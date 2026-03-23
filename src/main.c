@@ -10,44 +10,31 @@
 #include "stb_image.h"
 
 #include "jsk.h"
+#include "jsk_gl.h"
 #include "jsk_log.h"
 #include "jsk_config.h"
-#include "jsk_gl.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 #define WINDOW_TITLE "Voxel Test"
 
-#define TEXTURE_SIZE 64
-
-#define CELL_RADIUS 0.5f
-#define CELL_SIZE (2.0f * CELL_RADIUS)
-
-#define WORLD_SIZE_IN_SECTORS_LOG2 2
-#define WORLD_SIZE_IN_SECTORS (1 << WORLD_SIZE_IN_SECTORS_LOG2)
-#define WORLD_VOLUME_IN_SECTORS (1 << (3 * WORLD_SIZE_IN_SECTORS_LOG2))
-
-#define WORLD_STRIDE_IN_SECTORS_X 1
-#define WORLD_STRIDE_IN_SECTORS_Y (1 << WORLD_SIZE_IN_SECTORS_LOG2)
-#define WORLD_STRIDE_IN_SECTORS_Z (1 << (2 * WORLD_SIZE_IN_SECTORS_LOG2))
-
-#define WORLD_SIZE_MASK_IN_SECTORS (WORLD_SIZE_IN_SECTORS - 1)
+#define TEXTURE_SIZE 1 << 6
 
 #define SECTOR_SIZE_IN_CELLS_LOG2 2
-#define SECTOR_SIZE_IN_CELLS (1 << SECTOR_SIZE_IN_CELLS_LOG2)
-#define SECTOR_VOLUME_IN_CELLS (1 << (3 * SECTOR_SIZE_IN_CELLS_LOG2))
+#define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
+#define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
 
-#define SECTOR_STRIDE_IN_CELLS_X 1
-#define SECTOR_STRIDE_IN_CELLS_Y (1 << SECTOR_SIZE_IN_CELLS_LOG2)
-#define SECTOR_STRIDE_IN_CELLS_Z (1 << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
+#define WORLD_SIZE_IN_SECTORS_LOG2 2
+#define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
+#define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
 
-#define SECTOR_SIZE_MASK_IN_CELLS (SECTOR_SIZE_IN_CELLS - 1)
+#define WORLD_SIZE_IN_CELLS_LOG2 (SECTOR_SIZE_IN_CELLS_LOG2 + WORLD_SIZE_IN_SECTORS_LOG2)
+#define WORLD_SIZE_IN_CELLS (1 << (1u * WORLD_SIZE_IN_CELLS_LOG2))
+#define WORLD_AREA_IN_CELLS (1 << (2u * WORLD_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_SIZE_IN_CELLS (WORLD_SIZE_IN_SECTORS * SECTOR_SIZE_IN_CELLS)
-#define WORLD_VOLUME_IN_CELLS (1 << (3 * (WORLD_SIZE_IN_SECTORS_LOG2 + SECTOR_SIZE_IN_CELLS_LOG2)))
+#define WORLD_Z_MAX 1 << 8
 
-typedef enum CellFace CellFace;
-enum CellFace
+enum
 {
     CELL_FACE_POS_X,
     CELL_FACE_NEG_X,
@@ -59,7 +46,8 @@ enum CellFace
     CELL_FACE_COUNT,
 };
 
-static const char* CELL_FACE_TO_STRING[CELL_FACE_COUNT] = {
+static const char* CELL_FACE_TO_STRING[CELL_FACE_COUNT] =
+{
     "CELL_FACE_POS_X",
     "CELL_FACE_NEG_X",
     "CELL_FACE_POS_Y",
@@ -68,13 +56,10 @@ static const char* CELL_FACE_TO_STRING[CELL_FACE_COUNT] = {
     "CELL_FACE_NEG_Z",
 };
 
-typedef u8 CellFaceMask;
+#define GET_CELL_FACE(cell_face_mask) (__builtin_ctz(cell_face_mask))
+#define GET_CELL_FACE_MASK(cell_face) (1 << cell_face)
 
-#define GET_CELL_FACE(cell_face_mask) ((CellFace)(__builtin_ctz(cell_face_mask)))
-#define GET_CELL_FACE_MASK(cell_face) ((CellFaceMask)(1 << cell_face))
-
-typedef enum BlockType BlockType;
-enum BlockType
+enum
 {
     BLOCK_TYPE_NONE,
     BLOCK_TYPE_LION,
@@ -85,7 +70,8 @@ enum BlockType
     BLOCK_TYPE_COUNT,
 };
 
-static const char* BLOCK_TYPE_TO_STRING[BLOCK_TYPE_COUNT] = {
+static const char* BLOCK_TYPE_TO_STRING[BLOCK_TYPE_COUNT] =
+{
     "BLOCK_TYPE_NONE",
     "BLOCK_TYPE_LION",
     "BLOCK_TYPE_EAGLE",
@@ -105,123 +91,59 @@ struct VertexData
 #define VERTEX_COUNT_PER_FACE 4
 #define INDEX_COUNT_PER_FACE 6
 
-static vec3 CELL_FACE_VERTEX_ARRAY[CELL_FACE_COUNT][VERTEX_COUNT_PER_FACE] = {
-    // CELL_FACE_POS_X
-    {
-	{+CELL_RADIUS, -CELL_RADIUS, +CELL_RADIUS},
-	{+CELL_RADIUS, -CELL_RADIUS, -CELL_RADIUS},
-	{+CELL_RADIUS, +CELL_RADIUS, -CELL_RADIUS},
-	{+CELL_RADIUS, +CELL_RADIUS, +CELL_RADIUS},
-    },
-    
-    // CELL_FACE_NEG_X
-    {
-        {-CELL_RADIUS, -CELL_RADIUS, -CELL_RADIUS},
-        {-CELL_RADIUS, -CELL_RADIUS, +CELL_RADIUS},
-        {-CELL_RADIUS, +CELL_RADIUS, +CELL_RADIUS},
-        {-CELL_RADIUS, +CELL_RADIUS, -CELL_RADIUS},
-    },
-
-    // CELL_FACE_POS_Y
-    {
-        {-CELL_RADIUS, +CELL_RADIUS, +CELL_RADIUS},
-        {+CELL_RADIUS, +CELL_RADIUS, +CELL_RADIUS},
-        {+CELL_RADIUS, +CELL_RADIUS, -CELL_RADIUS},
-        {-CELL_RADIUS, +CELL_RADIUS, -CELL_RADIUS},
-    },
-
-    // CELL_FACE_NEG_Y
-    {
-        {-CELL_RADIUS, -CELL_RADIUS, -CELL_RADIUS},
-        {+CELL_RADIUS, -CELL_RADIUS, -CELL_RADIUS},
-        {+CELL_RADIUS, -CELL_RADIUS, +CELL_RADIUS},
-        {-CELL_RADIUS, -CELL_RADIUS, +CELL_RADIUS},
-    },
-
-    // CELL_FACE_POS_Z
-    {
-        {-CELL_RADIUS, -CELL_RADIUS, +CELL_RADIUS},
-        {+CELL_RADIUS, -CELL_RADIUS, +CELL_RADIUS},
-        {+CELL_RADIUS, +CELL_RADIUS, +CELL_RADIUS},
-        {-CELL_RADIUS, +CELL_RADIUS, +CELL_RADIUS},
-    },
-
-    // CELL_FACE_NEG_Z
-    {
-        {+CELL_RADIUS, -CELL_RADIUS, -CELL_RADIUS},
-        {-CELL_RADIUS, -CELL_RADIUS, -CELL_RADIUS},
-        {-CELL_RADIUS, +CELL_RADIUS, -CELL_RADIUS},
-        {+CELL_RADIUS, +CELL_RADIUS, -CELL_RADIUS},
-    },
+static vec3 CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT] =
+{
+    { +1, +0, +0 },
+    { -1, +0, +0 },
+    { +0, +1, +0 },
+    { +0, -1, +0 },
+    { +0, +0, +1 },
+    { +0, +0, -1 },
 };
 
-static vec3 CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT] = {
-    // CELL_FACE_POS_X
-    { +1.0f, +0.0f, +0.0f },
-
-    // CELL_FACE_NEG_X
-    { -1.0f, +0.0f, +0.0f },
-
-    // CELL_FACE_POS_Y
-    { +0.0f, +1.0f, +0.0f },
-
-    // CELL_FACE_NEG_Y
-    { +0.0f, -1.0f, +0.0f },
-
-    // CELL_FACE_POS_Z
-    { +0.0f, +0.0f, +1.0f },
-
-    // CELL_FACE_NEG_Z
-    { +0.0f, +0.0f, -1.0f },
-};
-
-static vec3 CELL_FACE_UV_ARRAY[CELL_FACE_COUNT][VERTEX_COUNT_PER_FACE] = {
+static vec3 CELL_FACE_UV_ARRAY[CELL_FACE_COUNT][VERTEX_COUNT_PER_FACE] =
+{
     // CELL_FACE_POS_X
     {
-	{+0.0f, +1.0f},
-	{+1.0f, +1.0f},
-	{+1.0f, +0.0f},
-	{+0.0f, +0.0f},
+	{ +0.0f, +1.0f },
+	{ +1.0f, +1.0f },
+	{ +1.0f, +0.0f },
+	{ +0.0f, +0.0f },
     },
-
     // CELL_FACE_NEG_X
     {
-	{+0.0f, +1.0f},
-	{+1.0f, +1.0f},
-	{+1.0f, +0.0f},
-	{+0.0f, +0.0f},
+	{ +0.0f, +1.0f },
+	{ +1.0f, +1.0f },
+	{ +1.0f, +0.0f },
+	{ +0.0f, +0.0f },
     },
-
     // CELL_FACE_POS_Y
     {
-	{+0.0f, +1.0f},
-	{+1.0f, +1.0f},
-	{+1.0f, +0.0f},
-	{+0.0f, +0.0f},
+	{ +0.0f, +1.0f },
+	{ +1.0f, +1.0f },
+	{ +1.0f, +0.0f },
+	{ +0.0f, +0.0f },
     },
-
     // CELL_FACE_NEG_Y
     {
-	{+0.0f, +1.0f},
-	{+1.0f, +1.0f},
-	{+1.0f, +0.0f},
-	{+0.0f, +0.0f},
+	{ +0.0f, +1.0f },
+	{ +1.0f, +1.0f },
+	{ +1.0f, +0.0f },
+	{ +0.0f, +0.0f },
     },
-
     // CELL_FACE_POS_Z
     {
-	{+0.0f, +1.0f},
-	{+1.0f, +1.0f},
-	{+1.0f, +0.0f},
-	{+0.0f, +0.0f},
+	{ +0.0f, +1.0f },
+	{ +1.0f, +1.0f },
+	{ +1.0f, +0.0f },
+	{ +0.0f, +0.0f },
     },
-
     // CELL_FACE_NEG_Z
     {
-	{+0.0f, +1.0f},
-	{+1.0f, +1.0f},
-	{+1.0f, +0.0f},
-	{+0.0f, +0.0f},
+	{ +0.0f, +1.0f },
+	{ +1.0f, +1.0f },
+	{ +1.0f, +0.0f },
+	{ +0.0f, +0.0f },
     },
 };
 
@@ -250,14 +172,14 @@ struct SectorFace
 {
     ivec3 cell_coordinate;
     
-    CellFace cell_face;
-    BlockType block_type;
+    u8 cell_face;
+    u8 block_type;
 };
 
 typedef struct SectorMesh SectorMesh;
 struct SectorMesh
 {
-    SectorFace sector_face_array[SECTOR_VOLUME_IN_CELLS * CELL_FACE_COUNT];
+    SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * CELL_FACE_COUNT];
 
     u32 count;
 };
@@ -268,12 +190,15 @@ struct GLContext
     GLFWwindow* window;
 
     GLuint program_id;
+    
     GLuint vao_id;
     GLuint vbo_id;
 
     GLuint texture_array_id;
 
     GLint u_texture_sampler_location;
+
+    GLint u_sector_transform_location;
 
     GLint u_projection_location;
     GLint u_view_location;
@@ -292,25 +217,25 @@ struct Timing
 typedef struct Cell Cell;
 struct Cell
 {
-    u32 sector_index;
-    u32 cell_index;
+    i32 sector_index;
+    i32 cell_index;
     
-    BlockType block_type;
-    CellFaceMask cell_face_mask;
+    u8 block_type;
+    u8 cell_face_mask;
 };
 
 typedef struct Sector Sector;
 struct Sector
 {
-    u32 sector_index;
+    i32 sector_index;
     
-    Cell cell_array[SECTOR_VOLUME_IN_CELLS];
+    Cell cell_array[SECTOR_AREA_IN_CELLS][WORLD_Z_MAX];
 };
 
 typedef struct World World;
 struct World
 {
-    Sector sector_array[WORLD_VOLUME_IN_SECTORS];
+    Sector sector_array[WORLD_AREA_IN_SECTORS];
 };
 
 typedef struct Input Input;
@@ -358,115 +283,119 @@ static JSK_Config* block_types_config;
 
 static int block_type_layer_array[BLOCK_TYPE_COUNT - 1];
 
-static SectorMesh sector_mesh_array[WORLD_VOLUME_IN_SECTORS];
-static GpuMesh gpu_mesh_array[WORLD_VOLUME_IN_SECTORS];
+static SectorMesh sector_mesh_array[WORLD_AREA_IN_SECTORS];
+static GpuMesh gpu_mesh_array[WORLD_AREA_IN_SECTORS];
 
-boolean map_world_coordinate_is_valid(u32 x, u32 y, u32 z)
-{
-    return x < WORLD_SIZE_IN_CELLS && y < WORLD_SIZE_IN_CELLS && z < WORLD_SIZE_IN_CELLS;
+boolean map_world_coordinate_is_valid(i32 x, i32 y)
+{   
+    return (
+	x >= 0 && x < WORLD_SIZE_IN_CELLS &&
+	y >= 0 && y < WORLD_SIZE_IN_CELLS
+    );
 }
 
-boolean map_sector_coordinate_is_valid(u32 x, u32 y, u32 z)
+boolean map_sector_coordinate_is_valid(i32 x, i32 y)
 {
-    return x < WORLD_SIZE_IN_SECTORS && y < WORLD_SIZE_IN_SECTORS && z < WORLD_SIZE_IN_SECTORS;
+    return (
+	x >= 0 && x < WORLD_SIZE_IN_SECTORS &&
+	y >= 0 && y < WORLD_SIZE_IN_SECTORS
+    );
 }
 
-boolean map_cell_coordinate_is_valid(u32 x, u32 y, u32 z)
+boolean map_cell_coordinate_is_valid(i32 x, i32 y)
 {
-    return x < SECTOR_SIZE_IN_CELLS && y < SECTOR_SIZE_IN_CELLS && z < SECTOR_SIZE_IN_CELLS;
+    return (
+	x >= 0 && x < SECTOR_SIZE_IN_CELLS &&
+	y >= 0 && y < SECTOR_SIZE_IN_CELLS
+    );
 }
 
-u32 map_sector_coordinate_to_index(ivec3 sector_coordinate)
+boolean map_height_is_valid(i32 z)
 {
-    assert(sector_coordinate[0] >= 0 && sector_coordinate[0] < WORLD_SIZE_IN_SECTORS);
-    assert(sector_coordinate[1] >= 0 && sector_coordinate[1] < WORLD_SIZE_IN_SECTORS);
-    assert(sector_coordinate[2] >= 0 && sector_coordinate[2] < WORLD_SIZE_IN_SECTORS);
+    return z >= 0 && z < WORLD_Z_MAX;
+}
+
+i32 map_sector_coordinate_to_index(ivec3 sector_coordinate)
+{
+    assert(sector_coordinate[0] < WORLD_SIZE_IN_SECTORS);
+    assert(sector_coordinate[1] < WORLD_SIZE_IN_SECTORS);
     
-    u32 sector_index =
-	sector_coordinate[0] +
-	(sector_coordinate[1] << WORLD_SIZE_IN_SECTORS_LOG2) +
-	(sector_coordinate[2] << (2 * WORLD_SIZE_IN_SECTORS_LOG2));
+    i32 sector_index = sector_coordinate[0] + sector_coordinate[1] * WORLD_SIZE_IN_SECTORS;
 	    
     return sector_index;
 }
 
-void map_sector_index_to_coordinate(u32 sector_index, ivec3 out_sector_coordinate)
+void map_sector_index_to_coordinate(i32 sector_index, ivec3 out_sector_coordinate)
 {
-    assert(sector_index < WORLD_VOLUME_IN_SECTORS);
+    assert(sector_index < WORLD_AREA_IN_SECTORS);
     
-    out_sector_coordinate[0] = sector_index & WORLD_SIZE_MASK_IN_SECTORS;
-    out_sector_coordinate[1] = (sector_index >> WORLD_SIZE_IN_SECTORS_LOG2) & WORLD_SIZE_MASK_IN_SECTORS;
-    out_sector_coordinate[2] = sector_index >> (2 * WORLD_SIZE_IN_SECTORS_LOG2) & WORLD_SIZE_MASK_IN_SECTORS;
+    out_sector_coordinate[0] = sector_index;
+    out_sector_coordinate[1] = sector_index >> WORLD_SIZE_IN_SECTORS_LOG2;
 }
 
-u32 map_cell_coordinate_to_index(ivec3 cell_coordinate)
+i32 map_cell_coordinate_to_index(ivec3 cell_coordinate)
 {
-    assert(cell_coordinate[0] >= 0 && cell_coordinate[0] < SECTOR_SIZE_IN_CELLS);
-    assert(cell_coordinate[1] >= 0 && cell_coordinate[1] < SECTOR_SIZE_IN_CELLS);
-    assert(cell_coordinate[2] >= 0 && cell_coordinate[2] < SECTOR_SIZE_IN_CELLS);
+    assert(cell_coordinate[0] < SECTOR_SIZE_IN_CELLS);
+    assert(cell_coordinate[1] < SECTOR_SIZE_IN_CELLS);
     
-    u32 cell_index =
-	cell_coordinate[0] +
-	(cell_coordinate[1] << SECTOR_SIZE_IN_CELLS_LOG2) +
-	(cell_coordinate[2] << (2 * SECTOR_SIZE_IN_CELLS_LOG2));
+    i32 cell_index = cell_coordinate[0] + cell_coordinate[1] * SECTOR_SIZE_IN_CELLS;
 	    
     return cell_index;
 }
 
-void map_cell_index_to_coordinate(u32 cell_index, ivec3 out_cell_coordinate)
+void map_cell_index_to_coordinate(i32 cell_index, ivec3 out_cell_coordinate)
 {
-    assert(cell_index < SECTOR_VOLUME_IN_CELLS);
+    assert(cell_index < SECTOR_AREA_IN_CELLS);
     
-    out_cell_coordinate[0] = cell_index & SECTOR_SIZE_MASK_IN_CELLS;
-    out_cell_coordinate[1] = (cell_index >> SECTOR_SIZE_IN_CELLS_LOG2) & SECTOR_SIZE_MASK_IN_CELLS;
-    out_cell_coordinate[2] = cell_index >> (2 * SECTOR_SIZE_IN_CELLS_LOG2) & SECTOR_SIZE_MASK_IN_CELLS;
+    out_cell_coordinate[0] = cell_index;
+    out_cell_coordinate[1] = cell_index >> (1 * SECTOR_SIZE_IN_CELLS_LOG2);
 }
 
-u32 map_world_coordinate_to_sector_index(ivec3 world_coordinate)
+i32 map_world_coordinate_to_sector_index(ivec3 world_coordinate)
 {
     assert(world_coordinate[0] < WORLD_SIZE_IN_CELLS);
     assert(world_coordinate[1] < WORLD_SIZE_IN_CELLS);
-    assert(world_coordinate[2] < WORLD_SIZE_IN_CELLS);
     
     ivec3 sector_coordinate;
 
     sector_coordinate[0] = world_coordinate[0] >> SECTOR_SIZE_IN_CELLS_LOG2;
     sector_coordinate[1] = world_coordinate[1] >> SECTOR_SIZE_IN_CELLS_LOG2;
-    sector_coordinate[2] = world_coordinate[2] >> SECTOR_SIZE_IN_CELLS_LOG2;
 
-    u32 sector_index = map_sector_coordinate_to_index(sector_coordinate);
+    i32 sector_index = map_sector_coordinate_to_index(sector_coordinate);
 
     return sector_index;
 }
 
-u32 map_world_coordinate_to_cell_index(ivec3 world_coordinate)
+void map_world_coordinate_to_cell_coordinate(ivec3 world_coordinate, ivec3 out_cell_coordinate)
 {
     assert(world_coordinate[0] < WORLD_SIZE_IN_CELLS);
     assert(world_coordinate[1] < WORLD_SIZE_IN_CELLS);
-    assert(world_coordinate[2] < WORLD_SIZE_IN_CELLS);
     
+    out_cell_coordinate[0] = world_coordinate[0] & (SECTOR_SIZE_IN_CELLS - 1);
+    out_cell_coordinate[1] = world_coordinate[1] & (SECTOR_SIZE_IN_CELLS - 1);
+}
+
+i32 map_world_coordinate_to_cell_index(ivec3 world_coordinate)
+{
     ivec3 cell_coordinate;
 
-    cell_coordinate[0] = (u32)world_coordinate[0] & SECTOR_SIZE_MASK_IN_CELLS;
-    cell_coordinate[1] = (u32)world_coordinate[1] & SECTOR_SIZE_MASK_IN_CELLS;
-    cell_coordinate[2] = (u32)world_coordinate[2] & SECTOR_SIZE_MASK_IN_CELLS;
+    map_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
 
-    u32 cell_index = map_cell_coordinate_to_index(cell_coordinate);
+    i32 cell_index = map_cell_coordinate_to_index(cell_coordinate);
 
     return cell_index;
 }
 
-void map_sector_index_to_world_coordinate(u32 sector_index, ivec3 out_world_coordinate)
+void map_sector_index_to_world_coordinate(i32 sector_index, ivec3 out_world_coordinate)
 {
     ivec3 sector_coordinate;
     map_sector_index_to_coordinate(sector_index, sector_coordinate);
 
     out_world_coordinate[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
     out_world_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
-    out_world_coordinate[2] = sector_coordinate[2] * SECTOR_SIZE_IN_CELLS;
 }
 
-void map_indices_to_world_coordinate(u32 sector_index, u32 cell_index, ivec3 out_world_coordinate)
+void map_indices_to_world_coordinate(i32 sector_index, i32 cell_index, ivec3 out_world_coordinate)
 {
     ivec3 sector_coordinate;
     ivec3 cell_coordinate;
@@ -474,52 +403,56 @@ void map_indices_to_world_coordinate(u32 sector_index, u32 cell_index, ivec3 out
     map_sector_index_to_coordinate(sector_index, sector_coordinate);
     map_cell_index_to_coordinate(cell_index, cell_coordinate);
 
-    glm_ivec3_scale(sector_coordinate, SECTOR_SIZE_IN_CELLS, out_world_coordinate);
-    glm_ivec3_add(out_world_coordinate, cell_coordinate, out_world_coordinate);
+    out_world_coordinate[0] = cell_coordinate[0] + sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
+    out_world_coordinate[1] = cell_coordinate[1] + sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
 }
 
-void map_world_coordinate_to_position(ivec3 world_coordinate, vec3 out_world_position)
+void map_world_coordinate_to_position(ivec2 world_coordinate, vec3 out_world_position)
 {
     out_world_position[0] = (f32)world_coordinate[0];
     out_world_position[1] = (f32)world_coordinate[1];
-    out_world_position[2] = (f32)world_coordinate[2];
 }
 
-BlockType map_block_type_from_string(const char* str)
+u8 map_block_type_from_string(const char* str)
 {
     int i;
     for (i = 0; i < BLOCK_TYPE_COUNT; ++i)
     {
         if (strcmp(str, BLOCK_TYPE_TO_STRING[i]) == 0)
         {
-            return (BlockType)i;
+            return (u8)i;
         }
     }
 
     return BLOCK_TYPE_NONE;
 }
 
-boolean map_is_solid(u32 x, u32 y, u32 z)
+boolean map_is_solid(i32 x, i32 y, i32 z)
 {   
-    if (!map_world_coordinate_is_valid(x, y, z))
+    if (!map_world_coordinate_is_valid(x, y))
     {
 	return False;
     }
 
-    ivec3 world_coordinate = {x, y, z};
+    if (!map_height_is_valid(z))
+    {
+	return False;
+    }
+
+    ivec2 world_coordinate = {x, y};
     
-    u32 sector_index = map_world_coordinate_to_sector_index(world_coordinate);
-    u32 cell_index = map_world_coordinate_to_cell_index(world_coordinate);
+    i32 sector_index = map_world_coordinate_to_sector_index(world_coordinate);
+    i32 cell_index = map_world_coordinate_to_cell_index(world_coordinate);
     
     Sector* sector = &world.sector_array[sector_index];
-    Cell* cell = &sector->cell_array[cell_index];
+    Cell* cell = &sector->cell_array[cell_index][z];
 
     return cell->block_type != BLOCK_TYPE_NONE;
 }
 
-CellFaceMask map_get_cell_face_mask(u32 x, u32 y, u32 z)
+u8 map_get_cell_face_mask(i32 x, i32 y, i32 z)
 {
-    CellFaceMask cell_face_mask = 0;
+    u8 cell_face_mask = 0;
 
     if (!map_is_solid(x + 1, y, z)) cell_face_mask |= GET_CELL_FACE_MASK(CELL_FACE_POS_X);
     if (!map_is_solid(x - 1, y, z)) cell_face_mask |= GET_CELL_FACE_MASK(CELL_FACE_NEG_X);
@@ -533,20 +466,20 @@ CellFaceMask map_get_cell_face_mask(u32 x, u32 y, u32 z)
     return cell_face_mask;
 }
 
-void map_set_block_type(u32 x, u32 y, u32 z, BlockType block_type)
+void map_set_block_type(i32 x, i32 y, i32 z, u8 block_type)
 {
-    if (map_world_coordinate_is_valid(x, y, z))
+    if (map_world_coordinate_is_valid(x, y) && map_height_is_valid(z))
     {
-	ivec3 world_coordinate = {x, y, z};
+	ivec3 world_coordinate = {x, y};
 
 	u32 sector_index = map_world_coordinate_to_sector_index(world_coordinate);
 	u32 cell_index = map_world_coordinate_to_cell_index(world_coordinate);
 	
-	world.sector_array[sector_index].cell_array[cell_index].block_type = block_type;
+	world.sector_array[sector_index].cell_array[cell_index][z].block_type = block_type;
     }
     else
     {
-	LOG_WARN("Block set at invalid coordinate: %u %u %u", x, y, z);
+	LOG_WARN("Block set at invalid coordinate: %d %d %d", x, y, z);
     }
 }
 
@@ -558,52 +491,58 @@ void map_init()
     
     srand(seed);
 
-    u32 sector_index;
-    u32 cell_index;
+    i32 sector_index;
+    i32 cell_index;
+    i32 cell_height;
 
-    for (sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; ++sector_index)
+    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
 	Sector* sector = &world.sector_array[sector_index];
 	sector->sector_index = sector_index;
 
-	for (cell_index = 0; cell_index < SECTOR_VOLUME_IN_CELLS; ++cell_index)
+	for (cell_index = 0; cell_index < SECTOR_AREA_IN_CELLS; ++cell_index)
 	{
-	    Cell* cell = &sector->cell_array[cell_index];
-	    cell->sector_index = sector_index;
-	    cell->cell_index = cell_index;
-	    cell->cell_face_mask = 0;
+	    for (cell_height = 0; cell_height < WORLD_Z_MAX; ++cell_height)
+	    {
+		Cell* cell = &sector->cell_array[cell_index][cell_height];
+		cell->sector_index = sector_index;
+		cell->cell_index = cell_index;
+		cell->cell_face_mask = 0;
 
-	    if (rand() % 100 < 5)
-	    {
-		int block_type_index = rand() % BLOCK_TYPE_COUNT;
-		BlockType block_type = (BlockType)(block_type_index);
+		if (rand() % 100 < 5)
+		{
+		    u8 block_type = rand() % BLOCK_TYPE_COUNT;
 		
-		cell->block_type = block_type;
-	    }
-	    else
-	    {
-		cell->block_type = BLOCK_TYPE_NONE;
+		    cell->block_type = block_type;
+		}
+		else
+		{
+		    cell->block_type = BLOCK_TYPE_NONE;
+		}
 	    }
 	}
     }
 
     ivec3 world_coordinate;
     
-    for (sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; ++sector_index)
+    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
 	Sector* sector = &world.sector_array[sector_index];
 	
-	for (cell_index = 0; cell_index < SECTOR_VOLUME_IN_CELLS; ++cell_index)
+	for (cell_index = 0; cell_index < SECTOR_AREA_IN_CELLS; ++cell_index)
 	{
-	    Cell* cell = &sector->cell_array[cell_index];
+	    for (cell_height = 0; cell_height < WORLD_Z_MAX; ++cell_height)
+	    {
+		Cell* cell = &sector->cell_array[cell_index][cell_height];
 	    
-	    map_indices_to_world_coordinate(sector_index, cell_index, world_coordinate);
+		map_indices_to_world_coordinate(sector_index, cell_index, world_coordinate);
 
-	    cell->cell_face_mask = map_get_cell_face_mask(
-		world_coordinate[0],
-		world_coordinate[1],
-		world_coordinate[2]
-	    );
+		cell->cell_face_mask = map_get_cell_face_mask(
+		    world_coordinate[0],
+		    world_coordinate[1],
+		    cell_height
+		);
+	    }
 	}
     }
 }
@@ -777,8 +716,17 @@ void camera_update()
     camera.rotation[0] -= camera.sensitivity * input.mouse_delta_y;
     camera.rotation[1] += camera.sensitivity * input.mouse_delta_x;
 
-    if (camera.rotation[0] > 89.9f) camera.rotation[0] = 89.9f;
-    if (camera.rotation[0] < -89.9f) camera.rotation[0] = -89.9f;
+    const f32 pitch_limit = 89.9f;
+    
+    if (camera.rotation[0] > pitch_limit)
+    {
+	camera.rotation[0] = pitch_limit;
+    }
+    
+    if (camera.rotation[0] < -pitch_limit)
+    {
+	camera.rotation[0] = -pitch_limit;
+    }
     
     camera_get_view_matrix(camera.view_matrix);
 }
@@ -847,7 +795,7 @@ void render_load_textures(const char* textures_path)
 	
 	snprintf(texture_path, sizeof(texture_path), "%s/%s", textures_path, entry->value);
 
-	BlockType block_type = map_block_type_from_string(entry->key);
+	u8  block_type = map_block_type_from_string(entry->key);
 
 	block_type_layer_array[(int)block_type] = layer_index;
 	
@@ -879,11 +827,8 @@ void render_setup_opengl()
 
     assert(glad_load_gl_result != 0);
 
-    char* vert_src = read_file("assets/shaders/test.vert");
-    char* frag_src = read_file("assets/shaders/test.frag");
-    
-    GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, vert_src);
-    GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_src);
+    GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
+    GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
     gl_context.program_id = glCreateProgram();
     glAttachShader(gl_context.program_id, vert_shader);
@@ -909,9 +854,6 @@ void render_setup_opengl()
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    free(vert_src);
-    free(frag_src);
-
     render_load_texture_config();
     render_load_textures("assets/textures");
 
@@ -922,49 +864,55 @@ void render_setup_opengl()
 
 void render_generate_sector_mesh(u32 sector_index)
 {
-    u32 cell_index;
-    ivec3 world_coordinate;
+    i32 cell_index;
+    i32 cell_height;
+    
+    ivec2 world_coordinate;
     
     Sector* sector = &world.sector_array[sector_index];
 
     SectorMesh* sector_mesh = &sector_mesh_array[sector->sector_index];
     sector_mesh->count = 0;
 
-    for (cell_index = 0; cell_index < SECTOR_VOLUME_IN_CELLS; ++cell_index)
+    for (cell_index = 0; cell_index < SECTOR_AREA_IN_CELLS; ++cell_index)
     {
-	Cell* cell = &sector->cell_array[cell_index];
-
-	if (cell->block_type == BLOCK_TYPE_NONE)
+	for (cell_height = 0; cell_height < WORLD_Z_MAX; ++cell_height)
 	{
-	    continue;
-	}
+	    Cell* cell = &sector->cell_array[cell_index][cell_height];
 
-	ivec3 cell_coordinate;
-	map_cell_index_to_coordinate(cell_index, cell_coordinate);
+	    if (cell->block_type == BLOCK_TYPE_NONE)
+	    {
+		continue;
+	    }
+
+	    ivec3 cell_coordinate;
+	    map_cell_index_to_coordinate(cell_index, cell_coordinate);
 	    
-	CellFaceMask cell_face_mask_test = cell->cell_face_mask;
+	    u8 cell_face_mask_test = cell->cell_face_mask;
 
-	while (cell_face_mask_test)
-	{
-	    CellFace cell_face = GET_CELL_FACE(cell_face_mask_test);
+	    while (cell_face_mask_test)
+	    {
+		u8 cell_face = GET_CELL_FACE(cell_face_mask_test);
 
-	    SectorFace* sector_face = &sector_mesh->sector_face_array[sector_mesh->count];
+		SectorFace* sector_face = &sector_mesh->sector_face_array[sector_mesh->count];
 
-	    sector_face->cell_face = cell_face;
-	    sector_face->block_type = cell->block_type;
+		sector_face->cell_face = cell_face;
+		sector_face->block_type = cell->block_type;
 	    
-	    glm_ivec3_copy(cell_coordinate, sector_face->cell_coordinate);
+		glm_ivec3_copy(cell_coordinate, sector_face->cell_coordinate);
 
-	    sector_mesh->count += 1;
+		sector_mesh->count += 1;
 
-	    cell_face_mask_test &= cell_face_mask_test - 1;
+		cell_face_mask_test &= cell_face_mask_test - 1;
+	    }
 	}
     }
 }
 
 void render_emit_sector_face(SectorFace* sector_face, GpuMesh* gpu_mesh)
 {
-    vec3 local_position = {
+    vec3 local_position =
+    {
 	(f32)sector_face->cell_coordinate[0],
 	(f32)sector_face->cell_coordinate[1],
 	(f32)sector_face->cell_coordinate[2]
@@ -977,9 +925,6 @@ void render_emit_sector_face(SectorFace* sector_face, GpuMesh* gpu_mesh)
     u32 vertex_index;
     for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-	f32* vertex_array = CELL_FACE_VERTEX_ARRAY[sector_face->cell_face][vertex_index];
-	f32* uv_array = CELL_FACE_UV_ARRAY[sector_face->cell_face][vertex_index];
-
 	VertexData vertex_data;
 	vertex_data.position_array[0] = local_position[0] + vertex_array[0];
 	vertex_data.position_array[1] = local_position[1] + vertex_array[1];
@@ -1017,7 +962,7 @@ void render_convert_sector_mesh_to_gpu_mesh(u32 sector_index)
     gpu_mesh->vertex_count = 0;
     gpu_mesh->index_count = 0;
 
-    ivec3 world_coordinate;
+    ivec2 world_coordinate;
     map_sector_index_to_world_coordinate(sector_index, world_coordinate);
     
     map_world_coordinate_to_position(world_coordinate, gpu_mesh->world_position);
@@ -1135,16 +1080,16 @@ void render_init()
 
     LOG_INFO("OpenGL Setup");
     
-    u32 sector_index;
+    i32 sector_index;
     
-    for (sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; ++sector_index)
+    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
 	render_generate_sector_mesh(sector_index);
     }
 
     LOG_INFO("Sector Meshes Generated");
 
-    for (sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; ++sector_index)
+    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
 	render_convert_sector_mesh_to_gpu_mesh(sector_index);
 	render_upload_gpu_mesh(sector_index);
@@ -1166,8 +1111,8 @@ void render_update()
     glUniformMatrix4fv(gl_context.u_projection_location, 1, GL_FALSE, (float*)camera.projection_matrix);
     glUniformMatrix4fv(gl_context.u_view_location, 1, GL_FALSE, (float*)camera.view_matrix);
 
-    u32 sector_index;
-    for (sector_index = 0; sector_index < WORLD_VOLUME_IN_SECTORS; ++sector_index)
+    i32 sector_index;
+    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
 	GpuMesh* gpu_mesh = &gpu_mesh_array[sector_index];
 
