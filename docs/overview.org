@@ -1,0 +1,12 @@
+* Last Ditch
+A Civilization Garden
+
+** Premise
+The *premise* behind /Last Ditch/.
+
+** Features
+The main features of Last Ditch.
+
+** Development
+Development tracking for Last Ditch.
+
