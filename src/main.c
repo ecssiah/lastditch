@@ -20,11 +20,11 @@
 
 #define TEXTURE_SIZE 1 << 6
 
-#define SECTOR_SIZE_IN_CELLS_LOG2 2
+#define SECTOR_SIZE_IN_CELLS_LOG2 1
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 #define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_SIZE_IN_SECTORS_LOG2 2
+#define WORLD_SIZE_IN_SECTORS_LOG2 1
 #define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
 #define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
 
@@ -86,10 +86,48 @@ struct VertexAttributes
     u32 a_face;
 };
 
-#define VERTEX_COUNT_PER_FACE 4
-#define INDEX_COUNT_PER_FACE 6
+#define VERTEX_COUNT_PER_FACE 6
 
-static float CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT][3] =
+static i32 CELL_FACE_VERTEX_ARRAY[CELL_FACE_COUNT][VERTEX_COUNT_PER_FACE][3] =
+{
+    // +X
+    {
+        {1, 0, 0}, {1, 1, 0}, {1, 1, 1},
+        {1, 0, 0}, {1, 1, 1}, {1, 0, 1},
+    },
+
+    // -X
+    {
+        {0, 0, 0}, {0, 0, 1}, {0, 1, 1},
+        {0, 0, 0}, {0, 1, 1}, {0, 1, 0},
+    },
+
+    // +Y
+    {
+        {0, 1, 0}, {0, 1, 1}, {1, 1, 1},
+        {0, 1, 0}, {1, 1, 1}, {1, 1, 0},
+    },
+
+    // -Y
+    {
+        {0, 0, 0}, {1, 0, 0}, {1, 0, 1},
+        {0, 0, 0}, {1, 0, 1}, {0, 0, 1},
+    },
+
+    // +Z
+    {
+        {0, 0, 1}, {1, 0, 1}, {1, 1, 1},
+        {0, 0, 1}, {1, 1, 1}, {0, 1, 1},
+    },
+
+    // -Z
+    {
+        {0, 0, 0}, {0, 1, 0}, {1, 1, 0},
+        {0, 0, 0}, {1, 1, 0}, {1, 0, 0},
+    },
+};
+
+static i32 CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT][3] =
 {
     { +1, +0, +0 },
     { -1, +0, +0 },
@@ -160,8 +198,6 @@ struct Timing
 typedef struct Cell Cell;
 struct Cell
 {
-    ivec2 sector_coordinate;
-    
     u8 block_type;
     u8 cell_face_mask;
 };
@@ -224,7 +260,7 @@ static JSK_Config* block_types_config;
 static int block_type_layer_array[BLOCK_TYPE_COUNT - 1];
 
 static SectorMesh sector_mesh_array[WORLD_SIZE_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
-static GpuMesh gpu_mesh_array[WORLD_AREA_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
+static GpuMesh gpu_mesh_array[WORLD_SIZE_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
 
 boolean map_world_coordinate_is_valid(i32 x, i32 y)
 {   
@@ -433,24 +469,21 @@ void map_init()
     srand(seed);
 
     i32 sector_x, sector_y;
-    i32 cell_x, cell_y;
-    i32 world_z;
+    i32 cell_x, cell_y, cell_z;
 
-    ivec3 world_coordinate;
-    
     for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
 	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
 	{
 	    Sector* sector = &world.sector_array[sector_x][sector_y];
 
-	    for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
+	    for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
 	    {
-		for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
+		for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
 		{
-		    for (world_z = 0; world_z < WORLD_Z_MAX; ++world_z)
+		    for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
 		    {
-			Cell* cell = &sector->cell_array[cell_x][cell_y][world_z];
+			Cell* cell = &sector->cell_array[cell_x][cell_y][cell_z];
 			cell->cell_face_mask = 0;
 
 			if (rand() % 100 < 5)
@@ -463,7 +496,6 @@ void map_init()
 			{
 			    cell->block_type = BLOCK_TYPE_NONE;
 			}
-			
 		    }
 		}
 	    }
@@ -476,17 +508,18 @@ void map_init()
 	{
 	    Sector* sector = &world.sector_array[sector_x][sector_y];
 
-	    for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
+	    for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
 	    {
-		for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
+		for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
 		{
-		    for (world_z = 0; world_z < WORLD_Z_MAX; ++world_z)
+		    for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
 		    {
-			Cell* cell = &sector->cell_array[cell_x][cell_y][world_z];
+			Cell* cell = &sector->cell_array[cell_x][cell_y][cell_z];
 			cell->cell_face_mask = 0;
 
 			i32 world_x = sector_x * SECTOR_SIZE_IN_CELLS + cell_x;
 			i32 world_y = sector_y * SECTOR_SIZE_IN_CELLS + cell_y;
+			i32 world_z = cell_z;
 
 			cell->cell_face_mask = map_get_cell_face_mask(world_x, world_y, world_z);
 		    }
@@ -534,11 +567,11 @@ void input_update()
 void camera_get_forward(vec3 out_forward)
 {
     f32 rotation_x = glm_rad(camera.rotation[0]);
-    f32 rotation_y = glm_rad(camera.rotation[1]);
-    
-    out_forward[0] = cosf(rotation_x) * cosf(rotation_y);
-    out_forward[1] = sinf(rotation_x);
-    out_forward[2] = cosf(rotation_x) * sinf(rotation_y);
+    f32 rotation_z = glm_rad(camera.rotation[2]);
+
+    out_forward[0] = cosf(rotation_x) * cosf(rotation_z);
+    out_forward[1] = cosf(rotation_x) * sinf(rotation_z);
+    out_forward[2] = sinf(rotation_x);
 
     glm_vec3_normalize(out_forward);
 }
@@ -548,7 +581,7 @@ void camera_get_right(vec3 out_right)
     vec3 forward;
     camera_get_forward(forward);
 
-    glm_vec3_cross(forward, GLM_YUP, out_right);
+    glm_vec3_cross(GLM_ZUP, forward, out_right);
 
     glm_vec3_normalize(out_right);
 }
@@ -561,7 +594,7 @@ void camera_get_up(vec3 out_up)
     vec3 right;
     camera_get_right(right);
 
-    glm_vec3_cross(right, forward, out_up);
+    glm_vec3_cross(forward, right, out_up);
 }
 
 void camera_get_projection_matrix(mat4 out_projection_matrix)
@@ -583,7 +616,7 @@ void camera_get_view_matrix(mat4 out_view_matrix)
     vec3 center;
     glm_vec3_add(camera.world_position, forward, center);
     
-    glm_lookat(camera.world_position, center, GLM_YUP, out_view_matrix);
+    glm_lookat(camera.world_position, center, GLM_ZUP, out_view_matrix);
 }
 
 void camera_init()
@@ -604,7 +637,7 @@ void camera_init()
 
 void camera_update()
 {
-    vec3 input_value = { 0.0f, 0.0f, 0.0f };
+    vec3 input_value = { 0, 0, 0 };
 
     if (glfwGetKey(gl_context.window, GLFW_KEY_A) == GLFW_PRESS)
     {
@@ -616,24 +649,24 @@ void camera_update()
 	input_value[0] += 1.0f;
     }
 
-    if (glfwGetKey(gl_context.window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-	input_value[1] -= 1.0f;
-    }
-    
-    if (glfwGetKey(gl_context.window, GLFW_KEY_E) == GLFW_PRESS)
-    {
-	input_value[1] += 1.0f;
-    }
-
     if (glfwGetKey(gl_context.window, GLFW_KEY_W) == GLFW_PRESS)
     {
-	input_value[2] += 1.0f;
+	input_value[1] += 1.0f;
     }
     
     if (glfwGetKey(gl_context.window, GLFW_KEY_S) == GLFW_PRESS)
     {
+	input_value[1] -= 1.0f;
+    }
+
+    if (glfwGetKey(gl_context.window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
 	input_value[2] -= 1.0f;
+    }
+    
+    if (glfwGetKey(gl_context.window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+	input_value[2] += 1.0f;
     }
 
     glm_vec3_normalize(input_value);
@@ -648,21 +681,23 @@ void camera_update()
     camera_get_right(camera_right);
     glm_vec3_scale(camera_right, input_value[0], velocity_right);
 
-    glm_vec3_scale(GLM_YUP, input_value[1], velocity_up);
-    
     camera_get_forward(camera_forward);
-    glm_vec3_scale(camera_forward, input_value[2], velocity_forward);
-
-    vec3 velocity;
+    glm_vec3_scale(camera_forward, input_value[1], velocity_forward);
     
-    glm_vec3_add(velocity_forward, velocity_right, velocity);
+    glm_vec3_scale(GLM_ZUP, input_value[2], velocity_up);
+    
+    vec3 velocity = { 0, 0, 0 };
+
+    glm_vec3_add(velocity, velocity_right, velocity);
+    glm_vec3_add(velocity, velocity_forward, velocity);
     glm_vec3_add(velocity, velocity_up, velocity);
+    
     glm_vec3_scale(velocity, camera.speed * timing.dt, velocity);
 
     glm_vec3_add(camera.world_position, velocity, camera.world_position);
     
     camera.rotation[0] -= camera.sensitivity * input.mouse_delta_y;
-    camera.rotation[1] += camera.sensitivity * input.mouse_delta_x;
+    camera.rotation[2] -= camera.sensitivity * input.mouse_delta_x;
 
     const f32 pitch_limit = 89.9f;
     
@@ -818,27 +853,13 @@ void render_setup_opengl()
 
 void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 {
-    i32 cell_x, cell_y, cell_z;
-    
-    ivec2 world_coordinate;
-
     Sector* sector = &world.sector_array[sector_x][sector_y];
-
-    for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
-    {
-	for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
-	{
-	    for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
-	    {
-		Cell* cell = &sector->cell_array[cell_x][cell_y][cell_z];
-		cell->cell_face_mask = 0;
-	    }
-	}
-    }
     
     SectorMesh* sector_mesh = &sector_mesh_array[sector_x][sector_y];
     sector_mesh->count = 0;
 
+    i32 cell_x, cell_y, cell_z;
+    
     for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
     {
 	for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
@@ -852,6 +873,8 @@ void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 		    continue;
 		}
 
+		printf("%d %d %d %s\n", cell_x, cell_y, cell_z, BLOCK_TYPE_TO_STRING[cell->block_type]);
+		
 		u8 cell_face_mask_test = cell->cell_face_mask;
 
 		while (cell_face_mask_test)
@@ -864,7 +887,9 @@ void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 		    sector_face->block_type = cell->block_type;
 
 		    ivec3 cell_position = { cell_x, cell_y, cell_z };
-	    
+
+		    glm_ivec3_copy(cell_position, sector_face->cell_position);
+
 		    sector_mesh->count += 1;
 
 		    cell_face_mask_test &= cell_face_mask_test - 1;
@@ -877,21 +902,25 @@ void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 void render_emit_sector_face(SectorFace* sector_face, GpuMesh* gpu_mesh)
 {
     int vertex_index;
+
     for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-	VertexAttributes vertex_attributes;
-	
-	vertex_attributes.a_vertex =
-	    ((sector_face->cell_position[0] & 63u)  <<  0u) |
-	    ((sector_face->cell_position[1] & 63u)  <<  6u) |
-	    ((sector_face->cell_position[2] & 255u) << 12u);
+        u32 x = sector_face->cell_position[0] + CELL_FACE_VERTEX_ARRAY[sector_face->cell_face][vertex_index][0];
+        u32 y = sector_face->cell_position[1] + CELL_FACE_VERTEX_ARRAY[sector_face->cell_face][vertex_index][1];
+        u32 z = sector_face->cell_position[2] + CELL_FACE_VERTEX_ARRAY[sector_face->cell_face][vertex_index][2];
 
-	LOG_INFO("%u", vertex_attributes.a_vertex);
+        VertexAttributes vertex_attributes;
 
-	vertex_attributes.a_face =
-	    ((sector_face->cell_face & 255u) << 0u);
+        vertex_attributes.a_vertex =
+            ((x & 63u)  <<  0u) |
+            ((y & 63u)  <<  6u) |
+            ((z & 255u) << 12u);
+
+        vertex_attributes.a_face =
+            (sector_face->cell_face & 7u);
+
+        gpu_mesh->vertex_attribute_array[gpu_mesh->vertex_attribute_count] = vertex_attributes;
 	
-	gpu_mesh->vertex_attribute_array[gpu_mesh->vertex_attribute_count] = vertex_attributes;
 	gpu_mesh->vertex_attribute_count += 1;
     }
 }
@@ -938,25 +967,24 @@ void render_upload_gpu_mesh(i32 sector_x, i32 sector_y)
     glBindVertexArray(gpu_mesh->vao_id);
     glBindBuffer(GL_ARRAY_BUFFER, gpu_mesh->vbo_id);
 
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
 	0,
 	1,
 	GL_UNSIGNED_INT,
-	GL_FALSE,
 	sizeof(VertexAttributes),
-	(void*)0
+	(void*)offsetof(VertexAttributes, a_vertex)
     );
+    
+    glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
 	1,
 	1,
 	GL_UNSIGNED_INT,
-	GL_FALSE,
 	sizeof(VertexAttributes),
-	(void*)(offsetof(VertexAttributes, a_face))
+	(void*)offsetof(VertexAttributes, a_face)
     );
-
-    glEnableVertexAttribArray(0);
+    
     glEnableVertexAttribArray(1);
 
     glBufferData(
