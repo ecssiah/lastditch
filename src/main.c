@@ -79,19 +79,17 @@ static const char* BLOCK_TYPE_TO_STRING[BLOCK_TYPE_COUNT] =
     "BLOCK_TYPE_HORSE"
 };
 
-typedef struct VertexData VertexData;
-struct VertexData
+typedef struct VertexAttributes VertexAttributes;
+struct VertexAttributes
 {
-    f32 position_array[3];
-    f32 normal_array[3];
-    f32 uv_array[2];
-    f32 layer_index;
+    u32 a_vertex;
+    u32 a_face;
 };
 
 #define VERTEX_COUNT_PER_FACE 4
 #define INDEX_COUNT_PER_FACE 6
 
-static vec3 CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT] =
+static float CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT][3] =
 {
     { +1, +0, +0 },
     { -1, +0, +0 },
@@ -101,52 +99,6 @@ static vec3 CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT] =
     { +0, +0, -1 },
 };
 
-static vec3 CELL_FACE_UV_ARRAY[CELL_FACE_COUNT][VERTEX_COUNT_PER_FACE] =
-{
-    // CELL_FACE_POS_X
-    {
-	{ +0.0f, +1.0f },
-	{ +1.0f, +1.0f },
-	{ +1.0f, +0.0f },
-	{ +0.0f, +0.0f },
-    },
-    // CELL_FACE_NEG_X
-    {
-	{ +0.0f, +1.0f },
-	{ +1.0f, +1.0f },
-	{ +1.0f, +0.0f },
-	{ +0.0f, +0.0f },
-    },
-    // CELL_FACE_POS_Y
-    {
-	{ +0.0f, +1.0f },
-	{ +1.0f, +1.0f },
-	{ +1.0f, +0.0f },
-	{ +0.0f, +0.0f },
-    },
-    // CELL_FACE_NEG_Y
-    {
-	{ +0.0f, +1.0f },
-	{ +1.0f, +1.0f },
-	{ +1.0f, +0.0f },
-	{ +0.0f, +0.0f },
-    },
-    // CELL_FACE_POS_Z
-    {
-	{ +0.0f, +1.0f },
-	{ +1.0f, +1.0f },
-	{ +1.0f, +0.0f },
-	{ +0.0f, +0.0f },
-    },
-    // CELL_FACE_NEG_Z
-    {
-	{ +0.0f, +1.0f },
-	{ +1.0f, +1.0f },
-	{ +1.0f, +0.0f },
-	{ +0.0f, +0.0f },
-    },
-};
-
 typedef struct GpuMesh GpuMesh;
 struct GpuMesh
 {
@@ -154,23 +106,17 @@ struct GpuMesh
     
     GLuint vao_id;
     GLuint vbo_id;
-    GLuint ebo_id;
     
-    VertexData* vertex_array;
+    VertexAttributes* vertex_attribute_array;
     
-    u32 vertex_count;
-    u32 vertex_capacity;
-
-    u32* index_array;
-    
-    u32 index_count;
-    u32 index_capacity;
+    u32 vertex_attribute_count;
+    u32 vertex_attribute_capacity;
 };
 
 typedef struct SectorFace SectorFace;
 struct SectorFace
 {
-    ivec3 cell_coordinate;
+    ivec3 cell_position;
     
     u8 cell_face;
     u8 block_type;
@@ -190,15 +136,12 @@ struct GLContext
     GLFWwindow* window;
 
     GLuint program_id;
-    
-    GLuint vao_id;
-    GLuint vbo_id;
 
     GLuint texture_array_id;
 
     GLint u_texture_sampler_location;
-
-    GLint u_sector_transform_location;
+    
+    GLint u_normal_table_location;
 
     GLint u_projection_location;
     GLint u_view_location;
@@ -217,8 +160,7 @@ struct Timing
 typedef struct Cell Cell;
 struct Cell
 {
-    i32 sector_index;
-    i32 cell_index;
+    ivec2 sector_coordinate;
     
     u8 block_type;
     u8 cell_face_mask;
@@ -227,15 +169,13 @@ struct Cell
 typedef struct Sector Sector;
 struct Sector
 {
-    i32 sector_index;
-    
-    Cell cell_array[SECTOR_AREA_IN_CELLS][WORLD_Z_MAX];
+    Cell cell_array[SECTOR_SIZE_IN_CELLS][SECTOR_SIZE_IN_CELLS][WORLD_Z_MAX];
 };
 
 typedef struct World World;
 struct World
 {
-    Sector sector_array[WORLD_AREA_IN_SECTORS];
+    Sector sector_array[WORLD_SIZE_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
 };
 
 typedef struct Input Input;
@@ -283,8 +223,8 @@ static JSK_Config* block_types_config;
 
 static int block_type_layer_array[BLOCK_TYPE_COUNT - 1];
 
-static SectorMesh sector_mesh_array[WORLD_AREA_IN_SECTORS];
-static GpuMesh gpu_mesh_array[WORLD_AREA_IN_SECTORS];
+static SectorMesh sector_mesh_array[WORLD_SIZE_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
+static GpuMesh gpu_mesh_array[WORLD_AREA_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
 
 boolean map_world_coordinate_is_valid(i32 x, i32 y)
 {   
@@ -315,48 +255,35 @@ boolean map_height_is_valid(i32 z)
     return z >= 0 && z < WORLD_Z_MAX;
 }
 
-i32 map_sector_coordinate_to_index(ivec3 sector_coordinate)
+i32 map_sector_coordinate_to_index(ivec2 sector_coordinate)
 {
-    assert(sector_coordinate[0] < WORLD_SIZE_IN_SECTORS);
-    assert(sector_coordinate[1] < WORLD_SIZE_IN_SECTORS);
-    
     i32 sector_index = sector_coordinate[0] + sector_coordinate[1] * WORLD_SIZE_IN_SECTORS;
 	    
     return sector_index;
 }
 
-void map_sector_index_to_coordinate(i32 sector_index, ivec3 out_sector_coordinate)
+void map_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordinate)
 {
-    assert(sector_index < WORLD_AREA_IN_SECTORS);
-    
     out_sector_coordinate[0] = sector_index;
     out_sector_coordinate[1] = sector_index >> WORLD_SIZE_IN_SECTORS_LOG2;
 }
 
-i32 map_cell_coordinate_to_index(ivec3 cell_coordinate)
+i32 map_cell_coordinate_to_index(ivec2 cell_coordinate)
 {
-    assert(cell_coordinate[0] < SECTOR_SIZE_IN_CELLS);
-    assert(cell_coordinate[1] < SECTOR_SIZE_IN_CELLS);
-    
     i32 cell_index = cell_coordinate[0] + cell_coordinate[1] * SECTOR_SIZE_IN_CELLS;
 	    
     return cell_index;
 }
 
-void map_cell_index_to_coordinate(i32 cell_index, ivec3 out_cell_coordinate)
+void map_cell_index_to_coordinate(i32 cell_index, ivec2 out_cell_coordinate)
 {
-    assert(cell_index < SECTOR_AREA_IN_CELLS);
-    
     out_cell_coordinate[0] = cell_index;
     out_cell_coordinate[1] = cell_index >> (1 * SECTOR_SIZE_IN_CELLS_LOG2);
 }
 
-i32 map_world_coordinate_to_sector_index(ivec3 world_coordinate)
+i32 map_world_coordinate_to_sector_index(ivec2 world_coordinate)
 {
-    assert(world_coordinate[0] < WORLD_SIZE_IN_CELLS);
-    assert(world_coordinate[1] < WORLD_SIZE_IN_CELLS);
-    
-    ivec3 sector_coordinate;
+    ivec2 sector_coordinate;
 
     sector_coordinate[0] = world_coordinate[0] >> SECTOR_SIZE_IN_CELLS_LOG2;
     sector_coordinate[1] = world_coordinate[1] >> SECTOR_SIZE_IN_CELLS_LOG2;
@@ -366,39 +293,45 @@ i32 map_world_coordinate_to_sector_index(ivec3 world_coordinate)
     return sector_index;
 }
 
-void map_world_coordinate_to_cell_coordinate(ivec3 world_coordinate, ivec3 out_cell_coordinate)
+void map_world_coordinate_to_sector_coordinate(ivec2 world_coordinate, ivec2 out_sector_coordinate)
 {
-    assert(world_coordinate[0] < WORLD_SIZE_IN_CELLS);
-    assert(world_coordinate[1] < WORLD_SIZE_IN_CELLS);
-    
-    out_cell_coordinate[0] = world_coordinate[0] & (SECTOR_SIZE_IN_CELLS - 1);
-    out_cell_coordinate[1] = world_coordinate[1] & (SECTOR_SIZE_IN_CELLS - 1);
+    out_sector_coordinate[0] = world_coordinate[0] / SECTOR_SIZE_IN_CELLS;
+    out_sector_coordinate[1] = world_coordinate[1] / SECTOR_SIZE_IN_CELLS;
 }
 
-i32 map_world_coordinate_to_cell_index(ivec3 world_coordinate)
+i32 map_world_coordinate_to_cell_index(ivec2 world_coordinate)
 {
-    ivec3 cell_coordinate;
+    i32 sector_size_mask = (SECTOR_SIZE_IN_CELLS - 1);
+    
+    i32 x = world_coordinate[0] & sector_size_mask;
+    i32 y = world_coordinate[1] & sector_size_mask;
 
-    map_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
-
-    i32 cell_index = map_cell_coordinate_to_index(cell_coordinate);
+    i32 cell_index = x + (y << SECTOR_SIZE_IN_CELLS_LOG2);
 
     return cell_index;
 }
 
-void map_sector_index_to_world_coordinate(i32 sector_index, ivec3 out_world_coordinate)
+void map_world_coordinate_to_cell_coordinate(ivec2 world_coordinate, ivec2 out_cell_coordinate)
 {
-    ivec3 sector_coordinate;
+    i32 sector_size_mask = (SECTOR_SIZE_IN_CELLS - 1);
+    
+    out_cell_coordinate[0] = world_coordinate[0] & sector_size_mask;
+    out_cell_coordinate[1] = world_coordinate[1] & sector_size_mask;
+}
+
+void map_sector_index_to_world_coordinate(i32 sector_index, ivec2 out_world_coordinate)
+{
+    ivec2 sector_coordinate;
     map_sector_index_to_coordinate(sector_index, sector_coordinate);
 
     out_world_coordinate[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
     out_world_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
 }
 
-void map_indices_to_world_coordinate(i32 sector_index, i32 cell_index, ivec3 out_world_coordinate)
+void map_indices_to_world_coordinate(i32 sector_index, i32 cell_index, ivec2 out_world_coordinate)
 {
-    ivec3 sector_coordinate;
-    ivec3 cell_coordinate;
+    ivec2 sector_coordinate;
+    ivec2 cell_coordinate;
     
     map_sector_index_to_coordinate(sector_index, sector_coordinate);
     map_cell_index_to_coordinate(cell_index, cell_coordinate);
@@ -411,16 +344,17 @@ void map_world_coordinate_to_position(ivec2 world_coordinate, vec3 out_world_pos
 {
     out_world_position[0] = (f32)world_coordinate[0];
     out_world_position[1] = (f32)world_coordinate[1];
+    out_world_position[2] = 0.0f;
 }
 
-u8 map_block_type_from_string(const char* str)
+u8 map_block_type_from_string(const char* in_string)
 {
-    int i;
-    for (i = 0; i < BLOCK_TYPE_COUNT; ++i)
+    int index;
+    for (index = 0; index < BLOCK_TYPE_COUNT; ++index)
     {
-        if (strcmp(str, BLOCK_TYPE_TO_STRING[i]) == 0)
+        if (strcmp(in_string, BLOCK_TYPE_TO_STRING[index]) == 0)
         {
-            return (u8)i;
+            return (u8)index;
         }
     }
 
@@ -440,12 +374,15 @@ boolean map_is_solid(i32 x, i32 y, i32 z)
     }
 
     ivec2 world_coordinate = {x, y};
-    
-    i32 sector_index = map_world_coordinate_to_sector_index(world_coordinate);
-    i32 cell_index = map_world_coordinate_to_cell_index(world_coordinate);
-    
-    Sector* sector = &world.sector_array[sector_index];
-    Cell* cell = &sector->cell_array[cell_index][z];
+
+    ivec2 sector_coordinate;
+    map_world_coordinate_to_sector_coordinate(world_coordinate, sector_coordinate);
+
+    ivec2 cell_coordinate;
+    map_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
+
+    Sector* sector = &world.sector_array[sector_coordinate[0]][sector_coordinate[1]];
+    Cell* cell = &sector->cell_array[cell_coordinate[0]][cell_coordinate[1]][z];
 
     return cell->block_type != BLOCK_TYPE_NONE;
 }
@@ -470,12 +407,16 @@ void map_set_block_type(i32 x, i32 y, i32 z, u8 block_type)
 {
     if (map_world_coordinate_is_valid(x, y) && map_height_is_valid(z))
     {
-	ivec3 world_coordinate = {x, y};
+	ivec2 world_coordinate = {x, y};
 
-	u32 sector_index = map_world_coordinate_to_sector_index(world_coordinate);
-	u32 cell_index = map_world_coordinate_to_cell_index(world_coordinate);
-	
-	world.sector_array[sector_index].cell_array[cell_index][z].block_type = block_type;
+	ivec2 sector_coordinate;
+	map_world_coordinate_to_sector_coordinate(world_coordinate, sector_coordinate);
+
+	ivec2 cell_coordinate;
+	map_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
+
+	Sector *sector = &world.sector_array[sector_coordinate[0]][sector_coordinate[1]];
+	sector->cell_array[cell_coordinate[0]][cell_coordinate[1]][z].block_type = block_type;
     }
     else
     {
@@ -491,57 +432,65 @@ void map_init()
     
     srand(seed);
 
-    i32 sector_index;
-    i32 cell_index;
-    i32 cell_height;
+    i32 sector_x, sector_y;
+    i32 cell_x, cell_y;
+    i32 world_z;
 
-    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    ivec3 world_coordinate;
+    
+    for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
-	Sector* sector = &world.sector_array[sector_index];
-	sector->sector_index = sector_index;
-
-	for (cell_index = 0; cell_index < SECTOR_AREA_IN_CELLS; ++cell_index)
+	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
 	{
-	    for (cell_height = 0; cell_height < WORLD_Z_MAX; ++cell_height)
-	    {
-		Cell* cell = &sector->cell_array[cell_index][cell_height];
-		cell->sector_index = sector_index;
-		cell->cell_index = cell_index;
-		cell->cell_face_mask = 0;
+	    Sector* sector = &world.sector_array[sector_x][sector_y];
 
-		if (rand() % 100 < 5)
+	    for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
+	    {
+		for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
 		{
-		    u8 block_type = rand() % BLOCK_TYPE_COUNT;
+		    for (world_z = 0; world_z < WORLD_Z_MAX; ++world_z)
+		    {
+			Cell* cell = &sector->cell_array[cell_x][cell_y][world_z];
+			cell->cell_face_mask = 0;
+
+			if (rand() % 100 < 5)
+			{
+			    u8 block_type = rand() % BLOCK_TYPE_COUNT;
 		
-		    cell->block_type = block_type;
-		}
-		else
-		{
-		    cell->block_type = BLOCK_TYPE_NONE;
+			    cell->block_type = block_type;
+			}
+			else
+			{
+			    cell->block_type = BLOCK_TYPE_NONE;
+			}
+			
+		    }
 		}
 	    }
 	}
     }
 
-    ivec3 world_coordinate;
-    
-    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
-	Sector* sector = &world.sector_array[sector_index];
-	
-	for (cell_index = 0; cell_index < SECTOR_AREA_IN_CELLS; ++cell_index)
+	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
 	{
-	    for (cell_height = 0; cell_height < WORLD_Z_MAX; ++cell_height)
-	    {
-		Cell* cell = &sector->cell_array[cell_index][cell_height];
-	    
-		map_indices_to_world_coordinate(sector_index, cell_index, world_coordinate);
+	    Sector* sector = &world.sector_array[sector_x][sector_y];
 
-		cell->cell_face_mask = map_get_cell_face_mask(
-		    world_coordinate[0],
-		    world_coordinate[1],
-		    cell_height
-		);
+	    for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
+	    {
+		for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
+		{
+		    for (world_z = 0; world_z < WORLD_Z_MAX; ++world_z)
+		    {
+			Cell* cell = &sector->cell_array[cell_x][cell_y][world_z];
+			cell->cell_face_mask = 0;
+
+			i32 world_x = sector_x * SECTOR_SIZE_IN_CELLS + cell_x;
+			i32 world_y = sector_y * SECTOR_SIZE_IN_CELLS + cell_y;
+
+			cell->cell_face_mask = map_get_cell_face_mask(world_x, world_y, world_z);
+		    }
+		}
 	    }
 	}
     }
@@ -632,7 +581,6 @@ void camera_get_view_matrix(mat4 out_view_matrix)
     camera_get_forward(forward);
     
     vec3 center;
-    
     glm_vec3_add(camera.world_position, forward, center);
     
     glm_lookat(camera.world_position, center, GLM_YUP, out_view_matrix);
@@ -696,14 +644,14 @@ void camera_update()
     
     vec3 camera_forward;
     vec3 camera_right;
-    
-    camera_get_forward(camera_forward);
-    glm_vec3_scale(camera_forward, input_value[2], velocity_forward);
 
     camera_get_right(camera_right);
     glm_vec3_scale(camera_right, input_value[0], velocity_right);
 
     glm_vec3_scale(GLM_YUP, input_value[1], velocity_up);
+    
+    camera_get_forward(camera_forward);
+    glm_vec3_scale(camera_forward, input_value[2], velocity_forward);
 
     vec3 velocity;
     
@@ -795,7 +743,7 @@ void render_load_textures(const char* textures_path)
 	
 	snprintf(texture_path, sizeof(texture_path), "%s/%s", textures_path, entry->value);
 
-	u8  block_type = map_block_type_from_string(entry->key);
+	const u8 block_type = map_block_type_from_string(entry->key);
 
 	block_type_layer_array[(int)block_type] = layer_index;
 	
@@ -823,7 +771,7 @@ void render_setup_opengl()
 
     glfwMakeContextCurrent(gl_context.window);
 
-    int glad_load_gl_result = gladLoadGL();
+    const int glad_load_gl_result = gladLoadGL();
 
     assert(glad_load_gl_result != 0);
 
@@ -831,8 +779,10 @@ void render_setup_opengl()
     GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
     gl_context.program_id = glCreateProgram();
+    
     glAttachShader(gl_context.program_id, vert_shader);
     glAttachShader(gl_context.program_id, frag_shader);
+    
     glLinkProgram(gl_context.program_id);
 
     glEnable(GL_DEPTH_TEST);
@@ -843,13 +793,17 @@ void render_setup_opengl()
 
     glUseProgram(gl_context.program_id);
 
-    gl_context.u_projection_location = glGetUniformLocation(gl_context.program_id, "u_projection_matrix");
-    gl_context.u_view_location = glGetUniformLocation(gl_context.program_id, "u_view_matrix");
-    gl_context.u_model_location = glGetUniformLocation(gl_context.program_id, "u_model_matrix");
-    
     gl_context.u_texture_sampler_location = glGetUniformLocation(gl_context.program_id, "u_texture_sampler");
     
     glUniform1i(gl_context.u_texture_sampler_location, 0);
+    
+    gl_context.u_normal_table_location = glGetUniformLocation(gl_context.program_id, "u_normal_table");
+
+    glUniform3fv(gl_context.u_normal_table_location, CELL_FACE_COUNT, (f32 *)CELL_FACE_NORMAL_ARRAY);
+    
+    gl_context.u_projection_location = glGetUniformLocation(gl_context.program_id, "u_projection_matrix");
+    gl_context.u_view_location = glGetUniformLocation(gl_context.program_id, "u_view_matrix");
+    gl_context.u_model_location = glGetUniformLocation(gl_context.program_id, "u_model_matrix");
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -862,48 +816,59 @@ void render_setup_opengl()
     LOG_INFO("OpenGL Setup");
 }
 
-void render_generate_sector_mesh(u32 sector_index)
+void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 {
-    i32 cell_index;
-    i32 cell_height;
+    i32 cell_x, cell_y, cell_z;
     
     ivec2 world_coordinate;
-    
-    Sector* sector = &world.sector_array[sector_index];
 
-    SectorMesh* sector_mesh = &sector_mesh_array[sector->sector_index];
+    Sector* sector = &world.sector_array[sector_x][sector_y];
+
+    for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
+    {
+	for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
+	{
+	    for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
+	    {
+		Cell* cell = &sector->cell_array[cell_x][cell_y][cell_z];
+		cell->cell_face_mask = 0;
+	    }
+	}
+    }
+    
+    SectorMesh* sector_mesh = &sector_mesh_array[sector_x][sector_y];
     sector_mesh->count = 0;
 
-    for (cell_index = 0; cell_index < SECTOR_AREA_IN_CELLS; ++cell_index)
+    for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
     {
-	for (cell_height = 0; cell_height < WORLD_Z_MAX; ++cell_height)
+	for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
 	{
-	    Cell* cell = &sector->cell_array[cell_index][cell_height];
-
-	    if (cell->block_type == BLOCK_TYPE_NONE)
+	    for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
 	    {
-		continue;
-	    }
+		Cell* cell = &sector->cell_array[cell_x][cell_y][cell_z];
 
-	    ivec3 cell_coordinate;
-	    map_cell_index_to_coordinate(cell_index, cell_coordinate);
+		if (cell->block_type == BLOCK_TYPE_NONE)
+		{
+		    continue;
+		}
+
+		u8 cell_face_mask_test = cell->cell_face_mask;
+
+		while (cell_face_mask_test)
+		{
+		    const u8 cell_face = GET_CELL_FACE(cell_face_mask_test);
+
+		    SectorFace* sector_face = &sector_mesh->sector_face_array[sector_mesh->count];
+
+		    sector_face->cell_face = cell_face;
+		    sector_face->block_type = cell->block_type;
+
+		    ivec3 cell_position = { cell_x, cell_y, cell_z };
 	    
-	    u8 cell_face_mask_test = cell->cell_face_mask;
+		    sector_mesh->count += 1;
 
-	    while (cell_face_mask_test)
-	    {
-		u8 cell_face = GET_CELL_FACE(cell_face_mask_test);
-
-		SectorFace* sector_face = &sector_mesh->sector_face_array[sector_mesh->count];
-
-		sector_face->cell_face = cell_face;
-		sector_face->block_type = cell->block_type;
-	    
-		glm_ivec3_copy(cell_coordinate, sector_face->cell_coordinate);
-
-		sector_mesh->count += 1;
-
-		cell_face_mask_test &= cell_face_mask_test - 1;
+		    cell_face_mask_test &= cell_face_mask_test - 1;
+		}
 	    }
 	}
     }
@@ -911,83 +876,44 @@ void render_generate_sector_mesh(u32 sector_index)
 
 void render_emit_sector_face(SectorFace* sector_face, GpuMesh* gpu_mesh)
 {
-    vec3 local_position =
-    {
-	(f32)sector_face->cell_coordinate[0],
-	(f32)sector_face->cell_coordinate[1],
-	(f32)sector_face->cell_coordinate[2]
-    };
-
-    f32* normal_array = CELL_FACE_NORMAL_ARRAY[sector_face->cell_face];
-
-    u32 base_index = gpu_mesh->vertex_count;
-    
-    u32 vertex_index;
+    int vertex_index;
     for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-	VertexData vertex_data;
-	vertex_data.position_array[0] = local_position[0] + vertex_array[0];
-	vertex_data.position_array[1] = local_position[1] + vertex_array[1];
-	vertex_data.position_array[2] = local_position[2] + vertex_array[2];
+	VertexAttributes vertex_attributes;
+	
+	vertex_attributes.a_vertex =
+	    ((sector_face->cell_position[0] & 63u)  <<  0u) |
+	    ((sector_face->cell_position[1] & 63u)  <<  6u) |
+	    ((sector_face->cell_position[2] & 255u) << 12u);
 
-	vertex_data.normal_array[0] = normal_array[0];
-	vertex_data.normal_array[1] = normal_array[1];
-	vertex_data.normal_array[2] = normal_array[2];
+	LOG_INFO("%u", vertex_attributes.a_vertex);
 
-	vertex_data.uv_array[0] = uv_array[0];
-	vertex_data.uv_array[1] = uv_array[1];
-
-	vertex_data.layer_index = (f32)sector_face->block_type - 1.0f;
-
-	gpu_mesh->vertex_array[gpu_mesh->vertex_count] = vertex_data;
-
-	gpu_mesh->vertex_count += 1;
+	vertex_attributes.a_face =
+	    ((sector_face->cell_face & 255u) << 0u);
+	
+	gpu_mesh->vertex_attribute_array[gpu_mesh->vertex_attribute_count] = vertex_attributes;
+	gpu_mesh->vertex_attribute_count += 1;
     }
-
-    gpu_mesh->index_array[gpu_mesh->index_count + 0] = base_index + 0;
-    gpu_mesh->index_array[gpu_mesh->index_count + 1] = base_index + 1;
-    gpu_mesh->index_array[gpu_mesh->index_count + 2] = base_index + 2;
-    gpu_mesh->index_array[gpu_mesh->index_count + 3] = base_index + 0;
-    gpu_mesh->index_array[gpu_mesh->index_count + 4] = base_index + 2;
-    gpu_mesh->index_array[gpu_mesh->index_count + 5] = base_index + 3;
-
-    gpu_mesh->index_count += INDEX_COUNT_PER_FACE;
 }
 
-void render_convert_sector_mesh_to_gpu_mesh(u32 sector_index)
+void render_convert_sector_mesh_to_gpu_mesh(i32 sector_x, i32 sector_y)
 {
-    SectorMesh* sector_mesh = &sector_mesh_array[sector_index];
-    GpuMesh* gpu_mesh = &gpu_mesh_array[sector_index];
+    SectorMesh* sector_mesh = &sector_mesh_array[sector_x][sector_y];
+    GpuMesh* gpu_mesh = &gpu_mesh_array[sector_x][sector_y];
 
-    gpu_mesh->vertex_count = 0;
-    gpu_mesh->index_count = 0;
+    gpu_mesh->vertex_attribute_count = 0;
 
-    ivec2 world_coordinate;
-    map_sector_index_to_world_coordinate(sector_index, world_coordinate);
-    
-    map_world_coordinate_to_position(world_coordinate, gpu_mesh->world_position);
+    u32 required_vertex_attribute_capacity = sector_mesh->count * VERTEX_COUNT_PER_FACE;
 
-    u32 required_vertex_capacity = sector_mesh->count * VERTEX_COUNT_PER_FACE;
-    u32 required_index_capacity = sector_mesh->count * INDEX_COUNT_PER_FACE;
-
-    if (gpu_mesh->vertex_capacity < required_vertex_capacity)
+    if (gpu_mesh->vertex_attribute_capacity < required_vertex_attribute_capacity)
     {
-	VertexData* new_vertex_data = malloc(sizeof(VertexData) * required_vertex_capacity);
+	VertexAttributes* new_vertex_attributes_data =
+	    malloc(sizeof(VertexAttributes) * required_vertex_attribute_capacity);
 
-	assert(new_vertex_data);
+	assert(new_vertex_attributes_data);
 	
-	gpu_mesh->vertex_capacity = required_vertex_capacity;
-	gpu_mesh->vertex_array = new_vertex_data;
-    }
-
-    if (gpu_mesh->index_capacity < required_index_capacity)
-    {
-	u32* new_index_data = malloc(sizeof(u32) * required_index_capacity);
-
-	assert(new_index_data);
-	
-	gpu_mesh->index_capacity = required_index_capacity;
-	gpu_mesh->index_array = new_index_data;
+	gpu_mesh->vertex_attribute_capacity = required_vertex_attribute_capacity;
+	gpu_mesh->vertex_attribute_array = new_vertex_attributes_data;
     }
 
     u32 face_index;
@@ -999,16 +925,14 @@ void render_convert_sector_mesh_to_gpu_mesh(u32 sector_index)
     }
 }
 
-void render_upload_gpu_mesh(u32 sector_index)
+void render_upload_gpu_mesh(i32 sector_x, i32 sector_y)
 {
-    GpuMesh* gpu_mesh = &gpu_mesh_array[sector_index];
+    GpuMesh* gpu_mesh = &gpu_mesh_array[sector_x][sector_y];
 
     if (gpu_mesh->vao_id == 0)
     {
 	glGenVertexArrays(1, &gpu_mesh->vao_id);
-
 	glGenBuffers(1, &gpu_mesh->vbo_id);
-	glGenBuffers(1, &gpu_mesh->ebo_id);
     }
 
     glBindVertexArray(gpu_mesh->vao_id);
@@ -1016,58 +940,29 @@ void render_upload_gpu_mesh(u32 sector_index)
 
     glVertexAttribPointer(
 	0,
-	3,
-	GL_FLOAT,
+	1,
+	GL_UNSIGNED_INT,
 	GL_FALSE,
-	sizeof(VertexData),
+	sizeof(VertexAttributes),
 	(void*)0
     );
 
     glVertexAttribPointer(
 	1,
-	3,
-	GL_FLOAT,
-	GL_FALSE,
-	sizeof(VertexData),
-	(void*)(offsetof(VertexData, normal_array))
-    );
-
-    glVertexAttribPointer(
-	2,
-	2,
-	GL_FLOAT,
-	GL_FALSE,
-	sizeof(VertexData),
-	(void*)(offsetof(VertexData, uv_array))
-    );
-
-    glVertexAttribPointer(
-	3,
 	1,
-	GL_FLOAT,
+	GL_UNSIGNED_INT,
 	GL_FALSE,
-	sizeof(VertexData),
-	(void*)(offsetof(VertexData, layer_index))
+	sizeof(VertexAttributes),
+	(void*)(offsetof(VertexAttributes, a_face))
     );
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
 
     glBufferData(
 	GL_ARRAY_BUFFER,
-	gpu_mesh->vertex_count * sizeof(VertexData),
-	gpu_mesh->vertex_array,
-	GL_STATIC_DRAW
-    );
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gpu_mesh->ebo_id);
-
-    glBufferData(
-	GL_ELEMENT_ARRAY_BUFFER,
-	gpu_mesh->index_count * sizeof(u32),
-	gpu_mesh->index_array,
+	gpu_mesh->vertex_attribute_count * sizeof(VertexAttributes),
+	gpu_mesh->vertex_attribute_array,
 	GL_STATIC_DRAW
     );
 
@@ -1078,21 +973,25 @@ void render_init()
 {
     render_setup_opengl();
 
-    LOG_INFO("OpenGL Setup");
-    
-    i32 sector_index;
-    
-    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    i32 sector_x, sector_y;
+
+    for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
-	render_generate_sector_mesh(sector_index);
+	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
+	{
+	    render_generate_sector_mesh(sector_x, sector_y);
+	}
     }
+    
+    LOG_INFO("Sector Meshes Generated");    
 
-    LOG_INFO("Sector Meshes Generated");
-
-    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
-	render_convert_sector_mesh_to_gpu_mesh(sector_index);
-	render_upload_gpu_mesh(sector_index);
+	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
+	{
+	    render_convert_sector_mesh_to_gpu_mesh(sector_x, sector_y);
+	    render_upload_gpu_mesh(sector_x, sector_y);
+	}
     }
 
     LOG_INFO("Gpu Meshes Generated");
@@ -1108,32 +1007,31 @@ void render_update()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, gl_context.texture_array_id);
 
-    glUniformMatrix4fv(gl_context.u_projection_location, 1, GL_FALSE, (float*)camera.projection_matrix);
-    glUniformMatrix4fv(gl_context.u_view_location, 1, GL_FALSE, (float*)camera.view_matrix);
+    glUniformMatrix4fv(gl_context.u_projection_location, 1, GL_FALSE, (f32 *)camera.projection_matrix);
+    glUniformMatrix4fv(gl_context.u_view_location, 1, GL_FALSE, (f32 *)camera.view_matrix);
 
-    i32 sector_index;
-    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    i32 sector_x, sector_y;
+
+    for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
-	GpuMesh* gpu_mesh = &gpu_mesh_array[sector_index];
-
-	if (gpu_mesh->index_count == 0)
+	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
 	{
-	    continue;
-	}
-	
-	mat4 model_matrix;
-	glm_translate_make(model_matrix, gpu_mesh->world_position);
-	
-	glUniformMatrix4fv(gl_context.u_model_location, 1, GL_FALSE, (float*)model_matrix);
+	    GpuMesh* gpu_mesh = &gpu_mesh_array[sector_x][sector_y];
 
-	glBindVertexArray(gpu_mesh->vao_id);
+	    if (gpu_mesh->vertex_attribute_count == 0)
+	    {
+		continue;
+	    }
 	
-	glDrawElements(
-	    GL_TRIANGLES,
-	    gpu_mesh->index_count,
-	    GL_UNSIGNED_INT,
-	    0
-	);
+	    mat4 model_matrix;
+	    glm_translate_make(model_matrix, gpu_mesh->world_position);
+	
+	    glUniformMatrix4fv(gl_context.u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
+
+	    glBindVertexArray(gpu_mesh->vao_id);
+
+	    glDrawArrays(GL_TRIANGLES, 0, gpu_mesh->vertex_attribute_count);
+	}
     }
 
     glfwSwapBuffers(gl_context.window);
