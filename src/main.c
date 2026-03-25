@@ -22,21 +22,24 @@
 
 #define VERTEX_COUNT_PER_FACE 6
 
-#define WORLD_SIZE_IN_SECTORS_LOG2 1
-#define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
-#define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
-
-#define SECTOR_SIZE_IN_CELLS_LOG2 1
+#define SECTOR_SIZE_IN_CELLS_LOG2 3
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 #define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
+
+#define WORLD_SIZE_IN_SECTORS_LOG2 3
+#define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
+#define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
 
 #define WORLD_SIZE_IN_CELLS_LOG2 (SECTOR_SIZE_IN_CELLS_LOG2 + WORLD_SIZE_IN_SECTORS_LOG2)
 #define WORLD_SIZE_IN_CELLS (1 << (1u * WORLD_SIZE_IN_CELLS_LOG2))
 #define WORLD_AREA_IN_CELLS (1 << (2u * WORLD_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_Z_MAX 4
+#define WORLD_HEIGHT_IN_CELLS_LOG2 6
+#define WORLD_HEIGHT_IN_CELLS (1 << (1u * WORLD_HEIGHT_IN_CELLS_LOG2))
+#define WORLD_Z_MAX (WORLD_HEIGHT_IN_CELLS - 1)
 
-enum
+typedef enum Direction Direction;
+enum Direction
 {
     DIRECTION_EAST,
     DIRECTION_WEST,
@@ -61,7 +64,8 @@ static const char* DIRECTION_TO_STRING[DIRECTION_COUNT] =
 #define GET_DIRECTION(direction_mask) (__builtin_ctz(direction_mask))
 #define GET_DIRECTION_MASK(direction) (1 << direction)
 
-enum
+typedef enum BlockType BlockType;
+enum BlockType
 {
     BLOCK_TYPE_NONE,
     BLOCK_TYPE_WOLF,
@@ -176,14 +180,14 @@ struct SectorFace
 {
     ivec3 cell_position;
     
-    u8 direction;
-    u8 block_type;
+    Direction direction;
+    BlockType block_type;
 };
 
 typedef struct SectorMesh SectorMesh;
 struct SectorMesh
 {
-    SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * DIRECTION_COUNT];
+    SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * WORLD_HEIGHT_IN_CELLS * DIRECTION_COUNT];
 
     u32 count;
 };
@@ -220,14 +224,14 @@ struct Timing
 typedef struct Cell Cell;
 struct Cell
 {
-    u8 block_type;
+    BlockType block_type;
     u8 direction_mask;
 };
 
 typedef struct Sector Sector;
 struct Sector
 {
-    Cell cell_array[SECTOR_SIZE_IN_CELLS][SECTOR_SIZE_IN_CELLS][WORLD_Z_MAX];
+    Cell cell_array[SECTOR_SIZE_IN_CELLS][SECTOR_SIZE_IN_CELLS][WORLD_HEIGHT_IN_CELLS];
 };
 
 typedef struct World World;
@@ -310,32 +314,32 @@ boolean map_cell_coordinate_is_valid(i32 x, i32 y)
 
 boolean map_height_is_valid(i32 z)
 {
-    return z >= 0 && z < WORLD_Z_MAX;
+    return z >= 0 && z < WORLD_HEIGHT_IN_CELLS;
 }
 
 i32 map_sector_coordinate_to_index(ivec2 sector_coordinate)
 {
-    i32 sector_index = sector_coordinate[0] + sector_coordinate[1] * WORLD_SIZE_IN_SECTORS;
+    const i32 sector_index = sector_coordinate[0] + sector_coordinate[1] * WORLD_SIZE_IN_SECTORS;
 	    
     return sector_index;
 }
 
 void map_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordinate)
 {
-    out_sector_coordinate[0] = sector_index;
+    out_sector_coordinate[0] = sector_index & (WORLD_SIZE_IN_SECTORS - 1);
     out_sector_coordinate[1] = sector_index >> WORLD_SIZE_IN_SECTORS_LOG2;
 }
 
 i32 map_cell_coordinate_to_index(ivec2 cell_coordinate)
 {
-    i32 cell_index = cell_coordinate[0] + cell_coordinate[1] * SECTOR_SIZE_IN_CELLS;
+    const i32 cell_index = cell_coordinate[0] + cell_coordinate[1] * SECTOR_SIZE_IN_CELLS;
 	    
     return cell_index;
 }
 
 void map_cell_index_to_coordinate(i32 cell_index, ivec2 out_cell_coordinate)
 {
-    out_cell_coordinate[0] = cell_index;
+    out_cell_coordinate[0] = cell_index & (SECTOR_SIZE_IN_CELLS - 1);
     out_cell_coordinate[1] = cell_index >> (1 * SECTOR_SIZE_IN_CELLS_LOG2);
 }
 
@@ -346,32 +350,32 @@ i32 map_world_coordinate_to_sector_index(ivec2 world_coordinate)
     sector_coordinate[0] = world_coordinate[0] >> SECTOR_SIZE_IN_CELLS_LOG2;
     sector_coordinate[1] = world_coordinate[1] >> SECTOR_SIZE_IN_CELLS_LOG2;
 
-    i32 sector_index = map_sector_coordinate_to_index(sector_coordinate);
+    const i32 sector_index = map_sector_coordinate_to_index(sector_coordinate);
 
     return sector_index;
 }
 
 void map_world_coordinate_to_sector_coordinate(ivec2 world_coordinate, ivec2 out_sector_coordinate)
 {
-    out_sector_coordinate[0] = world_coordinate[0] / SECTOR_SIZE_IN_CELLS;
-    out_sector_coordinate[1] = world_coordinate[1] / SECTOR_SIZE_IN_CELLS;
+    out_sector_coordinate[0] = world_coordinate[0] >> SECTOR_SIZE_IN_CELLS_LOG2;
+    out_sector_coordinate[1] = world_coordinate[1] >> SECTOR_SIZE_IN_CELLS_LOG2;
 }
 
 i32 map_world_coordinate_to_cell_index(ivec2 world_coordinate)
 {
-    i32 sector_size_mask = (SECTOR_SIZE_IN_CELLS - 1);
+    const u32 sector_size_mask = (u32)(SECTOR_SIZE_IN_CELLS - 1);
     
     i32 x = world_coordinate[0] & sector_size_mask;
     i32 y = world_coordinate[1] & sector_size_mask;
 
-    i32 cell_index = x + (y << SECTOR_SIZE_IN_CELLS_LOG2);
+    const i32 cell_index = x + (y << SECTOR_SIZE_IN_CELLS_LOG2);
 
     return cell_index;
 }
 
 void map_world_coordinate_to_cell_coordinate(ivec2 world_coordinate, ivec2 out_cell_coordinate)
 {
-    i32 sector_size_mask = (SECTOR_SIZE_IN_CELLS - 1);
+    const u32 sector_size_mask = (u32)(SECTOR_SIZE_IN_CELLS - 1);
     
     out_cell_coordinate[0] = world_coordinate[0] & sector_size_mask;
     out_cell_coordinate[1] = world_coordinate[1] & sector_size_mask;
@@ -405,14 +409,14 @@ void map_world_coordinate_to_position(ivec2 world_coordinate, vec3 out_world_pos
     out_world_position[2] = 0.0f;
 }
 
-u8 map_block_type_from_string(const char* block_type_string)
+BlockType map_block_type_from_string(const char* block_type_string)
 {
-    int index;
+    i32 index;
     for (index = 0; index < BLOCK_TYPE_COUNT; ++index)
     {
         if (strcmp(block_type_string, BLOCK_TYPE_TO_STRING[index]) == 0)
         {
-            return (u8)index;
+            return (BlockType)index;
         }
     }
 
@@ -461,7 +465,7 @@ u8 map_get_direction_mask(i32 x, i32 y, i32 z)
     return direction_mask;
 }
 
-void map_set_block_type(i32 x, i32 y, i32 z, u8 block_type)
+void map_set_block_type(i32 x, i32 y, i32 z, BlockType block_type)
 {
     if (map_world_coordinate_is_valid(x, y) && map_height_is_valid(z))
     {
@@ -500,7 +504,7 @@ void map_init()
 	{
 	    Sector *sector = &world.sector_array[sector_x][sector_y];
 
-	    for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
+	    for (cell_z = 0; cell_z < WORLD_HEIGHT_IN_CELLS; ++cell_z)
 	    {
 		for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
 		{
@@ -509,33 +513,33 @@ void map_init()
 			Cell *cell = &sector->cell_array[cell_x][cell_y][cell_z];
 			cell->direction_mask = 0;
 
-			/* if (rand() % 100 < 5) */
-			/* { */
-			/*     u8 block_type = rand() % BLOCK_TYPE_COUNT; */
+			if (rand() % 100 < 5)
+			{
+			    BlockType block_type = rand() % BLOCK_TYPE_COUNT;
 		
-			/*     cell->block_type = block_type; */
-			/* } */
-			/* else */
-			/* { */
-			/*     cell->block_type = BLOCK_TYPE_NONE; */
-			/* } */
-
-			cell->block_type = BLOCK_TYPE_NONE;
+			    cell->block_type = block_type;
+			}
+			else
+			{
+			    cell->block_type = BLOCK_TYPE_NONE;
+			}
 		    }
 		}
 	    }
 	}
     }
 
-    map_set_block_type(0, 0, 0, BLOCK_TYPE_EAGLE);
-    map_set_block_type(0, 3, 0, BLOCK_TYPE_EAGLE);
-    map_set_block_type(3, 0, 0, BLOCK_TYPE_EAGLE);
-    map_set_block_type(3, 3, 0, BLOCK_TYPE_EAGLE);
+    /* map_set_block_type(2, 1, 24, BLOCK_TYPE_EAGLE); */
+    
+    /* Map_set_block_type(0, 0, 0, BLOCK_TYPE_EAGLE); */
+    /* map_set_block_type(0, 3, 0, BLOCK_TYPE_EAGLE); */
+    /* map_set_block_type(3, 0, 0, BLOCK_TYPE_EAGLE); */
+    /* map_set_block_type(3, 3, 0, BLOCK_TYPE_EAGLE); */
 
-    map_set_block_type(0, 0, 3, BLOCK_TYPE_WOLF);
-    map_set_block_type(0, 3, 3, BLOCK_TYPE_WOLF);
-    map_set_block_type(3, 0, 3, BLOCK_TYPE_WOLF);
-    map_set_block_type(3, 3, 3, BLOCK_TYPE_WOLF);
+    /* map_set_block_type(0, 0, 3, BLOCK_TYPE_WOLF); */
+    /* map_set_block_type(0, 3, 3, BLOCK_TYPE_WOLF); */
+    /* map_set_block_type(3, 0, 3, BLOCK_TYPE_WOLF); */
+    /* map_set_block_type(3, 3, 3, BLOCK_TYPE_WOLF); */
     
     for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
@@ -543,7 +547,7 @@ void map_init()
 	{
 	    Sector *sector = &world.sector_array[sector_x][sector_y];
 
-	    for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
+	    for (cell_z = 0; cell_z < WORLD_HEIGHT_IN_CELLS; ++cell_z)
 	    {
 		for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
 		{
@@ -600,8 +604,8 @@ void input_update()
 
 void camera_get_forward(vec3 out_forward)
 {
-    f32 rotation_x = glm_rad(camera.rotation[0]);
-    f32 rotation_z = glm_rad(camera.rotation[2]);
+    const f32 rotation_x = glm_rad(camera.rotation[0]);
+    const f32 rotation_z = glm_rad(camera.rotation[2]);
 
     out_forward[0] = cosf(rotation_x) * cosf(rotation_z);
     out_forward[1] = cosf(rotation_x) * sinf(rotation_z);
@@ -814,7 +818,7 @@ void render_load_textures(const char* textures_path)
 	
 	snprintf(texture_path, sizeof(texture_path), "%s/%s", textures_path, config_entry->value);
 
-	const u8 block_type = map_block_type_from_string(config_entry->key);
+	const BlockType block_type = map_block_type_from_string(config_entry->key);
 
 	block_type_layer_array[(int)block_type] = layer_index;
 	
@@ -904,7 +908,7 @@ void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 
     i32 cell_x, cell_y, cell_z;
     
-    for (cell_z = 0; cell_z < WORLD_Z_MAX; ++cell_z)
+    for (cell_z = 0; cell_z < WORLD_HEIGHT_IN_CELLS; ++cell_z)
     {
 	for (cell_y = 0; cell_y < SECTOR_SIZE_IN_CELLS; ++cell_y)
 	{
@@ -921,7 +925,7 @@ void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 
 		while (direction_mask_test)
 		{
-		    const u8 direction = GET_DIRECTION(direction_mask_test);
+		    const Direction direction = GET_DIRECTION(direction_mask_test);
 
 		    SectorFace *sector_face = &sector_mesh->sector_face_array[sector_mesh->count];
 
@@ -944,7 +948,6 @@ void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 void render_emit_sector_face(SectorFace *sector_face, GpuMesh *gpu_mesh)
 {
     int vertex_index;
-
     for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
         u32 x = sector_face->cell_position[0] + VOXEL_VERTEX_ARRAY[sector_face->direction][vertex_index][0];
@@ -974,15 +977,15 @@ void render_convert_sector_mesh_to_gpu_mesh(i32 sector_x, i32 sector_y)
 
     gpu_mesh->vertex_attribute_count = 0;
 
-    u32 required_vertex_attribute_capacity = sector_mesh->count * VERTEX_COUNT_PER_FACE;
+    const u32 required_capacity = sector_mesh->count * VERTEX_COUNT_PER_FACE;
 
-    if (gpu_mesh->vertex_attribute_capacity < required_vertex_attribute_capacity)
+    if (gpu_mesh->vertex_attribute_capacity < required_capacity)
     {
 	u32 new_capacity = gpu_mesh->vertex_attribute_capacity == 0
 	    ? 64
 	    : gpu_mesh->vertex_attribute_capacity;
 
-	while (new_capacity < required_vertex_attribute_capacity)
+	while (new_capacity < required_capacity)
 	{
 	    new_capacity *= 2;
 	}
@@ -1002,7 +1005,7 @@ void render_convert_sector_mesh_to_gpu_mesh(i32 sector_x, i32 sector_y)
     gpu_mesh->world_position[1] = (f32)(sector_y * SECTOR_SIZE_IN_CELLS);
     gpu_mesh->world_position[2] = 0.0f;
 
-    i32 face_index;
+    int face_index;
     for (face_index = 0; face_index < sector_mesh->count; ++face_index)
     {
 	SectorFace *sector_face = &sector_mesh->sector_face_array[face_index];
@@ -1064,7 +1067,6 @@ void render_init()
     render_setup_opengl();
 
     i32 sector_x, sector_y;
-
     for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
 	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
@@ -1101,7 +1103,6 @@ void render_update()
     glUniformMatrix4fv(gl_context.u_view_location, 1, GL_FALSE, (f32 *)camera.view_matrix);
 
     i32 sector_x, sector_y;
-
     for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
 	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
