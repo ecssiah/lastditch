@@ -20,11 +20,13 @@
 
 #define TEXTURE_SIZE 64
 
-#define WORLD_SIZE_IN_SECTORS_LOG2 3
+#define VERTEX_COUNT_PER_FACE 6
+
+#define WORLD_SIZE_IN_SECTORS_LOG2 1
 #define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
 #define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
 
-#define SECTOR_SIZE_IN_CELLS_LOG2 3
+#define SECTOR_SIZE_IN_CELLS_LOG2 1
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 #define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
 
@@ -32,32 +34,32 @@
 #define WORLD_SIZE_IN_CELLS (1 << (1u * WORLD_SIZE_IN_CELLS_LOG2))
 #define WORLD_AREA_IN_CELLS (1 << (2u * WORLD_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_Z_MAX 32
+#define WORLD_Z_MAX 4
 
 enum
 {
-    CELL_FACE_POS_X,
-    CELL_FACE_NEG_X,
-    CELL_FACE_POS_Y,
-    CELL_FACE_NEG_Y,
-    CELL_FACE_POS_Z,
-    CELL_FACE_NEG_Z,
+    DIRECTION_EAST,
+    DIRECTION_WEST,
+    DIRECTION_NORTH,
+    DIRECTION_SOUTH,
+    DIRECTION_UP,
+    DIRECTION_DOWN,
 
-    CELL_FACE_COUNT,
+    DIRECTION_COUNT,
 };
 
-static const char* CELL_FACE_TO_STRING[CELL_FACE_COUNT] =
+static const char* DIRECTION_TO_STRING[DIRECTION_COUNT] =
 {
-    "CELL_FACE_POS_X",
-    "CELL_FACE_NEG_X",
-    "CELL_FACE_POS_Y",
-    "CELL_FACE_NEG_Y",
-    "CELL_FACE_POS_Z",
-    "CELL_FACE_NEG_Z",
+    "DIRECTION_EAST",
+    "DIRECTION_WEST",
+    "DIRECTION_NORTH",
+    "DIRECTION_SOUTH",
+    "DIRECTION_UP",
+    "DIRECTION_DOWN",
 };
 
-#define GET_CELL_FACE(cell_face_mask) (__builtin_ctz(cell_face_mask))
-#define GET_CELL_FACE_MASK(cell_face) (1 << cell_face)
+#define GET_DIRECTION(direction_mask) (__builtin_ctz(direction_mask))
+#define GET_DIRECTION_MASK(direction) (1 << direction)
 
 enum
 {
@@ -86,48 +88,46 @@ struct VertexAttributes
     u32 a_face;
 };
 
-#define VERTEX_COUNT_PER_FACE 6
-
-static i32 CELL_FACE_VERTEX_ARRAY[CELL_FACE_COUNT][VERTEX_COUNT_PER_FACE][3] =
+static f32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
 {
-    // +X (right)
+    // +X
     {
         {1,0,0}, {1,1,0}, {1,1,1},
         {1,0,0}, {1,1,1}, {1,0,1},
     },
 
-    // -X (left)
+    // -X
     {
-        {0,0,0}, {0,0,1}, {0,1,1},
-        {0,0,0}, {0,1,1}, {0,1,0},
+        {0,1,0}, {0,0,0}, {0,0,1},
+        {0,1,0}, {0,0,1}, {0,1,1},
     },
 
-    // +Y (forward)
+    // +Y
     {
-        {0,1,0}, {0,1,1}, {1,1,1},
-        {0,1,0}, {1,1,1}, {1,1,0},
+        {0,1,0}, {1,1,0}, {1,1,1},
+        {0,1,0}, {1,1,1}, {0,1,1},
     },
 
-    // -Y (back)
+    // -Y
     {
-        {0,0,0}, {1,0,0}, {1,0,1},
-        {0,0,0}, {1,0,1}, {0,0,1},
+        {0,0,0}, {0,0,1}, {1,0,1},
+        {0,0,0}, {1,0,1}, {1,0,0},
     },
 
-    // +Z (up)
+    // +Z
     {
-        {0,0,1}, {1,0,1}, {1,1,1},
-        {0,0,1}, {1,1,1}, {0,1,1},
+	{0,0,1}, {1,0,1}, {1,1,1},
+	{0,0,1}, {1,1,1}, {0,1,1},
     },
 
-    // -Z (down)
+    // -Z
     {
-        {0,0,0}, {0,1,0}, {1,1,0},
-        {0,0,0}, {1,1,0}, {1,0,0},
+        {0,0,0}, {1,0,0}, {1,1,0},
+        {0,0,0}, {1,1,0}, {0,1,0},
     },
 };
 
-static i32 CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT][3] =
+static f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
 {
     { +1, +0, +0 },
     { -1, +0, +0 },
@@ -135,6 +135,26 @@ static i32 CELL_FACE_NORMAL_ARRAY[CELL_FACE_COUNT][3] =
     { +0, -1, +0 },
     { +0, +0, +1 },
     { +0, +0, -1 },
+};
+
+static f32 CELL_UV_S_ARRAY[DIRECTION_COUNT][3] =
+{
+    { +0, +1, +0 },
+    { +0, -1, +0 },
+    { +1, +0, +0 },
+    { -1, +0, +0 },
+    { +1, +0, +0 },
+    { +1, +0, +0 },
+};
+
+static f32 CELL_UV_T_ARRAY[DIRECTION_COUNT][3] =
+{
+    { +0, +0, +1 },
+    { +0, +0, +1 },
+    { +0, +0, +1 },
+    { +0, +0, +1 },
+    { +0, +1, +0 },
+    { +0, -1, +0 },
 };
 
 typedef struct GpuMesh GpuMesh;
@@ -156,14 +176,14 @@ struct SectorFace
 {
     ivec3 cell_position;
     
-    u8 cell_face;
+    u8 direction;
     u8 block_type;
 };
 
 typedef struct SectorMesh SectorMesh;
 struct SectorMesh
 {
-    SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * CELL_FACE_COUNT];
+    SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * DIRECTION_COUNT];
 
     u32 count;
 };
@@ -180,7 +200,9 @@ struct GLContext
     GLint u_texture_sampler_location;
     
     GLint u_normal_table_location;
-
+    GLint u_uv_s_table_location;
+    GLint u_uv_t_table_location;
+    
     GLint u_projection_location;
     GLint u_view_location;
     GLint u_model_location;
@@ -199,7 +221,7 @@ typedef struct Cell Cell;
 struct Cell
 {
     u8 block_type;
-    u8 cell_face_mask;
+    u8 direction_mask;
 };
 
 typedef struct Sector Sector;
@@ -383,12 +405,12 @@ void map_world_coordinate_to_position(ivec2 world_coordinate, vec3 out_world_pos
     out_world_position[2] = 0.0f;
 }
 
-u8 map_block_type_from_string(const char* in_string)
+u8 map_block_type_from_string(const char* block_type_string)
 {
     int index;
     for (index = 0; index < BLOCK_TYPE_COUNT; ++index)
     {
-        if (strcmp(in_string, BLOCK_TYPE_TO_STRING[index]) == 0)
+        if (strcmp(block_type_string, BLOCK_TYPE_TO_STRING[index]) == 0)
         {
             return (u8)index;
         }
@@ -416,27 +438,27 @@ boolean map_is_solid(i32 x, i32 y, i32 z)
 
     ivec2 cell_coordinate;
     map_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
-
+    
     Sector *sector = &world.sector_array[sector_coordinate[0]][sector_coordinate[1]];
     Cell *cell = &sector->cell_array[cell_coordinate[0]][cell_coordinate[1]][z];
 
     return cell->block_type != BLOCK_TYPE_NONE;
 }
 
-u8 map_get_cell_face_mask(i32 x, i32 y, i32 z)
+u8 map_get_direction_mask(i32 x, i32 y, i32 z)
 {
-    u8 cell_face_mask = 0;
+    u8 direction_mask = 0;
 
-    if (!map_is_solid(x + 1, y, z)) cell_face_mask |= GET_CELL_FACE_MASK(CELL_FACE_POS_X);
-    if (!map_is_solid(x - 1, y, z)) cell_face_mask |= GET_CELL_FACE_MASK(CELL_FACE_NEG_X);
+    if (!map_is_solid(x + 1, y, z)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_EAST);
+    if (!map_is_solid(x - 1, y, z)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_WEST);
 
-    if (!map_is_solid(x, y + 1, z)) cell_face_mask |= GET_CELL_FACE_MASK(CELL_FACE_POS_Y);
-    if (!map_is_solid(x, y - 1, z)) cell_face_mask |= GET_CELL_FACE_MASK(CELL_FACE_NEG_Y);
+    if (!map_is_solid(x, y + 1, z)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_NORTH);
+    if (!map_is_solid(x, y - 1, z)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_SOUTH);
 
-    if (!map_is_solid(x, y, z + 1)) cell_face_mask |= GET_CELL_FACE_MASK(CELL_FACE_POS_Z);
-    if (!map_is_solid(x, y, z - 1)) cell_face_mask |= GET_CELL_FACE_MASK(CELL_FACE_NEG_Z);
+    if (!map_is_solid(x, y, z + 1)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_UP);
+    if (!map_is_solid(x, y, z - 1)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_DOWN);
 
-    return cell_face_mask;
+    return direction_mask;
 }
 
 void map_set_block_type(i32 x, i32 y, i32 z, u8 block_type)
@@ -452,6 +474,7 @@ void map_set_block_type(i32 x, i32 y, i32 z, u8 block_type)
 	map_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
 
 	Sector *sector = &world.sector_array[sector_coordinate[0]][sector_coordinate[1]];
+	
 	sector->cell_array[cell_coordinate[0]][cell_coordinate[1]][z].block_type = block_type;
     }
     else
@@ -484,24 +507,36 @@ void map_init()
 		    for (cell_x = 0; cell_x < SECTOR_SIZE_IN_CELLS; ++cell_x)
 		    {
 			Cell *cell = &sector->cell_array[cell_x][cell_y][cell_z];
-			cell->cell_face_mask = 0;
+			cell->direction_mask = 0;
 
-			if (rand() % 100 < 5)
-			{
-			    u8 block_type = rand() % BLOCK_TYPE_COUNT;
+			/* if (rand() % 100 < 5) */
+			/* { */
+			/*     u8 block_type = rand() % BLOCK_TYPE_COUNT; */
 		
-			    cell->block_type = block_type;
-			}
-			else
-			{
-			    cell->block_type = BLOCK_TYPE_NONE;
-			}
+			/*     cell->block_type = block_type; */
+			/* } */
+			/* else */
+			/* { */
+			/*     cell->block_type = BLOCK_TYPE_NONE; */
+			/* } */
+
+			cell->block_type = BLOCK_TYPE_NONE;
 		    }
 		}
 	    }
 	}
     }
 
+    map_set_block_type(0, 0, 0, BLOCK_TYPE_EAGLE);
+    map_set_block_type(0, 3, 0, BLOCK_TYPE_EAGLE);
+    map_set_block_type(3, 0, 0, BLOCK_TYPE_EAGLE);
+    map_set_block_type(3, 3, 0, BLOCK_TYPE_EAGLE);
+
+    map_set_block_type(0, 0, 3, BLOCK_TYPE_WOLF);
+    map_set_block_type(0, 3, 3, BLOCK_TYPE_WOLF);
+    map_set_block_type(3, 0, 3, BLOCK_TYPE_WOLF);
+    map_set_block_type(3, 3, 3, BLOCK_TYPE_WOLF);
+    
     for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
 	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
@@ -520,7 +555,7 @@ void map_init()
 			
 			Cell *cell = &sector->cell_array[cell_x][cell_y][cell_z];
 			
-			cell->cell_face_mask = map_get_cell_face_mask(world_x, world_y, world_z);
+			cell->direction_mask = map_get_direction_mask(world_x, world_y, world_z);
 		    }
 		}
 	    }
@@ -622,13 +657,13 @@ void camera_get_view_matrix(mat4 out_view_matrix)
 
 void camera_init()
 {
-    camera.world_position[0] = 12.0f;
-    camera.world_position[1] = 12.0f;
+    camera.world_position[0] = 0.0f;
+    camera.world_position[1] = 0.0f;
     camera.world_position[2] = 0.0f;
 
     camera.rotation[0] = 0.0f;
     camera.rotation[1] = 0.0f;
-    camera.rotation[2] = 0.0f;
+    camera.rotation[2] = 90.0f;
 
     camera.speed = 16.0f;
     camera.sensitivity = 0.1f;
@@ -770,7 +805,7 @@ void render_load_textures(const char* textures_path)
 	NULL
     );
 
-    int layer_index;
+    i32 layer_index;
     for (layer_index = 0; layer_index < block_types_config->entry_count; ++layer_index)
     {
 	JSK_ConfigEntry *config_entry = &block_types_config->config_entry_array[layer_index];
@@ -789,7 +824,7 @@ void render_load_textures(const char* textures_path)
 
 void render_setup_opengl()
 {
-    int glfw_result = glfwInit();
+    const int glfw_result = glfwInit();
     
     assert(glfw_result != 0);
     
@@ -835,7 +870,15 @@ void render_setup_opengl()
     
     gl_context.u_normal_table_location = glGetUniformLocation(gl_context.program_id, "u_normal_table");
 
-    glUniform3fv(gl_context.u_normal_table_location, CELL_FACE_COUNT, (f32 *)CELL_FACE_NORMAL_ARRAY);
+    glUniform3fv(gl_context.u_normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
+
+    gl_context.u_uv_s_table_location = glGetUniformLocation(gl_context.program_id, "u_uv_s_table");
+
+    glUniform3fv(gl_context.u_uv_s_table_location, DIRECTION_COUNT, &CELL_UV_S_ARRAY[0][0]);
+
+    gl_context.u_uv_t_table_location = glGetUniformLocation(gl_context.program_id, "u_uv_t_table");
+
+    glUniform3fv(gl_context.u_uv_t_table_location, DIRECTION_COUNT, &CELL_UV_T_ARRAY[0][0]);
     
     gl_context.u_projection_location = glGetUniformLocation(gl_context.program_id, "u_projection_matrix");
     gl_context.u_view_location = glGetUniformLocation(gl_context.program_id, "u_view_matrix");
@@ -874,15 +917,15 @@ void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 		    continue;
 		}
 
-		u8 cell_face_mask_test = cell->cell_face_mask;
+		u8 direction_mask_test = cell->direction_mask;
 
-		while (cell_face_mask_test)
+		while (direction_mask_test)
 		{
-		    const u8 cell_face = GET_CELL_FACE(cell_face_mask_test);
+		    const u8 direction = GET_DIRECTION(direction_mask_test);
 
 		    SectorFace *sector_face = &sector_mesh->sector_face_array[sector_mesh->count];
 
-		    sector_face->cell_face = cell_face;
+		    sector_face->direction = direction;
 		    sector_face->block_type = cell->block_type;
 
 		    ivec3 cell_position = { cell_x, cell_y, cell_z };
@@ -891,7 +934,7 @@ void render_generate_sector_mesh(i32 sector_x, i32 sector_y)
 
 		    sector_mesh->count += 1;
 
-		    cell_face_mask_test &= cell_face_mask_test - 1;
+		    direction_mask_test &= direction_mask_test - 1;
 		}
 	    }
 	}
@@ -904,9 +947,9 @@ void render_emit_sector_face(SectorFace *sector_face, GpuMesh *gpu_mesh)
 
     for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-        u32 x = sector_face->cell_position[0] + CELL_FACE_VERTEX_ARRAY[sector_face->cell_face][vertex_index][0];
-        u32 y = sector_face->cell_position[1] + CELL_FACE_VERTEX_ARRAY[sector_face->cell_face][vertex_index][1];
-        u32 z = sector_face->cell_position[2] + CELL_FACE_VERTEX_ARRAY[sector_face->cell_face][vertex_index][2];
+        u32 x = sector_face->cell_position[0] + VOXEL_VERTEX_ARRAY[sector_face->direction][vertex_index][0];
+        u32 y = sector_face->cell_position[1] + VOXEL_VERTEX_ARRAY[sector_face->direction][vertex_index][1];
+        u32 z = sector_face->cell_position[2] + VOXEL_VERTEX_ARRAY[sector_face->direction][vertex_index][2];
 
         VertexAttributes vertex_attributes;
 
@@ -914,9 +957,9 @@ void render_emit_sector_face(SectorFace *sector_face, GpuMesh *gpu_mesh)
             ((x & 63u)  <<  0u) |
             ((y & 63u)  <<  6u) |
             ((z & 255u) << 12u);
-
+	
         vertex_attributes.a_face =
-            ((sector_face->cell_face & 7u) << 0u);
+            ((sector_face->direction & 7u) << 0u);
 
         gpu_mesh->vertex_attribute_array[gpu_mesh->vertex_attribute_count] = vertex_attributes;
 	
@@ -935,20 +978,31 @@ void render_convert_sector_mesh_to_gpu_mesh(i32 sector_x, i32 sector_y)
 
     if (gpu_mesh->vertex_attribute_capacity < required_vertex_attribute_capacity)
     {
-	VertexAttributes* new_vertex_attributes_data =
-	    malloc(sizeof(VertexAttributes) * required_vertex_attribute_capacity);
+	u32 new_capacity = gpu_mesh->vertex_attribute_capacity == 0
+	    ? 64
+	    : gpu_mesh->vertex_attribute_capacity;
 
-	assert(new_vertex_attributes_data);
-	
-	gpu_mesh->vertex_attribute_capacity = required_vertex_attribute_capacity;
-	gpu_mesh->vertex_attribute_array = new_vertex_attributes_data;
+	while (new_capacity < required_vertex_attribute_capacity)
+	{
+	    new_capacity *= 2;
+	}
+
+	gpu_mesh->vertex_attribute_array =
+	    realloc(
+		gpu_mesh->vertex_attribute_array,
+                sizeof(VertexAttributes) * new_capacity
+	    );
+
+	assert(gpu_mesh->vertex_attribute_array);
+
+	gpu_mesh->vertex_attribute_capacity = new_capacity;
     }
 
-    gpu_mesh->world_position[0] = sector_x * SECTOR_SIZE_IN_CELLS;
-    gpu_mesh->world_position[1] = sector_y * SECTOR_SIZE_IN_CELLS;
+    gpu_mesh->world_position[0] = (f32)(sector_x * SECTOR_SIZE_IN_CELLS);
+    gpu_mesh->world_position[1] = (f32)(sector_y * SECTOR_SIZE_IN_CELLS);
     gpu_mesh->world_position[2] = 0.0f;
 
-    u32 face_index;
+    i32 face_index;
     for (face_index = 0; face_index < sector_mesh->count; ++face_index)
     {
 	SectorFace *sector_face = &sector_mesh->sector_face_array[face_index];
@@ -965,36 +1019,41 @@ void render_upload_gpu_mesh(i32 sector_x, i32 sector_y)
     {
 	glGenVertexArrays(1, &gpu_mesh->vao_id);
 	glGenBuffers(1, &gpu_mesh->vbo_id);
+
+	glBindVertexArray(gpu_mesh->vao_id);
+	glBindBuffer(GL_ARRAY_BUFFER, gpu_mesh->vbo_id);
+
+	glVertexAttribIPointer(
+	    0,
+	    1,
+	    GL_UNSIGNED_INT,
+	    sizeof(VertexAttributes),
+	    (void*)offsetof(VertexAttributes, a_vertex)
+	);
+    
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribIPointer(
+	    1,
+	    1,
+	    GL_UNSIGNED_INT,
+	    sizeof(VertexAttributes),
+	    (void*)offsetof(VertexAttributes, a_face)
+	);
+    
+	glEnableVertexAttribArray(1);
     }
-
-    glBindVertexArray(gpu_mesh->vao_id);
-    glBindBuffer(GL_ARRAY_BUFFER, gpu_mesh->vbo_id);
-
-    glVertexAttribIPointer(
-	0,
-	1,
-	GL_UNSIGNED_INT,
-	sizeof(VertexAttributes),
-	(void*)offsetof(VertexAttributes, a_vertex)
-    );
-    
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribIPointer(
-	1,
-	1,
-	GL_UNSIGNED_INT,
-	sizeof(VertexAttributes),
-	(void*)offsetof(VertexAttributes, a_face)
-    );
-    
-    glEnableVertexAttribArray(1);
+    else
+    {
+	glBindVertexArray(gpu_mesh->vao_id);
+	glBindBuffer(GL_ARRAY_BUFFER, gpu_mesh->vbo_id);
+    }
 
     glBufferData(
 	GL_ARRAY_BUFFER,
 	gpu_mesh->vertex_attribute_count * sizeof(VertexAttributes),
 	gpu_mesh->vertex_attribute_array,
-	GL_STATIC_DRAW
+	GL_DYNAMIC_DRAW
     );
 
     glBindVertexArray(0);
