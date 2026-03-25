@@ -64,9 +64,9 @@ static const char* DIRECTION_TO_STRING[DIRECTION_COUNT] =
 enum
 {
     BLOCK_TYPE_NONE,
-    BLOCK_TYPE_LION,
-    BLOCK_TYPE_EAGLE,
     BLOCK_TYPE_WOLF,
+    BLOCK_TYPE_EAGLE,
+    BLOCK_TYPE_LION,
     BLOCK_TYPE_HORSE,
 
     BLOCK_TYPE_COUNT,
@@ -75,9 +75,9 @@ enum
 static const char* BLOCK_TYPE_TO_STRING[BLOCK_TYPE_COUNT] =
 {
     "BLOCK_TYPE_NONE",
-    "BLOCK_TYPE_LION",
-    "BLOCK_TYPE_EAGLE",
     "BLOCK_TYPE_WOLF",
+    "BLOCK_TYPE_EAGLE",
+    "BLOCK_TYPE_LION",
     "BLOCK_TYPE_HORSE"
 };
 
@@ -104,14 +104,14 @@ static f32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
 
     // +Y
     {
-        {0,1,0}, {1,1,0}, {1,1,1},
-        {0,1,0}, {1,1,1}, {0,1,1},
+        {1,1,0}, {0,1,0}, {0,1,1},
+        {1,1,0}, {0,1,1}, {1,1,1},
     },
 
     // -Y
     {
-        {0,0,0}, {0,0,1}, {1,0,1},
-        {0,0,0}, {1,0,1}, {1,0,0},
+        {0,0,0}, {1,0,0}, {1,0,1},
+        {0,0,0}, {1,0,1}, {0,0,1},
     },
 
     // +Z
@@ -122,8 +122,8 @@ static f32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
 
     // -Z
     {
-        {0,0,0}, {1,0,0}, {1,1,0},
-        {0,0,0}, {1,1,0}, {0,1,0},
+        {0,1,0}, {1,1,0}, {1,0,0},
+        {0,1,0}, {1,0,0}, {0,0,0},
     },
 };
 
@@ -633,7 +633,7 @@ void camera_get_up(vec3 out_up)
 
 void camera_get_projection_matrix(mat4 out_projection_matrix)
 {
-    const aspect_ratio = (f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT;
+    const f32 aspect_ratio = (f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT;
     
     glm_perspective(
 	glm_rad(60.0f),
@@ -658,7 +658,7 @@ void camera_get_view_matrix(mat4 out_view_matrix)
 void camera_init()
 {
     camera.world_position[0] = 0.0f;
-    camera.world_position[1] = 0.0f;
+    camera.world_position[1] = -10.0f;
     camera.world_position[2] = 0.0f;
 
     camera.rotation[0] = 0.0f;
