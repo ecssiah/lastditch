@@ -49,6 +49,11 @@ target_sources(
     external/jsk/jsk_log.c
     external/jsk/jsk_config.c
     external/jsk/jsk_gl.c
+    src/camera.c
+    src/world.c
+    src/input.c
+    src/render.c
+    src/screen.c
 )
 
 target_compile_definitions(
