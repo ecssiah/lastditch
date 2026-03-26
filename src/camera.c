@@ -3,6 +3,7 @@
 #include "jsk.h"
 
 #include "ld_data.h"
+#include "input.h"
 
 void camera_get_forward(Sim *sim, vec3 out_forward)
 {
@@ -94,38 +95,37 @@ void camera_update(Sim *sim, Shell *shell)
     Camera *camera = &sim->camera;
 
     Input *input = &shell->input;
-    Render *render = &shell->render;
-    
+  
     vec3 input_value = { 0, 0, 0 };
 
-    if (glfwGetKey(render->window, GLFW_KEY_A) == GLFW_PRESS)
+    if (input_key_is_down(shell, GLFW_KEY_A))
     {
 	input_value[0] += 1.0f;
     }
     
-    if (glfwGetKey(render->window, GLFW_KEY_D) == GLFW_PRESS)
+    if (input_key_is_down(shell, GLFW_KEY_D))
     {
 	input_value[0] -= 1.0f;
     }
 
-    if (glfwGetKey(render->window, GLFW_KEY_W) == GLFW_PRESS)
+    if (input_key_is_down(shell, GLFW_KEY_W))
     {
 	input_value[1] += 1.0f;
     }
     
-    if (glfwGetKey(render->window, GLFW_KEY_S) == GLFW_PRESS)
+    if (input_key_is_down(shell, GLFW_KEY_S))
     {
 	input_value[1] -= 1.0f;
     }
     
     glm_vec3_normalize(input_value);
 
-    if (glfwGetKey(render->window, GLFW_KEY_Q) == GLFW_PRESS)
+    if (input_key_is_down(shell, GLFW_KEY_Q))
     {
 	input_value[2] -= 1.0f;
     }
     
-    if (glfwGetKey(render->window, GLFW_KEY_E) == GLFW_PRESS)
+    if (input_key_is_down(shell, GLFW_KEY_E))
     {
 	input_value[2] += 1.0f;
     }

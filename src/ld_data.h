@@ -315,4 +315,10 @@ struct Shell
     Render render;
 };
 
+typedef struct Bridge Bridge;
+struct Bridge
+{
+
+};
+
 #endif

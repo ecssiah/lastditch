@@ -12,6 +12,8 @@
 static Sim sim;
 static Shell shell;
 
+static Bridge bridge;
+
 int main()
 {
     log_init();
