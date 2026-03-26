@@ -22,11 +22,11 @@
 
 #define VERTEX_COUNT_PER_FACE 6
 
-#define SECTOR_SIZE_IN_CELLS_LOG2 3
+#define SECTOR_SIZE_IN_CELLS_LOG2 2
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 #define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_SIZE_IN_SECTORS_LOG2 3
+#define WORLD_SIZE_IN_SECTORS_LOG2 2
 #define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
 #define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
 
@@ -34,7 +34,7 @@
 #define WORLD_SIZE_IN_CELLS (1 << (1u * WORLD_SIZE_IN_CELLS_LOG2))
 #define WORLD_AREA_IN_CELLS (1 << (2u * WORLD_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_HEIGHT_IN_CELLS_LOG2 6
+#define WORLD_HEIGHT_IN_CELLS_LOG2 7
 #define WORLD_HEIGHT_IN_CELLS (1 << (1u * WORLD_HEIGHT_IN_CELLS_LOG2))
 #define WORLD_Z_MAX (WORLD_HEIGHT_IN_CELLS - 1)
 
@@ -698,6 +698,8 @@ void camera_update()
     {
 	input_value[1] -= 1.0f;
     }
+    
+    glm_vec3_normalize(input_value);
 
     if (glfwGetKey(gl_context.window, GLFW_KEY_Q) == GLFW_PRESS)
     {
@@ -708,8 +710,6 @@ void camera_update()
     {
 	input_value[2] += 1.0f;
     }
-
-    glm_vec3_normalize(input_value);
 
     vec3 velocity_forward;
     vec3 velocity_right;
