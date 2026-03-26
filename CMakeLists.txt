@@ -57,3 +57,13 @@ target_compile_definitions(
     GLFW_INCLUDE_NONE
     GL_SILENCE_DEPRECATION
 )
+
+add_custom_command(
+    TARGET
+    lastditch
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Assets..."
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets
+	    $<TARGET_FILE_DIR:lastditch>/assets
+)

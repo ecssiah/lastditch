@@ -1,4 +1,5 @@
 #include <dirent.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -22,11 +23,11 @@
 
 #define VERTEX_COUNT_PER_FACE 6
 
-#define SECTOR_SIZE_IN_CELLS_LOG2 2
+#define SECTOR_SIZE_IN_CELLS_LOG2 4
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 #define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_SIZE_IN_SECTORS_LOG2 2
+#define WORLD_SIZE_IN_SECTORS_LOG2 4
 #define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
 #define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
 
@@ -34,7 +35,7 @@
 #define WORLD_SIZE_IN_CELLS (1 << (1u * WORLD_SIZE_IN_CELLS_LOG2))
 #define WORLD_AREA_IN_CELLS (1 << (2u * WORLD_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_HEIGHT_IN_CELLS_LOG2 7
+#define WORLD_HEIGHT_IN_CELLS_LOG2 2
 #define WORLD_HEIGHT_IN_CELLS (1 << (1u * WORLD_HEIGHT_IN_CELLS_LOG2))
 #define WORLD_Z_MAX (WORLD_HEIGHT_IN_CELLS - 1)
 
@@ -437,6 +438,12 @@ void map_world_coordinate_to_position(ivec2 world_coordinate, vec3 out_world_pos
     out_world_position[0] = (f32)world_coordinate[0];
     out_world_position[1] = (f32)world_coordinate[1];
     out_world_position[2] = 0.0f;
+}
+
+void map_world_position_to_world_coordinate(vec3 world_position, ivec2 out_world_coordinate)
+{
+    out_world_coordinate[0] = (i32)floorf(world_position[0]);
+    out_world_coordinate[1] = (i32)floorf(world_position[1]);
 }
 
 BlockType map_block_type_from_string(const char *block_type_string)
@@ -1370,11 +1377,30 @@ void interface_update()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, interface.font_texture_id);
 
-    char camera_position_text[256];
+    char position_text[128];
 	
-    snprintf(camera_position_text, sizeof(camera_position_text), "(%.1f %.1f %.1f)", camera.world_position[0], camera.world_position[1], camera.world_position[2]);
+    snprintf(position_text, sizeof(position_text), "W: %.1f %.1f %.1f", camera.world_position[0], camera.world_position[1], camera.world_position[2]);
 
-    interface_draw_text(camera_position_text, 20, 20);
+    char sector_text[128];
+
+    ivec2 world_coordinate;
+    map_world_position_to_world_coordinate(camera.world_position, world_coordinate);
+
+    ivec2 sector_coordinate;
+    map_world_coordinate_to_sector_coordinate(world_coordinate, sector_coordinate);
+    
+    snprintf(sector_text, sizeof(sector_text), "S: %i %i", sector_coordinate[0], sector_coordinate[1]);
+
+    char cell_text[128];
+    
+    ivec2 cell_coordinate;
+    map_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
+    
+    snprintf(cell_text, sizeof(cell_text), "C: %i %i", cell_coordinate[0], cell_coordinate[1]);
+	
+    interface_draw_text(position_text, 20, 20);
+    interface_draw_text(sector_text, 20, 40);
+    interface_draw_text(cell_text, 20, 60);
 
     glBindVertexArray(0);
 }

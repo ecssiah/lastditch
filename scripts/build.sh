@@ -10,7 +10,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 echo "Building..."
 cmake --build build -j
 
-echo "Generating tags..."
+echo "Tags..."
 ctags -e -R .
 
 echo "Running..."
