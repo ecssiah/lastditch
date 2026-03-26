@@ -199,8 +199,30 @@ struct SectorMesh
     SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * WORLD_HEIGHT_IN_CELLS * DIRECTION_COUNT];
 };
 
-typedef struct GLContext GLContext;
-struct GLContext
+typedef struct TextVertex TextVertex;
+struct TextVertex
+{
+    f32 position[2];
+    f32 uv[2];
+};
+
+typedef struct Interface Interface;
+struct Interface
+{
+    GLuint program_id;
+
+    GLuint vao_id;
+    GLuint vbo_id;
+
+    GLuint font_texture_id;
+
+    GLint u_font_texture_sampler_location;
+    
+    GLint u_projection_location;
+};
+
+typedef struct Render Render;
+struct Render
 {
     GLFWwindow *window;
 
@@ -285,7 +307,9 @@ static Input input;
 static Timing timing;
 static Camera camera;
 
-static GLContext gl_context;
+static Interface interface;
+
+static Render render;
 
 static JSK_Config *block_types_config;
 
@@ -589,7 +613,7 @@ void input_init()
 
 void input_update()
 {
-    glfwGetCursorPos(gl_context.window, &input.mouse_current_x, &input.mouse_current_y);
+    glfwGetCursorPos(render.window, &input.mouse_current_x, &input.mouse_current_y);
     
     if (input.ignore_delta == True)
     {
@@ -685,34 +709,34 @@ void camera_update()
 {
     vec3 input_value = { 0, 0, 0 };
 
-    if (glfwGetKey(gl_context.window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(render.window, GLFW_KEY_A) == GLFW_PRESS)
     {
 	input_value[0] += 1.0f;
     }
     
-    if (glfwGetKey(gl_context.window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(render.window, GLFW_KEY_D) == GLFW_PRESS)
     {
 	input_value[0] -= 1.0f;
     }
 
-    if (glfwGetKey(gl_context.window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(render.window, GLFW_KEY_W) == GLFW_PRESS)
     {
 	input_value[1] += 1.0f;
     }
     
-    if (glfwGetKey(gl_context.window, GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(render.window, GLFW_KEY_S) == GLFW_PRESS)
     {
 	input_value[1] -= 1.0f;
     }
     
     glm_vec3_normalize(input_value);
 
-    if (glfwGetKey(gl_context.window, GLFW_KEY_Q) == GLFW_PRESS)
+    if (glfwGetKey(render.window, GLFW_KEY_Q) == GLFW_PRESS)
     {
 	input_value[2] -= 1.0f;
     }
     
-    if (glfwGetKey(gl_context.window, GLFW_KEY_E) == GLFW_PRESS)
+    if (glfwGetKey(render.window, GLFW_KEY_E) == GLFW_PRESS)
     {
 	input_value[2] += 1.0f;
     }
@@ -800,9 +824,9 @@ void render_load_texture(const char *texture_path, const GLint layer_index)
 }
 
 void render_load_textures(const char *textures_path)
-{
-    glGenTextures(1, &gl_context.texture_array_id);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, gl_context.texture_array_id);
+{   
+    glGenTextures(1, &render.texture_array_id);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, render.texture_array_id);
 
     glTexImage3D(
 	GL_TEXTURE_2D_ARRAY,
@@ -848,11 +872,11 @@ void render_setup_opengl()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    gl_context.window = glfwCreateWindow(WINDOW_WIDTH,	WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
+    render.window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
 
-    assert(gl_context.window != 0);
+    assert(render.window != 0);
 
-    glfwMakeContextCurrent(gl_context.window);
+    glfwMakeContextCurrent(render.window);
 
     const int glad_load_gl_result = gladLoadGL();
 
@@ -861,12 +885,12 @@ void render_setup_opengl()
     GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
     GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
-    gl_context.program_id = glCreateProgram();
+    render.program_id = glCreateProgram();
     
-    glAttachShader(gl_context.program_id, vert_shader);
-    glAttachShader(gl_context.program_id, frag_shader);
+    glAttachShader(render.program_id, vert_shader);
+    glAttachShader(render.program_id, frag_shader);
     
-    glLinkProgram(gl_context.program_id);
+    glLinkProgram(render.program_id);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -874,31 +898,36 @@ void render_setup_opengl()
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    glUseProgram(gl_context.program_id);
+    glUseProgram(render.program_id);
 
-    gl_context.u_texture_sampler_location = glGetUniformLocation(gl_context.program_id, "u_texture_sampler");
+    render.u_texture_sampler_location = glGetUniformLocation(render.program_id, "u_texture_sampler");
     
-    glUniform1i(gl_context.u_texture_sampler_location, 0);
+    glUniform1i(render.u_texture_sampler_location, 0);
     
-    gl_context.u_normal_table_location = glGetUniformLocation(gl_context.program_id, "u_normal_table");
+    render.u_normal_table_location = glGetUniformLocation(render.program_id, "u_normal_table");
 
-    glUniform3fv(gl_context.u_normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
+    glUniform3fv(render.u_normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
 
-    gl_context.u_uv_projection_table_location = glGetUniformLocation(gl_context.program_id, "u_uv_projection_table");
+    render.u_uv_projection_table_location = glGetUniformLocation(render.program_id, "u_uv_projection_table");
 
-    glUniform3fv(gl_context.u_uv_projection_table_location, DIRECTION_COUNT * 2, &CELL_UV_PROJECTION_ARRAY[0][0]);
+    glUniform3fv(render.u_uv_projection_table_location, DIRECTION_COUNT * 2, &CELL_UV_PROJECTION_ARRAY[0][0]);
 
-    gl_context.u_projection_location = glGetUniformLocation(gl_context.program_id, "u_projection_matrix");
-    gl_context.u_view_location = glGetUniformLocation(gl_context.program_id, "u_view_matrix");
-    gl_context.u_model_location = glGetUniformLocation(gl_context.program_id, "u_model_matrix");
+    render.u_projection_location = glGetUniformLocation(render.program_id, "u_projection_matrix");
+    render.u_view_location = glGetUniformLocation(render.program_id, "u_view_matrix");
+    render.u_model_location = glGetUniformLocation(render.program_id, "u_model_matrix");
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
     render_load_texture_config();
-    render_load_textures("assets/textures");
+    render_load_textures("assets/textures/block");
 
-    glfwSetInputMode(gl_context.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(render.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    
+    int fb_width, fb_height;
+    glfwGetFramebufferSize(render.window, &fb_width, &fb_height);
+
+    glViewport(0, 0, fb_width, fb_height);
 
     LOG_INFO("OpenGL Setup");
 }
@@ -1071,6 +1100,13 @@ void render_init()
 {
     render_setup_opengl();
 
+    glUseProgram(render.program_id);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, render.texture_array_id);
+
+    glUniformMatrix4fv(render.u_projection_location, 1, GL_FALSE, (f32 *)camera.projection_matrix);
+
     i32 sector_x, sector_y;
     for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
     {
@@ -1099,13 +1135,18 @@ void render_update()
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(gl_context.program_id);
+    glUseProgram(render.program_id);
+
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, gl_context.texture_array_id);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, render.texture_array_id);
 
-    glUniformMatrix4fv(gl_context.u_projection_location, 1, GL_FALSE, (f32 *)camera.projection_matrix);
-    glUniformMatrix4fv(gl_context.u_view_location, 1, GL_FALSE, (f32 *)camera.view_matrix);
+    glUniformMatrix4fv(render.u_view_location, 1, GL_FALSE, (f32 *)camera.view_matrix);
 
     i32 sector_x, sector_y;
     for (sector_y = 0; sector_y < WORLD_SIZE_IN_SECTORS; ++sector_y)
@@ -1122,16 +1163,284 @@ void render_update()
 	    mat4 model_matrix;
 	    glm_translate_make(model_matrix, gpu_mesh->world_position);
 	
-	    glUniformMatrix4fv(gl_context.u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
+	    glUniformMatrix4fv(render.u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
 
 	    glBindVertexArray(gpu_mesh->vao_id);
 
 	    glDrawArrays(GL_TRIANGLES, 0, gpu_mesh->vertex_attribute_count);
+
+	    glBindVertexArray(0);
 	}
     }
+}
 
-    glfwSwapBuffers(gl_context.window);
-    glfwPollEvents();
+void interface_load_textures(const char *textures_path)
+{
+    char path[512];
+    snprintf(path, sizeof(path), "%s/null_terminator.png", textures_path);
+
+    int width, height, channels;
+
+    stbi_set_flip_vertically_on_load(0);
+
+    unsigned char *data = stbi_load(path, &width, &height, &channels, 0);
+
+    if (!data)
+    {
+        printf("Failed to load font texture: %s\n", path);
+        return;
+    }
+
+    glGenTextures(1, &interface.font_texture_id);
+    glBindTexture(GL_TEXTURE_2D, interface.font_texture_id);
+
+    GLenum internal_format;
+    GLenum format;
+
+    if (channels == 1)
+    {
+	internal_format = GL_RED;
+	format = GL_RED;
+    }
+    else if (channels == 3)
+    {
+	internal_format = GL_RGB;
+	format = GL_RGB;
+    }
+    else if (channels == 4)
+    {
+	internal_format = GL_RGBA8;
+	format = GL_RGBA;
+    }
+    else
+    {
+        printf("Unsupported channel count: %d\n", channels);
+        stbi_image_free(data);
+	
+        return;
+    }
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        internal_format,
+        width,
+        height,
+        0,
+        format,
+        GL_UNSIGNED_BYTE,
+        data
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    stbi_image_free(data);
+}
+
+void interface_get_orthographic_projection_matrix(float width, float height, mat4 out_projection_matrix)
+{
+    glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, out_projection_matrix);
+
+    glm_mat4_print(out_projection_matrix, stdout);
+}
+
+void interface_draw_text(const char *text, float x, float y)
+{
+    float scale = 2.0f;
+    
+    float char_w = 8.0f * scale;
+    float char_h = 8.0f * scale;
+
+    float cell_w = 1.0f / 8.0f;
+    float cell_h = 1.0f / 12.0f;
+
+    size_t len = strlen(text);
+
+    size_t max_vertices = len * 6;
+    TextVertex text_vertex_array[max_vertices];
+
+    size_t vertex_count = 0;
+
+    float cursor_x = x;
+
+    size_t i;
+    for (i = 0; i < len; i++)
+    {
+        unsigned char c = text[i];
+
+        if (c < 32 || c > 126)
+        {
+            cursor_x += char_w;
+            continue;
+        }
+
+        int index = c - 32;
+
+        int col = index % 8;
+        int row = index / 8;
+
+        float u0 = col * cell_w;
+        float v0 = row * cell_h;
+
+        float u1 = u0 + cell_w;
+        float v1 = v0 + cell_h;
+
+        float x0 = cursor_x;
+        float y0 = y;
+        float x1 = cursor_x + char_w;
+        float y1 = y + char_h;
+
+	TextVertex text_vertex0;
+	text_vertex0.position[0] = x0;
+	text_vertex0.position[1] = y0;
+	
+	text_vertex0.uv[0] = u0;
+	text_vertex0.uv[1] = v0;
+
+	TextVertex text_vertex1;
+	text_vertex1.position[0] = x1;
+	text_vertex1.position[1] = y0;
+	
+	text_vertex1.uv[0] = u1;
+	text_vertex1.uv[1] = v0;
+
+	TextVertex text_vertex2;
+	text_vertex2.position[0] = x1;
+	text_vertex2.position[1] = y1;
+	
+	text_vertex2.uv[0] = u1;
+	text_vertex2.uv[1] = v1;
+
+	TextVertex text_vertex3;
+	text_vertex3.position[0] = x0;
+	text_vertex3.position[1] = y0;
+	
+	text_vertex3.uv[0] = u0;
+	text_vertex3.uv[1] = v0;
+
+	TextVertex text_vertex4;
+	text_vertex4.position[0] = x1;
+	text_vertex4.position[1] = y1;
+	
+	text_vertex4.uv[0] = u1;
+	text_vertex4.uv[1] = v1;
+
+	TextVertex text_vertex5;
+	text_vertex5.position[0] = x0;
+	text_vertex5.position[1] = y1;
+	
+	text_vertex5.uv[0] = u0;
+	text_vertex5.uv[1] = v1;
+	
+	text_vertex_array[vertex_count++] = text_vertex0;
+	text_vertex_array[vertex_count++] = text_vertex1;
+	text_vertex_array[vertex_count++] = text_vertex2;
+
+	text_vertex_array[vertex_count++] = text_vertex3;
+	text_vertex_array[vertex_count++] = text_vertex4;
+	text_vertex_array[vertex_count++] = text_vertex5;
+
+        cursor_x += char_w;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, interface.vbo_id);
+    glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(TextVertex), text_vertex_array, GL_DYNAMIC_DRAW);
+
+    glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+}
+
+void interface_update()
+{
+    glUseProgram(interface.program_id);
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+    
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindVertexArray(interface.vao_id);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, interface.font_texture_id);
+
+    char camera_position_text[256];
+	
+    snprintf(camera_position_text, sizeof(camera_position_text), "(%.1f %.1f %.1f)", camera.world_position[0], camera.world_position[1], camera.world_position[2]);
+
+    interface_draw_text(camera_position_text, 20, 20);
+
+    glBindVertexArray(0);
+}
+
+void interface_init()
+{
+    GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
+    GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
+
+    interface.program_id = glCreateProgram();
+    
+    glAttachShader(interface.program_id, vert_shader);
+    glAttachShader(interface.program_id, frag_shader);
+    
+    glLinkProgram(interface.program_id);
+
+    glUseProgram(interface.program_id);
+
+    interface.u_font_texture_sampler_location = glGetUniformLocation(interface.program_id, "u_font_texture_sampler");
+
+    glUniform1i(interface.u_font_texture_sampler_location, 0);
+    
+    interface.u_projection_location = glGetUniformLocation(interface.program_id, "u_projection_matrix");
+
+    int fb_width, fb_height;
+    glfwGetFramebufferSize(render.window, &fb_width, &fb_height);
+
+    mat4 interface_projection_matrix;
+    interface_get_orthographic_projection_matrix(fb_width, fb_height, interface_projection_matrix);
+    
+    glUniformMatrix4fv(interface.u_projection_location, 1, GL_FALSE, (f32 *)interface_projection_matrix);
+    
+    glDeleteShader(vert_shader);
+    glDeleteShader(frag_shader);
+
+    glGenVertexArrays(1, &interface.vao_id);
+    glGenBuffers(1, &interface.vbo_id);
+
+    glBindVertexArray(interface.vao_id);
+    glBindBuffer(GL_ARRAY_BUFFER, interface.vbo_id);
+
+    glVertexAttribPointer(
+	0,
+	2,
+	GL_FLOAT,
+	GL_FALSE,
+	sizeof(TextVertex),
+	(void *)0
+    );
+    
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(
+	1,
+	2,
+	GL_FLOAT,
+	GL_FALSE,
+	sizeof(TextVertex),
+	(void *)offsetof(TextVertex, uv)
+    );
+
+    glEnableVertexAttribArray(1);
+    
+    glBindVertexArray(0);
+
+    interface_load_textures("assets/textures/font");
 }
 
 void timing_init()
@@ -1157,21 +1466,27 @@ int main()
     map_init();
     input_init();
     camera_init();
-    render_init();
     
-    while (!glfwWindowShouldClose(gl_context.window))
+    render_init();
+    interface_init();
+    
+    while (!glfwWindowShouldClose(render.window))
     {
 	timing_update();
 	
-	if (glfwGetKey(gl_context.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glfwGetKey(render.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
-	    glfwSetWindowShouldClose(gl_context.window, 1);
+	    glfwSetWindowShouldClose(render.window, 1);
 	}
 	
 	input_update();
 	camera_update();
-	
+
 	render_update();
+	interface_update();
+	
+	glfwSwapBuffers(render.window);
+	glfwPollEvents();
     }
 
     glfwTerminate();
