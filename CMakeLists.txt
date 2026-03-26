@@ -22,6 +22,7 @@ target_include_directories(
     lastditch 
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/external/jsk
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/stb/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -44,8 +45,10 @@ endif()
 target_sources(
     lastditch 
     PRIVATE
-    external/jsk/jsk_log.c
     external/glad/src/glad.c
+    external/jsk/jsk_log.c
+    external/jsk/jsk_config.c
+    external/jsk/jsk_gl.c
 )
 
 target_compile_definitions(
