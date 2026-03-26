@@ -767,6 +767,8 @@ void render_load_texture(const char *texture_path, const GLint layer_index)
     int height;
     int channels;
 
+    stbi_set_flip_vertically_on_load(True);
+    
     unsigned char *pixel_data_array = stbi_load(texture_path, &width, &height, &channels, 4);
 
     assert(width == TEXTURE_SIZE && height == TEXTURE_SIZE);
@@ -962,7 +964,8 @@ void render_emit_sector_face(SectorFace *sector_face, GpuMesh *gpu_mesh)
             ((z & 255u) << 12u);
 	
         vertex_attributes.a_face =
-            ((sector_face->direction & 7u) << 0u);
+	    ((sector_face->block_type & 255u) <<  0u) |
+            ((sector_face->direction  & 7u)   <<  8u);
 
         gpu_mesh->vertex_attribute_array[gpu_mesh->vertex_attribute_count] = vertex_attributes;
 	
