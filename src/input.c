@@ -55,61 +55,32 @@ void input_update(Shell *shell)
     Input* input = &shell->input;
     Render* render = &shell->render;
     
-    if (glfwGetKey(render->window, GLFW_KEY_A) == GLFW_PRESS)
+    int key;
+    for (key = 0; key < GLFW_KEY_LAST + 1; ++key)
     {
-	input->current_key_array[GLFW_KEY_A] = True;
-    }
-    else
-    {
-	input->current_key_array[GLFW_KEY_A] = False;
-    }
-    
-    if (glfwGetKey(render->window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-	input->current_key_array[GLFW_KEY_D] = True;
-    }
-    else
-    {
-	input->current_key_array[GLFW_KEY_D] = False;
+	input->previous_key_array[key] = input->current_key_array[key];
     }
 
-    if (glfwGetKey(render->window, GLFW_KEY_W) == GLFW_PRESS)
+    int button;
+    for (button = 0; button < GLFW_MOUSE_BUTTON_LAST + 1; ++button)
     {
-	input->current_key_array[GLFW_KEY_W] = True;
-    }
-    else
-    {
-	input->current_key_array[GLFW_KEY_W] = False;
-    }
-    
-    if (glfwGetKey(render->window, GLFW_KEY_S) == GLFW_PRESS)
-     {
-	input->current_key_array[GLFW_KEY_S] = True;
-    }
-    else
-    {
-	input->current_key_array[GLFW_KEY_S] = False;
-    }
-    
-    if (glfwGetKey(render->window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-	input->current_key_array[GLFW_KEY_Q] = True;
-    }
-    else
-    {
-	input->current_key_array[GLFW_KEY_Q] = False;
+	input->previous_button_array[button] = input->current_button_array[button];
     }
 
-    if (glfwGetKey(render->window, GLFW_KEY_E) == GLFW_PRESS)
+    input->mouse_previous_x = input->mouse_current_x;
+    input->mouse_previous_y = input->mouse_current_y;
+
+    for (key = 0; key < GLFW_KEY_LAST + 1; ++key)
     {
-	input->current_key_array[GLFW_KEY_E] = True;
+	input->current_key_array[key] = glfwGetKey(shell->window, key) == GLFW_PRESS;
     }
-    else
+
+    for (button = 0; button < GLFW_MOUSE_BUTTON_LAST + 1; ++button)
     {
-	input->current_key_array[GLFW_KEY_E] = False;
+	input->current_button_array[button] = glfwGetMouseButton(shell->window, button) == GLFW_PRESS;
     }
     
-    glfwGetCursorPos(render->window, &input->mouse_current_x, &input->mouse_current_y);
+    glfwGetCursorPos(shell->window, &input->mouse_current_x, &input->mouse_current_y);
     
     if (input->ignore_delta == True)
     {
@@ -123,8 +94,5 @@ void input_update(Shell *shell)
 	input->mouse_delta_x = (f32)(input->mouse_current_x - input->mouse_previous_x);
 	input->mouse_delta_y = (f32)(input->mouse_current_y - input->mouse_previous_y);
     }
-
-    input->mouse_previous_x = input->mouse_current_x;
-    input->mouse_previous_y = input->mouse_current_y;
 }
 

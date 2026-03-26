@@ -19,8 +19,9 @@ enum ELogLevel
     LOG_LEVEL_COUNT,
 };
 
-void log_init();
 void log_message(ELogLevel log_level, const char* log_file, int line, const char* fmt, ...);
-void log_destroy();
+
+void log_init();
+void log_close();
 
 #endif

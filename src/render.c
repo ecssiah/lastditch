@@ -85,24 +85,6 @@ void render_load_textures(Shell *shell, const char *textures_path)
 void render_setup_opengl(Shell *shell)
 {
     Render *render = &shell->render;
-    
-    const int glfw_result = glfwInit();
-    
-    assert(glfw_result != 0);
-    
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-    render->window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
-
-    assert(render->window != 0);
-
-    glfwMakeContextCurrent(render->window);
 
     const int glad_load_gl_result = gladLoadGL();
 
@@ -148,10 +130,10 @@ void render_setup_opengl(Shell *shell)
     render_load_texture_config(shell);
     render_load_textures(shell, "assets/textures/block");
 
-    glfwSetInputMode(render->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(shell->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     int fb_width, fb_height;
-    glfwGetFramebufferSize(render->window, &fb_width, &fb_height);
+    glfwGetFramebufferSize(shell->window, &fb_width, &fb_height);
 
     glViewport(0, 0, fb_width, fb_height);
 
@@ -328,9 +310,6 @@ void render_init(Shell *shell, Sim *sim)
 {
     Render *render = &shell->render;
     
-    shell->current_time = 0.0;
-    shell->previous_time = 0.0;
-    
     render_setup_opengl(shell);
 
     glUseProgram(render->program_id);
@@ -366,14 +345,6 @@ void render_init(Shell *shell, Sim *sim)
 void render_update(Shell* shell, Sim* sim)
 {
     Render *render = &shell->render;
-    
-    shell->current_time = glfwGetTime();
-
-    shell->delta_time = (shell->previous_time > 0.0)
-	? (f32)(shell->current_time - shell->previous_time)
-	: 0.0f;
-
-    shell->previous_time = shell->current_time;
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

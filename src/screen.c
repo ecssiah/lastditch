@@ -81,8 +81,6 @@ static void load_textures(Screen *screen, const char *textures_path)
 static void get_orthographic_projection_matrix(float width, float height, mat4 out_projection_matrix)
 {
     glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, out_projection_matrix);
-
-    glm_mat4_print(out_projection_matrix, stdout);
 }
 
 void screen_draw_text(Shell *shell, const char *text, f32 x, f32 y)
@@ -214,7 +212,7 @@ void screen_init(Shell *shell)
     screen->u_projection_location = glGetUniformLocation(screen->program_id, "u_projection_matrix");
 
     int fb_width, fb_height;
-    glfwGetFramebufferSize(render->window, &fb_width, &fb_height);
+    glfwGetFramebufferSize(shell->window, &fb_width, &fb_height);
 
     mat4 shell_projection_matrix;
     get_orthographic_projection_matrix(fb_width, fb_height, shell_projection_matrix);

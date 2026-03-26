@@ -31,7 +31,7 @@ void log_init()
         JSK_LOG_FILE = stderr;
     }
 
-    LOG_INFO("\n\nLOGGING INIT\n");
+    LOG_INFO("\n\nLOG INIT\n");
 }
 
 void log_message(ELogLevel log_level, const char* file, int line, const char* fmt, ...)
@@ -136,9 +136,9 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
     }
 }
 
-void log_destroy()
+void log_close()
 {
-    LOG_INFO("\n\nLOGGING SHUTDOWN\n");
+    LOG_INFO("\n\nLOG CLOSE\n");
 
     if (JSK_LOG_FILE && JSK_LOG_FILE != stderr)
     {

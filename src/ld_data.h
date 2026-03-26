@@ -219,8 +219,6 @@ struct Screen
 typedef struct Render Render;
 struct Render
 {
-    GLFWwindow *window;
-
     GLuint program_id;
 
     GLuint texture_array_id;
@@ -305,10 +303,14 @@ struct Sim
 typedef struct Shell Shell;
 struct Shell
 {
+    boolean active;
+    
     f64 previous_time;
     f64 current_time;
 
     f32 delta_time;
+
+    GLFWwindow *window;
     
     Input input;
     Screen screen;

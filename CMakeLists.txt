@@ -50,6 +50,8 @@ target_sources(
     external/jsk/jsk_log.c
     external/jsk/jsk_config.c
     external/jsk/jsk_gl.c
+    src/sim.c
+    src/shell.c
     src/camera.c
     src/world.c
     src/input.c
