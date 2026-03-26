@@ -141,23 +141,30 @@ static f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
     { +0, +0, -1 },
 };
 
-static f32 CELL_UV_S_ARRAY[DIRECTION_COUNT][3] =
+static f32 CELL_UV_PROJECTION_ARRAY[DIRECTION_COUNT * 2][3] =
 {
-    { +0, +1, +0 },
+    // +X
     { +0, -1, +0 },
-    { +1, +0, +0 },
-    { -1, +0, +0 },
-    { +1, +0, +0 },
-    { +1, +0, +0 },
-};
+    { +0, +0, +1 },
 
-static f32 CELL_UV_T_ARRAY[DIRECTION_COUNT][3] =
-{
-    { +0, +0, +1 },
-    { +0, +0, +1 },
-    { +0, +0, +1 },
-    { +0, +0, +1 },
+    // -X
     { +0, +1, +0 },
+    { +0, +0, +1 },
+
+    // +Y
+    { +1, +0, +0 },
+    { +0, +0, +1 },
+
+    // -Y
+    { -1, +0, +0 },
+    { +0, +0, +1 },
+
+    // +Z
+    { +1, +0, +0 },
+    { +0, +1, +0 },
+
+    // -Z
+    { +1, +0, +0 },
     { +0, -1, +0 },
 };
 
@@ -204,8 +211,7 @@ struct GLContext
     GLint u_texture_sampler_location;
     
     GLint u_normal_table_location;
-    GLint u_uv_s_table_location;
-    GLint u_uv_t_table_location;
+    GLint u_uv_projection_table_location;
     
     GLint u_projection_location;
     GLint u_view_location;
@@ -878,14 +884,10 @@ void render_setup_opengl()
 
     glUniform3fv(gl_context.u_normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
 
-    gl_context.u_uv_s_table_location = glGetUniformLocation(gl_context.program_id, "u_uv_s_table");
+    gl_context.u_uv_projection_table_location = glGetUniformLocation(gl_context.program_id, "u_uv_projection_table");
 
-    glUniform3fv(gl_context.u_uv_s_table_location, DIRECTION_COUNT, &CELL_UV_S_ARRAY[0][0]);
+    glUniform3fv(gl_context.u_uv_projection_table_location, DIRECTION_COUNT * 2, &CELL_UV_PROJECTION_ARRAY[0][0]);
 
-    gl_context.u_uv_t_table_location = glGetUniformLocation(gl_context.program_id, "u_uv_t_table");
-
-    glUniform3fv(gl_context.u_uv_t_table_location, DIRECTION_COUNT, &CELL_UV_T_ARRAY[0][0]);
-    
     gl_context.u_projection_location = glGetUniformLocation(gl_context.program_id, "u_projection_matrix");
     gl_context.u_view_location = glGetUniformLocation(gl_context.program_id, "u_view_matrix");
     gl_context.u_model_location = glGetUniformLocation(gl_context.program_id, "u_model_matrix");

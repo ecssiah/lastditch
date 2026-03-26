@@ -4,9 +4,7 @@ layout (location = 0) in uint a_vertex;
 layout (location = 1) in uint a_face;
 
 uniform vec3 u_normal_table[6];
-
-uniform vec3 u_uv_s_table[6];
-uniform vec3 u_uv_t_table[6];
+uniform vec3 u_uv_projection_table[6 * 2];
 
 uniform mat4 u_projection_matrix;
 uniform mat4 u_view_matrix;
@@ -27,8 +25,8 @@ void main()
 	uint direction =  ((a_face >>  8u) &   7u);
 
 	vec2 uv;
-	uv.s = dot(vertex_coordinate, u_uv_s_table[direction]);
-	uv.t = dot(vertex_coordinate, u_uv_t_table[direction]);
+	uv.s = dot(vertex_coordinate, u_uv_projection_table[2 * direction + 0]);
+	uv.t = dot(vertex_coordinate, u_uv_projection_table[2 * direction + 1]);
 
 	vec3 normal = u_normal_table[direction];
 
