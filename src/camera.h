@@ -13,6 +13,6 @@ void camera_get_projection_matrix(Sim *sim, mat4 out_projection_matrix);
 void camera_get_view_matrix(Sim *sim, mat4 out_view_matrix);
 
 void camera_init(Sim *sim);
-void camera_update(Sim *sim, Interface* interface);
+void camera_update(Sim *sim, Shell* shell);
 
 #endif

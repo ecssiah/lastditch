@@ -45,6 +45,7 @@ endif()
 target_sources(
     lastditch 
     PRIVATE
+    external/stb/src/stb_image.c
     external/glad/src/glad.c
     external/jsk/jsk_log.c
     external/jsk/jsk_config.c

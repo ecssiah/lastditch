@@ -6,14 +6,14 @@
 #include "jsk_gl.h"
 #include "world.h"
 
-void render_load_texture_config(Interface *interface)
+void render_load_texture_config(Shell *shell)
 {
     const char *texture_config_path = "config/block_types.ini";
 
-    interface->render.block_types_config = jsk_load_config(texture_config_path);
+    shell->render.block_types_config = jsk_load_config(texture_config_path);
 }
 
-void render_load_texture(Interface *interface, const char *texture_path, const GLint layer_index)
+void render_load_texture(Shell *shell, const char *texture_path, const GLint layer_index)
 {
     int width;
     int height;
@@ -45,9 +45,9 @@ void render_load_texture(Interface *interface, const char *texture_path, const G
     LOG_INFO("Loaded texture: %s", texture_path);
 }
 
-void render_load_textures(Interface *interface, const char *textures_path)
+void render_load_textures(Shell *shell, const char *textures_path)
 {
-    Render *render = &interface->render;
+    Render *render = &shell->render;
     
     glGenTextures(1, &render->texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->texture_array_id);
@@ -78,13 +78,13 @@ void render_load_textures(Interface *interface, const char *textures_path)
 
 	render->block_type_layer_array[(int)block_type] = layer_index;
 	
-	render_load_texture(interface, texture_path, layer_index);
+	render_load_texture(shell, texture_path, layer_index);
     }
 }
 
-void render_setup_opengl(Interface *interface)
+void render_setup_opengl(Shell *shell)
 {
-    Render *render = &interface->render;
+    Render *render = &shell->render;
     
     const int glfw_result = glfwInit();
     
@@ -145,8 +145,8 @@ void render_setup_opengl(Interface *interface)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    render_load_texture_config(interface);
-    render_load_textures(interface, "assets/textures/block");
+    render_load_texture_config(shell);
+    render_load_textures(shell, "assets/textures/block");
 
     glfwSetInputMode(render->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
@@ -158,11 +158,11 @@ void render_setup_opengl(Interface *interface)
     LOG_INFO("OpenGL Setup");
 }
 
-void render_generate_sector_mesh(Interface *interface, Sim *sim, i32 sector_x, i32 sector_y)
+void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_x, i32 sector_y)
 {
     Sector *sector = &sim->world.sector_array[sector_x][sector_y];
     
-    SectorMesh *sector_mesh = &interface->render.sector_mesh_array[sector_x][sector_y];
+    SectorMesh *sector_mesh = &shell->render.sector_mesh_array[sector_x][sector_y];
     sector_mesh->count = 0;
 
     i32 cell_x, cell_y, cell_z;
@@ -204,7 +204,7 @@ void render_generate_sector_mesh(Interface *interface, Sim *sim, i32 sector_x, i
     }
 }
 
-void render_emit_sector_face(Interface *interface, SectorFace *sector_face, GpuMesh *gpu_mesh)
+void render_emit_sector_face(Shell *shell, SectorFace *sector_face, GpuMesh *gpu_mesh)
 {
     int vertex_index;
     for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
@@ -230,9 +230,9 @@ void render_emit_sector_face(Interface *interface, SectorFace *sector_face, GpuM
     }
 }
 
-void render_convert_sector_mesh_to_gpu_mesh(Interface *interface, i32 sector_x, i32 sector_y)
+void render_convert_sector_mesh_to_gpu_mesh(Shell *shell, i32 sector_x, i32 sector_y)
 {
-    Render *render = &interface->render;
+    Render *render = &shell->render;
     
     SectorMesh *sector_mesh = &render->sector_mesh_array[sector_x][sector_y];
     GpuMesh *gpu_mesh = &render->gpu_mesh_array[sector_x][sector_y];
@@ -272,13 +272,13 @@ void render_convert_sector_mesh_to_gpu_mesh(Interface *interface, i32 sector_x, 
     {
 	SectorFace *sector_face = &sector_mesh->sector_face_array[face_index];
 
-	render_emit_sector_face(interface, sector_face, gpu_mesh);
+	render_emit_sector_face(shell, sector_face, gpu_mesh);
     }
 }
 
-void render_upload_gpu_mesh(Interface *interface, i32 sector_x, i32 sector_y)
+void render_upload_gpu_mesh(Shell *shell, i32 sector_x, i32 sector_y)
 {
-    GpuMesh *gpu_mesh = &interface->render.gpu_mesh_array[sector_x][sector_y];
+    GpuMesh *gpu_mesh = &shell->render.gpu_mesh_array[sector_x][sector_y];
 
     if (gpu_mesh->vao_id == 0)
     {
@@ -324,14 +324,14 @@ void render_upload_gpu_mesh(Interface *interface, i32 sector_x, i32 sector_y)
     glBindVertexArray(0);
 }
 
-void render_init(Interface *interface, Sim *sim)
+void render_init(Shell *shell, Sim *sim)
 {
-    Render *render = &interface->render;
+    Render *render = &shell->render;
     
-    interface->current_time = 0.0;
-    interface->previous_time = 0.0;
+    shell->current_time = 0.0;
+    shell->previous_time = 0.0;
     
-    render_setup_opengl(interface);
+    render_setup_opengl(shell);
 
     glUseProgram(render->program_id);
 
@@ -345,7 +345,7 @@ void render_init(Interface *interface, Sim *sim)
     {
 	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
 	{
-	    render_generate_sector_mesh(interface, sim, sector_x, sector_y);
+	    render_generate_sector_mesh(shell, sim, sector_x, sector_y);
 	}
     }
     
@@ -355,25 +355,25 @@ void render_init(Interface *interface, Sim *sim)
     {
 	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
 	{
-	    render_convert_sector_mesh_to_gpu_mesh(interface, sector_x, sector_y);
-	    render_upload_gpu_mesh(interface, sector_x, sector_y);
+	    render_convert_sector_mesh_to_gpu_mesh(shell, sector_x, sector_y);
+	    render_upload_gpu_mesh(shell, sector_x, sector_y);
 	}
     }
 
     LOG_INFO("Gpu Meshes Generated");
 }
 
-void render_update(Interface* interface, Sim* sim)
+void render_update(Shell* shell, Sim* sim)
 {
-    Render *render = &interface->render;
+    Render *render = &shell->render;
     
-    interface->current_time = glfwGetTime();
+    shell->current_time = glfwGetTime();
 
-    interface->delta_time = (interface->previous_time > 0.0)
-	? (f32)(interface->current_time - interface->previous_time)
+    shell->delta_time = (shell->previous_time > 0.0)
+	? (f32)(shell->current_time - shell->previous_time)
 	: 0.0f;
 
-    interface->previous_time = interface->current_time;
+    shell->previous_time = shell->current_time;
     
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

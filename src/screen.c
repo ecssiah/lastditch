@@ -85,7 +85,7 @@ static void get_orthographic_projection_matrix(float width, float height, mat4 o
     glm_mat4_print(out_projection_matrix, stdout);
 }
 
-void screen_draw_text(Interface *interface, const char *text, f32 x, f32 y)
+void screen_draw_text(Shell *shell, const char *text, f32 x, f32 y)
 {
     float scale = 2.0f;
     
@@ -184,16 +184,16 @@ void screen_draw_text(Interface *interface, const char *text, f32 x, f32 y)
         cursor_x += char_w;
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, interface->screen.vbo_id);
+    glBindBuffer(GL_ARRAY_BUFFER, shell->screen.vbo_id);
     glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(TextVertex), text_vertex_array, GL_DYNAMIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
 
-void screen_init(Interface *interface)
+void screen_init(Shell *shell)
 {
-    Render *render = &interface->render;
-    Screen *screen = &interface->screen;
+    Render *render = &shell->render;
+    Screen *screen = &shell->screen;
     
     GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
     GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
@@ -216,10 +216,10 @@ void screen_init(Interface *interface)
     int fb_width, fb_height;
     glfwGetFramebufferSize(render->window, &fb_width, &fb_height);
 
-    mat4 interface_projection_matrix;
-    get_orthographic_projection_matrix(fb_width, fb_height, interface_projection_matrix);
+    mat4 shell_projection_matrix;
+    get_orthographic_projection_matrix(fb_width, fb_height, shell_projection_matrix);
     
-    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, (f32 *)interface_projection_matrix);
+    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, (f32 *)shell_projection_matrix);
     
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -257,9 +257,9 @@ void screen_init(Interface *interface)
     load_textures(screen, "assets/textures/font");
 }
 
-void screen_update(Interface *interface, Sim *sim)
+void screen_update(Shell *shell, Sim *sim)
 {
-    Screen *screen = &interface->screen;
+    Screen *screen = &shell->screen;
     Camera *camera = &sim->camera;
     
     glUseProgram(screen->program_id);
@@ -298,9 +298,9 @@ void screen_update(Interface *interface, Sim *sim)
     
     snprintf(cell_text, sizeof(cell_text), "C: %i %i", cell_coordinate[0], cell_coordinate[1]);
 	
-    screen_draw_text(interface, position_text, 20, 20);
-    screen_draw_text(interface, sector_text, 20, 40);
-    screen_draw_text(interface, cell_text, 20, 60);
+    screen_draw_text(shell, position_text, 20, 20);
+    screen_draw_text(shell, sector_text, 20, 40);
+    screen_draw_text(shell, cell_text, 20, 60);
 
     glBindVertexArray(0);
 }

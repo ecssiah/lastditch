@@ -5,9 +5,9 @@
 
 #include "ld_data.h"
 
-void screen_draw_text(Interface *interface, const char *text, f32 x, f32 y);
+void screen_draw_text(Shell *shell, const char *text, f32 x, f32 y);
 
-void screen_init(Interface *interface);
-void screen_update(Interface *interface, Sim *sim);
+void screen_init(Shell *shell);
+void screen_update(Shell *shell, Sim *sim);
 
 #endif

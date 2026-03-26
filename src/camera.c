@@ -89,12 +89,12 @@ void camera_init(Sim *sim)
     camera_get_projection_matrix(sim, camera->projection_matrix);
 }
 
-void camera_update(Sim *sim, Interface *interface)
+void camera_update(Sim *sim, Shell *shell)
 {
     Camera *camera = &sim->camera;
 
-    Input *input = &interface->input;
-    Render *render = &interface->render;
+    Input *input = &shell->input;
+    Render *render = &shell->render;
     
     vec3 input_value = { 0, 0, 0 };
 
@@ -151,7 +151,7 @@ void camera_update(Sim *sim, Interface *interface)
     glm_vec3_add(velocity, velocity_forward, velocity);
     glm_vec3_add(velocity, velocity_up, velocity);
     
-    glm_vec3_scale(velocity, camera->speed * interface->delta_time, velocity);
+    glm_vec3_scale(velocity, camera->speed * shell->delta_time, velocity);
 
     glm_vec3_add(camera->world_position, velocity, camera->world_position);
     

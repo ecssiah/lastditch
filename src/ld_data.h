@@ -242,12 +242,6 @@ struct Render
     GpuMesh gpu_mesh_array[WORLD_SIZE_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
 };
 
-typedef struct Timing Timing;
-struct Timing
-{
-
-};
-
 typedef struct Cell Cell;
 struct Cell
 {
@@ -308,8 +302,8 @@ struct Sim
     Camera camera;
 };
 
-typedef struct Interface Interface;
-struct Interface
+typedef struct Shell Shell;
+struct Shell
 {
     f64 previous_time;
     f64 current_time;

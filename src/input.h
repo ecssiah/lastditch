@@ -3,7 +3,7 @@
 
 #include "ld_data.h"
 
-void input_init(Interface *interface);
-void input_update(Interface *interface);
+void input_init(Shell *shell);
+void input_update(Shell *shell);
 
 #endif

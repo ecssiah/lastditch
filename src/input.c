@@ -4,9 +4,9 @@
 
 #include "ld_data.h"
 
-void input_init(Interface *interface)
+void input_init(Shell *shell)
 {
-    Input *input = &interface->input;
+    Input *input = &shell->input;
     
     input->mouse_current_x = 0.0;
     input->mouse_current_y = 0.0;
@@ -20,10 +20,10 @@ void input_init(Interface *interface)
     input->ignore_delta = True;
 }
 
-void input_update(Interface *interface)
+void input_update(Shell *shell)
 {
-    Input* input = &interface->input;
-    Render* render = &interface->render;
+    Input* input = &shell->input;
+    Render* render = &shell->render;
     
     glfwGetCursorPos(render->window, &input->mouse_current_x, &input->mouse_current_y);
     

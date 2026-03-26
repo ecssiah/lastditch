@@ -1,14 +1,3 @@
-#include <dirent.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <cglm/cglm.h>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include "jsk_log.h"
 
 #include "ld_data.h"
@@ -21,7 +10,7 @@
 #include "screen.h"
 
 static Sim sim;
-static Interface interface;
+static Shell shell;
 
 int main()
 {
@@ -30,25 +19,25 @@ int main()
     world_init(&sim);
     camera_init(&sim);
     
-    input_init(&interface);    
-    render_init(&interface, &sim);
-    screen_init(&interface);
+    input_init(&shell);    
+    render_init(&shell, &sim);
+    screen_init(&shell);
     
-    while (!glfwWindowShouldClose(interface.render.window))
+    while (!glfwWindowShouldClose(shell.render.window))
     {
-	if (glfwGetKey(interface.render.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glfwGetKey(shell.render.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
-	    glfwSetWindowShouldClose(interface.render.window, 1);
+	    glfwSetWindowShouldClose(shell.render.window, 1);
 	}
     	
-	input_update(&interface);
+	input_update(&shell);
 	
-	camera_update(&sim, &interface);
+	camera_update(&sim, &shell);
 
-	render_update(&interface, &sim);
-	screen_update(&interface, &sim);
+	render_update(&shell, &sim);
+	screen_update(&shell, &sim);
 	
-	glfwSwapBuffers(interface.render.window);
+	glfwSwapBuffers(shell.render.window);
 	glfwPollEvents();
     }
 
