@@ -166,7 +166,7 @@ static f32 CELL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
 typedef struct GpuMesh GpuMesh;
 struct GpuMesh
 {
-    vec3 world_position;
+    vec3 grid_position;
     
     GLuint vao_id;
     GLuint vbo_id;
@@ -283,7 +283,7 @@ struct Input
 typedef struct Camera Camera;
 struct Camera
 {
-    vec3 world_position;
+    vec3 grid_position;
     vec3 rotation;
 
     mat4 projection_matrix;
@@ -315,12 +315,6 @@ struct Shell
     Input input;
     Screen screen;
     Render render;
-};
-
-typedef struct Bridge Bridge;
-struct Bridge
-{
-
 };
 
 #endif

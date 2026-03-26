@@ -13,8 +13,6 @@
 static Sim sim;
 static Shell shell;
 
-static Bridge bridge;
-
 int main()
 {
     sim_init(&sim);

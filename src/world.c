@@ -5,7 +5,7 @@
 #include "jsk_log.h"
 #include "ld_data.h"
 
-boolean world_world_coordinate_is_valid(i32 x, i32 y)
+boolean world_grid_coordinate_is_valid(i32 x, i32 y)
 {   
     return (
 	x >= 0 && x < WORLD_SIZE_IN_CELLS &&
@@ -60,54 +60,54 @@ void world_cell_index_to_coordinate(i32 cell_index, ivec2 out_cell_coordinate)
     out_cell_coordinate[1] = cell_index >> (1 * SECTOR_SIZE_IN_CELLS_LOG2);
 }
 
-i32 world_world_coordinate_to_sector_index(ivec2 world_coordinate)
+i32 world_grid_coordinate_to_sector_index(ivec2 grid_coordinate)
 {
     ivec2 sector_coordinate;
 
-    sector_coordinate[0] = world_coordinate[0] >> SECTOR_SIZE_IN_CELLS_LOG2;
-    sector_coordinate[1] = world_coordinate[1] >> SECTOR_SIZE_IN_CELLS_LOG2;
+    sector_coordinate[0] = grid_coordinate[0] >> SECTOR_SIZE_IN_CELLS_LOG2;
+    sector_coordinate[1] = grid_coordinate[1] >> SECTOR_SIZE_IN_CELLS_LOG2;
 
     const i32 sector_index = world_sector_coordinate_to_index(sector_coordinate);
 
     return sector_index;
 }
 
-void world_world_coordinate_to_sector_coordinate(ivec2 world_coordinate, ivec2 out_sector_coordinate)
+void world_grid_coordinate_to_sector_coordinate(ivec2 grid_coordinate, ivec2 out_sector_coordinate)
 {
-    out_sector_coordinate[0] = world_coordinate[0] >> SECTOR_SIZE_IN_CELLS_LOG2;
-    out_sector_coordinate[1] = world_coordinate[1] >> SECTOR_SIZE_IN_CELLS_LOG2;
+    out_sector_coordinate[0] = grid_coordinate[0] >> SECTOR_SIZE_IN_CELLS_LOG2;
+    out_sector_coordinate[1] = grid_coordinate[1] >> SECTOR_SIZE_IN_CELLS_LOG2;
 }
 
-i32 world_world_coordinate_to_cell_index(ivec2 world_coordinate)
+i32 world_grid_coordinate_to_cell_index(ivec2 grid_coordinate)
 {
     const u32 sector_size_mask = (u32)(SECTOR_SIZE_IN_CELLS - 1);
     
-    i32 x = world_coordinate[0] & sector_size_mask;
-    i32 y = world_coordinate[1] & sector_size_mask;
+    i32 x = grid_coordinate[0] & sector_size_mask;
+    i32 y = grid_coordinate[1] & sector_size_mask;
 
     const i32 cell_index = x + (y << SECTOR_SIZE_IN_CELLS_LOG2);
 
     return cell_index;
 }
 
-void world_world_coordinate_to_cell_coordinate(ivec2 world_coordinate, ivec2 out_cell_coordinate)
+void world_grid_coordinate_to_cell_coordinate(ivec2 grid_coordinate, ivec2 out_cell_coordinate)
 {
     const u32 sector_size_mask = (u32)(SECTOR_SIZE_IN_CELLS - 1);
     
-    out_cell_coordinate[0] = world_coordinate[0] & sector_size_mask;
-    out_cell_coordinate[1] = world_coordinate[1] & sector_size_mask;
+    out_cell_coordinate[0] = grid_coordinate[0] & sector_size_mask;
+    out_cell_coordinate[1] = grid_coordinate[1] & sector_size_mask;
 }
 
-void world_sector_index_to_world_coordinate(i32 sector_index, ivec2 out_world_coordinate)
+void world_sector_index_to_grid_coordinate(i32 sector_index, ivec2 out_grid_coordinate)
 {
     ivec2 sector_coordinate;
     world_sector_index_to_coordinate(sector_index, sector_coordinate);
 
-    out_world_coordinate[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
-    out_world_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
+    out_grid_coordinate[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
+    out_grid_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
 }
 
-void world_indices_to_world_coordinate(i32 sector_index, i32 cell_index, ivec2 out_world_coordinate)
+void world_indices_to_grid_coordinate(i32 sector_index, i32 cell_index, ivec2 out_grid_coordinate)
 {
     ivec2 sector_coordinate;
     ivec2 cell_coordinate;
@@ -115,21 +115,21 @@ void world_indices_to_world_coordinate(i32 sector_index, i32 cell_index, ivec2 o
     world_sector_index_to_coordinate(sector_index, sector_coordinate);
     world_cell_index_to_coordinate(cell_index, cell_coordinate);
 
-    out_world_coordinate[0] = cell_coordinate[0] + sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
-    out_world_coordinate[1] = cell_coordinate[1] + sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
+    out_grid_coordinate[0] = cell_coordinate[0] + sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
+    out_grid_coordinate[1] = cell_coordinate[1] + sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
 }
 
-void world_world_coordinate_to_position(ivec2 world_coordinate, vec3 out_world_position)
+void world_grid_coordinate_to_position(ivec2 grid_coordinate, vec3 out_grid_position)
 {
-    out_world_position[0] = (f32)world_coordinate[0];
-    out_world_position[1] = (f32)world_coordinate[1];
-    out_world_position[2] = 0.0f;
+    out_grid_position[0] = (f32)grid_coordinate[0];
+    out_grid_position[1] = (f32)grid_coordinate[1];
+    out_grid_position[2] = 0.0f;
 }
 
-void world_world_position_to_world_coordinate(vec3 world_position, ivec2 out_world_coordinate)
+void world_grid_position_to_grid_coordinate(vec3 grid_position, ivec2 out_grid_coordinate)
 {
-    out_world_coordinate[0] = (i32)floorf(world_position[0]);
-    out_world_coordinate[1] = (i32)floorf(world_position[1]);
+    out_grid_coordinate[0] = (i32)floorf(grid_position[0]);
+    out_grid_coordinate[1] = (i32)floorf(grid_position[1]);
 }
 
 BlockType world_block_type_from_string(const char *block_type_string)
@@ -148,7 +148,7 @@ BlockType world_block_type_from_string(const char *block_type_string)
 
 boolean world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
 {   
-    if (!world_world_coordinate_is_valid(x, y))
+    if (!world_grid_coordinate_is_valid(x, y))
     {
 	return False;
     }
@@ -158,13 +158,13 @@ boolean world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
 	return False;
     }
 
-    ivec2 world_coordinate = {x, y};
+    ivec2 grid_coordinate = {x, y};
 
     ivec2 sector_coordinate;
-    world_world_coordinate_to_sector_coordinate(world_coordinate, sector_coordinate);
+    world_grid_coordinate_to_sector_coordinate(grid_coordinate, sector_coordinate);
 
     ivec2 cell_coordinate;
-    world_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
+    world_grid_coordinate_to_cell_coordinate(grid_coordinate, cell_coordinate);
     
     Sector *sector = &sim->world.sector_array[sector_coordinate[0]][sector_coordinate[1]];
     Cell *cell = &sector->cell_array[cell_coordinate[0]][cell_coordinate[1]][z];
@@ -190,15 +190,15 @@ u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
 
 void world_set_block_type(Sim *sim, i32 x, i32 y, i32 z, BlockType block_type)
 {
-    if (world_world_coordinate_is_valid(x, y) && world_height_is_valid(z))
+    if (world_grid_coordinate_is_valid(x, y) && world_height_is_valid(z))
     {
-	ivec2 world_coordinate = {x, y};
+	ivec2 grid_coordinate = {x, y};
 
 	ivec2 sector_coordinate;
-	world_world_coordinate_to_sector_coordinate(world_coordinate, sector_coordinate);
+	world_grid_coordinate_to_sector_coordinate(grid_coordinate, sector_coordinate);
 
 	ivec2 cell_coordinate;
-	world_world_coordinate_to_cell_coordinate(world_coordinate, cell_coordinate);
+	world_grid_coordinate_to_cell_coordinate(grid_coordinate, cell_coordinate);
 
 	Sector *sector = &sim->world.sector_array[sector_coordinate[0]][sector_coordinate[1]];
 	

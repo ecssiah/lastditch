@@ -245,9 +245,9 @@ void render_convert_sector_mesh_to_gpu_mesh(Shell *shell, i32 sector_x, i32 sect
 	gpu_mesh->vertex_attribute_capacity = new_capacity;
     }
 
-    gpu_mesh->world_position[0] = (f32)(sector_x * SECTOR_SIZE_IN_CELLS);
-    gpu_mesh->world_position[1] = (f32)(sector_y * SECTOR_SIZE_IN_CELLS);
-    gpu_mesh->world_position[2] = 0.0f;
+    gpu_mesh->grid_position[0] = (f32)(sector_x * SECTOR_SIZE_IN_CELLS);
+    gpu_mesh->grid_position[1] = (f32)(sector_y * SECTOR_SIZE_IN_CELLS);
+    gpu_mesh->grid_position[2] = 0.0f;
 
     int face_index;
     for (face_index = 0; face_index < sector_mesh->count; ++face_index)
@@ -375,7 +375,7 @@ void render_update(Shell* shell, Sim* sim)
 	    }
 	
 	    mat4 model_matrix;
-	    glm_translate_make(model_matrix, gpu_mesh->world_position);
+	    glm_translate_make(model_matrix, gpu_mesh->grid_position);
 	
 	    glUniformMatrix4fv(render->u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
 
