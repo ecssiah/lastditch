@@ -51,7 +51,7 @@ enum Direction
     DIRECTION_COUNT,
 };
 
-static const char* DIRECTION_TO_STRING[DIRECTION_COUNT] =
+static const char *DIRECTION_TO_STRING[DIRECTION_COUNT] =
 {
     "DIRECTION_EAST",
     "DIRECTION_WEST",
@@ -76,7 +76,7 @@ enum BlockType
     BLOCK_TYPE_COUNT,
 };
 
-static const char* BLOCK_TYPE_TO_STRING[BLOCK_TYPE_COUNT] =
+static const char *BLOCK_TYPE_TO_STRING[BLOCK_TYPE_COUNT] =
 {
     "BLOCK_TYPE_NONE",
     "BLOCK_TYPE_WOLF",
@@ -141,7 +141,7 @@ static f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
     { +0, +0, -1 },
 };
 
-static f32 CELL_UV_PROJECTION_ARRAY[DIRECTION_COUNT * 2][3] =
+static f32 CELL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
 {
     // +X
     { +0, -1, +0 },
@@ -175,11 +175,11 @@ struct GpuMesh
     
     GLuint vao_id;
     GLuint vbo_id;
-    
-    VertexAttributes* vertex_attribute_array;
-    
+
     u32 vertex_attribute_count;
     u32 vertex_attribute_capacity;
+    
+    VertexAttributes *vertex_attribute_array;
 };
 
 typedef struct SectorFace SectorFace;
@@ -194,15 +194,15 @@ struct SectorFace
 typedef struct SectorMesh SectorMesh;
 struct SectorMesh
 {
-    SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * WORLD_HEIGHT_IN_CELLS * DIRECTION_COUNT];
-
     u32 count;
+
+    SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * WORLD_HEIGHT_IN_CELLS * DIRECTION_COUNT];
 };
 
 typedef struct GLContext GLContext;
 struct GLContext
 {
-    GLFWwindow* window;
+    GLFWwindow *window;
 
     GLuint program_id;
 
@@ -287,7 +287,7 @@ static Camera camera;
 
 static GLContext gl_context;
 
-static JSK_Config* block_types_config;
+static JSK_Config *block_types_config;
 
 static int block_type_layer_array[BLOCK_TYPE_COUNT - 1];
 
@@ -415,7 +415,7 @@ void map_world_coordinate_to_position(ivec2 world_coordinate, vec3 out_world_pos
     out_world_position[2] = 0.0f;
 }
 
-BlockType map_block_type_from_string(const char* block_type_string)
+BlockType map_block_type_from_string(const char *block_type_string)
 {
     i32 index;
     for (index = 0; index < BLOCK_TYPE_COUNT; ++index)
@@ -497,7 +497,7 @@ void map_init()
 {
     u32 seed = 813;
     
-    /* u32 seed = (u32)time(NULL); */
+    // u32 seed = (u32)time(NULL);
     
     srand(seed);
 
@@ -799,7 +799,7 @@ void render_load_texture(const char *texture_path, const GLint layer_index)
     LOG_INFO("Loaded texture: %s", texture_path);
 }
 
-void render_load_textures(const char* textures_path)
+void render_load_textures(const char *textures_path)
 {
     glGenTextures(1, &gl_context.texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, gl_context.texture_array_id);
@@ -1036,7 +1036,7 @@ void render_upload_gpu_mesh(i32 sector_x, i32 sector_y)
 	    1,
 	    GL_UNSIGNED_INT,
 	    sizeof(VertexAttributes),
-	    (void*)offsetof(VertexAttributes, a_vertex)
+	    (void *)offsetof(VertexAttributes, a_vertex)
 	);
     
 	glEnableVertexAttribArray(0);
@@ -1046,7 +1046,7 @@ void render_upload_gpu_mesh(i32 sector_x, i32 sector_y)
 	    1,
 	    GL_UNSIGNED_INT,
 	    sizeof(VertexAttributes),
-	    (void*)offsetof(VertexAttributes, a_face)
+	    (void *)offsetof(VertexAttributes, a_face)
 	);
     
 	glEnableVertexAttribArray(1);
@@ -1112,7 +1112,7 @@ void render_update()
     {
 	for (sector_x = 0; sector_x < WORLD_SIZE_IN_SECTORS; ++sector_x)
 	{
-	    GpuMesh* gpu_mesh = &gpu_mesh_array[sector_x][sector_y];
+	    GpuMesh *gpu_mesh = &gpu_mesh_array[sector_x][sector_y];
 
 	    if (gpu_mesh->vertex_attribute_count == 0)
 	    {
