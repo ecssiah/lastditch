@@ -281,18 +281,18 @@ void screen_update(Shell *shell, Sim *sim)
 
     char sector_text[128];
 
-    ivec2 grid_coordinate;
-    world_grid_position_to_grid_coordinate(camera->grid_position, grid_coordinate);
+    ivec3 grid_coordinate;
+    world_grid_position_to_grid_coordinate(camera->grid_position[0], camera->grid_position[1], camera->grid_position[2], grid_coordinate);
 
     ivec2 sector_coordinate;
-    world_grid_coordinate_to_sector_coordinate(grid_coordinate, sector_coordinate);
+    world_grid_coordinate_to_sector_coordinate(grid_coordinate[0], grid_coordinate[1], grid_coordinate[2], sector_coordinate);
     
     snprintf(sector_text, sizeof(sector_text), "S: %i %i", sector_coordinate[0], sector_coordinate[1]);
 
     char cell_text[128];
     
     ivec2 cell_coordinate;
-    world_grid_coordinate_to_cell_coordinate(grid_coordinate, cell_coordinate);
+    world_grid_coordinate_to_cell_coordinate(grid_coordinate[0], grid_coordinate[1], grid_coordinate[2], cell_coordinate);
     
     snprintf(cell_text, sizeof(cell_text), "C: %i %i", cell_coordinate[0], cell_coordinate[1]);
 	
