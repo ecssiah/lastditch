@@ -8,9 +8,8 @@
 boolean world_grid_position_is_valid(f32 x, f32 y, f32 z)
 {
     ivec3 grid_coordinate;
-    vec3 grid_position = {x, y, z};
     
-    world_grid_position_to_grid_coordinate(grid_position[0], grid_position[1], grid_position[2], grid_coordinate);
+    world_grid_position_to_grid_coordinate(x, y, z, grid_coordinate);
 
     return world_grid_coordinate_is_valid(grid_coordinate[0], grid_coordinate[1], grid_coordinate[2]);
 }
@@ -236,7 +235,7 @@ void world_init(Sim *sim)
 			Cell *cell = &sector->cell_array[cell_x][cell_y][cell_z];
 			cell->direction_mask = 0;
 
-			if (rand() % 100 < 5)
+			if (rand() % 100 < 10)
 			{
 			    BlockType block_type = rand() % BLOCK_TYPE_COUNT;
 		

@@ -76,9 +76,9 @@ void camera_init(Sim *sim)
 {
     Camera *camera = &sim->camera;
     
-    camera->grid_position[0] = 0.0f;
-    camera->grid_position[1] = -10.0f;
-    camera->grid_position[2] = 0.0f;
+    camera->grid_position[0] = (f32)WORLD_SIZE_IN_CELLS / 2.0f;
+    camera->grid_position[1] = (f32)WORLD_SIZE_IN_CELLS / 2.0f;
+    camera->grid_position[2] = 16.0f;
 
     camera->rotation[0] = 0.0f;
     camera->rotation[1] = 0.0f;
