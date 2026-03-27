@@ -277,28 +277,25 @@ void screen_update(Shell *shell, Sim *sim)
 
     char position_text[128];
 	
-    snprintf(position_text, sizeof(position_text), "W: %.1f %.1f %.1f", camera->grid_position[0], camera->grid_position[1], camera->grid_position[2]);
+    snprintf(position_text, sizeof(position_text), "W: %.1f %.1f %.1f", camera->world_position[0], camera->world_position[1], camera->world_position[2]);
 
-    char sector_text[128];
-
-    ivec3 grid_coordinate;
-    world_grid_position_to_grid_coordinate(camera->grid_position[0], camera->grid_position[1], camera->grid_position[2], grid_coordinate);
+    ivec3 cell_coordinate;
+    world_position_to_cell_coordinate(camera->world_position[0], camera->world_position[1], camera->world_position[2], cell_coordinate);
 
     ivec2 sector_coordinate;
-    world_grid_coordinate_to_sector_coordinate(grid_coordinate[0], grid_coordinate[1], grid_coordinate[2], sector_coordinate);
+    world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2], sector_coordinate);
     
-    snprintf(sector_text, sizeof(sector_text), "S: %i %i", sector_coordinate[0], sector_coordinate[1]);
+    char sector_coordinate_text[128];
 
-    char cell_text[128];
-    
-    ivec2 cell_coordinate;
-    world_grid_coordinate_to_cell_coordinate(grid_coordinate[0], grid_coordinate[1], grid_coordinate[2], cell_coordinate);
-    
-    snprintf(cell_text, sizeof(cell_text), "C: %i %i", cell_coordinate[0], cell_coordinate[1]);
+    snprintf(sector_coordinate_text, sizeof(sector_coordinate_text), "S: %i %i", sector_coordinate[0], sector_coordinate[1]);
+
+    char cell_coordinate_text[128];
+        
+    snprintf(cell_coordinate_text, sizeof(cell_coordinate_text), "C: %i %i", cell_coordinate[0], cell_coordinate[1]);
 	
     screen_draw_text(shell, position_text, 20, 20);
-    screen_draw_text(shell, sector_text, 20, 40);
-    screen_draw_text(shell, cell_text, 20, 60);
+    screen_draw_text(shell, sector_coordinate_text, 20, 40);
+    screen_draw_text(shell, cell_coordinate_text, 20, 60);
 
     glBindVertexArray(0);
 }

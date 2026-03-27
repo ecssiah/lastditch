@@ -67,18 +67,18 @@ void camera_get_view_matrix(Sim *sim, mat4 out_view_matrix)
     camera_get_forward(sim, forward);
     
     vec3 center;
-    glm_vec3_add(camera->grid_position, forward, center);
+    glm_vec3_add(camera->world_position, forward, center);
     
-    glm_lookat(camera->grid_position, center, GLM_ZUP, out_view_matrix);
+    glm_lookat(camera->world_position, center, GLM_ZUP, out_view_matrix);
 }
 
 void camera_init(Sim *sim)
 {
     Camera *camera = &sim->camera;
     
-    camera->grid_position[0] = (f32)WORLD_SIZE_IN_CELLS / 2.0f;
-    camera->grid_position[1] = (f32)WORLD_SIZE_IN_CELLS / 2.0f;
-    camera->grid_position[2] = 16.0f;
+    camera->world_position[0] = (f32)WORLD_SIZE_IN_CELLS / 2.0f;
+    camera->world_position[1] = (f32)WORLD_SIZE_IN_CELLS / 2.0f;
+    camera->world_position[2] = 16.0f;
 
     camera->rotation[0] = 0.0f;
     camera->rotation[1] = 0.0f;
@@ -153,7 +153,7 @@ void camera_update(Sim *sim, Shell *shell)
     
     glm_vec3_scale(velocity, camera->speed * shell->delta_time, velocity);
 
-    glm_vec3_add(camera->grid_position, velocity, camera->grid_position);
+    glm_vec3_add(camera->world_position, velocity, camera->world_position);
     
     camera->rotation[0] -= camera->sensitivity * input->mouse_delta_y;
     camera->rotation[2] -= camera->sensitivity * input->mouse_delta_x;

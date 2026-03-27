@@ -3,6 +3,7 @@
 #include "input.h"
 #include "ld_data.h"
 #include "jsk_log.h"
+#include <malloc/_malloc.h>
 
 void shell_init(Shell *shell)
 {
@@ -30,6 +31,14 @@ void shell_init(Shell *shell)
     assert(shell->window != 0);
 
     glfwMakeContextCurrent(shell->window);
+
+    shell->render.sector_mesh_count = 0;
+    shell->render.sector_mesh_capacity = 0;
+    shell->render.sector_mesh_array = NULL;
+
+    shell->render.gpu_mesh_count = 0;
+    shell->render.gpu_mesh_capacity = 0;
+    shell->render.gpu_mesh_array = NULL;
 }
 
 void shell_update(Shell *shell)

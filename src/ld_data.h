@@ -17,11 +17,17 @@
 
 #define VERTEX_COUNT_PER_FACE 6
 
-#define SECTOR_SIZE_IN_CELLS_LOG2 4
+#define SECTOR_SIZE_IN_CELLS_LOG2 3
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
+
+#define SECTOR_HEIGHT_IN_CELLS_LOG2 6
+#define SECTOR_HEIGHT_IN_CELLS (1 << (1u * SECTOR_HEIGHT_IN_CELLS_LOG2))
+
 #define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_SIZE_IN_SECTORS_LOG2 4
+#define SECTOR_VOLUME_IN_CELLS (SECTOR_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS)
+
+#define WORLD_SIZE_IN_SECTORS_LOG2 3
 #define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
 #define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
 
@@ -29,9 +35,10 @@
 #define WORLD_SIZE_IN_CELLS (1 << (1u * WORLD_SIZE_IN_CELLS_LOG2))
 #define WORLD_AREA_IN_CELLS (1 << (2u * WORLD_SIZE_IN_CELLS_LOG2))
 
-#define WORLD_HEIGHT_IN_CELLS_LOG2 5
-#define WORLD_HEIGHT_IN_CELLS (1 << (1u * WORLD_HEIGHT_IN_CELLS_LOG2))
-#define WORLD_Z_MAX (WORLD_HEIGHT_IN_CELLS - 1)
+#define WORLD_VOLUME_IN_CELLS (WORLD_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS)
+
+#define TOWER_BORDER 4
+#define TOWER_ROOF_HEIGHT (SECTOR_HEIGHT_IN_CELLS - 4)
 
 typedef enum Direction Direction;
 enum Direction
@@ -280,24 +287,45 @@ static f32 CELL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     { +0, -1, +0 },
 };
 
+typedef struct Input Input;
+struct Input
+{
+    int current_key_array[GLFW_KEY_LAST + 1];
+    int previous_key_array[GLFW_KEY_LAST + 1];
+
+    int current_button_array[GLFW_MOUSE_BUTTON_LAST + 1];
+    int previous_button_array[GLFW_MOUSE_BUTTON_LAST + 1];
+
+    f64 mouse_current_x;
+    f64 mouse_previous_x;
+
+    f64 mouse_current_y;
+    f64 mouse_previous_y;
+    
+    f64 mouse_delta_x;
+    f64 mouse_delta_y;
+
+    boolean ignore_delta;
+};
+
 typedef struct GpuMesh GpuMesh;
 struct GpuMesh
 {
-    vec3 grid_position;
+    vec3 world_position;
     
     GLuint vao_id;
     GLuint vbo_id;
 
-    u32 vertex_attribute_count;
-    u32 vertex_attribute_capacity;
+    u32 vertex_attributes_count;
+    u32 vertex_attributes_capacity;
     
-    VertexAttributes *vertex_attribute_array;
+    VertexAttributes *vertex_attributes_array;
 };
 
-typedef struct SectorFace SectorFace;
-struct SectorFace
+typedef struct SectorQuad SectorQuad;
+struct SectorQuad
 {
-    ivec3 cell_position;
+    ivec3 cell_coordinate;
     
     Direction direction;
     BlockType block_type;
@@ -306,9 +334,43 @@ struct SectorFace
 typedef struct SectorMesh SectorMesh;
 struct SectorMesh
 {
-    u32 count;
+    i32 sector_index;
+    
+    u32 sector_quad_count;
+    u32 sector_quad_capacity;
 
-    SectorFace sector_face_array[SECTOR_AREA_IN_CELLS * WORLD_HEIGHT_IN_CELLS * DIRECTION_COUNT];
+    SectorQuad *sector_quad_array;
+};
+
+typedef struct Render Render;
+struct Render
+{
+    GLuint program_id;
+
+    GLuint texture_array_id;
+
+    GLint u_texture_sampler_location;
+    
+    GLint u_normal_table_location;
+    GLint u_uv_projection_table_location;
+    
+    GLint u_projection_location;
+    GLint u_view_location;
+    GLint u_model_location;
+
+    JSK_Config *block_types_config;
+
+    u8 block_type_layer_array[BLOCK_TYPE_COUNT - 1];
+
+    u32 sector_mesh_count;
+    u32 sector_mesh_capacity;
+
+    SectorMesh *sector_mesh_array;
+
+    u32 gpu_mesh_count;
+    u32 gpu_mesh_capacity;
+    
+    GpuMesh *gpu_mesh_array;
 };
 
 typedef struct TextVertex TextVertex;
@@ -333,30 +395,6 @@ struct Screen
     GLint u_projection_location;
 };
 
-typedef struct Render Render;
-struct Render
-{
-    GLuint program_id;
-
-    GLuint texture_array_id;
-
-    GLint u_texture_sampler_location;
-    
-    GLint u_normal_table_location;
-    GLint u_uv_projection_table_location;
-    
-    GLint u_projection_location;
-    GLint u_view_location;
-    GLint u_model_location;
-
-    JSK_Config *block_types_config;
-
-    u8 block_type_layer_array[BLOCK_TYPE_COUNT - 1];
-
-    SectorMesh sector_mesh_array[WORLD_SIZE_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
-    GpuMesh gpu_mesh_array[WORLD_SIZE_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
-};
-
 typedef struct Cell Cell;
 struct Cell
 {
@@ -364,43 +402,16 @@ struct Cell
     u8 direction_mask;
 };
 
-typedef struct Sector Sector;
-struct Sector
-{
-    Cell cell_array[SECTOR_SIZE_IN_CELLS][SECTOR_SIZE_IN_CELLS][WORLD_HEIGHT_IN_CELLS];
-};
-
 typedef struct World World;
 struct World
 {
-    Sector sector_array[WORLD_SIZE_IN_SECTORS][WORLD_SIZE_IN_SECTORS];
-};
-
-typedef struct Input Input;
-struct Input
-{
-    int current_key_array[GLFW_KEY_LAST + 1];
-    int previous_key_array[GLFW_KEY_LAST + 1];
-
-    int current_button_array[GLFW_MOUSE_BUTTON_LAST + 1];
-    int previous_button_array[GLFW_MOUSE_BUTTON_LAST + 1];
-
-    f64 mouse_current_x;
-    f64 mouse_previous_x;
-
-    f64 mouse_current_y;
-    f64 mouse_previous_y;
-    
-    f64 mouse_delta_x;
-    f64 mouse_delta_y;
-
-    boolean ignore_delta;
+    Cell* cell_array;
 };
 
 typedef struct Camera Camera;
 struct Camera
 {
-    vec3 grid_position;
+    vec3 world_position;
     vec3 rotation;
 
     mat4 projection_matrix;

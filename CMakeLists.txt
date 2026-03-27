@@ -11,6 +11,11 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_library(OPENGL_FRAMEWORK OpenGL)
+find_library(COCOA_FRAMEWORK Cocoa)
+find_library(IOKIT_FRAMEWORK IOKit)
+find_library(COREVIDEO_FRAMEWORK CoreVideo)
+
 find_package(glfw3 CONFIG REQUIRED)
 
 add_executable(
@@ -22,7 +27,6 @@ target_include_directories(
     lastditch 
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/external/jsk
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glfw/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/stb/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -35,11 +39,15 @@ target_link_libraries(
 )
 
 if(APPLE)
-    target_link_libraries(
-        lastditch 
-        PRIVATE
-        "-framework OpenGL"
-    )
+	target_link_libraries(
+		lastditch
+		PRIVATE
+    		glfw
+		${OPENGL_FRAMEWORK}
+		${COCOA_FRAMEWORK}
+		${IOKIT_FRAMEWORK}
+		${COREVIDEO_FRAMEWORK}
+	)
 endif()
 
 target_sources(

@@ -37,5 +37,6 @@ int main()
 	shell_update(&shell);
     }
 
+    sim_close(&sim);
     shell_close(&shell);
 }
