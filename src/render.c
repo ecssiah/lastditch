@@ -194,33 +194,51 @@ void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
     sector_mesh.sector_quad_capacity = 0;
     sector_mesh.sector_quad_array = NULL;
 
-    i32 cell_index;
-    i32 sector_cell_index = sector_index * SECTOR_VOLUME_IN_CELLS;
+    ivec2 sector_coordinate;
+    world_sector_index_to_coordinate(sector_index, sector_coordinate);
 
-    for (cell_index = sector_cell_index; cell_index < sector_cell_index + SECTOR_VOLUME_IN_CELLS; ++cell_index)
+    ivec3 sector_cell_coordinate;
+    sector_cell_coordinate[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
+    sector_cell_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
+    sector_cell_coordinate[2] = 0;
+
+    i32 cell_x, cell_y, cell_z;
+    
+    for (cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
     {
-	Cell *cell = &sim->world.cell_array[cell_index];
-
-	if (cell->block_type == BLOCK_TYPE_NONE)
+	for (cell_y = sector_cell_coordinate[1]; cell_y < sector_cell_coordinate[1] + SECTOR_SIZE_IN_CELLS; ++cell_y)
 	{
-	    continue;
-	}
+	    for (cell_x = sector_cell_coordinate[0]; cell_x < sector_cell_coordinate[0] + SECTOR_SIZE_IN_CELLS; ++cell_x)
+	    {
+		i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
+		
+		Cell *cell = &sim->world.cell_array[cell_index];
 
-	u8 test_direction_mask = cell->direction_mask;
+		if (cell->block_type == BLOCK_TYPE_NONE)
+		{
+		    continue;
+		}
 
-	while (test_direction_mask)
-	{
-	    const Direction direction = GET_DIRECTION(test_direction_mask);
+		u8 test_direction_mask = cell->direction_mask;
 
-	    SectorQuad sector_quad;
-	    sector_quad.direction = direction;
-	    sector_quad.block_type = cell->block_type;
+		while (test_direction_mask)
+		{
+		    const Direction direction = GET_DIRECTION(test_direction_mask);
+
+		    SectorQuad sector_quad;
+		    sector_quad.direction = direction;
+		    sector_quad.block_type = cell->block_type;
 	    
-	    world_cell_index_to_coordinate(cell_index, sector_quad.cell_coordinate);
+		    sector_quad.local_coordinate[0] = cell_x - sector_cell_coordinate[0];
+		    sector_quad.local_coordinate[1] = cell_y - sector_cell_coordinate[1];
+		    sector_quad.local_coordinate[2] = cell_z;
 
-	    render_add_sector_quad(&sector_mesh, sector_quad);
+		    render_add_sector_quad(&sector_mesh, sector_quad);
 	    
-	    test_direction_mask &= test_direction_mask - 1;
+		    test_direction_mask &= test_direction_mask - 1;
+		}
+
+	    }
 	}
     }
 
@@ -232,9 +250,9 @@ void render_emit_sector_face(SectorQuad *sector_quad, GpuMesh *gpu_mesh)
     i32 vertex_index;
     for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-        u32 x = sector_quad->cell_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0];
-        u32 y = sector_quad->cell_coordinate[1] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1];
-        u32 z = sector_quad->cell_coordinate[2] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2];
+        u32 x = sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0];
+        u32 y = sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1];
+        u32 z = sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2];
 
         VertexAttributes vertex_attributes;
 
@@ -338,7 +356,7 @@ void render_init(Shell *shell, Sim *sim)
     glUniformMatrix4fv(render->u_projection_location, 1, GL_FALSE, (f32 *)sim->camera.projection_matrix);
 
     i32 sector_index;
-    for (sector_index = 0; sector_index < SECTOR_AREA_IN_CELLS; ++sector_index)
+    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
 	render_generate_sector_mesh(shell, sim, sector_index);
     }

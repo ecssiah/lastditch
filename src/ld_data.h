@@ -325,7 +325,7 @@ struct GpuMesh
 typedef struct SectorQuad SectorQuad;
 struct SectorQuad
 {
-    ivec3 cell_coordinate;
+    ivec3 local_coordinate;
     
     Direction direction;
     BlockType block_type;

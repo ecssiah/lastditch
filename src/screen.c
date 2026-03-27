@@ -291,7 +291,7 @@ void screen_update(Shell *shell, Sim *sim)
 
     char cell_coordinate_text[128];
         
-    snprintf(cell_coordinate_text, sizeof(cell_coordinate_text), "C: %i %i", cell_coordinate[0], cell_coordinate[1]);
+    snprintf(cell_coordinate_text, sizeof(cell_coordinate_text), "C: %i %i %i", cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]);
 	
     screen_draw_text(shell, position_text, 20, 20);
     screen_draw_text(shell, sector_coordinate_text, 20, 40);

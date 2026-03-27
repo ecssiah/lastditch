@@ -71,6 +71,28 @@ i32 world_cell_coordinate_to_sector_index(i32 x, i32 y, i32 z)
     return sector_index;
 }
 
+i32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)
+{
+    i32 local_x = x & (SECTOR_SIZE_IN_CELLS - 1);
+    i32 local_y = y & (SECTOR_SIZE_IN_CELLS - 1);
+    i32 local_z = z;
+
+    i32 local_index = (
+	(local_x << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
+	(local_y << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
+	(local_z << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
+    );
+
+    return local_index;
+}
+
+void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_local_coordinate)
+{
+    out_local_coordinate[0] = x & (SECTOR_SIZE_IN_CELLS - 1);
+    out_local_coordinate[1] = y & (SECTOR_SIZE_IN_CELLS - 1);
+    out_local_coordinate[2] = z;
+}
+
 void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position)
 {
     out_position[0] = (f32)x;
@@ -157,15 +179,15 @@ void world_set_block_type(Sim *sim, i32 x, i32 y, i32 z, BlockType block_type)
 
 void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    i32 gx, gy, gz;
+    i32 cell_x, cell_y, cell_z;
 
-    for (gz = z; gz < z + size_z; ++gz)
+    for (cell_z = z; cell_z < z + size_z; ++cell_z)
     {
-	for (gy = y; gy < y + size_y; ++gy)
+	for (cell_y = y; cell_y < y + size_y; ++cell_y)
 	{
-	    for (gx = x; gx < x + size_x; ++gx)
+	    for (cell_x = x; cell_x < x + size_x; ++cell_x)
 	    {
-		world_set_block_type(sim, gx, gy, gz, block_type);
+		world_set_block_type(sim, cell_x, cell_y, cell_z, block_type);
 	    }
 	}
     }
@@ -173,21 +195,23 @@ void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 si
 
 void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    i32 gx, gy, gz;
+    i32 cell_x, cell_y, cell_z;
 
-    for (gz = z; gz < z + size_z; ++gz)
+    for (cell_z = z; cell_z < z + size_z; ++cell_z)
     {
-	
-    }
-    
-    for (gy = y; gy < y + size_y; ++gy)
-    {
-
-    }
-    
-    for (gx = x; gx < x + size_x; ++gx)
-    {
-
+        for (cell_y = y; cell_y < y + size_y; ++cell_y)
+        {
+            for (cell_x = x; cell_x < x + size_x; ++cell_x)
+            {
+                if (
+                    cell_x == x || cell_x == x + size_x - 1 ||
+                    cell_y == y || cell_y == y + size_y - 1 ||
+                    cell_z == z || cell_z == z + size_z - 1
+                ) {
+                    world_set_block_type(sim, cell_x, cell_y, cell_z, block_type);
+                }
+            }
+        }
     }
 }
 
@@ -197,28 +221,35 @@ static void init_direction_mask(Sim *sim)
     
     for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
+	Cell *cell = &sim->world.cell_array[cell_index];
+
 	ivec3 cell_coordinate;
 	world_cell_index_to_coordinate(cell_index, cell_coordinate);
-
-	Cell *cell = world_get_cell(sim, cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]);
-	cell->direction_mask = world_get_direction_mask(sim, cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]);
+	
+	cell->direction_mask = world_get_direction_mask(
+	    sim,
+	    cell_coordinate[0],
+	    cell_coordinate[1],
+	    cell_coordinate[2]
+	);
     }
 }
 
 static void setup_tower(Sim *sim)
 {
-    i32 grid_x, grid_y, grid_z;
-
-    grid_x = TOWER_BORDER;
-    grid_y = TOWER_BORDER;
-    grid_z = TOWER_ROOF_HEIGHT;
-
     world_set_block_type_cube(
 	sim,
-	grid_x, grid_y, grid_z,
-	WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
-	BLOCK_TYPE_CARVED_2
-    ); 
+	3, 3, 3,
+	2, 2, 2,
+	BLOCK_TYPE_METAL_4
+    );
+
+    world_set_block_type_box(
+	sim,
+	0, 0, 0,
+	8, 8, 8,
+	BLOCK_TYPE_CAUTION_3
+    );
 }
 
 void world_init(Sim *sim)
