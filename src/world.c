@@ -38,8 +38,8 @@ void world_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordin
 i32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z)
 {
     const i32 cell_index = (
-	x +
-	(y << WORLD_SIZE_IN_CELLS_LOG2) +
+	(x << (0 * WORLD_SIZE_IN_CELLS_LOG2)) +
+	(y << (1 * WORLD_SIZE_IN_CELLS_LOG2)) +
 	(z << (2 * WORLD_SIZE_IN_CELLS_LOG2))
     );
 	    
@@ -139,14 +139,49 @@ u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
 {
     u8 direction_mask = 0;
 
-    if (!world_is_solid(sim, x + 1, y, z)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_EAST);
-    if (!world_is_solid(sim, x - 1, y, z)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_WEST);
+    i32 cell_index = world_cell_coordinate_to_index(x, y, z);
 
-    if (!world_is_solid(sim, x, y + 1, z)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_NORTH);
-    if (!world_is_solid(sim, x, y - 1, z)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_SOUTH);
+    if (
+	x + 1 >= WORLD_SIZE_IN_CELLS ||
+	sim->world.cell_array[cell_index + DIRECTION_STRIDE[DIRECTION_EAST]].block_type == BLOCK_TYPE_NONE
+    ) {
+	direction_mask |= GET_DIRECTION_MASK(DIRECTION_EAST);
+    }
 
-    if (!world_is_solid(sim, x, y, z + 1)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_UP);
-    if (!world_is_solid(sim, x, y, z - 1)) direction_mask |= GET_DIRECTION_MASK(DIRECTION_DOWN);
+    if (
+	x - 1 < 0 ||
+	sim->world.cell_array[cell_index + DIRECTION_STRIDE[DIRECTION_WEST]].block_type == BLOCK_TYPE_NONE
+    ) {
+	direction_mask |= GET_DIRECTION_MASK(DIRECTION_WEST);
+    }
+
+    if (
+	y + 1 >= WORLD_SIZE_IN_CELLS ||
+	sim->world.cell_array[cell_index + DIRECTION_STRIDE[DIRECTION_NORTH]].block_type == BLOCK_TYPE_NONE
+    ) {
+	direction_mask |= GET_DIRECTION_MASK(DIRECTION_NORTH);
+    }
+
+    if (
+	y - 1 < 0 ||
+	sim->world.cell_array[cell_index + DIRECTION_STRIDE[DIRECTION_SOUTH]].block_type == BLOCK_TYPE_NONE
+    ) {
+	direction_mask |= GET_DIRECTION_MASK(DIRECTION_SOUTH);
+    }
+
+    if (
+	z + 1 >= SECTOR_HEIGHT_IN_CELLS ||
+	sim->world.cell_array[cell_index + DIRECTION_STRIDE[DIRECTION_UP]].block_type == BLOCK_TYPE_NONE
+    ) {
+	direction_mask |= GET_DIRECTION_MASK(DIRECTION_UP);
+    }
+
+    if (
+	z - 1 < 0 ||
+	sim->world.cell_array[cell_index + DIRECTION_STRIDE[DIRECTION_DOWN]].block_type == BLOCK_TYPE_NONE
+    ) {
+	direction_mask |= GET_DIRECTION_MASK(DIRECTION_DOWN);
+    }
 
     return direction_mask;
 }
@@ -246,7 +281,7 @@ static void setup_tower(Sim *sim)
 
     world_set_block_type_box(
 	sim,
-	0, 0, 0,
+	-4, -4, -4,
 	8, 8, 8,
 	BLOCK_TYPE_CAUTION_3
     );

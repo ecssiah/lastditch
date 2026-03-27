@@ -255,10 +255,54 @@ void screen_init(Shell *shell)
     load_textures(screen, "assets/textures/font");
 }
 
+static void draw_debug_info(Shell *shell, Sim *sim)
+{
+    Camera *camera = &sim->camera;
+
+    ivec3 cell_coordinate;
+    world_position_to_cell_coordinate(camera->world_position[0], camera->world_position[1], camera->world_position[2], cell_coordinate);
+
+    ivec2 sector_coordinate;
+    world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2], sector_coordinate);
+    
+    char position_text[64];
+    char cell_coordinate_text[64];
+    char sector_coordinate_text[64];
+    
+    snprintf(
+	position_text,
+	sizeof(position_text),
+	"W %.1f %.1f %.1f",
+	camera->world_position[0],
+	camera->world_position[1],
+	camera->world_position[2]
+    );
+    
+    snprintf(
+	cell_coordinate_text,
+	sizeof(cell_coordinate_text),
+	"C %i %i %i",
+	cell_coordinate[0],
+	cell_coordinate[1],
+	cell_coordinate[2]
+    );
+    
+    snprintf(
+	sector_coordinate_text,
+	sizeof(sector_coordinate_text),
+	"S %i %i",
+	sector_coordinate[0],
+	sector_coordinate[1]
+    );
+
+    screen_draw_text(shell, position_text, 20, 20);
+    screen_draw_text(shell, cell_coordinate_text, 20, 40);
+    screen_draw_text(shell, sector_coordinate_text, 20, 60);
+}
+
 void screen_update(Shell *shell, Sim *sim)
 {
     Screen *screen = &shell->screen;
-    Camera *camera = &sim->camera;
     
     glUseProgram(screen->program_id);
 
@@ -275,27 +319,7 @@ void screen_update(Shell *shell, Sim *sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, screen->font_texture_id);
 
-    char position_text[128];
-	
-    snprintf(position_text, sizeof(position_text), "W: %.1f %.1f %.1f", camera->world_position[0], camera->world_position[1], camera->world_position[2]);
-
-    ivec3 cell_coordinate;
-    world_position_to_cell_coordinate(camera->world_position[0], camera->world_position[1], camera->world_position[2], cell_coordinate);
-
-    ivec2 sector_coordinate;
-    world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2], sector_coordinate);
-    
-    char sector_coordinate_text[128];
-
-    snprintf(sector_coordinate_text, sizeof(sector_coordinate_text), "S: %i %i", sector_coordinate[0], sector_coordinate[1]);
-
-    char cell_coordinate_text[128];
-        
-    snprintf(cell_coordinate_text, sizeof(cell_coordinate_text), "C: %i %i %i", cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]);
-	
-    screen_draw_text(shell, position_text, 20, 20);
-    screen_draw_text(shell, sector_coordinate_text, 20, 40);
-    screen_draw_text(shell, cell_coordinate_text, 20, 60);
+    draw_debug_info(shell, sim);
 
     glBindVertexArray(0);
 }
