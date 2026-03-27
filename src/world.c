@@ -250,6 +250,35 @@ void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 siz
     }
 }
 
+void world_set_block_type_wireframe(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
+{
+    i32 cell_x, cell_y, cell_z;
+
+    const i32 max_x = x + size_x - 1;
+    const i32 max_y = y + size_y - 1;
+    const i32 max_z = z + size_z - 1;
+
+    for (cell_z = z; cell_z <= max_z; ++cell_z)
+    {
+        for (cell_y = y; cell_y <= max_y; ++cell_y)
+        {
+            for (cell_x = x; cell_x <= max_x; ++cell_x)
+            {
+                i32 boundary_count = 0;
+
+                if (cell_x == x || cell_x == max_x) boundary_count++;
+                if (cell_y == y || cell_y == max_y) boundary_count++;
+                if (cell_z == z || cell_z == max_z) boundary_count++;
+
+                if (boundary_count >= 2)
+                {
+                    world_set_block_type(sim, cell_x, cell_y, cell_z, block_type);
+                }
+            }
+        }
+    }
+}
+
 static void init_direction_mask(Sim *sim)
 {
     i32 cell_index;
@@ -270,31 +299,72 @@ static void init_direction_mask(Sim *sim)
     }
 }
 
-static void setup_tower(Sim *sim)
+static void setup_roof(Sim *sim)
 {
+    LOG_INFO("Floor R at %i", TOWER_ROOF_HEIGHT);
+    
     world_set_block_type_cube(
 	sim,
-	3, 3, 3,
-	2, 2, 2,
-	BLOCK_TYPE_METAL_4
+	TOWER_BORDER, TOWER_BORDER, TOWER_ROOF_HEIGHT,
+	WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
+	BLOCK_TYPE_SMOOTH_1
     );
 
-    world_set_block_type_box(
+    world_set_block_type_cube(
 	sim,
-	-4, -4, -4,
-	8, 8, 8,
-	BLOCK_TYPE_CAUTION_3
+	WORLD_SIZE_IN_CELLS / 2 - 4, WORLD_SIZE_IN_CELLS / 2 - 4, TOWER_ROOF_HEIGHT + 1,
+	8, 8, 1,
+	BLOCK_TYPE_SMOOTH_3
     );
+
+    world_set_block_type_wireframe(
+	sim,
+	WORLD_SIZE_IN_CELLS / 2 - 4, WORLD_SIZE_IN_CELLS / 2 - 4, TOWER_ROOF_HEIGHT + 1,
+	8, 8, 1,
+	BLOCK_TYPE_ORNATE_3
+    );
+
+    world_set_block_type(sim, TOWER_ORIGIN + 3, TOWER_ORIGIN + 1, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_EAST);
+    world_set_block_type(sim, TOWER_ORIGIN + 3, TOWER_ORIGIN - 2, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_EAST);
+    
+    world_set_block_type(sim, TOWER_ORIGIN - 4, TOWER_ORIGIN + 1, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_WEST);
+    world_set_block_type(sim, TOWER_ORIGIN - 4, TOWER_ORIGIN - 2, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_WEST);
+	
+    world_set_block_type(sim, TOWER_ORIGIN + 1, TOWER_ORIGIN + 3, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_NORTH);
+    world_set_block_type(sim, TOWER_ORIGIN - 2, TOWER_ORIGIN + 3, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_NORTH);
+	
+    world_set_block_type(sim, TOWER_ORIGIN + 1, TOWER_ORIGIN - 4, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_SOUTH);
+    world_set_block_type(sim, TOWER_ORIGIN - 2, TOWER_ORIGIN - 4, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_SOUTH);
+}
+
+static void setup_tower(Sim *sim)
+{
+    i32 floor_number;
+    for (floor_number = FLOOR_COUNT; floor_number > 0; --floor_number)
+    {
+	const i32 floor_height = TOWER_ROOF_HEIGHT - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT;
+
+	LOG_INFO("Floor %i at %i", floor_number, floor_height);
+	
+	world_set_block_type_cube(
+	    sim,
+	    TOWER_BORDER, TOWER_BORDER, floor_height,
+	    WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
+	    BLOCK_TYPE_SMOOTH_2
+	);
+
+	world_set_block_type_wireframe(
+	    sim,
+	    TOWER_BORDER, TOWER_BORDER, floor_height,
+	    WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, FLOOR_HEIGHT,
+	    BLOCK_TYPE_CAUTION_1
+	);
+    }
 }
 
 void world_init(Sim *sim)
 {
-    u32 seed = 813;
-    
-    // u32 seed = (u32)time(NULL);
-    
-    srand(seed);
-
+    setup_roof(sim);
     setup_tower(sim);
 
     init_direction_mask(sim);

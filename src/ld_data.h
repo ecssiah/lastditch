@@ -41,8 +41,13 @@
 #define WORLD_STRIDE_Y (WORLD_SIZE_IN_CELLS)
 #define WORLD_STRIDE_Z (WORLD_AREA_IN_CELLS)
 
+#define TOWER_ORIGIN (WORLD_SIZE_IN_CELLS / 2)
+
 #define TOWER_BORDER 4
 #define TOWER_ROOF_HEIGHT (SECTOR_HEIGHT_IN_CELLS - 4)
+
+#define FLOOR_HEIGHT 10
+#define FLOOR_COUNT 6
 
 typedef enum Direction Direction;
 enum Direction
@@ -438,6 +443,8 @@ struct Camera
 typedef struct Sim Sim;
 struct Sim
 {
+    u32 seed;
+    
     World world;
     Camera camera;
 };
