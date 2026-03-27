@@ -277,23 +277,45 @@ static void draw_debug_info(Shell *shell, Sim *sim)
 	camera->world_position[1],
 	camera->world_position[2]
     );
-    
-    snprintf(
-	cell_coordinate_text,
-	sizeof(cell_coordinate_text),
-	"C %i %i %i",
-	cell_coordinate[0],
-	cell_coordinate[1],
-	cell_coordinate[2]
-    );
-    
-    snprintf(
-	sector_coordinate_text,
-	sizeof(sector_coordinate_text),
-	"S %i %i",
-	sector_coordinate[0],
-	sector_coordinate[1]
-    );
+
+    if (world_cell_coordinate_is_valid(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]))
+    {
+	snprintf(
+	    cell_coordinate_text,
+	    sizeof(cell_coordinate_text),
+	    "C %i %i %i",
+	    cell_coordinate[0],
+	    cell_coordinate[1],
+	    cell_coordinate[2]
+	);
+    }
+    else
+    {
+	snprintf(
+	    cell_coordinate_text,
+	    sizeof(cell_coordinate_text),
+	    "C - - -"
+	);
+    }
+
+    if (world_sector_coordinate_is_valid(sector_coordinate[0], sector_coordinate[1]))
+    {
+	snprintf(
+	    sector_coordinate_text,
+	    sizeof(sector_coordinate_text),
+	    "S %i %i",
+	    sector_coordinate[0],
+	    sector_coordinate[1]
+	);
+    }
+    else
+    {
+	snprintf(
+	    sector_coordinate_text,
+	    sizeof(sector_coordinate_text),
+	    "S - -"
+	);
+    }
 
     screen_draw_text(shell, position_text, 20, 20);
     screen_draw_text(shell, cell_coordinate_text, 20, 40);

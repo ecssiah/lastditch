@@ -343,22 +343,45 @@ static void setup_tower(Sim *sim)
     for (floor_number = FLOOR_COUNT; floor_number > 0; --floor_number)
     {
 	const i32 floor_height = TOWER_ROOF_HEIGHT - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT;
-
+	const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_height };
+	const ivec3 floor_size = { WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, FLOOR_HEIGHT };
+	    
 	LOG_INFO("Floor %i at %i", floor_number, floor_height);
-	
+
 	world_set_block_type_cube(
 	    sim,
-	    TOWER_BORDER, TOWER_BORDER, floor_height,
-	    WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
+	    floor_origin[0], floor_origin[1], floor_origin[2],
+	    floor_size[0], floor_size[1], 1,
 	    BLOCK_TYPE_SMOOTH_2
 	);
 
 	world_set_block_type_wireframe(
 	    sim,
-	    TOWER_BORDER, TOWER_BORDER, floor_height,
-	    WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, FLOOR_HEIGHT,
+	    floor_origin[0], floor_origin[1], floor_origin[2],
+	    floor_size[0], floor_size[1], floor_size[2],
 	    BLOCK_TYPE_CAUTION_1
 	);
+
+	i32 cell_x, cell_y, cell_z;
+	
+	cell_z = floor_origin[2];
+
+	for (cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + floor_size[0] - 1; ++cell_x)
+	{
+	    world_set_block_type_cube(
+		sim,
+		cell_x, floor_origin[0], cell_z,
+		1, 1, rand() % (floor_height - 1),
+		BLOCK_TYPE_METAL_5
+	    );
+	}
+	
+	for (cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + floor_size[1] - 1; ++cell_y)
+	{
+
+	}
+	
+
     }
 }
 
