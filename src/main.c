@@ -1,11 +1,9 @@
+#include "jsk_log.h"
 #include "ld_data.h"
-
 #include "sim.h"
 #include "shell.h"
-
 #include "camera.h"
 #include "world.h"
-
 #include "input.h"
 #include "render.h"
 #include "screen.h"
@@ -15,6 +13,8 @@ static Shell shell;
 
 int main()
 {
+    log_init();
+    
     sim_init(&sim);
 
     world_init(&sim);
@@ -39,4 +39,6 @@ int main()
 
     sim_close(&sim);
     shell_close(&shell);
+
+    log_close();
 }

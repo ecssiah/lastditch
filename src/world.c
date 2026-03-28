@@ -379,7 +379,8 @@ static void setup_tower(Sim *sim)
 	for (cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + floor_size[0] - 1; ++cell_x)
 	{
 	    i32 north_position_z, north_size_z;
-	    i32 north_offset = rand() % (FLOOR_HEIGHT - 2);
+	    
+	    const i32 north_offset = rand() % (FLOOR_HEIGHT - 2);
 
 	    if (rand() % 2)
 	    {
@@ -394,13 +395,14 @@ static void setup_tower(Sim *sim)
 	    
 	    world_set_block_type_cube(
 		sim,
-		cell_x, floor_origin[0], north_position_z,
+		cell_x, floor_origin[0] + floor_size[0] - 1, north_position_z,
 		1, 1, north_size_z,
 		BLOCK_TYPE_METAL_5
 	    );
 
 	    i32 south_position_z, south_size_z;
-	    i32 south_offset = rand() % (FLOOR_HEIGHT - 2);
+
+	    const i32 south_offset = rand() % (FLOOR_HEIGHT - 2);
 
 	    if (rand() % 2)
 	    {
@@ -415,7 +417,7 @@ static void setup_tower(Sim *sim)
 
 	    world_set_block_type_cube(
 		sim,
-		cell_x, floor_origin[0] + floor_size[0] - 1, south_position_z,
+		cell_x, floor_origin[0], south_position_z,
 		1, 1, south_size_z,
 		BLOCK_TYPE_METAL_5
 	    );
@@ -424,7 +426,8 @@ static void setup_tower(Sim *sim)
 	for (cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + floor_size[1] - 1; ++cell_y)
 	{
 	    i32 east_position_z, east_size_z;
-	    i32 east_offset = rand() % (FLOOR_HEIGHT - 2);
+
+	    const i32 east_offset = rand() % (FLOOR_HEIGHT - 2);
 
 	    if (rand() % 2)
 	    {
@@ -439,13 +442,14 @@ static void setup_tower(Sim *sim)
 	    
 	    world_set_block_type_cube(
 		sim,
-		floor_origin[0], cell_y, east_position_z,
+		floor_origin[1] + floor_size[1] - 1, cell_y, east_position_z,
 		1, 1, east_size_z,
-		BLOCK_TYPE_METAL_5
+		BLOCK_TYPE_METAL_2
 	    );
 
 	    i32 west_position_z, west_size_z;
-	    i32 west_offset = rand() % (FLOOR_HEIGHT - 2);
+
+	    const i32 west_offset = rand() % (FLOOR_HEIGHT - 2);
 
 	    if (rand() % 2)
 	    {
@@ -460,7 +464,7 @@ static void setup_tower(Sim *sim)
 
 	    world_set_block_type_cube(
 		sim,
-		floor_origin[1] + floor_size[1] - 1, cell_y, west_position_z,
+		floor_origin[1], cell_y, west_position_z,
 		1, 1, west_size_z,
 		BLOCK_TYPE_METAL_5
 	    );
