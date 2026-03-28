@@ -444,7 +444,7 @@ static void setup_tower(Sim *sim)
 		sim,
 		floor_origin[1] + floor_size[1] - 1, cell_y, east_position_z,
 		1, 1, east_size_z,
-		BLOCK_TYPE_METAL_2
+		BLOCK_TYPE_METAL_5
 	    );
 
 	    i32 west_position_z, west_size_z;

@@ -78,7 +78,7 @@ void render_load_textures(Shell *shell, const char *textures_path)
 
 	const BlockType block_type = world_block_type_from_string(config_entry->key);
 
-	render->block_type_layer_array[(int)block_type] = layer_index;
+	render->block_type_layer_array[(i32)block_type] = layer_index;
 	
 	render_load_texture(shell, texture_path, layer_index);
     }

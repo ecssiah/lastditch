@@ -6,8 +6,8 @@
 typedef struct JSK_ConfigEntry JSK_ConfigEntry;
 struct JSK_ConfigEntry
 {
-    const char* key;
-    const char* value;
+    const char *key;
+    const char *value;
 };
 
 typedef struct JSK_Config JSK_Config;
@@ -16,10 +16,10 @@ struct JSK_Config
     size_t entry_count;
     size_t entry_capacity;
     
-    JSK_ConfigEntry* config_entry_array;
+    JSK_ConfigEntry *config_entry_array;
 };
 
-JSK_Config* jsk_load_config(const char* config_path);
-void jsk_destroy_config(JSK_Config* config);
+JSK_Config *jsk_load_config(const char *config_path);
+void jsk_destroy_config(JSK_Config *config);
 
 #endif
