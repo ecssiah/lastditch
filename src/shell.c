@@ -2,17 +2,13 @@
 
 #include "jsk_log.h"
 #include "ld_data.h"
-#include "input.h"
 
 void shell_init(Shell *shell)
 {
     log_init();
     
-    shell->active = True;
+    shell->active = TRUE;
     
-    shell->current_time = 0.0;
-    shell->previous_time = 0.0;
-
     const int glfw_result = glfwInit();
     
     assert(glfw_result != 0);
@@ -30,26 +26,10 @@ void shell_init(Shell *shell)
     assert(shell->window != 0);
 
     glfwMakeContextCurrent(shell->window);
-
-    shell->render.sector_mesh_count = 0;
-    shell->render.sector_mesh_capacity = 0;
-    shell->render.sector_mesh_array = NULL;
-
-    shell->render.gpu_mesh_count = 0;
-    shell->render.gpu_mesh_capacity = 0;
-    shell->render.gpu_mesh_array = NULL;
 }
 
 void shell_update(Shell *shell)
 {
-    shell->current_time = glfwGetTime();
-
-    shell->delta_time = (shell->previous_time > 0.0)
-        ? (f32)(shell->current_time - shell->previous_time)
-        : 0.0f;
-
-    shell->previous_time = shell->current_time;
-
     glfwSwapBuffers(shell->window);
     glfwPollEvents();
 }

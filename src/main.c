@@ -17,7 +17,6 @@ int main()
     sim_init(&sim);
 
     world_init(&sim);
-    viewpoint_init(&sim);
     
     input_init(&shell);    
     render_init(&shell, &sim);
@@ -26,9 +25,8 @@ int main()
     while (shell.active)
     {
         shell_update(&shell);
-        input_update(&shell);
-        
-        viewpoint_update(&sim, &shell);
+        input_update(&shell, &sim);
+
         sim_update(&sim);
 
         render_update(&shell, &sim);

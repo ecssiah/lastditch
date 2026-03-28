@@ -25,7 +25,7 @@ const i32 DIRECTION_STRIDE[DIRECTION_COUNT] =
     -WORLD_STRIDE_Z,
 };
 
-boolean world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
+b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
 {   
     return (
         x >= 0 && x < WORLD_SIZE_IN_CELLS &&
@@ -34,7 +34,7 @@ boolean world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
     );
 }
 
-boolean world_sector_coordinate_is_valid(i32 x, i32 y)
+b32 world_sector_coordinate_is_valid(i32 x, i32 y)
 {
     return (
         x >= 0 && x < WORLD_SIZE_IN_SECTORS &&
@@ -144,11 +144,11 @@ BlockType world_block_type_from_string(const char *block_type_string)
     return BLOCK_TYPE_NONE;
 }
 
-boolean world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
+b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
 {   
     if (!world_cell_coordinate_is_valid(x, y, z))
     {
-        return False;
+        return FALSE;
     }
     
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
@@ -171,7 +171,7 @@ u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
         const i32 neighbor_y = y + DIRECTION_NORMAL_ARRAY[direction_index][1];
         const i32 neighbor_z = z + DIRECTION_NORMAL_ARRAY[direction_index][2];
 
-        const boolean valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
+        const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
         
         if (!valid_neighbor || sim->cell_array[cell_index + DIRECTION_STRIDE[direction_index]].block_type == BLOCK_TYPE_NONE)
         {

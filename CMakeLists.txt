@@ -53,19 +53,21 @@ endif()
 target_sources(
     lastditch 
     PRIVATE
-    external/stb/src/stb_image.c
     external/glad/src/glad.c
-    external/jsk/jsk_log.c
     external/jsk/jsk_config.c
     external/jsk/jsk_gl.c
+    external/jsk/jsk_log.c      
+    external/stb/src/stb_image.c
+    src/action.c
+    src/actor.c
+    src/input.c
+    src/physics.c
+    src/render.c
+    src/screen.c
     src/sim.c
     src/shell.c
     src/viewpoint.c
     src/world.c
-    src/input.c
-    src/render.c
-    src/screen.c
-    src/action.c
 )
 
 target_compile_definitions(

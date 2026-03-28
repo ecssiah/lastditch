@@ -2,34 +2,36 @@
 
 #include <GLFW/glfw3.h>
 
+#include "action.h"
+#include "jsk.h"
 #include "ld_data.h"
 
-boolean input_key_is_down(Shell *shell, int key)
+b32 input_key_is_down(Shell *shell, int key)
 {
     return shell->input.current_key_array[key];
 }
 
-boolean input_key_is_pressed(Shell *shell, int key)
+b32 input_key_is_pressed(Shell *shell, int key)
 {
     return shell->input.current_key_array[key] && !shell->input.previous_key_array[key];
 }
 
-boolean input_key_is_released(Shell *shell, int key)
+b32 input_key_is_released(Shell *shell, int key)
 {
     return !shell->input.current_key_array[key] && shell->input.previous_key_array[key];
 }
 
-boolean input_button_is_down(Shell *shell, int button)
+b32 input_button_is_down(Shell *shell, int button)
 {
     return shell->input.current_button_array[button];
 }
 
-boolean input_button_is_pressed(Shell *shell, int button)
+b32 input_button_is_pressed(Shell *shell, int button)
 {
     return shell->input.current_button_array[button] && !shell->input.previous_button_array[button];
 }
 
-boolean input_button_is_released(Shell *shell, int button)
+b32 input_button_is_released(Shell *shell, int button)
 {
     return !shell->input.current_button_array[button] && shell->input.previous_button_array[button];
 }
@@ -47,17 +49,82 @@ void input_init(Shell *shell)
     input->mouse_delta_x = 0.0;
     input->mouse_delta_y = 0.0;
 
-    input->ignore_delta = True;
+    input->ignore_delta = TRUE;
 }
 
-void input_update(Shell *shell)
+static void handle_move_action(Shell *shell, Sim *sim)
+{
+    vec3 action_value;
+
+    if (input_key_is_down(shell, GLFW_KEY_A))
+    {
+        action_value[0] += 1.0f;
+    }
+    
+    if (input_key_is_down(shell, GLFW_KEY_D))
+    {
+        action_value[0] -= 1.0f;
+    }
+
+    if (input_key_is_down(shell, GLFW_KEY_W))
+    {
+        action_value[1] += 1.0f;
+    }
+    
+    if (input_key_is_down(shell, GLFW_KEY_S))
+    {
+        action_value[1] -= 1.0f;
+    }
+    
+    glm_vec3_normalize(action_value);
+
+    if (input_key_is_down(shell, GLFW_KEY_Q))
+    {
+        action_value[2] -= 1.0f;
+    }
+    
+    if (input_key_is_down(shell, GLFW_KEY_E))
+    {
+        action_value[2] += 1.0f;
+    }
+
+    if (glm_vec3_norm2(action_value) > 1e-12f)
+    {
+        Action move_action;
+        move_action.type = ACTION_MOVE;
+        move_action.handle = sim->judge_handle;
+
+        glm_vec3_copy(action_value, move_action.action_value);
+        
+        action_add(&sim->action_queue, move_action);        
+    }
+}
+
+static void handle_rotate_action(Shell *shell, Sim *sim)
+{
+    if (fabs(shell->input.mouse_delta_x) > 1e-12f || fabs(shell->input.mouse_delta_y) > 1e-12f)
+    {
+        Action rotate_action;
+        rotate_action.type = ACTION_ROTATE;
+        rotate_action.handle = sim->judge_handle;
+
+        rotate_action.action_value[0] = shell->input.mouse_delta_x;
+        rotate_action.action_value[1] = shell->input.mouse_delta_y;
+        rotate_action.action_value[2] = 0.0f;
+
+        action_add(&sim->action_queue, rotate_action);
+    }
+}
+
+void input_update(Shell *shell, Sim *sim)
 {
     Input* input = &shell->input;
     Render* render = &shell->render;
 
     if (input_key_is_pressed(shell, GLFW_KEY_ESCAPE))
     {
-        shell->active = False;
+        shell->active = FALSE;
+        
         glfwSetWindowShouldClose(shell->window, 1);
     }
     
@@ -88,17 +155,20 @@ void input_update(Shell *shell)
     
     glfwGetCursorPos(shell->window, &input->mouse_current_x, &input->mouse_current_y);
     
-    if (input->ignore_delta == True)
+    if (input->ignore_delta == TRUE)
     {
         input->mouse_delta_x = 0.0;
         input->mouse_delta_y = 0.0;
 	
-        input->ignore_delta = False;
+        input->ignore_delta = FALSE;
     }
     else
     {
         input->mouse_delta_x = (f32)(input->mouse_current_x - input->mouse_previous_x);
         input->mouse_delta_y = (f32)(input->mouse_current_y - input->mouse_previous_y);
     }
+    
+    handle_move_action(shell, sim);
+    handle_rotate_action(shell, sim);
 }
 

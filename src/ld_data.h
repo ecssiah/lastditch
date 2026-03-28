@@ -13,11 +13,16 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
+#define WINDOW_ASPECT_RATIO ((f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT)
+
 #define TEXTURE_SIZE 64
 
 #define VERTEX_COUNT_PER_FACE 6
 
-#define PITCH_LIMIT 89.99f
+#define CAMERA_SENSITIVITY_X 0.1f
+#define CAMERA_SENSITIVITY_Y 0.1f
+
+#define CAMERA_PITCH_LIMIT 89.99f
 
 #define SECTOR_SIZE_IN_CELLS_LOG2 5
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
@@ -52,7 +57,11 @@
 #define FLOOR_HEIGHT 10
 #define FLOOR_SIZE (WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER)
 
+#define ACTION_QUEUE_CAPACITY 1024
+
 #define MAX_ACTORS 256
+
+#define JUDGE_DEFAULT_SPEED 16.0f
 
 #define FOR_LIST_DIRECTION(DO) \
     DO( DIRECTION_EAST ) \
@@ -72,7 +81,7 @@ enum Direction
 extern const char *DIRECTION_STRING[DIRECTION_COUNT];
 extern const i32 DIRECTION_STRIDE[DIRECTION_COUNT];
 
-#define GET_DIRECTION(mask) (__builtin_ctz(mask))
+#define DIRECTION_FROM_MASK(mask) (__builtin_ctz(mask))
 
 #define FOR_LIST_BLOCK_TYPE(DO) \
     DO( BLOCK_TYPE_NONE ) \
@@ -164,7 +173,7 @@ struct Input
     f64 mouse_delta_x;
     f64 mouse_delta_y;
 
-    boolean ignore_delta;
+    b32 ignore_delta;
 };
 
 typedef struct GpuMesh GpuMesh;
@@ -201,6 +210,16 @@ struct SectorMesh
     SectorQuad *sector_quad_array;
 };
 
+typedef struct Viewpoint Viewpoint;
+struct Viewpoint
+{
+    vec3 world_position;
+    vec3 rotation;
+
+    mat4 projection_matrix;
+    mat4 view_matrix;
+};
+
 typedef struct Render Render;
 struct Render
 {
@@ -230,6 +249,8 @@ struct Render
     u32 gpu_mesh_capacity;
     
     GpuMesh *gpu_mesh_array;
+
+    Viewpoint viewpoint;
 };
 
 typedef struct TextVertex TextVertex;
@@ -273,8 +294,12 @@ struct Actor
 {
     ActorType actor_type;
 
-    vec3 word_position;
+    vec3 world_position;
     vec3 rotation;
+
+    f32 speed;
+    
+    vec3 velocity;
 };
 
 typedef struct ActorPool ActorPool;
@@ -300,7 +325,7 @@ enum ActionType
 typedef struct Action Action;
 struct Action
 {
-    ActorType type;
+    ActionType type;
     ActorHandle handle;
 
     vec3 action_value;
@@ -309,7 +334,7 @@ struct Action
 typedef struct ActionQueue ActionQueue;
 struct ActionQueue
 {
-    Action action_array[1024];
+    Action action_array[ACTION_QUEUE_CAPACITY];
 
     u32 head_index;
     u32 tail_index;
@@ -322,27 +347,19 @@ struct Cell
     u8 direction_mask;
 };
 
-typedef struct Viewpoint Viewpoint;
-struct Viewpoint
-{
-    vec3 world_position;
-    vec3 rotation;
-
-    mat4 projection_matrix;
-    mat4 view_matrix;
-
-    f32 speed;
-    f32 sensitivity;
-};
-
 typedef struct Sim Sim;
 struct Sim
 {
-    boolean active;
+    b32 active;
     
     u32 seed;
 
-    Viewpoint viewpoint;
+    f64 previous_time;
+    f64 current_time;
+
+    f32 delta_time;
+
+    ActorHandle judge_handle;
 
     ActionQueue action_queue;
     ActorPool actor_pool;
@@ -353,13 +370,8 @@ struct Sim
 typedef struct Shell Shell;
 struct Shell
 {
-    boolean active;
+    b32 active;
     
-    f64 previous_time;
-    f64 current_time;
-
-    f32 delta_time;
-
     GLFWwindow *window;
     
     Input input;

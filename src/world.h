@@ -6,8 +6,8 @@
 #include "jsk.h"
 #include "ld_data.h"
 
-boolean world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
-boolean world_sector_coordinate_is_valid(i32 x, i32 y);
+b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
+b32 world_sector_coordinate_is_valid(i32 x, i32 y);
 
 i32 world_sector_coordinate_to_index(ivec2 sector_coordinate);
 void world_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordinate);
@@ -24,7 +24,7 @@ void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_lo
 void world_cell_coordinate_to_world_position(i32 x, i32 y, i32 z, vec3 out_world_position);
 void world_world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
 
-boolean world_is_solid(Sim *sim, i32 x, i32 y, i32 z);
+b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z);
 
 BlockType world_block_type_from_string(const char *block_type_string);
 

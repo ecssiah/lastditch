@@ -257,10 +257,10 @@ void screen_init(Shell *shell)
 
 static void draw_debug_info(Shell *shell, Sim *sim)
 {
-    Viewpoint *viewpoint = &sim->viewpoint;
+    Actor *actor = &sim->actor_pool.actor_array[sim->judge_handle.index];
 
     ivec3 cell_coordinate;
-    world_world_position_to_cell_coordinate(viewpoint->world_position[0], viewpoint->world_position[1], viewpoint->world_position[2], cell_coordinate);
+    world_world_position_to_cell_coordinate(actor->world_position[0], actor->world_position[1], actor->world_position[2], cell_coordinate);
 
     ivec2 sector_coordinate;
     world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2], sector_coordinate);
@@ -273,9 +273,9 @@ static void draw_debug_info(Shell *shell, Sim *sim)
         position_text,
         sizeof(position_text),
         "W %.1f %.1f %.1f",
-        viewpoint->world_position[0],
-        viewpoint->world_position[1],
-        viewpoint->world_position[2]
+        actor->world_position[0],
+        actor->world_position[1],
+        actor->world_position[2]
     );
 
     if (world_cell_coordinate_is_valid(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]))

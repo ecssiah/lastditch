@@ -24,22 +24,22 @@ static void strip_newline(char *str)
     }
 }
 
-static boolean parse_line(char *line, JSK_ConfigEntry *out_config_entry)
+static b32 parse_line(char *line, JSK_ConfigEntry *out_config_entry)
 {
     strip_newline(line);
 
     if (line[0] == '\0')
     {
-	return False;
+        return FALSE;
     }
 
     char *equal_sign_present = strchr(line, '=');
 
     if (!equal_sign_present)
     {
-	LOG_WARN("Invalid config: %s", line);
+        LOG_WARN("Invalid config: %s", line);
 
-	return False;
+        return FALSE;
     }
 
     *equal_sign_present = '\0';
@@ -50,7 +50,7 @@ static boolean parse_line(char *line, JSK_ConfigEntry *out_config_entry)
     out_config_entry->key = strdup(key);
     out_config_entry->value = strdup(value);
 
-    return True;
+    return TRUE;
 }
 
 static void extend_capacity(JSK_Config* config)
@@ -58,8 +58,8 @@ static void extend_capacity(JSK_Config* config)
     size_t new_capacity = config->entry_capacity * 2;
 
     JSK_ConfigEntry *new_config_entry_array = realloc(
-	config->config_entry_array,
-	new_capacity * sizeof(JSK_ConfigEntry)
+        config->config_entry_array,
+        new_capacity * sizeof(JSK_ConfigEntry)
     );
 
     if (!new_config_entry_array)
@@ -84,28 +84,28 @@ JSK_Config *jsk_load_config(const char* config_path)
 
     if (!file)
     {
-	LOG_ERROR("Config not found: %s", config_path);
+        LOG_ERROR("Config not found: %s", config_path);
 
-	return jsk_config;
+        return jsk_config;
     }
 
     char line[512];
 
     while (fgets(line, sizeof(line), file))
     {
-	JSK_ConfigEntry *config_entry = &jsk_config->config_entry_array[jsk_config->entry_count];
+        JSK_ConfigEntry *config_entry = &jsk_config->config_entry_array[jsk_config->entry_count];
 		
-	boolean success = parse_line(line, config_entry);
+        b32 success = parse_line(line, config_entry);
 
-	if (success)
-	{
-	    jsk_config->entry_count += 1;
+        if (success)
+        {
+            jsk_config->entry_count += 1;
 
-	    if (jsk_config->entry_count >= jsk_config->entry_capacity)
-	    {
-		extend_capacity(jsk_config);
-	    }
-	}
+            if (jsk_config->entry_count >= jsk_config->entry_capacity)
+            {
+                extend_capacity(jsk_config);
+            }
+        }
     }
 
     fclose(file);
