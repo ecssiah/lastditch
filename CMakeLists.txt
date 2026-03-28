@@ -60,11 +60,12 @@ target_sources(
     external/jsk/jsk_gl.c
     src/sim.c
     src/shell.c
-    src/camera.c
+    src/viewpoint.c
     src/world.c
     src/input.c
     src/render.c
     src/screen.c
+    src/action.c
 )
 
 target_compile_definitions(

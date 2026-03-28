@@ -54,17 +54,23 @@ void input_update(Shell *shell)
 {
     Input* input = &shell->input;
     Render* render = &shell->render;
+
+    if (input_key_is_pressed(shell, GLFW_KEY_ESCAPE))
+    {
+        shell->active = False;
+        glfwSetWindowShouldClose(shell->window, 1);
+    }
     
     int key;
     for (key = 0; key < GLFW_KEY_LAST + 1; ++key)
     {
-	input->previous_key_array[key] = input->current_key_array[key];
+        input->previous_key_array[key] = input->current_key_array[key];
     }
 
     int button;
     for (button = 0; button < GLFW_MOUSE_BUTTON_LAST + 1; ++button)
     {
-	input->previous_button_array[button] = input->current_button_array[button];
+        input->previous_button_array[button] = input->current_button_array[button];
     }
 
     input->mouse_previous_x = input->mouse_current_x;
@@ -72,27 +78,27 @@ void input_update(Shell *shell)
 
     for (key = 0; key < GLFW_KEY_LAST + 1; ++key)
     {
-	input->current_key_array[key] = glfwGetKey(shell->window, key) == GLFW_PRESS;
+        input->current_key_array[key] = glfwGetKey(shell->window, key) == GLFW_PRESS;
     }
 
     for (button = 0; button < GLFW_MOUSE_BUTTON_LAST + 1; ++button)
     {
-	input->current_button_array[button] = glfwGetMouseButton(shell->window, button) == GLFW_PRESS;
+        input->current_button_array[button] = glfwGetMouseButton(shell->window, button) == GLFW_PRESS;
     }
     
     glfwGetCursorPos(shell->window, &input->mouse_current_x, &input->mouse_current_y);
     
     if (input->ignore_delta == True)
     {
-	input->mouse_delta_x = 0.0;
-	input->mouse_delta_y = 0.0;
+        input->mouse_delta_x = 0.0;
+        input->mouse_delta_y = 0.0;
 	
-	input->ignore_delta = False;
+        input->ignore_delta = False;
     }
     else
     {
-	input->mouse_delta_x = (f32)(input->mouse_current_x - input->mouse_previous_x);
-	input->mouse_delta_y = (f32)(input->mouse_current_y - input->mouse_previous_y);
+        input->mouse_delta_x = (f32)(input->mouse_current_x - input->mouse_previous_x);
+        input->mouse_delta_y = (f32)(input->mouse_current_y - input->mouse_previous_y);
     }
 }
 

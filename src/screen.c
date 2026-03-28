@@ -36,18 +36,18 @@ static void load_textures(Screen *screen, const char *textures_path)
 
     if (channels == 1)
     {
-	internal_format = GL_RED;
-	format = GL_RED;
+        internal_format = GL_RED;
+        format = GL_RED;
     }
     else if (channels == 3)
     {
-	internal_format = GL_RGB;
-	format = GL_RGB;
+        internal_format = GL_RGB;
+        format = GL_RGB;
     }
     else if (channels == 4)
     {
-	internal_format = GL_RGBA8;
-	format = GL_RGBA;
+        internal_format = GL_RGBA8;
+        format = GL_RGBA;
     }
     else
     {
@@ -129,55 +129,55 @@ void screen_draw_text(Shell *shell, const char *text, f32 x, f32 y)
         float x1 = cursor_x + char_w;
         float y1 = y + char_h;
 
-	TextVertex text_vertex0;
-	text_vertex0.position[0] = x0;
-	text_vertex0.position[1] = y0;
+        TextVertex text_vertex0;
+        text_vertex0.position[0] = x0;
+        text_vertex0.position[1] = y0;
 	
-	text_vertex0.uv[0] = u0;
-	text_vertex0.uv[1] = v0;
+        text_vertex0.uv[0] = u0;
+        text_vertex0.uv[1] = v0;
 
-	TextVertex text_vertex1;
-	text_vertex1.position[0] = x1;
-	text_vertex1.position[1] = y0;
+        TextVertex text_vertex1;
+        text_vertex1.position[0] = x1;
+        text_vertex1.position[1] = y0;
 	
-	text_vertex1.uv[0] = u1;
-	text_vertex1.uv[1] = v0;
+        text_vertex1.uv[0] = u1;
+        text_vertex1.uv[1] = v0;
 
-	TextVertex text_vertex2;
-	text_vertex2.position[0] = x1;
-	text_vertex2.position[1] = y1;
+        TextVertex text_vertex2;
+        text_vertex2.position[0] = x1;
+        text_vertex2.position[1] = y1;
 	
-	text_vertex2.uv[0] = u1;
-	text_vertex2.uv[1] = v1;
+        text_vertex2.uv[0] = u1;
+        text_vertex2.uv[1] = v1;
 
-	TextVertex text_vertex3;
-	text_vertex3.position[0] = x0;
-	text_vertex3.position[1] = y0;
+        TextVertex text_vertex3;
+        text_vertex3.position[0] = x0;
+        text_vertex3.position[1] = y0;
 	
-	text_vertex3.uv[0] = u0;
-	text_vertex3.uv[1] = v0;
+        text_vertex3.uv[0] = u0;
+        text_vertex3.uv[1] = v0;
 
-	TextVertex text_vertex4;
-	text_vertex4.position[0] = x1;
-	text_vertex4.position[1] = y1;
+        TextVertex text_vertex4;
+        text_vertex4.position[0] = x1;
+        text_vertex4.position[1] = y1;
 	
-	text_vertex4.uv[0] = u1;
-	text_vertex4.uv[1] = v1;
+        text_vertex4.uv[0] = u1;
+        text_vertex4.uv[1] = v1;
 
-	TextVertex text_vertex5;
-	text_vertex5.position[0] = x0;
-	text_vertex5.position[1] = y1;
+        TextVertex text_vertex5;
+        text_vertex5.position[0] = x0;
+        text_vertex5.position[1] = y1;
 	
-	text_vertex5.uv[0] = u0;
-	text_vertex5.uv[1] = v1;
+        text_vertex5.uv[0] = u0;
+        text_vertex5.uv[1] = v1;
 	
-	text_vertex_array[vertex_count++] = text_vertex0;
-	text_vertex_array[vertex_count++] = text_vertex1;
-	text_vertex_array[vertex_count++] = text_vertex2;
+        text_vertex_array[vertex_count++] = text_vertex0;
+        text_vertex_array[vertex_count++] = text_vertex1;
+        text_vertex_array[vertex_count++] = text_vertex2;
 
-	text_vertex_array[vertex_count++] = text_vertex3;
-	text_vertex_array[vertex_count++] = text_vertex4;
-	text_vertex_array[vertex_count++] = text_vertex5;
+        text_vertex_array[vertex_count++] = text_vertex3;
+        text_vertex_array[vertex_count++] = text_vertex4;
+        text_vertex_array[vertex_count++] = text_vertex5;
 
         cursor_x += char_w;
     }
@@ -229,23 +229,23 @@ void screen_init(Shell *shell)
     glBindBuffer(GL_ARRAY_BUFFER, screen->vbo_id);
 
     glVertexAttribPointer(
-	0,
-	2,
-	GL_FLOAT,
-	GL_FALSE,
-	sizeof(TextVertex),
-	(void *)0
+        0,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(TextVertex),
+        (void *)0
     );
     
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(
-	1,
-	2,
-	GL_FLOAT,
-	GL_FALSE,
-	sizeof(TextVertex),
-	(void *)offsetof(TextVertex, uv)
+        1,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(TextVertex),
+        (void *)offsetof(TextVertex, uv)
     );
 
     glEnableVertexAttribArray(1);
@@ -257,10 +257,10 @@ void screen_init(Shell *shell)
 
 static void draw_debug_info(Shell *shell, Sim *sim)
 {
-    Camera *camera = &sim->camera;
+    Viewpoint *viewpoint = &sim->viewpoint;
 
     ivec3 cell_coordinate;
-    world_position_to_cell_coordinate(camera->world_position[0], camera->world_position[1], camera->world_position[2], cell_coordinate);
+    world_world_position_to_cell_coordinate(viewpoint->world_position[0], viewpoint->world_position[1], viewpoint->world_position[2], cell_coordinate);
 
     ivec2 sector_coordinate;
     world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2], sector_coordinate);
@@ -270,51 +270,51 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     char sector_coordinate_text[64];
     
     snprintf(
-	position_text,
-	sizeof(position_text),
-	"W %.1f %.1f %.1f",
-	camera->world_position[0],
-	camera->world_position[1],
-	camera->world_position[2]
+        position_text,
+        sizeof(position_text),
+        "W %.1f %.1f %.1f",
+        viewpoint->world_position[0],
+        viewpoint->world_position[1],
+        viewpoint->world_position[2]
     );
 
     if (world_cell_coordinate_is_valid(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]))
     {
-	snprintf(
-	    cell_coordinate_text,
-	    sizeof(cell_coordinate_text),
-	    "C %i %i %i",
-	    cell_coordinate[0],
-	    cell_coordinate[1],
-	    cell_coordinate[2]
-	);
+        snprintf(
+            cell_coordinate_text,
+            sizeof(cell_coordinate_text),
+            "C %i %i %i",
+            cell_coordinate[0],
+            cell_coordinate[1],
+            cell_coordinate[2]
+        );
     }
     else
     {
-	snprintf(
-	    cell_coordinate_text,
-	    sizeof(cell_coordinate_text),
-	    "C - - -"
-	);
+        snprintf(
+            cell_coordinate_text,
+            sizeof(cell_coordinate_text),
+            "C - - -"
+        );
     }
 
     if (world_sector_coordinate_is_valid(sector_coordinate[0], sector_coordinate[1]))
     {
-	snprintf(
-	    sector_coordinate_text,
-	    sizeof(sector_coordinate_text),
-	    "S %i %i",
-	    sector_coordinate[0],
-	    sector_coordinate[1]
-	);
+        snprintf(
+            sector_coordinate_text,
+            sizeof(sector_coordinate_text),
+            "S %i %i",
+            sector_coordinate[0],
+            sector_coordinate[1]
+        );
     }
     else
     {
-	snprintf(
-	    sector_coordinate_text,
-	    sizeof(sector_coordinate_text),
-	    "S - -"
-	);
+        snprintf(
+            sector_coordinate_text,
+            sizeof(sector_coordinate_text),
+            "S - -"
+        );
     }
 
     screen_draw_text(shell, position_text, 20, 20);

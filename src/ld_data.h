@@ -17,7 +17,9 @@
 
 #define VERTEX_COUNT_PER_FACE 6
 
-#define SECTOR_SIZE_IN_CELLS_LOG2 3
+#define PITCH_LIMIT 89.99f
+
+#define SECTOR_SIZE_IN_CELLS_LOG2 5
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 
 #define SECTOR_HEIGHT_IN_CELLS_LOG2 7
@@ -41,7 +43,7 @@
 #define WORLD_STRIDE_Y (WORLD_SIZE_IN_CELLS)
 #define WORLD_STRIDE_Z (WORLD_AREA_IN_CELLS)
 
-#define TOWER_ORIGIN (WORLD_SIZE_IN_CELLS / 2)
+#define WORLD_CENTER (WORLD_SIZE_IN_CELLS / 2)
 
 #define TOWER_BORDER 4
 #define TOWER_ROOF_HEIGHT (SECTOR_HEIGHT_IN_CELLS / 2)
@@ -50,88 +52,86 @@
 #define FLOOR_HEIGHT 10
 #define FLOOR_SIZE (WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER)
 
-#define LIST_DIRECTION    \
-    X(DIRECTION_EAST)     \
-    X(DIRECTION_WEST)     \
-    X(DIRECTION_NORTH)    \
-    X(DIRECTION_SOUTH)    \
-    X(DIRECTION_UP)       \
-    X(DIRECTION_DOWN)     \
+#define MAX_ACTORS 256
 
-#define X(name) name,
+#define FOR_LIST_DIRECTION(DO) \
+    DO( DIRECTION_EAST ) \
+    DO( DIRECTION_WEST ) \
+    DO( DIRECTION_NORTH ) \
+    DO( DIRECTION_SOUTH ) \
+    DO( DIRECTION_UP ) \
+    DO( DIRECTION_DOWN ) \
+
 typedef enum Direction Direction;
 enum Direction
 {
-    LIST_DIRECTION
+    FOR_LIST_DIRECTION(DEFINE_LIST_ENUMERATION)
     DIRECTION_COUNT
 };
-#undef X
 
 extern const char *DIRECTION_STRING[DIRECTION_COUNT];
 extern const i32 DIRECTION_STRIDE[DIRECTION_COUNT];
 
 #define GET_DIRECTION(mask) (__builtin_ctz(mask))
 
-#define LIST_BLOCK_TYPE                     \
-    X(BLOCK_TYPE_NONE)                      \
-    X(BLOCK_TYPE_CARDINAL_EAST)             \
-    X(BLOCK_TYPE_CARDINAL_WEST)             \
-    X(BLOCK_TYPE_CARDINAL_NORTH)            \
-    X(BLOCK_TYPE_CARDINAL_SOUTH)            \
-    X(BLOCK_TYPE_WOLF_STONE)                \
-    X(BLOCK_TYPE_EAGLE_STONE)               \
-    X(BLOCK_TYPE_LION_STONE)                \
-    X(BLOCK_TYPE_HORSE_STONE)               \
-    X(BLOCK_TYPE_WOLF_SYMBOL)               \
-    X(BLOCK_TYPE_EAGLE_SYMBOL)              \
-    X(BLOCK_TYPE_LION_SYMBOL)               \
-    X(BLOCK_TYPE_HORSE_SYMBOL)              \
-    X(BLOCK_TYPE_CARVED_1)                  \
-    X(BLOCK_TYPE_CARVED_2)                  \
-    X(BLOCK_TYPE_CARVED_3)                  \
-    X(BLOCK_TYPE_CARVED_4)                  \
-    X(BLOCK_TYPE_CAUTION_1)                 \
-    X(BLOCK_TYPE_CAUTION_2)                 \
-    X(BLOCK_TYPE_CAUTION_3)                 \
-    X(BLOCK_TYPE_CAUTION_4)                 \
-    X(BLOCK_TYPE_ENGRAVED_1)                \
-    X(BLOCK_TYPE_ENGRAVED_2)                \
-    X(BLOCK_TYPE_ENGRAVED_3)                \
-    X(BLOCK_TYPE_ENGRAVED_4)                \
-    X(BLOCK_TYPE_METAL_1)                   \
-    X(BLOCK_TYPE_METAL_2)                   \
-    X(BLOCK_TYPE_METAL_3)                   \
-    X(BLOCK_TYPE_METAL_4)                   \
-    X(BLOCK_TYPE_METAL_5)                   \
-    X(BLOCK_TYPE_ORNATE_1)                  \
-    X(BLOCK_TYPE_ORNATE_2)                  \
-    X(BLOCK_TYPE_ORNATE_3)                  \
-    X(BLOCK_TYPE_ORNATE_4)                  \
-    X(BLOCK_TYPE_PANEL_1)                   \
-    X(BLOCK_TYPE_PANEL_2)                   \
-    X(BLOCK_TYPE_PANEL_3)                   \
-    X(BLOCK_TYPE_PANEL_4)                   \
-    X(BLOCK_TYPE_SERVER_1)                  \
-    X(BLOCK_TYPE_SERVER_2)                  \
-    X(BLOCK_TYPE_SERVER_3)                  \
-    X(BLOCK_TYPE_SERVER_4)                  \
-    X(BLOCK_TYPE_SMOOTH_1)                  \
-    X(BLOCK_TYPE_SMOOTH_2)                  \
-    X(BLOCK_TYPE_SMOOTH_3)                  \
-    X(BLOCK_TYPE_SMOOTH_4)                  \
-    X(BLOCK_TYPE_VENT_1)                    \
-    X(BLOCK_TYPE_VENT_2)                    \
-    X(BLOCK_TYPE_VENT_3)                    \
-    X(BLOCK_TYPE_VENT_4)                    \
+#define FOR_LIST_BLOCK_TYPE(DO) \
+    DO( BLOCK_TYPE_NONE ) \
+    DO( BLOCK_TYPE_CARDINAL_EAST ) \
+    DO( BLOCK_TYPE_CARDINAL_WEST ) \
+    DO( BLOCK_TYPE_CARDINAL_NORTH ) \
+    DO( BLOCK_TYPE_CARDINAL_SOUTH ) \
+    DO( BLOCK_TYPE_WOLF_STONE ) \
+    DO( BLOCK_TYPE_EAGLE_STONE ) \
+    DO( BLOCK_TYPE_LION_STONE ) \
+    DO( BLOCK_TYPE_HORSE_STONE ) \
+    DO( BLOCK_TYPE_WOLF_SYMBOL ) \
+    DO( BLOCK_TYPE_EAGLE_SYMBOL ) \
+    DO( BLOCK_TYPE_LION_SYMBOL ) \
+    DO( BLOCK_TYPE_HORSE_SYMBOL ) \
+    DO( BLOCK_TYPE_CARVED_1 ) \
+    DO( BLOCK_TYPE_CARVED_2 ) \
+    DO( BLOCK_TYPE_CARVED_3 ) \
+    DO( BLOCK_TYPE_CARVED_4 ) \
+    DO( BLOCK_TYPE_CAUTION_1 ) \
+    DO( BLOCK_TYPE_CAUTION_2 ) \
+    DO( BLOCK_TYPE_CAUTION_3 ) \
+    DO( BLOCK_TYPE_CAUTION_4 ) \
+    DO( BLOCK_TYPE_ENGRAVED_1 ) \
+    DO( BLOCK_TYPE_ENGRAVED_2 ) \
+    DO( BLOCK_TYPE_ENGRAVED_3 ) \
+    DO( BLOCK_TYPE_ENGRAVED_4 ) \
+    DO( BLOCK_TYPE_METAL_1 ) \
+    DO( BLOCK_TYPE_METAL_2 ) \
+    DO( BLOCK_TYPE_METAL_3 ) \
+    DO( BLOCK_TYPE_METAL_4 ) \
+    DO( BLOCK_TYPE_METAL_5 ) \
+    DO( BLOCK_TYPE_ORNATE_1 ) \
+    DO( BLOCK_TYPE_ORNATE_2 ) \
+    DO( BLOCK_TYPE_ORNATE_3 ) \
+    DO( BLOCK_TYPE_ORNATE_4 ) \
+    DO( BLOCK_TYPE_PANEL_1 ) \
+    DO( BLOCK_TYPE_PANEL_2 ) \
+    DO( BLOCK_TYPE_PANEL_3 ) \
+    DO( BLOCK_TYPE_PANEL_4 ) \
+    DO( BLOCK_TYPE_SERVER_1 ) \
+    DO( BLOCK_TYPE_SERVER_2 ) \
+    DO( BLOCK_TYPE_SERVER_3 ) \
+    DO( BLOCK_TYPE_SERVER_4 ) \
+    DO( BLOCK_TYPE_SMOOTH_1 ) \
+    DO( BLOCK_TYPE_SMOOTH_2 ) \
+    DO( BLOCK_TYPE_SMOOTH_3 ) \
+    DO( BLOCK_TYPE_SMOOTH_4 ) \
+    DO( BLOCK_TYPE_VENT_1 ) \
+    DO( BLOCK_TYPE_VENT_2 ) \
+    DO( BLOCK_TYPE_VENT_3 ) \
+    DO( BLOCK_TYPE_VENT_4 ) \
 
-#define X(name) name,
 typedef enum BlockType BlockType;
 enum BlockType
 {
-    LIST_BLOCK_TYPE
+    FOR_LIST_BLOCK_TYPE(DEFINE_LIST_ENUMERATION)
     BLOCK_TYPE_COUNT
 };
-#undef X
 
 extern const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT];
 
@@ -254,12 +254,65 @@ struct Screen
     GLint u_projection_location;
 };
 
+typedef enum ActorType ActorType;
+enum ActorType
+{
+    ACTOR_TYPE_JUDGE,
+    ACTOR_TYPE_AGENT,
+};
+
+typedef struct ActorHandle ActorHandle;
+struct ActorHandle
+{
+    u32 index;
+    u32 generation;
+};
+
 typedef struct Actor Actor;
 struct Actor
 {
-    i32 actor_id;
+    ActorType actor_type;
 
     vec3 word_position;
+    vec3 rotation;
+};
+
+typedef struct ActorPool ActorPool;
+struct ActorPool
+{
+    Actor actor_array[MAX_ACTORS];
+
+    u32 generation_array[MAX_ACTORS];
+    u32 free_array[MAX_ACTORS];
+    u32 free_count[MAX_ACTORS];
+};
+
+typedef enum ActionType ActionType;
+enum ActionType
+{
+    ACTION_MOVE,
+    ACTION_ROTATE,
+    ACTION_JUMP,
+
+    ACTION_COUNT,
+};
+
+typedef struct Action Action;
+struct Action
+{
+    ActorType type;
+    ActorHandle handle;
+
+    vec3 action_value;
+};
+
+typedef struct ActionQueue ActionQueue;
+struct ActionQueue
+{
+    Action action_array[1024];
+
+    u32 head_index;
+    u32 tail_index;
 };
 
 typedef struct Cell Cell;
@@ -269,15 +322,8 @@ struct Cell
     u8 direction_mask;
 };
 
-typedef struct World World;
-struct World
-{
-    Actor *actor_array;
-    Cell *cell_array;
-};
-
-typedef struct Camera Camera;
-struct Camera
+typedef struct Viewpoint Viewpoint;
+struct Viewpoint
 {
     vec3 world_position;
     vec3 rotation;
@@ -292,10 +338,16 @@ struct Camera
 typedef struct Sim Sim;
 struct Sim
 {
-    u32 seed;
+    boolean active;
     
-    World world;
-    Camera camera;
+    u32 seed;
+
+    Viewpoint viewpoint;
+
+    ActionQueue action_queue;
+    ActorPool actor_pool;
+    
+    Cell *cell_array;
 };
 
 typedef struct Shell Shell;

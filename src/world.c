@@ -5,19 +5,15 @@
 #include "jsk_log.h"
 #include "ld_data.h"
 
-#define X(name) #name,
 const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
 {
-    LIST_BLOCK_TYPE
+    FOR_LIST_BLOCK_TYPE(DEFINE_LIST_STRING)
 };
-#undef X
 
-#define X(name) #name,
 const char *DIRECTION_STRING[DIRECTION_COUNT] =
 {
-    LIST_DIRECTION
+    FOR_LIST_DIRECTION(DEFINE_LIST_STRING)
 };
-#undef X
 
 const i32 DIRECTION_STRIDE[DIRECTION_COUNT] =
 {
@@ -120,14 +116,14 @@ void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_lo
     out_local_coordinate[2] = z;
 }
 
-void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position)
+void world_cell_coordinate_to_world_position(i32 x, i32 y, i32 z, vec3 out_world_position)
 {
-    out_position[0] = (f32)x;
-    out_position[1] = (f32)y;
-    out_position[2] = (f32)z;
+    out_world_position[0] = (f32)x;
+    out_world_position[1] = (f32)y;
+    out_world_position[2] = (f32)z;
 }
 
-void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate)
+void world_world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate)
 {
     out_cell_coordinate[0] = (i32)floorf(x);
     out_cell_coordinate[1] = (i32)floorf(y);
@@ -157,7 +153,7 @@ boolean world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
     
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
     
-    Cell *cell = &sim->world.cell_array[cell_index];
+    Cell *cell = &sim->cell_array[cell_index];
 
     return cell->block_type != BLOCK_TYPE_NONE;
 }
@@ -177,16 +173,16 @@ u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
 
         const boolean valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
         
-        if (!valid_neighbor || sim->world.cell_array[cell_index + DIRECTION_STRIDE[direction_index]].block_type == BLOCK_TYPE_NONE)
+        if (!valid_neighbor || sim->cell_array[cell_index + DIRECTION_STRIDE[direction_index]].block_type == BLOCK_TYPE_NONE)
         {
-            direction_mask |= (1 << direction_index);
+            direction_mask |= (1u << direction_index);
         }
     }
     
     return direction_mask;
 }
 
-Cell* world_get_cell(Sim *sim, i32 x, i32 y, i32 z)
+Cell *world_get_cell(Sim *sim, i32 x, i32 y, i32 z)
 {
     if (!world_cell_coordinate_is_valid(x, y, z))
     {
@@ -195,7 +191,7 @@ Cell* world_get_cell(Sim *sim, i32 x, i32 y, i32 z)
 
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
     
-    return &sim->world.cell_array[cell_index];
+    return &sim->cell_array[cell_index];
 }
 
 void world_set_block_type(Sim *sim, i32 x, i32 y, i32 z, BlockType block_type)
@@ -285,7 +281,7 @@ static void init_direction_mask(Sim *sim)
     
     for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
-        Cell *cell = &sim->world.cell_array[cell_index];
+        Cell *cell = &sim->cell_array[cell_index];
 
         ivec3 cell_coordinate;
         world_cell_index_to_coordinate(cell_index, cell_coordinate);
@@ -324,17 +320,17 @@ static void setup_roof(Sim *sim)
         BLOCK_TYPE_ORNATE_3
     );
 
-    world_set_block_type(sim, TOWER_ORIGIN + 3, TOWER_ORIGIN + 1, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_EAST);
-    world_set_block_type(sim, TOWER_ORIGIN + 3, TOWER_ORIGIN - 2, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_EAST);
+    world_set_block_type(sim, WORLD_CENTER + 3, WORLD_CENTER + 1, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_EAST);
+    world_set_block_type(sim, WORLD_CENTER + 3, WORLD_CENTER - 2, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_EAST);
     
-    world_set_block_type(sim, TOWER_ORIGIN - 4, TOWER_ORIGIN + 1, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_WEST);
-    world_set_block_type(sim, TOWER_ORIGIN - 4, TOWER_ORIGIN - 2, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_WEST);
+    world_set_block_type(sim, WORLD_CENTER - 4, WORLD_CENTER + 1, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_WEST);
+    world_set_block_type(sim, WORLD_CENTER - 4, WORLD_CENTER - 2, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_WEST);
 	
-    world_set_block_type(sim, TOWER_ORIGIN + 1, TOWER_ORIGIN + 3, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_NORTH);
-    world_set_block_type(sim, TOWER_ORIGIN - 2, TOWER_ORIGIN + 3, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_NORTH);
+    world_set_block_type(sim, WORLD_CENTER + 1, WORLD_CENTER + 3, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_NORTH);
+    world_set_block_type(sim, WORLD_CENTER - 2, WORLD_CENTER + 3, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_NORTH);
 	
-    world_set_block_type(sim, TOWER_ORIGIN + 1, TOWER_ORIGIN - 4, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_SOUTH);
-    world_set_block_type(sim, TOWER_ORIGIN - 2, TOWER_ORIGIN - 4, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_SOUTH);
+    world_set_block_type(sim, WORLD_CENTER + 1, WORLD_CENTER - 4, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_SOUTH);
+    world_set_block_type(sim, WORLD_CENTER - 2, WORLD_CENTER - 4, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_SOUTH);
 }
 
 static void setup_tower(Sim *sim)

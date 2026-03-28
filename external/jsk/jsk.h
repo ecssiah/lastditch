@@ -22,4 +22,7 @@ typedef   signed long long i64;
 typedef  float f32;
 typedef double f64;
 
+#define DEFINE_LIST_STRING(name) #name,
+#define DEFINE_LIST_ENUMERATION(name) name,
+
 #endif

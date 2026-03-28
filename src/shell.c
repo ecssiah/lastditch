@@ -45,16 +45,10 @@ void shell_update(Shell *shell)
     shell->current_time = glfwGetTime();
 
     shell->delta_time = (shell->previous_time > 0.0)
-	? (f32)(shell->current_time - shell->previous_time)
-	: 0.0f;
+        ? (f32)(shell->current_time - shell->previous_time)
+        : 0.0f;
 
     shell->previous_time = shell->current_time;
-
-    if (input_key_is_pressed(shell, GLFW_KEY_ESCAPE))
-    {
-	shell->active = False;
-	glfwSetWindowShouldClose(shell->window, 1);
-    }
 
     glfwSwapBuffers(shell->window);
     glfwPollEvents();

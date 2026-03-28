@@ -4,6 +4,7 @@
 #include "ld_data.h"
 
 void sim_init(Sim *sim);
+void sim_update(Sim *sim);
 void sim_close(Sim *sim);
 
 #endif

@@ -287,7 +287,7 @@ void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
 	    {
 		i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
 		
-		Cell *cell = &sim->world.cell_array[cell_index];
+		Cell *cell = &sim->cell_array[cell_index];
 
 		if (cell->block_type == BLOCK_TYPE_NONE)
 		{
@@ -428,7 +428,7 @@ void render_init(Shell *shell, Sim *sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->texture_array_id);
 
-    glUniformMatrix4fv(render->u_projection_location, 1, GL_FALSE, (f32 *)sim->camera.projection_matrix);
+    glUniformMatrix4fv(render->u_projection_location, 1, GL_FALSE, (f32 *)sim->viewpoint.projection_matrix);
 
     i32 sector_index;
     for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
@@ -473,7 +473,7 @@ void render_update(Shell* shell, Sim* sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->texture_array_id);
 
-    glUniformMatrix4fv(render->u_view_location, 1, GL_FALSE, (f32 *)sim->camera.view_matrix);
+    glUniformMatrix4fv(render->u_view_location, 1, GL_FALSE, (f32 *)sim->viewpoint.view_matrix);
 
     i32 gpu_mesh_index;
     for (gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
