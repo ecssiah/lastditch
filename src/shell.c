@@ -1,10 +1,13 @@
 #include "shell.h"
 
-#include "input.h"
+#include "jsk_log.h"
 #include "ld_data.h"
+#include "input.h"
 
 void shell_init(Shell *shell)
 {
+    log_init();
+    
     shell->active = True;
     
     shell->current_time = 0.0;
@@ -60,5 +63,7 @@ void shell_update(Shell *shell)
 void shell_close(Shell *shell)
 {
     glfwTerminate();
+
+    log_close();
 }
 

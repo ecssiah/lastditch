@@ -1,4 +1,3 @@
-#include "jsk_log.h"
 #include "ld_data.h"
 #include "sim.h"
 #include "shell.h"
@@ -13,15 +12,13 @@ static Shell shell;
 
 int main()
 {
-    log_init();
+    shell_init(&shell);
     
     sim_init(&sim);
 
     world_init(&sim);
     camera_init(&sim);
     
-    shell_init(&shell);
-
     input_init(&shell);    
     render_init(&shell, &sim);
     screen_init(&shell);
@@ -39,6 +36,4 @@ int main()
 
     sim_close(&sim);
     shell_close(&shell);
-
-    log_close();
 }
