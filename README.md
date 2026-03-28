@@ -1,3 +1,3 @@
 # Last Ditch
 
-Tribal Simulator
+A Garden of Civilizations
