@@ -342,11 +342,21 @@ static void setup_tower(Sim *sim)
     i32 floor_number;
     for (floor_number = FLOOR_COUNT; floor_number > 0; --floor_number)
     {
-	const i32 floor_height = TOWER_ROOF_HEIGHT - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT;
-	const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_height };
-	const ivec3 floor_size = { WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, FLOOR_HEIGHT };
+	const ivec3 floor_origin =
+	{
+	    TOWER_BORDER,
+	    TOWER_BORDER,
+	    TOWER_ROOF_HEIGHT - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT
+	};
+	
+	const ivec3 floor_size =
+	{
+	    WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER,
+	    WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER,
+	    FLOOR_HEIGHT
+	};
 	    
-	LOG_INFO("Floor %i at %i", floor_number, floor_height);
+	LOG_INFO("Floor %i at %i", floor_number, floor_origin[2]);
 
 	world_set_block_type_cube(
 	    sim,
@@ -368,20 +378,93 @@ static void setup_tower(Sim *sim)
 
 	for (cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + floor_size[0] - 1; ++cell_x)
 	{
+	    i32 north_position_z, north_size_z;
+	    i32 north_offset = rand() % (FLOOR_HEIGHT - 2);
+
+	    if (rand() % 2)
+	    {
+		north_position_z = cell_z + 1;
+		north_size_z = north_offset;
+	    }
+	    else
+	    {
+		north_position_z = cell_z + 1 + north_offset;
+		north_size_z = (FLOOR_HEIGHT - 2) - north_offset;
+	    }
+	    
 	    world_set_block_type_cube(
 		sim,
-		cell_x, floor_origin[0], cell_z,
-		1, 1, rand() % (floor_height - 1),
+		cell_x, floor_origin[0], north_position_z,
+		1, 1, north_size_z,
+		BLOCK_TYPE_METAL_5
+	    );
+
+	    i32 south_position_z, south_size_z;
+	    i32 south_offset = rand() % (FLOOR_HEIGHT - 2);
+
+	    if (rand() % 2)
+	    {
+		south_position_z = cell_z + 1;
+		south_size_z = south_offset;
+	    }
+	    else
+	    {
+		south_position_z = cell_z + 1 + south_offset;
+		south_size_z = (FLOOR_HEIGHT - 2) - south_offset;
+	    }
+
+	    world_set_block_type_cube(
+		sim,
+		cell_x, floor_origin[0] + floor_size[0] - 1, south_position_z,
+		1, 1, south_size_z,
 		BLOCK_TYPE_METAL_5
 	    );
 	}
 	
 	for (cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + floor_size[1] - 1; ++cell_y)
 	{
+	    i32 east_position_z, east_size_z;
+	    i32 east_offset = rand() % (FLOOR_HEIGHT - 2);
 
+	    if (rand() % 2)
+	    {
+		east_position_z = cell_z + 1;
+		east_size_z = east_offset;
+	    }
+	    else
+	    {
+		east_position_z = cell_z + 1 + east_offset;
+		east_size_z = (FLOOR_HEIGHT - 2) - east_offset;
+	    }
+	    
+	    world_set_block_type_cube(
+		sim,
+		floor_origin[0], cell_y, east_position_z,
+		1, 1, east_size_z,
+		BLOCK_TYPE_METAL_5
+	    );
+
+	    i32 west_position_z, west_size_z;
+	    i32 west_offset = rand() % (FLOOR_HEIGHT - 2);
+
+	    if (rand() % 2)
+	    {
+		west_position_z = cell_z + 1;
+		west_size_z = west_offset;
+	    }
+	    else
+	    {
+		west_position_z = cell_z + 1 + west_offset;
+		west_size_z = (FLOOR_HEIGHT - 2) - west_offset;
+	    }
+
+	    world_set_block_type_cube(
+		sim,
+		floor_origin[1] + floor_size[1] - 1, cell_y, west_position_z,
+		1, 1, west_size_z,
+		BLOCK_TYPE_METAL_5
+	    );
 	}
-	
-
     }
 }
 
