@@ -323,21 +323,13 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     {
     case MOVEMENT_TYPE_GROUND:
     {
-        snprintf(
-            movement_type_text,
-            sizeof(movement_type_text),
-            "Movement Type: Flying"
-        );
+        strcpy(movement_type_text, "Ground");
         
         break;
     }
     case MOVEMENT_TYPE_FLYING:
     {
-        snprintf(
-            movement_type_text,
-            sizeof(movement_type_text),
-            "Movement Type: Flying"
-        );
+        strcpy(movement_type_text, "Flying");
 
         break;
     }

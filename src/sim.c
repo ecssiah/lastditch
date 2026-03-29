@@ -25,7 +25,7 @@ static void actors_init(Sim *sim)
     
     judge.world_position[0] = WORLD_CENTER;
     judge.world_position[1] = WORLD_CENTER - 12;
-    judge.world_position[2] = TOWER_ROOF_HEIGHT + 5;
+    judge.world_position[2] = TOWER_ROOF + 5;
 
     judge.rotation[0] = 0.0f;
     judge.rotation[1] = 0.0f;

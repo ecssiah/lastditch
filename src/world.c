@@ -296,58 +296,19 @@ static void init_direction_mask(Sim *sim)
     }
 }
 
-static void setup_roof(Sim *sim)
-{
-    LOG_INFO("Floor R at %i", TOWER_ROOF_HEIGHT);
-    
-    world_set_block_type_cube(
-        sim,
-        TOWER_BORDER, TOWER_BORDER, TOWER_ROOF_HEIGHT,
-        WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
-        BLOCK_TYPE_SMOOTH_1
-    );
-
-    world_set_block_type_cube(
-        sim,
-        WORLD_SIZE_IN_CELLS / 2 - 4, WORLD_SIZE_IN_CELLS / 2 - 4, TOWER_ROOF_HEIGHT + 1,
-        8, 8, 1,
-        BLOCK_TYPE_SMOOTH_3
-    );
-
-    world_set_block_type_wireframe(
-        sim,
-        WORLD_SIZE_IN_CELLS / 2 - 4, WORLD_SIZE_IN_CELLS / 2 - 4, TOWER_ROOF_HEIGHT + 1,
-        8, 8, 1,
-        BLOCK_TYPE_ORNATE_3
-    );
-
-    world_set_block_type(sim, WORLD_CENTER + 3, WORLD_CENTER + 1, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_EAST);
-    world_set_block_type(sim, WORLD_CENTER + 3, WORLD_CENTER - 2, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_EAST);
-    
-    world_set_block_type(sim, WORLD_CENTER - 4, WORLD_CENTER + 1, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_WEST);
-    world_set_block_type(sim, WORLD_CENTER - 4, WORLD_CENTER - 2, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_WEST);
-	
-    world_set_block_type(sim, WORLD_CENTER + 1, WORLD_CENTER + 3, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_NORTH);
-    world_set_block_type(sim, WORLD_CENTER - 2, WORLD_CENTER + 3, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_NORTH);
-	
-    world_set_block_type(sim, WORLD_CENTER + 1, WORLD_CENTER - 4, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_SOUTH);
-    world_set_block_type(sim, WORLD_CENTER - 2, WORLD_CENTER - 4, TOWER_ROOF_HEIGHT + 1, BLOCK_TYPE_CARDINAL_SOUTH);
-}
-
 static void setup_tower(Sim *sim)
 {
+    const ivec3 floor_size = { FLOOR_SIZE, FLOOR_SIZE, FLOOR_HEIGHT	};
+
     i32 floor_number;
     for (floor_number = FLOOR_COUNT; floor_number > 0; --floor_number)
     {
-        const ivec3 floor_origin =
-            {
-                TOWER_BORDER,
-                TOWER_BORDER,
-                TOWER_ROOF_HEIGHT - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT
-            };
+        const ivec3 floor_origin = {
+            TOWER_BORDER,
+            TOWER_BORDER,
+            TOWER_ROOF - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT
+        };
 	
-        const ivec3 floor_size = { FLOOR_SIZE, FLOOR_SIZE, FLOOR_HEIGHT	};
-	    
         LOG_INFO("Floor %i at %i", floor_number, floor_origin[2]);
 
         world_set_block_type_cube(
@@ -461,36 +422,77 @@ static void setup_tower(Sim *sim)
                 BLOCK_TYPE_METAL_5
             );
         }
+
+        u32 main_room_size = TOWER_SIZE / 2 - TOWER_BORDER - TOWER_CENTER_HALL_SIZE / 2;
+        
+        // South West
+        world_set_block_type_wireframe(
+            sim,
+            TOWER_BORDER + 6, TOWER_BORDER + 6, floor_origin[2],
+            main_room_size, main_room_size, floor_size[2],
+            BLOCK_TYPE_CAUTION_2
+        );
+
+        // South East
+        world_set_block_type_wireframe(
+            sim,
+            WORLD_CENTER + 14, TOWER_BORDER + 6, floor_origin[2],
+            main_room_size, main_room_size, floor_size[2],
+            BLOCK_TYPE_CAUTION_2
+        );
+
+        // North East
+        world_set_block_type_wireframe(
+            sim,
+            WORLD_CENTER + 14, WORLD_CENTER + 14, floor_origin[2],
+            main_room_size, main_room_size, floor_size[2],
+            BLOCK_TYPE_CAUTION_2
+        );
+
+        // North West
+        world_set_block_type_wireframe(
+            sim,
+            TOWER_BORDER + 6, WORLD_CENTER + 14, floor_origin[2],
+            main_room_size, main_room_size, floor_size[2],
+            BLOCK_TYPE_CAUTION_2
+        );
     }
 }
 
 static void setup_elevator(Sim *sim)
 {
-    world_set_block_type_cube(
+    world_set_block_type_box(
         sim,
         WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, 0,
-        ELEVATOR_SIZE, ELEVATOR_SIZE, TOWER_ROOF_HEIGHT + FLOOR_HEIGHT,
+        ELEVATOR_SIZE, ELEVATOR_SIZE, 1,
+        BLOCK_TYPE_METAL_3
+    );
+
+    world_set_block_type_cube(
+        sim,
+        WORLD_CENTER - ELEVATOR_EXTENT + 1, WORLD_CENTER - ELEVATOR_EXTENT + 1, 1,
+        ELEVATOR_SIZE - 2, ELEVATOR_SIZE - 2, TOWER_ROOF + FLOOR_HEIGHT,
         BLOCK_TYPE_NONE
     );
 
     world_set_block_type_wireframe(
         sim,
-        WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, TOWER_ROOF_HEIGHT,
+        WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, TOWER_ROOF,
         ELEVATOR_SIZE, ELEVATOR_SIZE, 12,
         BLOCK_TYPE_CAUTION_3
     );
 
+    const ivec3 floor_size = { FLOOR_SIZE, FLOOR_SIZE, FLOOR_HEIGHT	};
+    
     i32 floor_number;
     for (floor_number = FLOOR_COUNT; floor_number > 0; --floor_number)
     {
         const ivec3 floor_origin = {
             TOWER_BORDER,
             TOWER_BORDER,
-            TOWER_ROOF_HEIGHT - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT
+            TOWER_ROOF - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT
         };
         
-        const ivec3 floor_size = { FLOOR_SIZE, FLOOR_SIZE, FLOOR_HEIGHT	};
-	    
         world_set_block_type_wireframe(
             sim,
             WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, floor_origin[2],
@@ -500,11 +502,47 @@ static void setup_elevator(Sim *sim)
     }
 }
 
+static void setup_roof(Sim *sim)
+{
+    LOG_INFO("Floor R at %i", TOWER_ROOF);
+    
+    world_set_block_type_cube(
+        sim,
+        TOWER_BORDER, TOWER_BORDER, TOWER_ROOF,
+        WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
+        BLOCK_TYPE_SMOOTH_1
+    );
+
+    world_set_block_type(sim, WORLD_CENTER + 12, WORLD_CENTER + 1, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_EAST);
+    world_set_block_type(sim, WORLD_CENTER + 12, WORLD_CENTER - 2, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_EAST);
+    
+    world_set_block_type(sim, WORLD_CENTER - 13, WORLD_CENTER + 1, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_WEST);
+    world_set_block_type(sim, WORLD_CENTER - 13, WORLD_CENTER - 2, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_WEST);
+	
+    world_set_block_type(sim, WORLD_CENTER + 1, WORLD_CENTER + 12, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_NORTH);
+    world_set_block_type(sim, WORLD_CENTER - 2, WORLD_CENTER + 12, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_NORTH);
+	
+    world_set_block_type(sim, WORLD_CENTER + 1, WORLD_CENTER - 13, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_SOUTH);
+    world_set_block_type(sim, WORLD_CENTER - 2, WORLD_CENTER - 13, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_SOUTH);
+}
+
+void setup_temples(Sim *sim)
+{
+    // Wolf Temple
+    world_set_block_type_cube(
+        sim,
+        TOWER_BORDER + TOWER_SIZE, WORLD_CENTER - 8, TOWER_ROOF,
+        8, 16, 1,
+        BLOCK_TYPE_SMOOTH_2
+    );
+}
+
 void world_init(Sim *sim)
 {
-    setup_roof(sim);
     setup_tower(sim);
+    setup_roof(sim);
     setup_elevator(sim);
-
+    setup_temples(sim);
+    
     init_direction_mask(sim);
 }
