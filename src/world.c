@@ -54,8 +54,10 @@ i32 world_sector_coordinate_to_index(ivec2 sector_coordinate)
 
 void world_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordinate)
 {
-    out_sector_coordinate[0] = sector_index & (WORLD_SIZE_IN_SECTORS - 1);
-    out_sector_coordinate[1] = sector_index >> WORLD_SIZE_IN_SECTORS_LOG2;
+    const i32 mask = WORLD_SIZE_IN_SECTORS - 1; 
+    
+    out_sector_coordinate[0] = (sector_index >> (0 * WORLD_SIZE_IN_SECTORS_LOG2)) & mask;
+    out_sector_coordinate[1] = (sector_index >> (1 * WORLD_SIZE_IN_SECTORS_LOG2));
 }
 
 i32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z)
@@ -94,26 +96,25 @@ i32 world_cell_coordinate_to_sector_index(i32 x, i32 y, i32 z)
     return sector_index;
 }
 
-i32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)
-{
-    const i32 local_x = x & (SECTOR_SIZE_IN_CELLS - 1);
-    const i32 local_y = y & (SECTOR_SIZE_IN_CELLS - 1);
-    const i32 local_z = z;
-
-    const i32 local_index = (
-        (local_x << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
-        (local_y << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
-        (local_z << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
-    );
-
-    return local_index;
-}
-
 void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_local_coordinate)
 {
     out_local_coordinate[0] = x & (SECTOR_SIZE_IN_CELLS - 1);
     out_local_coordinate[1] = y & (SECTOR_SIZE_IN_CELLS - 1);
     out_local_coordinate[2] = z;
+}
+
+i32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)
+{
+    ivec3 local_coordinate;
+    world_cell_coordinate_to_local_coordinate(x, y, z, local_coordinate);
+
+    const i32 local_index = (
+        (local_coordinate[0] << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
+        (local_coordinate[1] << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
+        (local_coordinate[2] << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
+    );
+
+    return local_index;
 }
 
 void world_cell_coordinate_to_world_position(i32 x, i32 y, i32 z, vec3 out_world_position)
@@ -196,7 +197,7 @@ Cell *world_get_cell(Sim *sim, i32 x, i32 y, i32 z)
 
 void world_set_block_type(Sim *sim, i32 x, i32 y, i32 z, BlockType block_type)
 {
-    Cell* cell = world_get_cell(sim, x, y, z);
+    Cell *cell = world_get_cell(sim, x, y, z);
 
     if (cell)
     {
@@ -463,10 +464,47 @@ static void setup_tower(Sim *sim)
     }
 }
 
+static void setup_elevator(Sim *sim)
+{
+    world_set_block_type_cube(
+        sim,
+        WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, 0,
+        ELEVATOR_SIZE, ELEVATOR_SIZE, TOWER_ROOF_HEIGHT + FLOOR_HEIGHT,
+        BLOCK_TYPE_NONE
+    );
+
+    world_set_block_type_wireframe(
+        sim,
+        WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, TOWER_ROOF_HEIGHT,
+        ELEVATOR_SIZE, ELEVATOR_SIZE, 12,
+        BLOCK_TYPE_CAUTION_3
+    );
+
+    i32 floor_number;
+    for (floor_number = FLOOR_COUNT; floor_number > 0; --floor_number)
+    {
+        const ivec3 floor_origin = {
+            TOWER_BORDER,
+            TOWER_BORDER,
+            TOWER_ROOF_HEIGHT - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT
+        };
+        
+        const ivec3 floor_size = { FLOOR_SIZE, FLOOR_SIZE, FLOOR_HEIGHT	};
+	    
+        world_set_block_type_wireframe(
+            sim,
+            WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, floor_origin[2],
+            ELEVATOR_SIZE, ELEVATOR_SIZE, floor_size[2],
+            BLOCK_TYPE_CAUTION_3
+        );
+    }
+}
+
 void world_init(Sim *sim)
 {
     setup_roof(sim);
     setup_tower(sim);
+    setup_elevator(sim);
 
     init_direction_mask(sim);
 }

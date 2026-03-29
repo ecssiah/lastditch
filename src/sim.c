@@ -14,8 +14,8 @@ static void actors_init(Sim *sim)
     judge_actor.actor_type = ACTOR_TYPE_JUDGE;
     
     judge_actor.world_position[0] = WORLD_CENTER;
-    judge_actor.world_position[1] = WORLD_CENTER;
-    judge_actor.world_position[2] = TOWER_ROOF_HEIGHT + 5.0f;
+    judge_actor.world_position[1] = WORLD_CENTER - 12;
+    judge_actor.world_position[2] = TOWER_ROOF_HEIGHT + 5;
 
     judge_actor.rotation[0] = 0.0f;
     judge_actor.rotation[1] = 0.0f;
@@ -30,67 +30,65 @@ static void actors_init(Sim *sim)
     sim->actor_pool.actor_array[sim->judge_handle.index] = judge_actor;
 }
 
+static void apply_move_action(Sim *sim, Actor *actor, Action *action)
+{
+    vec3 velocity_forward;
+    vec3 velocity_right;
+    vec3 velocity_up;
+
+    vec3 actor_forward;
+    actor_get_forward(actor, actor_forward);
+        
+    vec3 actor_right;
+    actor_get_right(actor, actor_right);
+        
+    glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
+    glm_vec3_scale(actor_forward, action->action_value[1], velocity_forward);
+    glm_vec3_scale(GLM_ZUP, action->action_value[2], velocity_up);
+
+    glm_vec3_zero(actor->velocity);
+        
+    glm_vec3_add(actor->velocity, velocity_right, actor->velocity);
+    glm_vec3_add(actor->velocity, velocity_forward, actor->velocity);
+    glm_vec3_add(actor->velocity, velocity_up, actor->velocity);
+
+    glm_vec3_scale(actor->velocity, actor->speed * sim->delta_time, actor->velocity);
+
+    glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
+}
+
+static void apply_rotate_action(Sim *sim, Actor *actor, Action *action)
+{
+    actor->rotation[2] -= CAMERA_SENSITIVITY_X * action->action_value[0];
+    actor->rotation[0] -= CAMERA_SENSITIVITY_Y * action->action_value[1];
+    
+    if (actor->rotation[0] > CAMERA_PITCH_LIMIT)
+    {
+        actor->rotation[0] = CAMERA_PITCH_LIMIT;
+    }
+    
+    if (actor->rotation[0] < -CAMERA_PITCH_LIMIT)
+    {
+        actor->rotation[0] = -CAMERA_PITCH_LIMIT;
+    }
+}
+
+static void apply_jump_action(Sim *sim, Actor *actor, Action *action)
+{
+
+}
+
 static void apply_action(Sim *sim, Action *action)
 {
     Actor *actor = &sim->actor_pool.actor_array[action->handle.index];
     
     switch (action->type)
     {
-    case ACTION_MOVE:
-    {
-        vec3 velocity_forward;
-        vec3 velocity_right;
-        vec3 velocity_up;
-
-        vec3 actor_forward;
-        actor_get_forward(actor, actor_forward);
-        
-        vec3 actor_right;
-        actor_get_right(actor, actor_right);
-        
-        glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
-        glm_vec3_scale(actor_forward, action->action_value[1], velocity_forward);
-        glm_vec3_scale(GLM_ZUP, action->action_value[2], velocity_up);
-    
-        glm_vec3_zero(actor->velocity);
-
-        glm_vec3_add(actor->velocity, velocity_right, actor->velocity);
-        glm_vec3_add(actor->velocity, velocity_forward, actor->velocity);
-        glm_vec3_add(actor->velocity, velocity_up, actor->velocity);
-
-        glm_vec3_scale(actor->velocity, actor->speed * sim->delta_time, actor->velocity);
-
-        glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
-
-        break;
+    case ACTION_MOVE: apply_move_action(sim, actor, action); break;
+    case ACTION_ROTATE: apply_rotate_action(sim, actor, action); break;
+    case ACTION_JUMP: apply_jump_action(sim, actor, action); break;
+    default: break;
     }
-    case ACTION_ROTATE:
-    {
-        actor->rotation[2] -= CAMERA_SENSITIVITY_X * action->action_value[0];
-        actor->rotation[0] -= CAMERA_SENSITIVITY_Y * action->action_value[1];
-    
-        if (actor->rotation[0] > CAMERA_PITCH_LIMIT)
-        {
-            actor->rotation[0] = CAMERA_PITCH_LIMIT;
-        }
-    
-        if (actor->rotation[0] < -CAMERA_PITCH_LIMIT)
-        {
-            actor->rotation[0] = -CAMERA_PITCH_LIMIT;
-        }
-
-        break;
-    }
-    case ACTION_JUMP:
-    {
-        break;
-    }
-    default:
-    {
-        break;
-    }
-    }
-
 }
 
 void sim_init(Sim *sim)
