@@ -58,12 +58,12 @@ static void handle_move_action(Shell *shell, Sim *sim)
 
     if (input_key_is_down(shell, GLFW_KEY_A))
     {
-        action_value[0] += 1.0f;
+        action_value[0] -= 1.0f;
     }
     
     if (input_key_is_down(shell, GLFW_KEY_D))
     {
-        action_value[0] -= 1.0f;
+        action_value[0] += 1.0f;
     }
 
     if (input_key_is_down(shell, GLFW_KEY_W))
@@ -78,14 +78,14 @@ static void handle_move_action(Shell *shell, Sim *sim)
     
     glm_vec3_normalize(action_value);
 
-    if (input_key_is_down(shell, GLFW_KEY_Q))
-    {
-        action_value[2] -= 1.0f;
-    }
-    
     if (input_key_is_down(shell, GLFW_KEY_E))
     {
         action_value[2] += 1.0f;
+    }
+    
+    if (input_key_is_down(shell, GLFW_KEY_Q))
+    {
+        action_value[2] -= 1.0f;
     }
 
     if (glm_vec3_norm2(action_value) > 1e-12f)
@@ -102,8 +102,12 @@ static void handle_move_action(Shell *shell, Sim *sim)
 
 static void handle_rotate_action(Shell *shell, Sim *sim)
 {
+    
+    
     if (fabs(shell->input.mouse_delta_x) > 1e-12f || fabs(shell->input.mouse_delta_y) > 1e-12f)
     {
+        printf("ROTATE\n");
+
         Action rotate_action;
         rotate_action.type = ACTION_ROTATE;
         rotate_action.handle = sim->judge_handle;

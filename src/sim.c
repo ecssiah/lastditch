@@ -1,5 +1,6 @@
 #include "sim.h"
 
+#include "jsk_log.h"
 #include "ld_data.h"
 #include "action.h"
 #include "actor.h"
@@ -41,14 +42,14 @@ static void apply_action(Sim *sim, Action *action)
         vec3 velocity_right;
         vec3 velocity_up;
 
-        vec3 actor_right;
-        actor_get_right(actor, actor_right);
-        glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
-
         vec3 actor_forward;
         actor_get_forward(actor, actor_forward);
+        
+        vec3 actor_right;
+        actor_get_right(actor, actor_right);
+        
+        glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
         glm_vec3_scale(actor_forward, action->action_value[1], velocity_forward);
-    
         glm_vec3_scale(GLM_ZUP, action->action_value[2], velocity_up);
     
         glm_vec3_zero(actor->velocity);
@@ -60,6 +61,8 @@ static void apply_action(Sim *sim, Action *action)
         glm_vec3_scale(actor->velocity, actor->speed * sim->delta_time, actor->velocity);
 
         glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
+
+        break;
     }
     case ACTION_ROTATE:
     {
@@ -75,13 +78,16 @@ static void apply_action(Sim *sim, Action *action)
         {
             actor->rotation[0] = -CAMERA_PITCH_LIMIT;
         }
+
+        break;
     }
     case ACTION_JUMP:
     {
+        break;
     }
     default:
     {
-
+        break;
     }
     }
 

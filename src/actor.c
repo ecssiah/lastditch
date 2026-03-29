@@ -30,6 +30,7 @@ void actor_get_up(Actor *actor, vec3 out_up)
     vec3 right;
     actor_get_right(actor, right);
 
-    glm_vec3_cross(right, forward, out_up);
+    glm_vec3_cross(forward, right, out_up);
+    
     glm_vec3_normalize(out_up);
 }

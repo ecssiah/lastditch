@@ -21,7 +21,7 @@ void viewpoint_get_right(Viewpoint *viewpoint, vec3 out_right)
     vec3 forward;
     viewpoint_get_forward(viewpoint, forward);
 
-    glm_vec3_cross(GLM_ZUP, forward, out_right);
+    glm_vec3_cross(forward, GLM_ZUP, out_right);
 
     glm_vec3_normalize(out_right);
 }
@@ -35,6 +35,8 @@ void viewpoint_get_up(Viewpoint *viewpoint, vec3 out_up)
     viewpoint_get_right(viewpoint, right);
 
     glm_vec3_cross(forward, right, out_up);
+
+    glm_vec3_normalize(out_up);
 }
 
 void viewpoint_get_projection_matrix(Viewpoint *viewpoint, mat4 out_projection_matrix)
