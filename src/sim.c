@@ -7,27 +7,39 @@
 
 static void actors_init(Sim *sim)
 {
-    sim->judge_handle.index = 0;
-    sim->judge_handle.generation = 0;
+    sim->actor_pool.free_count = MAX_ACTORS;
+    sim->actor_pool.active_count = 0;
 
-    Actor judge_actor;
-    judge_actor.actor_type = ACTOR_TYPE_JUDGE;
+    i32 actor_index;
+    for (actor_index = 0; actor_index < MAX_ACTORS; ++actor_index)
+    {
+        sim->actor_pool.free_array[actor_index] = actor_index;
+        sim->actor_pool.generation_array[actor_index] = 0;
+    }
     
-    judge_actor.world_position[0] = WORLD_CENTER;
-    judge_actor.world_position[1] = WORLD_CENTER - 12;
-    judge_actor.world_position[2] = TOWER_ROOF_HEIGHT + 5;
+    Actor judge;
+    judge.actor_type = ACTOR_TYPE_JUDGE;
+    judge.movement_type = MOVEMENT_TYPE_FLYING;
+    
+    glm_vec3_broadcast(0.5f, judge.box_collider.radius);
+    
+    judge.world_position[0] = WORLD_CENTER;
+    judge.world_position[1] = WORLD_CENTER - 12;
+    judge.world_position[2] = TOWER_ROOF_HEIGHT + 5;
 
-    judge_actor.rotation[0] = 0.0f;
-    judge_actor.rotation[1] = 0.0f;
-    judge_actor.rotation[2] = 90.0f;
+    judge.rotation[0] = 0.0f;
+    judge.rotation[1] = 0.0f;
+    judge.rotation[2] = 90.0f;
 
-    judge_actor.speed = JUDGE_DEFAULT_SPEED;
+    judge.speed = JUDGE_DEFAULT_SPEED;
 
-    judge_actor.velocity[0] = 0.0f;
-    judge_actor.velocity[1] = 0.0f;
-    judge_actor.velocity[2] = 0.0f;
+    judge.velocity[0] = 0.0f;
+    judge.velocity[1] = 0.0f;
+    judge.velocity[2] = 0.0f;
 
-    sim->actor_pool.actor_array[sim->judge_handle.index] = judge_actor;
+    sim->judge_handle = actor_add_to_pool(&judge, &sim->actor_pool);
+
+    LOG_INFO("Generated Judge, Index: %u", sim->judge_handle.index);
 }
 
 static void apply_move_action(Sim *sim, Actor *actor, Action *action)
@@ -41,20 +53,42 @@ static void apply_move_action(Sim *sim, Actor *actor, Action *action)
         
     vec3 actor_right;
     actor_get_right(actor, actor_right);
+
+    switch (actor->movement_type)
+    {
+    case MOVEMENT_TYPE_GROUND:
+    {
+        vec3 actor_forward_flat;
+        actor_forward_flat[0] = actor_forward[0];
+        actor_forward_flat[1] = actor_forward[1];
+        actor_forward_flat[2] = 0.0f;
+
+        glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
+        glm_vec3_scale(actor_forward_flat, action->action_value[1], velocity_forward);
+        glm_vec3_zero(velocity_up);
         
-    glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
-    glm_vec3_scale(actor_forward, action->action_value[1], velocity_forward);
-    glm_vec3_scale(GLM_ZUP, action->action_value[2], velocity_up);
+        break;
+    }
+    case MOVEMENT_TYPE_FLYING:
+    {
+        glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
+        glm_vec3_scale(actor_forward, action->action_value[1], velocity_forward);
+        glm_vec3_scale(GLM_ZUP, action->action_value[2], velocity_up);
+
+        break;
+    }
+    default: {
+        break;
+    }
+    }
 
     glm_vec3_zero(actor->velocity);
         
     glm_vec3_add(actor->velocity, velocity_right, actor->velocity);
     glm_vec3_add(actor->velocity, velocity_forward, actor->velocity);
     glm_vec3_add(actor->velocity, velocity_up, actor->velocity);
-
+        
     glm_vec3_scale(actor->velocity, actor->speed * sim->delta_time, actor->velocity);
-
-    glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
 }
 
 static void apply_rotate_action(Sim *sim, Actor *actor, Action *action)
@@ -78,6 +112,27 @@ static void apply_jump_action(Sim *sim, Actor *actor, Action *action)
 
 }
 
+static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
+{
+    switch (actor->movement_type)
+    {
+    case MOVEMENT_TYPE_GROUND:
+    {
+        actor->movement_type = MOVEMENT_TYPE_FLYING;
+        break;
+    }
+    case MOVEMENT_TYPE_FLYING:
+    {
+        actor->movement_type = MOVEMENT_TYPE_GROUND;
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+}
+
 static void apply_action(Sim *sim, Action *action)
 {
     Actor *actor = &sim->actor_pool.actor_array[action->handle.index];
@@ -87,6 +142,7 @@ static void apply_action(Sim *sim, Action *action)
     case ACTION_MOVE: apply_move_action(sim, actor, action); break;
     case ACTION_ROTATE: apply_rotate_action(sim, actor, action); break;
     case ACTION_JUMP: apply_jump_action(sim, actor, action); break;
+    case ACTION_DEBUG_MODE: apply_debug_mode_action(sim, actor, action); break;
     default: break;
     }
 }
@@ -104,13 +160,17 @@ void sim_init(Sim *sim)
     sim->previous_time = 0.0;
 
     sim->delta_time = 0.0f;
+
+    sim->physics.gravity[0] = 0.0f;
+    sim->physics.gravity[1] = 0.0f;
+    sim->physics.gravity[2] = GRAVITY_DEFAULT;
     
     sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
 
     actors_init(sim);
 }
 
-void sim_update(Sim *sim)
+static void update_time(Sim *sim)
 {
     sim->current_time = glfwGetTime();
 
@@ -119,7 +179,10 @@ void sim_update(Sim *sim)
         : 0.0f;
 
     sim->previous_time = sim->current_time;
-    
+}
+
+static void apply_action_queue(Sim *sim)
+{
     while (sim->action_queue.head_index != sim->action_queue.tail_index)
     {
         Action action;
@@ -127,6 +190,56 @@ void sim_update(Sim *sim)
 
         apply_action(sim, &action);
     }
+}
+
+static void update_actor(Sim *sim, Actor *actor)
+{
+    switch (actor->movement_type)
+    {
+    case MOVEMENT_TYPE_GROUND:
+    {
+        actor->velocity[2] += sim->delta_time * GRAVITY_DEFAULT;
+        
+        glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
+        
+        break;
+    }
+    case MOVEMENT_TYPE_FLYING:
+    {
+        glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
+        
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+}
+
+static void update_actors(Sim *sim)
+{   
+    i32 actor_index;
+    for (actor_index = 0; actor_index < MAX_ACTORS; ++actor_index)
+    {
+        if (sim->actor_pool.generation_array[actor_index] == 0)
+        {
+            continue;
+        }
+        
+        Actor *actor = &sim->actor_pool.actor_array[actor_index];
+
+        update_actor(sim, actor);
+    }
+}
+
+void sim_update(Sim *sim)
+{
+    update_time(sim);
+
+    apply_action_queue(sim);
+
+    update_actors(sim);
 }
 
 void sim_close(Sim *sim)

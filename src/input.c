@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "jsk_log.h"
 #include "action.h"
 #include "jsk.h"
 #include "ld_data.h"
@@ -52,7 +53,7 @@ void input_init(Shell *shell)
     input->ignore_delta = TRUE;
 }
 
-static void handle_move_action(Shell *shell, Sim *sim)
+static void queue_move_action(Shell *shell, Sim *sim)
 {
     vec3 action_value;
 
@@ -88,36 +89,42 @@ static void handle_move_action(Shell *shell, Sim *sim)
         action_value[2] -= 1.0f;
     }
 
-    if (glm_vec3_norm2(action_value) > 1e-12f)
-    {
-        Action move_action;
-        move_action.type = ACTION_MOVE;
-        move_action.handle = sim->judge_handle;
+    Action move_action;
+    move_action.type = ACTION_MOVE;
+    move_action.handle = sim->judge_handle;
 
-        glm_vec3_copy(action_value, move_action.action_value);
+    glm_vec3_copy(action_value, move_action.action_value);
         
-        action_add(&sim->action_queue, move_action);        
-    }
+    action_add(&sim->action_queue, move_action);        
 }
 
-static void handle_rotate_action(Shell *shell, Sim *sim)
+static void queue_rotate_action(Shell *shell, Sim *sim)
 {
+    Action rotate_action;
+    rotate_action.type = ACTION_ROTATE;
+    rotate_action.handle = sim->judge_handle;
+
+    rotate_action.action_value[0] = shell->input.mouse_delta_x;
+    rotate_action.action_value[1] = shell->input.mouse_delta_y;
+    rotate_action.action_value[2] = 0.0f;
+
+    action_add(&sim->action_queue, rotate_action);
+}
+
+static void queue_jump_action(Shell *shell, Sim *sim)
+{
+    LOG_WARN("Unimplemented Jump Action");
+}
+
+static void queue_debug_mode_action(Shell *shell, Sim *sim)
+{
+    Action debug_action;
+    debug_action.type = ACTION_DEBUG_MODE;
+    debug_action.handle = sim->judge_handle;
     
-    
-    if (fabs(shell->input.mouse_delta_x) > 1e-12f || fabs(shell->input.mouse_delta_y) > 1e-12f)
-    {
-        printf("ROTATE\n");
+    debug_action.action_value[0] = 1.0f;
 
-        Action rotate_action;
-        rotate_action.type = ACTION_ROTATE;
-        rotate_action.handle = sim->judge_handle;
-
-        rotate_action.action_value[0] = shell->input.mouse_delta_x;
-        rotate_action.action_value[1] = shell->input.mouse_delta_y;
-        rotate_action.action_value[2] = 0.0f;
-
-        action_add(&sim->action_queue, rotate_action);
-    }
+    action_add(&sim->action_queue, debug_action);
 }
 
 void input_update(Shell *shell, Sim *sim)
@@ -172,7 +179,21 @@ void input_update(Shell *shell, Sim *sim)
         input->mouse_delta_y = (f32)(input->mouse_current_y - input->mouse_previous_y);
     }
     
-    handle_move_action(shell, sim);
-    handle_rotate_action(shell, sim);
+    queue_move_action(shell, sim);
+
+    if (fabs(shell->input.mouse_delta_x) > 1e-12f || fabs(shell->input.mouse_delta_y) > 1e-12f)
+    {
+        queue_rotate_action(shell, sim);
+    }
+
+    if (input_key_is_down(shell, GLFW_KEY_SPACE))
+    {
+        queue_jump_action(shell, sim);
+    }
+
+    if (input_key_is_released(shell, GLFW_KEY_TAB))
+    {
+        queue_debug_mode_action(shell, sim);
+    }
 }
 

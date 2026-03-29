@@ -64,6 +64,8 @@
 
 #define MAX_ACTORS 256
 
+#define GRAVITY_DEFAULT -20.0f
+
 #define JUDGE_DEFAULT_SPEED 16.0f
 
 #define FOR_LIST_DIRECTION(DO) \
@@ -278,11 +280,28 @@ struct Screen
     GLint u_projection_location;
 };
 
+typedef struct BoxCollider BoxCollider;
+struct BoxCollider
+{
+    vec3 radius;
+};
+
 typedef enum ActorType ActorType;
 enum ActorType
 {
     ACTOR_TYPE_JUDGE,
     ACTOR_TYPE_AGENT,
+
+    ACTOR_TYPE_COUNT,
+};
+
+typedef enum MovementType MovementType;
+enum MovementType
+{
+    MOVEMENT_TYPE_GROUND,
+    MOVEMENT_TYPE_FLYING,
+
+    MOVEMENT_TYPE_COUNT,
 };
 
 typedef struct ActorHandle ActorHandle;
@@ -300,9 +319,13 @@ struct Actor
     vec3 world_position;
     vec3 rotation;
 
+    MovementType movement_type;
+    
     f32 speed;
     
     vec3 velocity;
+
+    BoxCollider box_collider;
 };
 
 typedef struct ActorPool ActorPool;
@@ -311,8 +334,12 @@ struct ActorPool
     Actor actor_array[MAX_ACTORS];
 
     u32 generation_array[MAX_ACTORS];
+
+    u32 active_array[MAX_ACTORS];
+    u32 active_count;
+    
     u32 free_array[MAX_ACTORS];
-    u32 free_count[MAX_ACTORS];
+    u32 free_count;
 };
 
 typedef enum ActionType ActionType;
@@ -321,6 +348,7 @@ enum ActionType
     ACTION_MOVE,
     ACTION_ROTATE,
     ACTION_JUMP,
+    ACTION_DEBUG_MODE,
 
     ACTION_COUNT,
 };
@@ -341,6 +369,12 @@ struct ActionQueue
 
     u32 head_index;
     u32 tail_index;
+};
+
+typedef struct Physics Physics;
+struct Physics
+{
+    vec3 gravity;
 };
 
 typedef struct Cell Cell;
@@ -366,6 +400,8 @@ struct Sim
 
     ActionQueue action_queue;
     ActorPool actor_pool;
+
+    Physics physics;
     
     Cell *cell_array;
 };

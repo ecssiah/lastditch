@@ -1,4 +1,5 @@
 #include "actor.h"
+#include "ld_data.h"
 
 void actor_get_forward(Actor *actor, vec3 out_forward)
 {
@@ -33,4 +34,21 @@ void actor_get_up(Actor *actor, vec3 out_up)
     glm_vec3_cross(forward, right, out_up);
     
     glm_vec3_normalize(out_up);
+}
+
+ActorHandle actor_add_to_pool(Actor *actor, ActorPool* actor_pool)
+{   
+    const u32 actor_index = actor_pool->free_array[--actor_pool->free_count];
+    const u32 actor_generation = ++actor_pool->generation_array[actor_index];
+    
+    actor_pool->actor_array[actor_index] = *actor;
+    
+    actor_pool->active_array[actor_index] = actor_pool->active_count;
+    actor_pool->active_array[actor_pool->active_count++] = actor_index;
+
+    assert(actor_pool->free_count + actor_pool->active_count == MAX_ACTORS);
+
+    ActorHandle actor_handle = { actor_index, actor_generation };
+    
+    return actor_handle;
 }

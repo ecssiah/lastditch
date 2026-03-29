@@ -1,7 +1,6 @@
 #include "ld_data.h"
 #include "sim.h"
 #include "shell.h"
-#include "viewpoint.h"
 #include "world.h"
 #include "input.h"
 #include "render.h"
@@ -13,9 +12,8 @@ static Shell shell;
 int main()
 {
     shell_init(&shell);
-    
     sim_init(&sim);
-
+    
     world_init(&sim);
     
     input_init(&shell);    
