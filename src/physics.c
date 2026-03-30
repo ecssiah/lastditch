@@ -15,17 +15,47 @@ static void get_int_bounds(BoxCollider *box_collider, vec3 position, IntBounds *
     out_int_bounds->max[0] = position[0] + box_collider->radius[0];
     out_int_bounds->max[1] = position[1] + box_collider->radius[1];
     out_int_bounds->max[2] = position[2] + box_collider->radius[2];
+
+    i32 axis_index;
+    for (axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    {
+        if (out_int_bounds->min[axis_index] < 0)
+        {
+            out_int_bounds->min[axis_index] = 0;
+        }
+        
+        if (out_int_bounds->max[axis_index] >= WORLD_SIZE_IN_CELLS)
+        {
+            out_int_bounds->max[axis_index] = WORLD_SIZE_IN_CELLS - 1;
+        }
+    }
 }
 
-static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBounds *out_fbounds)
+static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBounds *out_float_bounds)
 {
-    out_fbounds->min[0] = position[0] - box_collider->radius[0];
-    out_fbounds->min[1] = position[1] - box_collider->radius[1];
-    out_fbounds->min[2] = position[2] - box_collider->radius[2];
+    out_float_bounds->min[0] = position[0] - box_collider->radius[0];
+    out_float_bounds->min[1] = position[1] - box_collider->radius[1];
+    out_float_bounds->min[2] = position[2] - box_collider->radius[2];
 
-    out_fbounds->max[0] = position[0] + box_collider->radius[0];
-    out_fbounds->max[1] = position[1] + box_collider->radius[1];
-    out_fbounds->max[2] = position[2] + box_collider->radius[2];
+    out_float_bounds->max[0] = position[0] + box_collider->radius[0];
+    out_float_bounds->max[1] = position[1] + box_collider->radius[1];
+    out_float_bounds->max[2] = position[2] + box_collider->radius[2];
+
+    const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
+
+    i32 axis_index;
+    for (axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    {
+        if (out_float_bounds->min[axis_index] < 0.0f)
+        {
+            out_float_bounds->min[axis_index] = 0.0f;
+        }
+        
+        if (out_float_bounds->max[axis_index] > world_size)
+        {
+            out_float_bounds->max[axis_index] = world_size;
+        }
+    }
 }
 
 static void get_overlap_bounds(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
@@ -148,6 +178,11 @@ static void integrate_axis(Sim *sim, Actor *actor, Axis axis, f32 delta_time)
                     const ivec3 cell_coordinate = { x, y, z };
                     
                     Cell *cell = world_get_cell(sim, x, y, z);
+
+                    if (!cell)
+                    {
+                        continue;
+                    }
                     
                     if (cell->block_type == BLOCK_TYPE_NONE)
                     {
@@ -206,6 +241,11 @@ static void integrate_axis(Sim *sim, Actor *actor, Axis axis, f32 delta_time)
                     ivec3 cell_coordinate = { x, y, z };
                     
                     Cell *cell = world_get_cell(sim, x, y, z);
+
+                    if (!cell)
+                    {
+                        continue;
+                    }
                     
                     if (cell->block_type == BLOCK_TYPE_NONE)
                     {
