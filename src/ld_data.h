@@ -73,6 +73,9 @@
 
 #define GRAVITY_DEFAULT -90.0f
 
+#define RISING_GRAVITY_MODIFIER 1.0f
+#define FALLING_GRAVITY_MODIFIER 1.7f
+
 #define JUDGE_DEFAULT_MOVE_SPEED 12.0f
 #define JUDGE_DEFAULT_FLY_SPEED 32.0f
 #define JUDGE_DEFAULT_JUMP_SPEED 46.0f
@@ -287,6 +290,16 @@ struct Screen
     GLint u_font_texture_sampler_location;
     
     GLint u_projection_location;
+};
+
+typedef enum Axis Axis;
+enum Axis
+{
+    AXIS_X = 0,
+    AXIS_Y = 1,
+    AXIS_Z = 2,
+
+    AXIS_COUNT,
 };
 
 typedef struct IntBounds IntBounds;

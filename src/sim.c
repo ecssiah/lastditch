@@ -34,7 +34,7 @@ static void actors_init(Sim *sim)
     judge.rotation[1] = 0.0f;
     judge.rotation[2] = 90.0f;
 
-    judge.speed = JUDGE_DEFAULT_MOVE_SPEED;
+    judge.speed = JUDGE_DEFAULT_FLY_SPEED;
 
     judge.velocity[0] = 0.0f;
     judge.velocity[1] = 0.0f;
@@ -176,39 +176,6 @@ static void apply_action(Sim *sim, Action *action)
     }
 }
 
-void sim_init(Sim *sim)
-{
-    sim->active = TRUE;
-    
-    sim->seed = 813;
-    // u32 seed = (u32)time(NULL);
-    
-    srand(sim->seed);
-
-    sim->current_time = 0.0;
-    sim->previous_time = 0.0;
-
-    sim->delta_time = 0.0f;
-
-    sim->physics.gravity[0] = 0.0f;
-    sim->physics.gravity[1] = 0.0f;
-    sim->physics.gravity[2] = GRAVITY_DEFAULT;
-
-    sim->physics.overlap_cell_set.count = 0;
-    sim->physics.overlap_cell_set.capacity = 32;
-    sim->physics.overlap_cell_set.cell_ptr_array = calloc(sim->physics.overlap_cell_set.capacity, sizeof(Cell *));
-    
-    sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
-
-    i32 cell_index;
-    for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
-    {
-        sim->cell_array[cell_index].cell_index = cell_index;
-    }
-
-    actors_init(sim);
-}
-
 static void update_time(Sim *sim)
 {
     sim->current_time = glfwGetTime();
@@ -255,6 +222,39 @@ static void update_actors(Sim *sim)
 
         update_actor(sim, actor);
     }
+}
+
+void sim_init(Sim *sim)
+{
+    sim->active = TRUE;
+    
+    sim->seed = 813;
+    // u32 seed = (u32)time(NULL);
+    
+    srand(sim->seed);
+
+    sim->current_time = 0.0;
+    sim->previous_time = 0.0;
+
+    sim->delta_time = 0.0f;
+
+    sim->physics.gravity[0] = 0.0f;
+    sim->physics.gravity[1] = 0.0f;
+    sim->physics.gravity[2] = GRAVITY_DEFAULT;
+
+    sim->physics.overlap_cell_set.count = 0;
+    sim->physics.overlap_cell_set.capacity = 32;
+    sim->physics.overlap_cell_set.cell_ptr_array = calloc(sim->physics.overlap_cell_set.capacity, sizeof(Cell *));
+    
+    sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
+
+    i32 cell_index;
+    for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    {
+        sim->cell_array[cell_index].cell_index = cell_index;
+    }
+
+    actors_init(sim);
 }
 
 void sim_update(Sim *sim)
