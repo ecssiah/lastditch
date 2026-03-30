@@ -10,38 +10,8 @@ The main features of Last Ditch.
 ** Development
 Development tracking for Last Ditch.
 
+*** Issues
+1. SegFault at maximum sector height
+
 *** Notes
-
-float best_block_min = +INFINITY;
-bool found = false;
-
-for (z = min.z; z <= max.z; ++z)
-for (y = min.y; y <= max.y; ++y)
-for (x = min.x; x <= max.x; ++x)
-{
-    Cell *cell = world_get_cell(sim, x, y, z);
-    if (cell->block_type == BLOCK_TYPE_NONE)
-        continue;
-
-    // check Y overlap
-    if (actor_max_y <= y || actor_min_y >= y + 1.0f)
-        continue;
-
-    // check Z overlap
-    if (actor_max_z <= z || actor_min_z >= z + 1.0f)
-        continue;
-
-    // candidate block along X
-    float block_min = x;
-
-    if (velocity.x > 0)
-    {
-        if (block_min >= actor_max_before &&
-            block_min < best_block_min)
-        {
-            best_block_min = block_min;
-            found = true;
-        }
-    }
-}
 

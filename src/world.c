@@ -514,38 +514,150 @@ static void setup_roof(Sim *sim)
     );
 }
 
-void setup_temples(Sim *sim)
+void setup_nation_bases(Sim *sim)
 {
-    // Wolf Temple
+    // Wolf Trading Platform
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER + TOWER_SIZE, WORLD_CENTER - 8, TOWER_ROOF,
-        8, 16, 1,
-        BLOCK_TYPE_WOLF_STONE
+        TOWER_BORDER + TOWER_SIZE, WORLD_CENTER - TRADING_PLATFORM_WIDTH / 2, TOWER_ROOF,
+        TRADING_PLATFORM_LENGTH, TRADING_PLATFORM_WIDTH, 1,
+        BLOCK_TYPE_SMOOTH_2
+    );
+
+    // Wolf Temple
+    const ivec3 wolf_temple_origin = {
+        TOWER_BORDER + TOWER_SIZE - 32,
+        WORLD_CENTER - TEMPLE_WIDTH / 2,
+        TOWER_ROOF + 1,
+    };
+    
+    world_set_block_type_cube(
+        sim,
+        wolf_temple_origin[0], wolf_temple_origin[1], wolf_temple_origin[2],
+        TEMPLE_LENGTH, TEMPLE_WIDTH, 1,
+        BLOCK_TYPE_SMOOTH_3
+    );
+
+    world_set_block_type_cube(
+        sim,
+        wolf_temple_origin[0] + 1, wolf_temple_origin[1] + 1, wolf_temple_origin[2] + 1,
+        TEMPLE_LENGTH - 2, TEMPLE_WIDTH - 2, 1,
+        BLOCK_TYPE_SMOOTH_3
+    );
+
+    world_set_block_type_cube(
+        sim,
+        wolf_temple_origin[0] + 4, wolf_temple_origin[1] + 4, wolf_temple_origin[2] + 2,
+        1, 1, 16,
+        BLOCK_TYPE_WOLF_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        wolf_temple_origin[0] + 4, wolf_temple_origin[1] + TEMPLE_WIDTH - 5, wolf_temple_origin[2] + 2,
+        1, 1, 16,
+        BLOCK_TYPE_WOLF_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        wolf_temple_origin[0] + TEMPLE_LENGTH - 5, wolf_temple_origin[1] + 4, wolf_temple_origin[2] + 2,
+        1, 1, 16,
+        BLOCK_TYPE_WOLF_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        wolf_temple_origin[0] + TEMPLE_LENGTH - 5, wolf_temple_origin[1] + TEMPLE_WIDTH - 5, wolf_temple_origin[2] + 2,
+        1, 1, 16,
+        BLOCK_TYPE_WOLF_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        wolf_temple_origin[0] + 1, wolf_temple_origin[1] + 1, wolf_temple_origin[2] + 18,
+        TEMPLE_LENGTH - 2, TEMPLE_WIDTH - 2, 1,
+        BLOCK_TYPE_SMOOTH_3
+    );
+
+    // Eagle Trading Platform
+    world_set_block_type_cube(
+        sim,
+        TOWER_BORDER - TRADING_PLATFORM_LENGTH, WORLD_CENTER - TRADING_PLATFORM_WIDTH / 2, TOWER_ROOF,
+        TRADING_PLATFORM_LENGTH, TRADING_PLATFORM_WIDTH, 1,
+        BLOCK_TYPE_SMOOTH_2
     );
 
     // Eagle Temple
+    const ivec3 eagle_temple_origin = {
+        TOWER_BORDER + 32,
+        WORLD_CENTER - TEMPLE_WIDTH / 2,
+        TOWER_ROOF + 1,
+    };
+
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER - 8, WORLD_CENTER - 8, TOWER_ROOF,
-        8, 16, 1,
-        BLOCK_TYPE_EAGLE_STONE
+        eagle_temple_origin[0], eagle_temple_origin[1], eagle_temple_origin[2],
+        TEMPLE_LENGTH, TEMPLE_WIDTH, 1,
+        BLOCK_TYPE_SMOOTH_3
     );
 
-    // Lion Temple
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - 8, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF,
-        16, 8, 1,
-        BLOCK_TYPE_LION_STONE
+        eagle_temple_origin[0] + 1, eagle_temple_origin[1] + 1, eagle_temple_origin[2] + 1,
+        TEMPLE_LENGTH - 2, TEMPLE_WIDTH - 2, 1,
+        BLOCK_TYPE_SMOOTH_3
     );
 
-    // Horse Temple
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - 8, TOWER_BORDER - 8, TOWER_ROOF,
-        16, 8, 1,
-        BLOCK_TYPE_HORSE_STONE
+        eagle_temple_origin[0] + 4, eagle_temple_origin[1] + 4, eagle_temple_origin[2] + 2,
+        1, 1, 16,
+        BLOCK_TYPE_EAGLE_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        eagle_temple_origin[0] + 4, eagle_temple_origin[1] + TEMPLE_WIDTH - 5, eagle_temple_origin[2] + 2,
+        1, 1, 16,
+        BLOCK_TYPE_EAGLE_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        eagle_temple_origin[0] + TEMPLE_LENGTH - 5, eagle_temple_origin[1] + 4, eagle_temple_origin[2] + 2,
+        1, 1, 16,
+        BLOCK_TYPE_EAGLE_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        eagle_temple_origin[0] + TEMPLE_LENGTH - 5, eagle_temple_origin[1] + TEMPLE_WIDTH - 5, eagle_temple_origin[2] + 2,
+        1, 1, 16,
+        BLOCK_TYPE_EAGLE_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        eagle_temple_origin[0] + 1, eagle_temple_origin[1] + 1, eagle_temple_origin[2] + 18,
+        TEMPLE_LENGTH - 2, TEMPLE_WIDTH - 2, 1,
+        BLOCK_TYPE_SMOOTH_3
+    );
+
+    // Lion Trading Platform
+    world_set_block_type_cube(
+        sim,
+        WORLD_CENTER - TRADING_PLATFORM_WIDTH / 2, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF,
+        TRADING_PLATFORM_WIDTH, TRADING_PLATFORM_LENGTH, 1,
+        BLOCK_TYPE_SMOOTH_2
+    );
+
+    // Horse Trading Platform
+    world_set_block_type_cube(
+        sim,
+        WORLD_CENTER - TRADING_PLATFORM_WIDTH / 2, TOWER_BORDER - TRADING_PLATFORM_WIDTH / 2, TOWER_ROOF,
+        TRADING_PLATFORM_WIDTH, TRADING_PLATFORM_LENGTH, 1,
+        BLOCK_TYPE_SMOOTH_2
     );
 }
 
@@ -554,7 +666,7 @@ void world_init(Sim *sim)
     setup_tower(sim);
     setup_roof(sim);
     setup_elevator(sim);
-    setup_temples(sim);
+    setup_nation_bases(sim);
     
     init_direction_mask(sim);
 }

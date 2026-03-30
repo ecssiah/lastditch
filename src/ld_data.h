@@ -80,6 +80,12 @@
 #define JUDGE_DEFAULT_FLY_SPEED 32.0f
 #define JUDGE_DEFAULT_JUMP_SPEED 46.0f
 
+#define TRADING_PLATFORM_WIDTH 16
+#define TRADING_PLATFORM_LENGTH 8
+
+#define TEMPLE_WIDTH 30
+#define TEMPLE_LENGTH 20
+
 #define FOR_LIST_DIRECTION(DO) \
     DO( DIRECTION_EAST ) \
     DO( DIRECTION_WEST ) \
@@ -295,9 +301,9 @@ struct Screen
 typedef enum Axis Axis;
 enum Axis
 {
-    AXIS_X = 0,
-    AXIS_Y = 1,
-    AXIS_Z = 2,
+    AXIS_X,
+    AXIS_Y,
+    AXIS_Z,
 
     AXIS_COUNT,
 };
@@ -417,6 +423,7 @@ struct Cell
     u8 direction_mask;
 };
 
+// TODO: Unused
 typedef struct CellSet CellSet;
 struct CellSet
 {
