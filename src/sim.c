@@ -211,30 +211,9 @@ static void update_actor(Sim *sim, Actor *actor)
 {
     switch (actor->movement_type)
     {
-    case MOVEMENT_TYPE_GROUND:
-    {
-        actor->velocity[2] += sim->delta_time * GRAVITY_DEFAULT;
-        
-        glm_vec3_add(actor->position, actor->velocity, actor->position);
-        glm_vec3_copy(actor->position, actor->box_collider.position);
-
-        physics_resolve_collisions(sim, actor);
-        
-        break;
-    }
-    case MOVEMENT_TYPE_FLYING:
-    {
-        glm_vec3_add(actor->position, actor->velocity, actor->position);
-        glm_vec3_copy(actor->position, actor->box_collider.position);
-
-        physics_resolve_collisions(sim, actor);
-        
-        break;
-    }
-    default:
-    {
-        break;
-    }
+    case MOVEMENT_TYPE_GROUND: physics_integrate(sim, actor); break;
+    case MOVEMENT_TYPE_FLYING: physics_integrate(sim, actor); break;
+    default: break;
     }
 }
 

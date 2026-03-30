@@ -24,6 +24,8 @@
 
 #define CAMERA_PITCH_LIMIT 89.99f
 
+#define CELL_SIZE 1.0f
+
 #define SECTOR_SIZE_IN_CELLS_LOG2 5
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 
@@ -285,11 +287,18 @@ struct Screen
     GLint u_projection_location;
 };
 
-typedef struct Bounds Bounds;
-struct Bounds
+typedef struct IntBounds IntBounds;
+struct IntBounds
 {
     ivec3 min;
     ivec3 max;
+};
+
+typedef struct FloatBounds FloatBounds;
+struct FloatBounds
+{
+    vec3 min;
+    vec3 max;
 };
 
 typedef struct BoxCollider BoxCollider;
