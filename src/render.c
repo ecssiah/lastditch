@@ -493,7 +493,12 @@ void render_update(Shell* shell, Sim* sim)
 
     Actor *judge = &sim->actor_pool.actor_array[sim->judge_handle.index];
 
-    glm_vec3_copy(judge->position, render->viewpoint.position);
+    vec3 judge_eye_offset = { 0.0f, 0.0f, 0.5f };
+    
+    vec3 judge_eye_position;
+    glm_vec3_add(judge->position, judge_eye_offset, judge_eye_position);
+    
+    glm_vec3_copy(judge_eye_position, render->viewpoint.position);
     glm_vec3_copy(judge->rotation, render->viewpoint.rotation);
 
     viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);

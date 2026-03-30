@@ -30,17 +30,17 @@ static void actors_init(Sim *sim)
     judge.position[1] = WORLD_CENTER - 12;
     judge.position[2] = TOWER_ROOF + 5;
 
-    glm_vec3_copy(judge.position, judge.box_collider.position);
-    
     judge.rotation[0] = 0.0f;
     judge.rotation[1] = 0.0f;
     judge.rotation[2] = 90.0f;
 
-    judge.speed = JUDGE_DEFAULT_SPEED;
+    judge.speed = JUDGE_DEFAULT_MOVE_SPEED;
 
     judge.velocity[0] = 0.0f;
     judge.velocity[1] = 0.0f;
     judge.velocity[2] = 0.0f;
+
+    judge.is_grounded = FALSE;
 
     sim->judge_handle = actor_add_to_pool(&judge, &sim->actor_pool);
 
@@ -70,7 +70,22 @@ static void apply_move_action(Sim *sim, Actor *actor, Action *action)
 
         glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
         glm_vec3_scale(actor_forward_flat, action->action_value[1], velocity_forward);
-        glm_vec3_zero(velocity_up);
+
+        vec3 move_velocity = {0};
+
+        glm_vec3_add(move_velocity, velocity_right, move_velocity);
+        glm_vec3_add(move_velocity, velocity_forward, move_velocity);
+
+        glm_vec3_scale(move_velocity, actor->speed, move_velocity);
+
+        if (glm_vec3_norm(move_velocity) > 0.0f)
+        {
+            glm_vec3_normalize(move_velocity);
+            glm_vec3_scale(move_velocity, actor->speed, move_velocity);
+        }
+
+        actor->velocity[0] = move_velocity[0];
+        actor->velocity[1] = move_velocity[1];
         
         break;
     }
@@ -80,20 +95,22 @@ static void apply_move_action(Sim *sim, Actor *actor, Action *action)
         glm_vec3_scale(actor_forward, action->action_value[1], velocity_forward);
         glm_vec3_scale(GLM_ZUP, action->action_value[2], velocity_up);
 
+        actor->velocity[0] = 0.0f;
+        actor->velocity[1] = 0.0f;
+        actor->velocity[2] = 0.0f;
+    
+        glm_vec3_add(actor->velocity, velocity_right, actor->velocity);
+        glm_vec3_add(actor->velocity, velocity_forward, actor->velocity);
+        glm_vec3_add(actor->velocity, velocity_up, actor->velocity);
+
+        glm_vec3_scale(actor->velocity, actor->speed, actor->velocity);
+        
         break;
     }
     default: {
         break;
     }
     }
-
-    glm_vec3_zero(actor->velocity);
-        
-    glm_vec3_add(actor->velocity, velocity_right, actor->velocity);
-    glm_vec3_add(actor->velocity, velocity_forward, actor->velocity);
-    glm_vec3_add(actor->velocity, velocity_up, actor->velocity);
-        
-    glm_vec3_scale(actor->velocity, actor->speed * sim->delta_time, actor->velocity);
 }
 
 static void apply_rotate_action(Sim *sim, Actor *actor, Action *action)
@@ -114,7 +131,10 @@ static void apply_rotate_action(Sim *sim, Actor *actor, Action *action)
 
 static void apply_jump_action(Sim *sim, Actor *actor, Action *action)
 {
-
+    if (actor->is_grounded)
+    {
+        actor->velocity[2] = JUDGE_DEFAULT_JUMP_SPEED;
+    }
 }
 
 static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
@@ -124,11 +144,15 @@ static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
     case MOVEMENT_TYPE_GROUND:
     {
         actor->movement_type = MOVEMENT_TYPE_FLYING;
+        actor->speed = JUDGE_DEFAULT_FLY_SPEED;
+
         break;
     }
     case MOVEMENT_TYPE_FLYING:
     {
         actor->movement_type = MOVEMENT_TYPE_GROUND;
+        actor->speed = JUDGE_DEFAULT_MOVE_SPEED;
+        
         break;
     }
     default:

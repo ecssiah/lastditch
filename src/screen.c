@@ -267,6 +267,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2], sector_coordinate);
     
     char position_text[64];
+    char velocity_text[64];
     char cell_coordinate_text[64];
     char sector_coordinate_text[64];
     char movement_type_text[128];
@@ -274,10 +275,19 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     snprintf(
         position_text,
         sizeof(position_text),
-        "W %.1f %.1f %.1f",
+        "POS %.1f %.1f %.1f",
         judge->position[0],
         judge->position[1],
         judge->position[2]
+    );
+    
+    snprintf(
+        velocity_text,
+        sizeof(velocity_text),
+        "VEL %.1f %.1f %.1f",
+        judge->velocity[0],
+        judge->velocity[1],
+        judge->velocity[2]
     );
 
     if (world_cell_coordinate_is_valid(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]))
@@ -285,7 +295,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
         snprintf(
             cell_coordinate_text,
             sizeof(cell_coordinate_text),
-            "C %i %i %i",
+            "CEL %i %i %i",
             cell_coordinate[0],
             cell_coordinate[1],
             cell_coordinate[2]
@@ -296,7 +306,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
         snprintf(
             cell_coordinate_text,
             sizeof(cell_coordinate_text),
-            "C - - -"
+            "CEL - - -"
         );
     }
 
@@ -305,7 +315,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
         snprintf(
             sector_coordinate_text,
             sizeof(sector_coordinate_text),
-            "S %i %i",
+            "SEC %i %i",
             sector_coordinate[0],
             sector_coordinate[1]
         );
@@ -315,7 +325,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
         snprintf(
             sector_coordinate_text,
             sizeof(sector_coordinate_text),
-            "S - -"
+            "SEC - -"
         );
     }
 
@@ -340,9 +350,10 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     }
 
     screen_draw_text(shell, position_text, 20, 20);
-    screen_draw_text(shell, cell_coordinate_text, 20, 40);
-    screen_draw_text(shell, sector_coordinate_text, 20, 60);
-    screen_draw_text(shell, movement_type_text, 20, 80);
+    screen_draw_text(shell, velocity_text, 20, 40);
+    screen_draw_text(shell, cell_coordinate_text, 20, 60);
+    screen_draw_text(shell, sector_coordinate_text, 20, 80);
+    screen_draw_text(shell, movement_type_text, 20, 100);
 }
 
 void screen_update(Shell *shell, Sim *sim)

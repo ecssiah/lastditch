@@ -113,7 +113,13 @@ static void queue_rotate_action(Shell *shell, Sim *sim)
 
 static void queue_jump_action(Shell *shell, Sim *sim)
 {
-    LOG_WARN("Unimplemented Jump Action");
+    Action jump_action;
+    jump_action.type = ACTION_JUMP;
+    jump_action.handle = sim->judge_handle;
+
+    jump_action.action_value[0] = 1.0f;
+
+    action_add(&sim->action_queue, jump_action);
 }
 
 static void queue_debug_mode_action(Shell *shell, Sim *sim)
@@ -186,7 +192,7 @@ void input_update(Shell *shell, Sim *sim)
         queue_rotate_action(shell, sim);
     }
 
-    if (input_key_is_down(shell, GLFW_KEY_SPACE))
+    if (input_key_is_released(shell, GLFW_KEY_SPACE))
     {
         queue_jump_action(shell, sim);
     }

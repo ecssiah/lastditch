@@ -71,9 +71,11 @@
 
 #define MAX_ACTORS 256
 
-#define GRAVITY_DEFAULT -20.0f
+#define GRAVITY_DEFAULT -90.0f
 
-#define JUDGE_DEFAULT_SPEED 16.0f
+#define JUDGE_DEFAULT_MOVE_SPEED 12.0f
+#define JUDGE_DEFAULT_FLY_SPEED 32.0f
+#define JUDGE_DEFAULT_JUMP_SPEED 46.0f
 
 #define FOR_LIST_DIRECTION(DO) \
     DO( DIRECTION_EAST ) \
@@ -304,7 +306,6 @@ struct FloatBounds
 typedef struct BoxCollider BoxCollider;
 struct BoxCollider
 {
-    vec3 position;
     vec3 radius;
 };
 
@@ -342,9 +343,10 @@ struct Actor
     vec3 rotation;
 
     MovementType movement_type;
+
+    b32 is_grounded;
     
     f32 speed;
-    
     vec3 velocity;
 
     BoxCollider box_collider;

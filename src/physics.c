@@ -6,37 +6,37 @@
 
 #include <math.h>
 
-static void get_int_bounds(BoxCollider *box_collider, IntBounds *out_int_bounds)
+static void get_int_bounds(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
 {
-    out_int_bounds->min[0] = box_collider->position[0] - box_collider->radius[0];
-    out_int_bounds->min[1] = box_collider->position[1] - box_collider->radius[1];
-    out_int_bounds->min[2] = box_collider->position[2] - box_collider->radius[2];
+    out_int_bounds->min[0] = position[0] - box_collider->radius[0];
+    out_int_bounds->min[1] = position[1] - box_collider->radius[1];
+    out_int_bounds->min[2] = position[2] - box_collider->radius[2];
 
-    out_int_bounds->max[0] = box_collider->position[0] + box_collider->radius[0];
-    out_int_bounds->max[1] = box_collider->position[1] + box_collider->radius[1];
-    out_int_bounds->max[2] = box_collider->position[2] + box_collider->radius[2];
+    out_int_bounds->max[0] = position[0] + box_collider->radius[0];
+    out_int_bounds->max[1] = position[1] + box_collider->radius[1];
+    out_int_bounds->max[2] = position[2] + box_collider->radius[2];
 }
 
-static void get_float_bounds(BoxCollider *box_collider, FloatBounds *out_fbounds)
+static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBounds *out_fbounds)
 {
-    out_fbounds->min[0] = box_collider->position[0] - box_collider->radius[0];
-    out_fbounds->min[1] = box_collider->position[1] - box_collider->radius[1];
-    out_fbounds->min[2] = box_collider->position[2] - box_collider->radius[2];
+    out_fbounds->min[0] = position[0] - box_collider->radius[0];
+    out_fbounds->min[1] = position[1] - box_collider->radius[1];
+    out_fbounds->min[2] = position[2] - box_collider->radius[2];
 
-    out_fbounds->max[0] = box_collider->position[0] + box_collider->radius[0];
-    out_fbounds->max[1] = box_collider->position[1] + box_collider->radius[1];
-    out_fbounds->max[2] = box_collider->position[2] + box_collider->radius[2];
+    out_fbounds->max[0] = position[0] + box_collider->radius[0];
+    out_fbounds->max[1] = position[1] + box_collider->radius[1];
+    out_fbounds->max[2] = position[2] + box_collider->radius[2];
 }
 
-static void get_overlap_bounds(BoxCollider *box_collider, IntBounds *out_int_bounds)
+static void get_overlap_bounds(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
 {
-    out_int_bounds->min[0] = (i32)floorf(box_collider->position[0] - box_collider->radius[0]);
-    out_int_bounds->min[1] = (i32)floorf(box_collider->position[1] - box_collider->radius[1]);
-    out_int_bounds->min[2] = (i32)floorf(box_collider->position[2] - box_collider->radius[2]);
+    out_int_bounds->min[0] = (i32)floorf(position[0] - box_collider->radius[0]);
+    out_int_bounds->min[1] = (i32)floorf(position[1] - box_collider->radius[1]);
+    out_int_bounds->min[2] = (i32)floorf(position[2] - box_collider->radius[2]);
 
-    out_int_bounds->max[0] = (i32)ceilf(box_collider->position[0] + box_collider->radius[0]) - 1;
-    out_int_bounds->max[1] = (i32)ceilf(box_collider->position[1] + box_collider->radius[1]) - 1;
-    out_int_bounds->max[2] = (i32)ceilf(box_collider->position[2] + box_collider->radius[2]) - 1;
+    out_int_bounds->max[0] = (i32)ceilf(position[0] + box_collider->radius[0]) - 1;
+    out_int_bounds->max[1] = (i32)ceilf(position[1] + box_collider->radius[1]) - 1;
+    out_int_bounds->max[2] = (i32)ceilf(position[2] + box_collider->radius[2]) - 1;
 
     out_int_bounds->min[0] = out_int_bounds->min[0] < 0 ? 0 : out_int_bounds->min[0];
     out_int_bounds->min[1] = out_int_bounds->min[1] < 0 ? 0 : out_int_bounds->min[1];
@@ -69,7 +69,7 @@ static void get_overlap_bounds_from_float_bounds(FloatBounds *float_bounds, IntB
 static void get_colliding_cell_set(Sim *sim, Actor *actor)
 {
     IntBounds overlap_bounds;
-    get_overlap_bounds(&actor->box_collider, &overlap_bounds);
+    get_overlap_bounds(&actor->box_collider, actor->position, &overlap_bounds);
     
     sim->physics.overlap_cell_set.count = 0;
 
@@ -94,7 +94,7 @@ static void get_colliding_cell_set(Sim *sim, Actor *actor)
     }
 }
 
-static void integrate_x(Sim *sim, Actor *actor)
+static void integrate_x(Sim *sim, Actor *actor, f32 delta_time)
 {
     if (actor->velocity[0] == 0.0f)
     {
@@ -102,11 +102,11 @@ static void integrate_x(Sim *sim, Actor *actor)
     }
 
     FloatBounds actor_bounds;
-    get_float_bounds(&actor->box_collider, &actor_bounds);
+    get_float_bounds(&actor->box_collider, actor->position, &actor_bounds);
 
     FloatBounds swept_bounds = actor_bounds;
-    swept_bounds.min[0] = fminf(actor_bounds.min[0], actor_bounds.min[0] + actor->velocity[0]);
-    swept_bounds.max[0] = fmaxf(actor_bounds.max[0], actor_bounds.max[0] + actor->velocity[0]);
+    swept_bounds.min[0] = fminf(actor_bounds.min[0], actor_bounds.min[0] + delta_time * actor->velocity[0]);
+    swept_bounds.max[0] = fmaxf(actor_bounds.max[0], actor_bounds.max[0] + delta_time * actor->velocity[0]);
 
     IntBounds overlap_bounds;
     get_overlap_bounds_from_float_bounds(&swept_bounds, &overlap_bounds);
@@ -114,8 +114,8 @@ static void integrate_x(Sim *sim, Actor *actor)
     f32 actor_min_prev = actor_bounds.min[0];
     f32 actor_max_prev = actor_bounds.max[0];
 
-    f32 actor_min_next = actor_min_prev + actor->velocity[0];
-    f32 actor_max_next = actor_max_prev + actor->velocity[0];
+    f32 actor_min_next = actor_min_prev + delta_time * actor->velocity[0];
+    f32 actor_max_next = actor_max_prev + delta_time * actor->velocity[0];
 
     i32 x, y, z;
 
@@ -160,7 +160,7 @@ static void integrate_x(Sim *sim, Actor *actor)
         }
         else
         {
-            actor->position[0] += actor->velocity[0];
+            actor->position[0] += delta_time * actor->velocity[0];
         }
     }
     else
@@ -204,12 +204,12 @@ static void integrate_x(Sim *sim, Actor *actor)
         }
         else
         {
-            actor->position[0] += actor->velocity[0];
+            actor->position[0] += delta_time * actor->velocity[0];
         }
     }
 }
 
-static void integrate_y(Sim *sim, Actor *actor)
+static void integrate_y(Sim *sim, Actor *actor, f32 delta_time)
 {
     if (actor->velocity[1] == 0.0f)
     {
@@ -217,11 +217,11 @@ static void integrate_y(Sim *sim, Actor *actor)
     }
 
     FloatBounds actor_bounds;
-    get_float_bounds(&actor->box_collider, &actor_bounds);
+    get_float_bounds(&actor->box_collider, actor->position, &actor_bounds);
 
     FloatBounds swept_bounds = actor_bounds;
-    swept_bounds.min[1] = fminf(actor_bounds.min[1], actor_bounds.min[1] + actor->velocity[1]);
-    swept_bounds.max[1] = fmaxf(actor_bounds.max[1], actor_bounds.max[1] + actor->velocity[1]);
+    swept_bounds.min[1] = fminf(actor_bounds.min[1], actor_bounds.min[1] + delta_time * actor->velocity[1]);
+    swept_bounds.max[1] = fmaxf(actor_bounds.max[1], actor_bounds.max[1] + delta_time * actor->velocity[1]);
 
     IntBounds overlap_bounds;
     get_overlap_bounds_from_float_bounds(&swept_bounds, &overlap_bounds);
@@ -229,8 +229,8 @@ static void integrate_y(Sim *sim, Actor *actor)
     f32 actor_min_prev = actor_bounds.min[1];
     f32 actor_max_prev = actor_bounds.max[1];
 
-    f32 actor_min_next = actor_min_prev + actor->velocity[1];
-    f32 actor_max_next = actor_max_prev + actor->velocity[1];
+    f32 actor_min_next = actor_min_prev + delta_time * actor->velocity[1];
+    f32 actor_max_next = actor_max_prev + delta_time * actor->velocity[1];
 
     i32 x, y, z;
 
@@ -276,7 +276,7 @@ static void integrate_y(Sim *sim, Actor *actor)
         }
         else
         {
-            actor->position[1] += actor->velocity[1];
+            actor->position[1] += delta_time * actor->velocity[1];
         }
     }
     else
@@ -321,12 +321,12 @@ static void integrate_y(Sim *sim, Actor *actor)
         }
         else
         {
-            actor->position[1] += actor->velocity[1];
+            actor->position[1] += delta_time * actor->velocity[1];
         }
     }
 }
 
-static void integrate_z(Sim *sim, Actor *actor)
+static void integrate_z(Sim *sim, Actor *actor, f32 delta_time)
 {
     if (actor->velocity[2] == 0.0f)
     {
@@ -334,11 +334,11 @@ static void integrate_z(Sim *sim, Actor *actor)
     }
 
     FloatBounds actor_bounds;
-    get_float_bounds(&actor->box_collider, &actor_bounds);
+    get_float_bounds(&actor->box_collider, actor->position, &actor_bounds);
 
     FloatBounds swept_bounds = actor_bounds;
-    swept_bounds.min[2] = fminf(actor_bounds.min[2], actor_bounds.min[2] + actor->velocity[2]);
-    swept_bounds.max[2] = fmaxf(actor_bounds.max[2], actor_bounds.max[2] + actor->velocity[2]);
+    swept_bounds.min[2] = fminf(actor_bounds.min[2], actor_bounds.min[2] + delta_time * actor->velocity[2]);
+    swept_bounds.max[2] = fmaxf(actor_bounds.max[2], actor_bounds.max[2] + delta_time * actor->velocity[2]);
 
     IntBounds overlap_bounds;
     get_overlap_bounds_from_float_bounds(&swept_bounds, &overlap_bounds);
@@ -346,8 +346,8 @@ static void integrate_z(Sim *sim, Actor *actor)
     f32 actor_min_prev = actor_bounds.min[2];
     f32 actor_max_prev = actor_bounds.max[2];
 
-    f32 actor_min_next = actor_min_prev + actor->velocity[2];
-    f32 actor_max_next = actor_max_prev + actor->velocity[2];
+    f32 actor_min_next = actor_min_prev + delta_time * actor->velocity[2];
+    f32 actor_max_next = actor_max_prev + delta_time * actor->velocity[2];
 
     i32 x, y, z;
 
@@ -393,7 +393,7 @@ static void integrate_z(Sim *sim, Actor *actor)
         }
         else
         {
-            actor->position[2] += actor->velocity[2];
+            actor->position[2] += delta_time * actor->velocity[2];
         }
     }
     else
@@ -435,24 +435,51 @@ static void integrate_z(Sim *sim, Actor *actor)
         {
             actor->position[2] = best + actor->box_collider.radius[2];
             actor->velocity[2] = 0.0f;
+
+            actor->is_grounded = TRUE;
         }
         else
         {
-            actor->position[2] += actor->velocity[2];
+            actor->position[2] += delta_time * actor->velocity[2];
         }
     }
 }
 
 void physics_integrate(Sim *sim, Actor *actor)
 {
+    actor->is_grounded = FALSE;
+    
     if (actor->movement_type == MOVEMENT_TYPE_GROUND)
     {
-        actor->velocity[2] = actor->velocity[2] + sim->delta_time * sim->physics.gravity[2];  
+        if (actor->velocity[2] < 0.0f)
+        {
+            actor->velocity[2] += sim->delta_time * 1.7f * sim->physics.gravity[2];
+        }
+        else
+        {
+            actor->velocity[2] += sim->delta_time * sim->physics.gravity[2];
+        }
     }
 
-    integrate_x(sim, actor);
-    integrate_y(sim, actor);
-    integrate_z(sim, actor);
+    f32 move_x = fabsf(sim->delta_time * actor->velocity[0]);
+    f32 move_y = fabsf(sim->delta_time * actor->velocity[1]);
+    f32 move_z = fabsf(sim->delta_time * actor->velocity[2]);
 
-    glm_vec3_copy(actor->position, actor->box_collider.position);
+    f32 max_move = fmaxf(move_x, fmaxf(move_y, move_z));
+
+    i32 steps = (i32)ceilf(max_move);
+    if (steps < 1)
+    {
+        steps = 1;
+    }
+
+    f32 step_dt = sim->delta_time / (f32)steps;
+
+    i32 i;
+    for (i = 0; i < steps; ++i)
+    {
+        integrate_x(sim, actor, step_dt);
+        integrate_y(sim, actor, step_dt);
+        integrate_z(sim, actor, step_dt);
+    }
 }
