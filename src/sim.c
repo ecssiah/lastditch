@@ -4,6 +4,7 @@
 #include "ld_data.h"
 #include "action.h"
 #include "actor.h"
+#include "physics.h"
 
 static void actors_init(Sim *sim)
 {
@@ -21,7 +22,9 @@ static void actors_init(Sim *sim)
     judge.actor_type = ACTOR_TYPE_JUDGE;
     judge.movement_type = MOVEMENT_TYPE_FLYING;
     
-    glm_vec3_broadcast(0.5f, judge.box_collider.radius);
+    judge.box_collider.radius[0] = 0.5f;
+    judge.box_collider.radius[1] = 0.5f;
+    judge.box_collider.radius[2] = 1.0f;
     
     judge.world_position[0] = WORLD_CENTER;
     judge.world_position[1] = WORLD_CENTER - 12;
@@ -201,12 +204,16 @@ static void update_actor(Sim *sim, Actor *actor)
         actor->velocity[2] += sim->delta_time * GRAVITY_DEFAULT;
         
         glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
+
+        physics_resolve_collisions(sim, actor);
         
         break;
     }
     case MOVEMENT_TYPE_FLYING:
     {
         glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
+
+        physics_resolve_collisions(sim, actor);
         
         break;
     }

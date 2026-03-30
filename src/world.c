@@ -423,7 +423,7 @@ static void setup_tower(Sim *sim)
             );
         }
 
-        u32 main_room_size = TOWER_SIZE / 2 - TOWER_BORDER - TOWER_CENTER_HALL_SIZE / 2;
+        const u32 main_room_size = TOWER_SIZE / 2 - TOWER_BORDER - TOWER_CENTER_HALL_SIZE / 2 + 1;
         
         // South West
         world_set_block_type_wireframe(
@@ -512,18 +512,6 @@ static void setup_roof(Sim *sim)
         WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
         BLOCK_TYPE_SMOOTH_1
     );
-
-    world_set_block_type(sim, WORLD_CENTER + 12, WORLD_CENTER + 1, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_EAST);
-    world_set_block_type(sim, WORLD_CENTER + 12, WORLD_CENTER - 2, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_EAST);
-    
-    world_set_block_type(sim, WORLD_CENTER - 13, WORLD_CENTER + 1, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_WEST);
-    world_set_block_type(sim, WORLD_CENTER - 13, WORLD_CENTER - 2, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_WEST);
-	
-    world_set_block_type(sim, WORLD_CENTER + 1, WORLD_CENTER + 12, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_NORTH);
-    world_set_block_type(sim, WORLD_CENTER - 2, WORLD_CENTER + 12, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_NORTH);
-	
-    world_set_block_type(sim, WORLD_CENTER + 1, WORLD_CENTER - 13, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_SOUTH);
-    world_set_block_type(sim, WORLD_CENTER - 2, WORLD_CENTER - 13, TOWER_ROOF + 1, BLOCK_TYPE_CARDINAL_SOUTH);
 }
 
 void setup_temples(Sim *sim)
@@ -533,7 +521,31 @@ void setup_temples(Sim *sim)
         sim,
         TOWER_BORDER + TOWER_SIZE, WORLD_CENTER - 8, TOWER_ROOF,
         8, 16, 1,
-        BLOCK_TYPE_SMOOTH_2
+        BLOCK_TYPE_WOLF_STONE
+    );
+
+    // Eagle Temple
+    world_set_block_type_cube(
+        sim,
+        TOWER_BORDER - 8, WORLD_CENTER - 8, TOWER_ROOF,
+        8, 16, 1,
+        BLOCK_TYPE_EAGLE_STONE
+    );
+
+    // Lion Temple
+    world_set_block_type_cube(
+        sim,
+        WORLD_CENTER - 8, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF,
+        16, 8, 1,
+        BLOCK_TYPE_LION_STONE
+    );
+
+    // Horse Temple
+    world_set_block_type_cube(
+        sim,
+        WORLD_CENTER - 8, TOWER_BORDER - 8, TOWER_ROOF,
+        16, 8, 1,
+        BLOCK_TYPE_HORSE_STONE
     );
 }
 
