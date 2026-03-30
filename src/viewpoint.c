@@ -56,7 +56,7 @@ void viewpoint_get_view_matrix(Viewpoint *viewpoint, mat4 out_view_matrix)
     viewpoint_get_forward(viewpoint, forward);
     
     vec3 center;
-    glm_vec3_add(viewpoint->world_position, forward, center);
+    glm_vec3_add(viewpoint->position, forward, center);
     
-    glm_lookat(viewpoint->world_position, center, GLM_ZUP, out_view_matrix);
+    glm_lookat(viewpoint->position, center, GLM_ZUP, out_view_matrix);
 }

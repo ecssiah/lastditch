@@ -26,10 +26,12 @@ static void actors_init(Sim *sim)
     judge.box_collider.radius[1] = 0.5f;
     judge.box_collider.radius[2] = 1.0f;
     
-    judge.world_position[0] = WORLD_CENTER;
-    judge.world_position[1] = WORLD_CENTER - 12;
-    judge.world_position[2] = TOWER_ROOF + 5;
+    judge.position[0] = WORLD_CENTER;
+    judge.position[1] = WORLD_CENTER - 12;
+    judge.position[2] = TOWER_ROOF + 5;
 
+    glm_vec3_copy(judge.position, judge.box_collider.position);
+    
     judge.rotation[0] = 0.0f;
     judge.rotation[1] = 0.0f;
     judge.rotation[2] = 90.0f;
@@ -167,8 +169,18 @@ void sim_init(Sim *sim)
     sim->physics.gravity[0] = 0.0f;
     sim->physics.gravity[1] = 0.0f;
     sim->physics.gravity[2] = GRAVITY_DEFAULT;
+
+    sim->physics.overlap_cell_set.count = 0;
+    sim->physics.overlap_cell_set.capacity = 32;
+    sim->physics.overlap_cell_set.cell_ptr_array = calloc(sim->physics.overlap_cell_set.capacity, sizeof(Cell *));
     
     sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
+
+    i32 cell_index;
+    for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    {
+        sim->cell_array[cell_index].cell_index = cell_index;
+    }
 
     actors_init(sim);
 }
@@ -203,7 +215,8 @@ static void update_actor(Sim *sim, Actor *actor)
     {
         actor->velocity[2] += sim->delta_time * GRAVITY_DEFAULT;
         
-        glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
+        glm_vec3_add(actor->position, actor->velocity, actor->position);
+        glm_vec3_copy(actor->position, actor->box_collider.position);
 
         physics_resolve_collisions(sim, actor);
         
@@ -211,7 +224,8 @@ static void update_actor(Sim *sim, Actor *actor)
     }
     case MOVEMENT_TYPE_FLYING:
     {
-        glm_vec3_add(actor->world_position, actor->velocity, actor->world_position);
+        glm_vec3_add(actor->position, actor->velocity, actor->position);
+        glm_vec3_copy(actor->position, actor->box_collider.position);
 
         physics_resolve_collisions(sim, actor);
         

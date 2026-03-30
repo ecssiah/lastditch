@@ -117,14 +117,14 @@ i32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)
     return local_index;
 }
 
-void world_cell_coordinate_to_world_position(i32 x, i32 y, i32 z, vec3 out_world_position)
+void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position)
 {
-    out_world_position[0] = (f32)x;
-    out_world_position[1] = (f32)y;
-    out_world_position[2] = (f32)z;
+    out_position[0] = (f32)x;
+    out_position[1] = (f32)y;
+    out_position[2] = (f32)z;
 }
 
-void world_world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate)
+void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate)
 {
     out_cell_coordinate[0] = (i32)floorf(x);
     out_cell_coordinate[1] = (i32)floorf(y);

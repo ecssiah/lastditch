@@ -21,8 +21,8 @@ void world_cell_coordinate_to_sector_coordinate(i32 x, i32 y, i32 z, ivec2 out_s
 i32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z);
 void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_local_coordinate);
 
-void world_cell_coordinate_to_world_position(i32 x, i32 y, i32 z, vec3 out_world_position);
-void world_world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
+void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position);
+void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
 
 b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z);
 

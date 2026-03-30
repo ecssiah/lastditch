@@ -357,9 +357,9 @@ void render_convert_sector_mesh_to_gpu_mesh(Render *render, SectorMesh *sector_m
     ivec2 sector_coordinate;
     world_sector_index_to_coordinate(sector_mesh->sector_index, sector_coordinate);
 
-    gpu_mesh.world_position[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
-    gpu_mesh.world_position[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
-    gpu_mesh.world_position[2] = 0.0f;
+    gpu_mesh.position[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
+    gpu_mesh.position[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
+    gpu_mesh.position[2] = 0.0f;
 
     i32 quad_index;
     for (quad_index = 0; quad_index < sector_mesh->sector_quad_count; ++quad_index)
@@ -430,7 +430,7 @@ void render_init(Shell *shell, Sim *sim)
     render->gpu_mesh_capacity = 0;
     render->gpu_mesh_array = NULL;
 
-    glm_vec3_zero(render->viewpoint.world_position);
+    glm_vec3_zero(render->viewpoint.position);
     glm_vec3_zero(render->viewpoint.rotation);
     
     glm_mat4_identity(render->viewpoint.projection_matrix);
@@ -493,7 +493,7 @@ void render_update(Shell* shell, Sim* sim)
 
     Actor *judge = &sim->actor_pool.actor_array[sim->judge_handle.index];
 
-    glm_vec3_copy(judge->world_position, render->viewpoint.world_position);
+    glm_vec3_copy(judge->position, render->viewpoint.position);
     glm_vec3_copy(judge->rotation, render->viewpoint.rotation);
 
     viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
@@ -506,7 +506,7 @@ void render_update(Shell* shell, Sim* sim)
         GpuMesh *gpu_mesh = &render->gpu_mesh_array[gpu_mesh_index];
 
         mat4 model_matrix;
-        glm_translate_make(model_matrix, gpu_mesh->world_position);
+        glm_translate_make(model_matrix, gpu_mesh->position);
 	
         glUniformMatrix4fv(render->u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
 

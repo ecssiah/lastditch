@@ -189,7 +189,7 @@ struct Input
 typedef struct GpuMesh GpuMesh;
 struct GpuMesh
 {
-    vec3 world_position;
+    vec3 position;
     
     GLuint vao_id;
     GLuint vbo_id;
@@ -223,7 +223,7 @@ struct SectorMesh
 typedef struct Viewpoint Viewpoint;
 struct Viewpoint
 {
-    vec3 world_position;
+    vec3 position;
     vec3 rotation;
 
     mat4 projection_matrix;
@@ -285,9 +285,17 @@ struct Screen
     GLint u_projection_location;
 };
 
+typedef struct Bounds Bounds;
+struct Bounds
+{
+    ivec3 min;
+    ivec3 max;
+};
+
 typedef struct BoxCollider BoxCollider;
 struct BoxCollider
 {
+    vec3 position;
     vec3 radius;
 };
 
@@ -321,7 +329,7 @@ struct Actor
 {
     ActorType actor_type;
 
-    vec3 world_position;
+    vec3 position;
     vec3 rotation;
 
     MovementType movement_type;
@@ -376,17 +384,30 @@ struct ActionQueue
     u32 tail_index;
 };
 
+typedef struct Cell Cell;
+struct Cell
+{
+    i32 cell_index;
+    
+    BlockType block_type;
+    u8 direction_mask;
+};
+
+typedef struct CellSet CellSet;
+struct CellSet
+{
+    u32 count;
+    u32 capacity;
+
+    Cell **cell_ptr_array;
+};
+
 typedef struct Physics Physics;
 struct Physics
 {
     vec3 gravity;
-};
 
-typedef struct Cell Cell;
-struct Cell
-{
-    BlockType block_type;
-    u8 direction_mask;
+    CellSet overlap_cell_set;
 };
 
 typedef struct Sim Sim;
