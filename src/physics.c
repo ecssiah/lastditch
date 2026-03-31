@@ -125,10 +125,7 @@ static void get_colliding_cell_set(Sim *sim, Actor *actor)
 }
 
 static void integrate_axis(Sim *sim, Actor *actor, Axis axis, f32 delta_time)
-{
-    const i32 axis_s = (axis + 1) % AXIS_COUNT;
-    const i32 axis_t = (axis + 2) % AXIS_COUNT;
-                    
+{           
     if (actor->velocity[axis] == 0.0f)
     {
         return;
@@ -156,53 +153,56 @@ static void integrate_axis(Sim *sim, Actor *actor, Axis axis, f32 delta_time)
     IntBounds overlap_bounds;
     get_overlap_bounds_from_float_bounds(&swept_bounds, &overlap_bounds);
 
-    f32 actor_min_prev = actor_bounds.min[axis];
-    f32 actor_max_prev = actor_bounds.max[axis];
+    const f32 actor_min_prev = actor_bounds.min[axis];
+    const f32 actor_max_prev = actor_bounds.max[axis];
 
-    f32 actor_min_next = actor_min_prev + delta_time * actor->velocity[axis];
-    f32 actor_max_next = actor_max_prev + delta_time * actor->velocity[axis];
+    const f32 actor_min_next = actor_min_prev + delta_time * actor->velocity[axis];
+    const f32 actor_max_next = actor_max_prev + delta_time * actor->velocity[axis];
 
+    const i32 axis_s = (axis + 1) % AXIS_COUNT;
+    const i32 axis_t = (axis + 2) % AXIS_COUNT;
+    
+    b32 found = FALSE;
+    f32 best = actor->velocity[axis] > 0 ? INFINITY : -INFINITY;
+    
     i32 x, y, z;
 
-    if (actor->velocity[axis] > 0)
+    for (z = overlap_bounds.min[AXIS_Z]; z <= overlap_bounds.max[AXIS_Z]; ++z)
     {
-        b32 found = FALSE;
-        f32 best = INFINITY;
-
-        for (z = overlap_bounds.min[2]; z <= overlap_bounds.max[2]; ++z)
+        for (y = overlap_bounds.min[AXIS_Y]; y <= overlap_bounds.max[AXIS_Y]; ++y)
         {
-            for (y = overlap_bounds.min[1]; y <= overlap_bounds.max[1]; ++y)
+            for (x = overlap_bounds.min[AXIS_X]; x <= overlap_bounds.max[AXIS_X]; ++x)
             {
-                for (x = overlap_bounds.min[0]; x <= overlap_bounds.max[0]; ++x)
+                ivec3 cell_coordinate = { x, y, z };
+                    
+                Cell *cell = world_get_cell(sim, x, y, z);
+
+                if (!cell)
                 {
-                    const ivec3 cell_coordinate = { x, y, z };
+                    continue;
+                }
                     
-                    Cell *cell = world_get_cell(sim, x, y, z);
-
-                    if (!cell)
-                    {
-                        continue;
-                    }
+                if (cell->block_type == BLOCK_TYPE_NONE)
+                {
+                    continue;
+                }
                     
-                    if (cell->block_type == BLOCK_TYPE_NONE)
-                    {
-                        continue;
-                    }
+                if (
+                    actor_bounds.max[axis_s] <= cell_coordinate[axis_s] ||
+                    actor_bounds.min[axis_s] >= cell_coordinate[axis_s] + 1.0f
+                ) {
+                    continue;
+                }
+                    
+                if (
+                    actor_bounds.max[axis_t] <= cell_coordinate[axis_t] ||
+                    actor_bounds.min[axis_t] >= cell_coordinate[axis_t] + 1.0f
+                ) {
+                    continue;
+                }
 
-                    if (
-                        actor_bounds.max[axis_s] <= cell_coordinate[axis_s] ||
-                        actor_bounds.min[axis_s] >= cell_coordinate[axis_s] + 1.0f
-                    ) {
-                        continue;
-                    }
-
-                    if (
-                        actor_bounds.max[axis_t] <= cell_coordinate[axis_t] ||
-                        actor_bounds.min[axis_t] >= cell_coordinate[axis_t] + 1.0f
-                    ) {
-                        continue;
-                    }
-
+                if (actor->velocity[axis] > 0)
+                {
                     const f32 block_min = cell_coordinate[axis];
 
                     if (
@@ -214,85 +214,44 @@ static void integrate_axis(Sim *sim, Actor *actor, Axis axis, f32 delta_time)
                         found = TRUE;
                     }
                 }
-            }
-        }
-
-        if (found)
-        {
-            actor->position[axis] = best - actor->box_collider.radius[axis];
-            actor->velocity[axis] = 0.0f;
-        }
-        else
-        {
-            actor->position[axis] += delta_time * actor->velocity[axis];
-        }
-    }
-    else
-    {
-        b32 found = FALSE;
-        f32 best = -INFINITY;
-
-        for (z = overlap_bounds.min[2]; z <= overlap_bounds.max[2]; ++z)
-        {
-            for (y = overlap_bounds.min[1]; y <= overlap_bounds.max[1]; ++y)
-            {
-                for (x = overlap_bounds.min[0]; x <= overlap_bounds.max[0]; ++x)
+                else
                 {
-                    ivec3 cell_coordinate = { x, y, z };
-                    
-                    Cell *cell = world_get_cell(sim, x, y, z);
-
-                    if (!cell)
-                    {
-                        continue;
-                    }
-                    
-                    if (cell->block_type == BLOCK_TYPE_NONE)
-                    {
-                        continue;
-                    }
-                    
-                    if (
-                        actor_bounds.max[axis_s] <= cell_coordinate[axis_s] ||
-                        actor_bounds.min[axis_s] >= cell_coordinate[axis_s] + 1.0f
-                    ) {
-                        continue;
-                    }
-                    
-                    if (
-                        actor_bounds.max[axis_t] <= cell_coordinate[axis_t] ||
-                        actor_bounds.min[axis_t] >= cell_coordinate[axis_t] + 1.0f
-                    ) {
-                        continue;
-                    }
-
                     const f32 block_max = cell_coordinate[axis] + 1.0f;
 
-                    if (block_max <= actor_min_prev &&
+                    if (
+                        block_max <= actor_min_prev &&
                         block_max >= actor_min_next &&
-                        block_max > best)
-                    {
+                        block_max > best
+                    ) {
                         best = block_max;
                         found = TRUE;
                     }
                 }
             }
         }
+    }
 
-        if (found)
+    if (found)
+    {
+        if (actor->velocity[axis] > 0)
+        {
+            actor->position[axis] = best - actor->box_collider.radius[axis];
+        }
+        else
         {
             actor->position[axis] = best + actor->box_collider.radius[axis];
-            actor->velocity[axis] = 0.0f;
 
             if (axis == AXIS_Z)
             {
                 actor->is_grounded = TRUE;
             }
         }
-        else
-        {
-            actor->position[axis] += delta_time * actor->velocity[axis];
-        }
+
+        actor->velocity[axis] = 0.0f;
+    }
+    else
+    {
+        actor->position[axis] += delta_time * actor->velocity[axis];
     }
 }
 

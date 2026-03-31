@@ -192,7 +192,7 @@ void input_update(Shell *shell, Sim *sim)
         queue_rotate_action(shell, sim);
     }
 
-    if (input_key_is_released(shell, GLFW_KEY_SPACE))
+    if (input_key_is_pressed(shell, GLFW_KEY_SPACE))
     {
         queue_jump_action(shell, sim);
     }
