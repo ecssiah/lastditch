@@ -269,6 +269,65 @@ void render_add_gpu_mesh(Render *render, GpuMesh gpu_mesh)
     render->gpu_mesh_array[render->gpu_mesh_count++] = gpu_mesh;
 }
 
+void render_generate_editor_mesh(Shell *shell, Sim *sim)
+{
+    SectorMesh sector_mesh;
+    sector_mesh.sector_index = sector_index;
+    sector_mesh.sector_quad_count = 0;
+    sector_mesh.sector_quad_capacity = 0;
+    sector_mesh.sector_quad_array = NULL;
+
+    ivec2 sector_coordinate;
+    world_sector_index_to_coordinate(sector_index, sector_coordinate);
+
+    ivec3 sector_cell_coordinate;
+    sector_cell_coordinate[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
+    sector_cell_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
+    sector_cell_coordinate[2] = 0;
+
+    i32 cell_x, cell_y, cell_z;
+    
+    for (cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
+    {
+        for (cell_y = sector_cell_coordinate[1]; cell_y < sector_cell_coordinate[1] + SECTOR_SIZE_IN_CELLS; ++cell_y)
+        {
+            for (cell_x = sector_cell_coordinate[0]; cell_x < sector_cell_coordinate[0] + SECTOR_SIZE_IN_CELLS; ++cell_x)
+            {
+                i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
+		
+                Cell *cell = &sim->cell_array[cell_index];
+
+                if (cell->block_type == BLOCK_TYPE_NONE)
+                {
+                    continue;
+                }
+
+                u8 test_direction_mask = cell->direction_mask;
+
+                while (test_direction_mask)
+                {
+                    const Direction direction = DIRECTION_FROM_MASK(test_direction_mask);
+
+                    SectorQuad sector_quad;
+                    sector_quad.direction = direction;
+                    sector_quad.block_type = cell->block_type;
+	    
+                    sector_quad.local_coordinate[0] = cell_x - sector_cell_coordinate[0];
+                    sector_quad.local_coordinate[1] = cell_y - sector_cell_coordinate[1];
+                    sector_quad.local_coordinate[2] = cell_z;
+
+                    render_add_sector_quad(&sector_mesh, sector_quad);
+	    
+                    test_direction_mask &= test_direction_mask - 1;
+                }
+
+            }
+        }
+    }
+
+//    render_add_sector_mesh(&shell->render, sector_mesh);
+}
+
 void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
 {
     SectorMesh sector_mesh;
@@ -350,6 +409,11 @@ void render_emit_sector_face(SectorQuad *sector_quad, GpuMesh *gpu_mesh)
 
         render_add_vertex_attributes(gpu_mesh, vertex_attributes);
     }
+}
+
+void render_convert_editor_mesh_to_gpu_mesh(Render *render)
+{
+
 }
 
 void render_convert_sector_mesh_to_gpu_mesh(Render *render, SectorMesh *sector_mesh)
@@ -455,27 +519,11 @@ void render_init(Shell *shell, Platform *platform, Sim *sim)
 
     glUniformMatrix4fv(render->u_projection_location, 1, GL_FALSE, (f32 *)render->viewpoint.projection_matrix);
 
-    i32 sector_index;
-    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
-    {
-        render_generate_sector_mesh(shell, sim, sector_index);
-    }
+    render_generate_editor_mesh(shell, sim);
 
-    i32 sector_mesh_index;
-    for (sector_mesh_index = 0; sector_mesh_index < render->sector_mesh_count; ++sector_mesh_index)
-    {
-        SectorMesh *sector_mesh = &render->sector_mesh_array[sector_mesh_index];
-	  
-        render_convert_sector_mesh_to_gpu_mesh(render, sector_mesh);
-    }
+    render_convert_editor_mesh_to_gpu_mesh(render);
 
-    i32 gpu_mesh_index;
-    for (gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
-    {
-        GpuMesh *gpu_mesh = &render->gpu_mesh_array[gpu_mesh_index];
-	
-        render_upload_gpu_mesh(gpu_mesh);
-    }
+    render_upload_gpu_mesh(editor_gpu_mesh);
 
     int fb_width, fb_height;
     glfwGetFramebufferSize(platform->window.glfw_window, &fb_width, &fb_height);

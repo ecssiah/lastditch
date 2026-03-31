@@ -26,9 +26,9 @@ static void get_int_bounds(BoxCollider *box_collider, vec3 position, IntBounds *
             out_int_bounds->min[axis_index] = 0;
         }
         
-        if (out_int_bounds->max[axis_index] >= WORLD_SIZE_IN_CELLS)
+        if (out_int_bounds->max[axis_index] >= EDITOR_SIZE_IN_CELLS)
         {
-            out_int_bounds->max[axis_index] = WORLD_SIZE_IN_CELLS - 1;
+            out_int_bounds->max[axis_index] = EDITOR_SIZE_IN_CELLS - 1;
         }
     }
 }
@@ -43,7 +43,7 @@ static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBoun
     out_float_bounds->max[1] = position[1] + box_collider->radius[1];
     out_float_bounds->max[2] = position[2] + box_collider->radius[2];
 
-    const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
+    const f32 world_size = (f32)EDITOR_SIZE_IN_CELLS;
 
     i32 axis_index;
     for (axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
@@ -74,9 +74,9 @@ static void get_overlap_bounds(BoxCollider *box_collider, vec3 position, IntBoun
     out_int_bounds->min[1] = out_int_bounds->min[1] < 0 ? 0 : out_int_bounds->min[1];
     out_int_bounds->min[2] = out_int_bounds->min[2] < 0 ? 0 : out_int_bounds->min[2];
 
-    out_int_bounds->max[0] = out_int_bounds->max[0] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[0];
-    out_int_bounds->max[1] = out_int_bounds->max[1] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[1];
-    out_int_bounds->max[2] = out_int_bounds->max[2] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[2];
+    out_int_bounds->max[0] = out_int_bounds->max[0] >= EDITOR_SIZE_IN_CELLS ? EDITOR_SIZE_IN_CELLS - 1: out_int_bounds->max[0];
+    out_int_bounds->max[1] = out_int_bounds->max[1] >= EDITOR_SIZE_IN_CELLS ? EDITOR_SIZE_IN_CELLS - 1: out_int_bounds->max[1];
+    out_int_bounds->max[2] = out_int_bounds->max[2] >= EDITOR_SIZE_IN_CELLS ? EDITOR_SIZE_IN_CELLS - 1: out_int_bounds->max[2];
 }
 
 static void get_overlap_bounds_from_float_bounds(FloatBounds *float_bounds, IntBounds *out_int_bounds)
@@ -93,9 +93,9 @@ static void get_overlap_bounds_from_float_bounds(FloatBounds *float_bounds, IntB
     if (out_int_bounds->min[1] < 0) out_int_bounds->min[1] = 0;
     if (out_int_bounds->min[2] < 0) out_int_bounds->min[2] = 0;
 
-    if (out_int_bounds->max[0] >= WORLD_SIZE_IN_CELLS) out_int_bounds->max[0] = WORLD_SIZE_IN_CELLS - 1;
-    if (out_int_bounds->max[1] >= WORLD_SIZE_IN_CELLS) out_int_bounds->max[1] = WORLD_SIZE_IN_CELLS - 1;
-    if (out_int_bounds->max[2] >= WORLD_SIZE_IN_CELLS) out_int_bounds->max[2] = WORLD_SIZE_IN_CELLS - 1;
+    if (out_int_bounds->max[0] >= EDITOR_SIZE_IN_CELLS) out_int_bounds->max[0] = EDITOR_SIZE_IN_CELLS - 1;
+    if (out_int_bounds->max[1] >= EDITOR_SIZE_IN_CELLS) out_int_bounds->max[1] = EDITOR_SIZE_IN_CELLS - 1;
+    if (out_int_bounds->max[2] >= EDITOR_SIZE_IN_CELLS) out_int_bounds->max[2] = EDITOR_SIZE_IN_CELLS - 1;
 }
 
 static void integrate_axis(Sim *sim, Actor *actor, Axis axis, f32 delta_time)

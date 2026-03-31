@@ -30,9 +30,9 @@ static void actors_init(Sim *sim)
     editor.box_collider.radius[1] = 0.4f;
     editor.box_collider.radius[2] = 0.9f;
     
-    editor.position[0] = WORLD_CENTER;
-    editor.position[1] = WORLD_CENTER - 12;
-    editor.position[2] = TOWER_ROOF + 5;
+    editor.position[0] = EDITOR_SIZE_IN_CELLS / 2;
+    editor.position[1] = EDITOR_SIZE_IN_CELLS / 2;
+    editor.position[2] = EDITOR_SIZE_IN_CELLS / 2 + 5;
 
     editor.rotation[0] = 0.0f;
     editor.rotation[1] = 0.0f;

@@ -21,8 +21,12 @@ void render_add_gpu_mesh(Render *render, GpuMesh gpu_mesh);
 
 void render_emit_sector_quad(SectorQuad *sector_quad, GpuMesh *gpu_mesh);
 
+void render_generate_editor_mesh(Shell *shell, Sim *sim);
 void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index);
+
+void render_convert_editor_mesh_to_gpu_mesh(Render *render);
 void render_convert_sector_mesh_to_gpu_mesh(Render *render, SectorMesh *sector_mesh);
+
 void render_upload_gpu_mesh(GpuMesh* gpu_mesh);
 
 void render_init(Shell *shell, Platform *platform, Sim *sim);
