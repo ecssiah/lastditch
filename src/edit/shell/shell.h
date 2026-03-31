@@ -1,11 +1,13 @@
-#ifndef EDIT_SHELL_H
-#define EDIT_SHELL_H
+#ifndef SHELL_H
+#define SHELL_H
 
-#include "edit/edit_data.h"
-#include "shell/shell_data.h"
+#include "edit/sim/sim_data.h"
+#include "edit/shell/shell_data.h"
+#include "platform/platform_data.h"
 
-void edit_shell_init(Shell *shell);
-void edit_shell_update(Shell *shell, Edit *edit);
-void edit_shell_close(Shell *shell);
+void shell_init(Shell *shell);
+void shell_update(Shell *shell, Platform *platform, Sim *sim);
+void shell_present(Shell *shell, Sim *sim);
+void shell_close(Shell *shell);
 
 #endif

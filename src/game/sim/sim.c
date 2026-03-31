@@ -8,6 +8,7 @@
 #include "game/sim/actor.h"
 #include "game/sim/physics.h"
 #include "game/sim/sim_data.h"
+#include "game/sim/world.h"
 
 static void actors_init(Sim *sim)
 {
@@ -238,6 +239,7 @@ void sim_init(Sim *sim)
     }
 
     actors_init(sim);
+    world_init(sim);
 }
 
 void sim_update(Sim *sim)

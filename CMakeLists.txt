@@ -136,6 +136,14 @@ target_sources(
     external/jsk/jsk_log.c      
     external/stb/src/stb_image.c
     src/core/action.c
+    src/edit/sim/actor.c
+    src/edit/sim/physics.c
+    src/edit/sim/sim.c
+    src/edit/sim/world.c
+    src/edit/shell/render.c
+    src/edit/shell/screen.c
+    src/edit/shell/shell.c
+    src/edit/shell/viewpoint.c
     src/platform/platform.c
 )
 

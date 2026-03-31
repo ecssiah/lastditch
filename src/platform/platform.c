@@ -119,7 +119,7 @@ b32 platform_key_is_released(Platform *platform, Key key)
     return !platform->input.current_key_array[key] && platform->input.previous_key_array[key];
 }
 
-void platform_init(Platform *platform)
+void platform_init(Platform *platform, const char *window_title)
 {
     const int glfw_result = glfwInit();
 
@@ -144,7 +144,7 @@ void platform_init(Platform *platform)
     platform->window.height = WINDOW_HEIGHT;
     platform->window.aspect_ratio = (f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT;
     
-    platform->window.glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
+    platform->window.glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, NULL, NULL);
 
     assert(platform->window.glfw_window != 0);
 

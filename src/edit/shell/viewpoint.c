@@ -1,8 +1,6 @@
-#include "viewpoint.h"
+#include "edit/shell/viewpoint.h"
 
 #include "jsk.h"
-
-#include "core/ld_data.h"
 
 void viewpoint_get_forward(Viewpoint *viewpoint, vec3 out_forward)
 {

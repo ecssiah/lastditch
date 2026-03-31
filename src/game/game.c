@@ -18,7 +18,7 @@ static Sim sim;
 
 int main()
 {
-    platform_init(&platform);
+    platform_init(&platform, "Last Ditch");
     shell_init(&shell);
     sim_init(&sim);
     

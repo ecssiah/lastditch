@@ -3,7 +3,9 @@
 
 #include <glad/glad.h>
 
-#include "shell/shell_data.h"
+#include "edit/sim/sim_data.h"
+#include "edit/shell/shell_data.h"
+#include "platform/platform_data.h"
 
 void render_load_texture_config(Shell *shell);
 void render_load_texture(Shell *shell, const char *texture_path, const GLint layer_index);
@@ -19,11 +21,11 @@ void render_add_gpu_mesh(Render *render, GpuMesh gpu_mesh);
 
 void render_emit_sector_quad(SectorQuad *sector_quad, GpuMesh *gpu_mesh);
 
-void render_generate_sector_mesh(Shell *shell, Game *game, i32 sector_index);
+void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index);
 void render_convert_sector_mesh_to_gpu_mesh(Render *render, SectorMesh *sector_mesh);
 void render_upload_gpu_mesh(GpuMesh* gpu_mesh);
 
-void render_init(Shell *shell, Game *game);
-void render_update(Shell *shell, Game *game);
+void render_init(Shell *shell, Platform *platform, Sim *sim);
+void render_update(Shell *shell, Sim *sim);
 
 #endif

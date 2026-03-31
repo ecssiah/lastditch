@@ -1,4 +1,4 @@
-#include "shell/render.h"
+#include "edit/shell/render.h"
 
 #include <string.h>
 
@@ -8,8 +8,8 @@
 #include "jsk_gl.h"
 
 #include "core/core_data.h"
-#include "game/world.h"
-#include "shell/viewpoint.h"
+#include "edit/sim/world.h"
+#include "edit/shell/viewpoint.h"
 
 const f32 CELL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
 {
@@ -86,6 +86,17 @@ const f32 CELL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     { +1, +0, +0 },
     { +0, -1, +0 },
 };
+
+static void get_projection_matrix(Render *render, mat4 out_projection_matrix)
+{
+    glm_perspective(
+        glm_rad(60.0f),
+        WINDOW_ASPECT_RATIO,
+        0.1f,
+        1000.0f,
+        out_projection_matrix
+    );
+}
 
 void render_load_texture_config(Shell *shell)
 {
@@ -211,13 +222,6 @@ void render_setup_opengl(Shell *shell)
     render_load_texture_config(shell);
     render_load_textures(shell, "assets/textures/block");
 
-    glfwSetInputMode(shell->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
-    int fb_width, fb_height;
-    glfwGetFramebufferSize(shell->window, &fb_width, &fb_height);
-
-    glViewport(0, 0, fb_width, fb_height);
-
     LOG_INFO("OpenGL Setup");
 }
 
@@ -265,7 +269,7 @@ void render_add_gpu_mesh(Render *render, GpuMesh gpu_mesh)
     render->gpu_mesh_array[render->gpu_mesh_count++] = gpu_mesh;
 }
 
-void render_generate_sector_mesh(Shell *shell, Game *game, i32 sector_index)
+void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
 {
     SectorMesh sector_mesh;
     sector_mesh.sector_index = sector_index;
@@ -291,7 +295,7 @@ void render_generate_sector_mesh(Shell *shell, Game *game, i32 sector_index)
             {
                 i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
 		
-                Cell *cell = &game->cell_array[cell_index];
+                Cell *cell = &sim->cell_array[cell_index];
 
                 if (cell->block_type == BLOCK_TYPE_NONE)
                 {
@@ -422,7 +426,7 @@ void render_upload_gpu_mesh(GpuMesh *gpu_mesh)
     glBindVertexArray(0);
 }
 
-void render_init(Shell *shell, Game *game)
+void render_init(Shell *shell, Platform *platform, Sim *sim)
 {
     Render *render = &shell->render;
     
@@ -447,7 +451,7 @@ void render_init(Shell *shell, Game *game)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->texture_array_id);
 
-    viewpoint_get_projection_matrix(&render->viewpoint, render->viewpoint.projection_matrix);
+    get_projection_matrix(render, render->viewpoint.projection_matrix);
 
     glUniformMatrix4fv(render->u_projection_location, 1, GL_FALSE, (f32 *)render->viewpoint.projection_matrix);
 
@@ -472,11 +476,16 @@ void render_init(Shell *shell, Game *game)
 	
         render_upload_gpu_mesh(gpu_mesh);
     }
+
+    int fb_width, fb_height;
+    glfwGetFramebufferSize(platform->window.glfw_window, &fb_width, &fb_height);
+
+    glViewport(0, 0, fb_width, fb_height);
     
     LOG_INFO("Gpu Meshes Generated");
 }
 
-void render_update(Shell* shell, Game* sim)
+void render_update(Shell* shell, Sim* sim)
 {
     Render *render = &shell->render;
     
@@ -494,15 +503,15 @@ void render_update(Shell* shell, Game* sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->texture_array_id);
 
-    Actor *judge = &game->actor_pool.actor_array[game->judge_handle.index];
+    Actor *editor = &sim->actor_pool.actor_array[sim->editor_handle.index];
 
-    vec3 judge_eye_offset = { 0.0f, 0.0f, 0.5f };
+    vec3 editor_eye_offset = { 0.0f, 0.0f, 0.5f };
     
-    vec3 judge_eye_position;
-    glm_vec3_add(judge->position, judge_eye_offset, judge_eye_position);
+    vec3 editor_eye_position;
+    glm_vec3_add(editor->position, editor_eye_offset, editor_eye_position);
     
-    glm_vec3_copy(judge_eye_position, render->viewpoint.position);
-    glm_vec3_copy(judge->rotation, render->viewpoint.rotation);
+    glm_vec3_copy(editor_eye_position, render->viewpoint.position);
+    glm_vec3_copy(editor->rotation, render->viewpoint.rotation);
 
     viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
 

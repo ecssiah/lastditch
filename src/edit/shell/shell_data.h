@@ -11,11 +11,6 @@
 #define FACE_COUNT_PER_VOXEL 6
 #define VERTEX_COUNT_PER_FACE 6
 
-#define CAMERA_SENSITIVITY_X 0.1f
-#define CAMERA_SENSITIVITY_Y 0.1f
-
-#define CAMERA_PITCH_LIMIT 89.99f
-
 typedef struct VertexAttributes VertexAttributes;
 struct VertexAttributes
 {

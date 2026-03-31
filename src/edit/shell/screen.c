@@ -1,6 +1,5 @@
-#include "screen.h"
+#include "edit/shell/screen.h"
 
-#include <_stdio.h>
 #include <string.h>
 #include <glad/glad.h>
 
@@ -9,8 +8,7 @@
 #include "jsk_gl.h"
 
 #include "core/core_data.h"
-
-#include "game/world.h"
+#include "edit/sim/world.h"
 
 static void load_textures(Screen *screen, const char *textures_path)
 {
@@ -189,7 +187,7 @@ void screen_draw_text(Shell *shell, const char *text, f32 x, f32 y)
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
 
-void screen_init(Shell *shell)
+void screen_init(Shell *shell, Platform *platform)
 {
     Render *render = &shell->render;
     Screen *screen = &shell->screen;
@@ -213,7 +211,7 @@ void screen_init(Shell *shell)
     screen->u_projection_location = glGetUniformLocation(screen->program_id, "u_projection_matrix");
 
     int fb_width, fb_height;
-    glfwGetFramebufferSize(shell->window, &fb_width, &fb_height);
+    glfwGetFramebufferSize(platform->window.glfw_window, &fb_width, &fb_height);
 
     mat4 shell_projection_matrix;
     get_orthographic_projection_matrix(fb_width, fb_height, shell_projection_matrix);
@@ -256,12 +254,12 @@ void screen_init(Shell *shell)
     load_textures(screen, "assets/textures/font");
 }
 
-static void draw_debug_info(Shell *shell, Game *game)
+static void draw_debug_info(Shell *shell, Sim *sim)
 {
-    Actor *judge = &game->actor_pool.actor_array[game->judge_handle.index];
+    Actor *editor = &sim->actor_pool.actor_array[sim->editor_handle.index];
 
     ivec3 cell_coordinate;
-    world_position_to_cell_coordinate(judge->position[0], judge->position[1], judge->position[2], cell_coordinate);
+    world_position_to_cell_coordinate(editor->position[0], editor->position[1], editor->position[2], cell_coordinate);
 
     ivec2 sector_coordinate;
     world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2], sector_coordinate);
@@ -276,18 +274,18 @@ static void draw_debug_info(Shell *shell, Game *game)
         position_text,
         sizeof(position_text),
         "POS %.1f %.1f %.1f",
-        judge->position[0],
-        judge->position[1],
-        judge->position[2]
+        editor->position[0],
+        editor->position[1],
+        editor->position[2]
     );
     
     snprintf(
         velocity_text,
         sizeof(velocity_text),
         "VEL %.1f %.1f %.1f",
-        judge->velocity[0],
-        judge->velocity[1],
-        judge->velocity[2]
+        editor->velocity[0],
+        editor->velocity[1],
+        editor->velocity[2]
     );
 
     if (world_cell_coordinate_is_valid(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]))
@@ -329,7 +327,7 @@ static void draw_debug_info(Shell *shell, Game *game)
         );
     }
 
-    switch (judge->movement_type)
+    switch (editor->movement_type)
     {
     case MOVEMENT_TYPE_GROUND:
     {
@@ -356,7 +354,7 @@ static void draw_debug_info(Shell *shell, Game *game)
     screen_draw_text(shell, movement_type_text, 20, 100);
 }
 
-void screen_update(Shell *shell, Game *game)
+void screen_update(Shell *shell, Sim *sim)
 {
     Screen *screen = &shell->screen;
     
