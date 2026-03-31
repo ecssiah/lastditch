@@ -93,6 +93,8 @@ void shell_init(Shell *shell)
 
 void shell_update(Shell *shell, Platform *platform, Sim *sim)
 {
+    sim->time.delta_time = platform->delta_time;
+
     queue_move_action(platform, sim);
     
     if (fabs(platform->input.mouse_delta_x) > 1e-12f || fabs(platform->input.mouse_delta_y) > 1e-12f)

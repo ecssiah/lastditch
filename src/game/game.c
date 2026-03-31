@@ -27,7 +27,7 @@ int main()
     render_init(&shell, &platform, &sim);
     screen_init(&shell, &platform);
     
-    while (shell.active)
+    while (platform.active)
     {
         platform_begin_frame(&platform);
         shell_update(&shell, &platform, &sim);

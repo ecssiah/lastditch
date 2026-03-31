@@ -503,9 +503,7 @@ void render_update(Shell* shell, Sim* sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->texture_array_id);
 
-    const i32 judge_index = 0;
-    
-    Actor *judge = &sim->actor_pool.actor_array[judge_index];
+    Actor *judge = &sim->actor_pool.actor_array[sim->judge_handle.index];
 
     vec3 judge_eye_offset = { 0.0f, 0.0f, 0.5f };
     

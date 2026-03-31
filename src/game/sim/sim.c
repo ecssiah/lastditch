@@ -45,6 +45,8 @@ static void actors_init(Sim *sim)
 
     judge.is_grounded = FALSE;
 
+    sim->judge_handle = actor_add_to_pool(&judge, &sim->actor_pool);
+
     LOG_INFO("Generated Judge, Index: %u", sim->judge_handle.index);
 }
 
@@ -162,10 +164,8 @@ static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
 
 static void apply_action(Sim *sim, Action *action)
 {
-    i32 judge_handle = 0;
-    
-    Actor *actor = &sim->actor_pool.actor_array[judge_handle];
-    
+    Actor *actor = &sim->actor_pool.actor_array[sim->judge_handle.index];
+
     switch (action->type)
     {
     case ACTION_MOVE: apply_move_action(sim, actor, action); break;

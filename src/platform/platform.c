@@ -122,6 +122,8 @@ b32 platform_key_is_released(Platform *platform, Key key)
 void platform_init(Platform *platform)
 {
     const int glfw_result = glfwInit();
+
+    platform->active = TRUE;
     
     platform->current_time = 0.0;
     platform->previous_time = 0.0;
@@ -185,6 +187,8 @@ void platform_begin_frame(Platform *platform)
 
     if (platform_key_is_pressed(platform, KEY_ESCAPE))
     {
+        platform->active = FALSE;
+        
         glfwSetWindowShouldClose(platform->window.glfw_window, 1);
     }
 }

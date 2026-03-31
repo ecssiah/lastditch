@@ -69,6 +69,8 @@ struct Window
 typedef struct Platform Platform;
 struct Platform
 {
+    b32 active;
+    
     f64 previous_time;
     f64 current_time;
 
