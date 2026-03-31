@@ -1,9 +1,26 @@
 #+TITLE: Last Ditch Development
 
-* Tracker
-** <2026-03-31 Tue>
+* <2026-03-30 Mon>
+** Completed
+
+- Basic collision working
+- Tower roof construction started
+  
+** Active
+- Nation Temple construction
+
+** Next
+- Structure templates
+
+** Notes
 
 
-*** Completed
+* <2026-03-31 Tue>
+** Completed
 
-* Issues
+
+** Active
+
+** Next
+
+** Notes
