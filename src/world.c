@@ -174,9 +174,18 @@ u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
 
         const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
         
-        if (!valid_neighbor || sim->cell_array[cell_index + DIRECTION_STRIDE[direction_index]].block_type == BLOCK_TYPE_NONE)
+        if (!valid_neighbor)
         {
             direction_mask |= (1u << direction_index);
+        }
+        else
+        {
+            const i32 neighbor_cell_index = cell_index + DIRECTION_STRIDE[direction_index];
+
+            if (sim->cell_array[neighbor_cell_index].block_type == BLOCK_TYPE_NONE)
+            {
+                direction_mask |= (1u << direction_index);
+            }
         }
     }
     

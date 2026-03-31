@@ -22,9 +22,9 @@ static void actors_init(Sim *sim)
     judge.actor_type = ACTOR_TYPE_JUDGE;
     judge.movement_type = MOVEMENT_TYPE_FLYING;
     
-    judge.box_collider.radius[0] = 0.5f;
-    judge.box_collider.radius[1] = 0.5f;
-    judge.box_collider.radius[2] = 1.0f;
+    judge.box_collider.radius[0] = 0.4f;
+    judge.box_collider.radius[1] = 0.4f;
+    judge.box_collider.radius[2] = 0.9f;
     
     judge.position[0] = WORLD_CENTER;
     judge.position[1] = WORLD_CENTER - 12;
