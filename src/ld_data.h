@@ -445,6 +445,7 @@ typedef struct Sim Sim;
 struct Sim
 {
     b32 active;
+    b32 evolving;
     
     u32 seed;
 

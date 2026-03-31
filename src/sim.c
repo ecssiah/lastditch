@@ -227,6 +227,7 @@ static void update_actors(Sim *sim)
 void sim_init(Sim *sim)
 {
     sim->active = TRUE;
+    sim->evolving = TRUE;
     
     sim->seed = 813;
     // u32 seed = (u32)time(NULL);
