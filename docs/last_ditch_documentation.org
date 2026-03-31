@@ -3,10 +3,12 @@
 The Garden of Civilizations.
 
 * Overview
-The premise behind Last Ditch.
+Last Ditch is a simulation of civilizations acting under the leadership of a [[Judge]].
 
 * Features
-The main features of Last Ditch.
+
+** Leadership
+Each civilization has a [[Judge]] who leads it through the use of [[Rule]]s.
 
 * Development
 The development of Last Ditch.
@@ -16,4 +18,15 @@ The development of Last Ditch.
    
 
 * Notes
+
+* Keywords
+<<Judge>>
+A Judge issues a set of [[Rule]]s that affect how each [[Citizen]] behaves.
+
+<<Citizen>>
+A Citizen is a member of a Civilization.
+
+<<Rule>>
+A Rule is a constraint on the behavior of Citizens.
+
 
