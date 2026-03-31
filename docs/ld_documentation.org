@@ -1,0 +1,42 @@
+#+TITLE: Last Ditch Documentation
+
+The Garden of Civilizations.
+
+* Overview
+Last Ditch is a simulation of civilizations acting under the leadership of a [[Judge]].
+
+The player always controls only the [[Judge]], but the position can be passed on to other [[Citizen]]s. All [[Citizen]]s behave autonomously. 
+
+* Features
+
+** Leadership
+Each civilization has a [[Judge]] who leads it through the use of [[Rule]]s.
+
+** Nations
+There are four [[Nation]]s.
+
+1. <<Wolf>>
+   The Eastern nation.
+   
+2. <<Eagle>>
+   The Western nation.
+   
+3. <<Lion>>
+   The Northern nation.
+   
+4. <<Horse>>
+   The Southern nation.
+
+* Notes
+
+* Keywords
+<<Judge>>
+A Judge issues a set of [[Rule]]s that affect how each [[Citizen]] behaves.
+
+<<Citizen>>
+A Citizen is a member of a Civilization.
+
+<<Rule>>
+A Rule is a constraint on the behavior of Citizens.
+
+
