@@ -1,0 +1,19 @@
+#+TITLE: Last Ditch Documentation
+
+The Garden of Civilizations.
+
+* Overview
+The premise behind Last Ditch.
+
+* Features
+The main features of Last Ditch.
+
+* Development
+The development of Last Ditch.
+
+** Issues
+- SegFault at peak cell
+   
+
+* Notes
+
