@@ -1,17 +1,18 @@
 #include "platform/platform.h"
 
+#include "jsk_log.h"
 #include "platform/platform_data.h"
 
 static void init_keymap(Input *input)
 {
     i32 key_index;
-    for (key_index = 0; key_index <= GLFW_KEY_LAST; ++key_index)
+    for (key_index = 0; key_index < GLFW_KEY_LAST + 1; ++key_index)
     {
         input->glfw_keymap[key_index] = KEY_NONE;
     }
 
     i32 button_index;
-    for (button_index = 0; button_index <= GLFW_MOUSE_BUTTON_LAST; ++button_index)
+    for (button_index = 0; button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++button_index)
     {
         input->glfw_buttonmap[button_index] = KEY_NONE; 
     }
@@ -45,23 +46,62 @@ static void update_time(Platform *platform)
 static void update_keys(Platform *platform)
 {
     Input *input = &platform->input;
-    
+
     i32 key_index;
-    for (key_index = 0; key_index < GLFW_KEY_LAST + 1; ++key_index)
+    for (key_index = 0; key_index < KEY_COUNT; ++key_index)
     {
-        Key key = input->glfw_keymap[key_index];
+        input->previous_key_array[key_index] = input->current_key_array[key_index];
+        input->current_key_array[key_index] = FALSE;
+    }
+
+    i32 glfw_key_index;
+    for (glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
+    {
+        const Key key = input->glfw_keymap[glfw_key_index];
+
+        if (key == KEY_NONE)
+        {
+            continue;
+        }
         
-        input->current_key_array[key] = glfwGetKey(platform->window.glfw_window, key_index) == GLFW_PRESS;
+        input->current_key_array[key] = glfwGetKey(platform->window.glfw_window, glfw_key_index) == GLFW_PRESS;
     }
 
-    i32 button_index;
-    for (button_index = 0; button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++button_index)
+    i32 glfw_button_index;
+    for (glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
-        Key key = input->glfw_buttonmap[button_index];
+        const Key key = input->glfw_buttonmap[glfw_button_index];
 
-        input->current_key_array[key] = glfwGetMouseButton(platform->window.glfw_window, button_index) == GLFW_PRESS;
+        if (key == KEY_NONE)
+        {
+            continue;
+        }
+
+        input->current_key_array[key] = glfwGetMouseButton(platform->window.glfw_window, glfw_button_index) == GLFW_PRESS;
     }
+}
 
+static void update_mouse(Platform *platform)
+{
+    Input *input = &platform->input;
+    
+    input->mouse_previous_x = input->mouse_current_x;
+    input->mouse_previous_y = input->mouse_current_y;
+    
+    glfwGetCursorPos(platform->window.glfw_window, &input->mouse_current_x, &input->mouse_current_y);
+    
+    if (input->ignore_delta == TRUE)
+    {
+        input->mouse_delta_x = 0.0;
+        input->mouse_delta_y = 0.0;
+	
+        input->ignore_delta = FALSE;
+    }
+    else
+    {
+        input->mouse_delta_x = (f32)(input->mouse_current_x - input->mouse_previous_x);
+        input->mouse_delta_y = (f32)(input->mouse_current_y - input->mouse_previous_y);
+    }
 }
 
 b32 platform_key_is_down(Platform *platform, Key key)
@@ -135,41 +175,17 @@ void platform_init(Platform *platform)
 
 void platform_begin_frame(Platform *platform)
 {
+    Input* input = &platform->input;
+
     glfwPollEvents();
 
     update_time(platform);
-    
-    Input* input = &platform->input;
-
-    i32 key_index;
-    for (key_index = 0; key_index < KEY_COUNT; ++key_index)
-    {
-        input->previous_key_array[key_index] = input->current_key_array[key_index];
-    }
-
-    input->mouse_previous_x = input->mouse_current_x;
-    input->mouse_previous_y = input->mouse_current_y;
-
     update_keys(platform);
+    update_mouse(platform);
 
     if (platform_key_is_pressed(platform, KEY_ESCAPE))
     {
         glfwSetWindowShouldClose(platform->window.glfw_window, 1);
-    }
-
-    glfwGetCursorPos(platform->window.glfw_window, &input->mouse_current_x, &input->mouse_current_y);
-    
-    if (input->ignore_delta == TRUE)
-    {
-        input->mouse_delta_x = 0.0;
-        input->mouse_delta_y = 0.0;
-	
-        input->ignore_delta = FALSE;
-    }
-    else
-    {
-        input->mouse_delta_x = (f32)(input->mouse_current_x - input->mouse_previous_x);
-        input->mouse_delta_y = (f32)(input->mouse_current_y - input->mouse_previous_y);
     }
 }
 
