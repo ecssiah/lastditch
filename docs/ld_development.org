@@ -1,26 +1,29 @@
 #+TITLE: Last Ditch Development
 
 * <2026-03-30 Mon>
-** Completed
-
+** Done
 - Basic collision working
 - Tower roof construction started
   
-** Active
-- Nation Temple construction
-
 ** Next
 - Structure templates
-
-** Notes
-
-
+- Nation temple construction
+  
 * <2026-03-31 Tue>
-** Completed
-
-
-** Active
+** Done
+- Separate out editor as standalone app
 
 ** Next
+- Nation temple construction
+- Editor still in source tree
+  
+* <2026-04-01 Wed>
+** Done
+- Room generation algorithm
+- Door generation algorithm
 
-** Notes
+** Next
+- Tower wireframe option
+- Store rooms for later reference
+- Door generation placement refinement
+- Nation temple construction

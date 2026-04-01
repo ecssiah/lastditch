@@ -11,6 +11,16 @@
 #include "game/sim/sim_data.h"
 #include "game/sim/world.h"
 
+static void time_init(Sim *sim)
+{
+    sim->time.delta_time = 0.0f;
+
+    sim->time.second_count = 0;
+    sim->time.tick_count = 0;
+
+    sim->time.time_rate = 1.0f;
+}
+
 static void actors_init(Sim *sim)
 {
     sim->actor_pool.free_count = ACTOR_MAX;
@@ -25,9 +35,9 @@ static void actors_init(Sim *sim)
     
     Actor judge;
     judge.actor_type = ACTOR_TYPE_JUDGE;
-    judge.movement_type = MOVEMENT_TYPE_FLYING;
+    judge.movement_type = MOVEMENT_TYPE_DEBUG;
 
-    judge.box_collider.collision_enabled = TRUE;
+    judge.box_collider.collision_enabled = FALSE;
     
     judge.box_collider.radius[0] = 0.4f;
     judge.box_collider.radius[1] = 0.4f;
@@ -41,7 +51,7 @@ static void actors_init(Sim *sim)
     judge.rotation[1] = 0.0f;
     judge.rotation[2] = 90.0f;
 
-    judge.speed = JUDGE_DEFAULT_FLY_SPEED;
+    judge.speed = JUDGE_DEFAULT_DEBUG_SPEED;
 
     judge.velocity[0] = 0.0f;
     judge.velocity[1] = 0.0f;
@@ -52,6 +62,13 @@ static void actors_init(Sim *sim)
     sim->judge_handle = actor_add_to_pool(&judge, &sim->actor_pool);
 
     LOG_INFO("Generated Judge, Index: %u", sim->judge_handle.index);
+}
+
+static void physics_init(Sim *sim)
+{
+    sim->physics.gravity[0] = 0.0f;
+    sim->physics.gravity[1] = 0.0f;
+    sim->physics.gravity[2] = GRAVITY_DEFAULT;
 }
 
 static void apply_move_action(Sim *sim, Actor *actor, Action *action)
@@ -97,7 +114,7 @@ static void apply_move_action(Sim *sim, Actor *actor, Action *action)
         
         break;
     }
-    case MOVEMENT_TYPE_FLYING:
+    case MOVEMENT_TYPE_DEBUG:
     {
         glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
         glm_vec3_scale(actor_forward, action->action_value[1], velocity_forward);
@@ -149,14 +166,14 @@ static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
     {
     case MOVEMENT_TYPE_GROUND:
     {
-        actor->movement_type = MOVEMENT_TYPE_FLYING;
-        actor->speed = JUDGE_DEFAULT_FLY_SPEED;
+        actor->movement_type = MOVEMENT_TYPE_DEBUG;
+        actor->speed = JUDGE_DEFAULT_DEBUG_SPEED;
 
         actor->box_collider.collision_enabled = FALSE;
 
         break;
     }
-    case MOVEMENT_TYPE_FLYING:
+    case MOVEMENT_TYPE_DEBUG:
     {
         actor->movement_type = MOVEMENT_TYPE_GROUND;
         actor->speed = JUDGE_DEFAULT_MOVE_SPEED;
@@ -165,8 +182,7 @@ static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
         
         break;
     }
-    default:
-        break;
+    default: break;
     }
 }
 
@@ -200,7 +216,7 @@ static void update_actor(Sim *sim, Actor *actor)
     switch (actor->movement_type)
     {
     case MOVEMENT_TYPE_GROUND: physics_integrate(sim, actor); break;
-    case MOVEMENT_TYPE_FLYING: physics_integrate(sim, actor); break;
+    case MOVEMENT_TYPE_DEBUG: physics_integrate(sim, actor); break;
     default: break;
     }
 }
@@ -232,22 +248,10 @@ void sim_init(Sim *sim)
     
     srand(sim->seed);
 
-    sim->time.delta_time = 0.0f;
-
-    sim->physics.gravity[0] = 0.0f;
-    sim->physics.gravity[1] = 0.0f;
-    sim->physics.gravity[2] = GRAVITY_DEFAULT;
-
-    sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
-
-    i32 cell_index;
-    for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
-    {
-        sim->cell_array[cell_index].cell_index = cell_index;
-    }
-
+    time_init(sim);
     actors_init(sim);
     world_init(sim);
+    physics_init(sim);
 }
 
 void sim_update(Sim *sim)

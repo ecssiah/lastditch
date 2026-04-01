@@ -31,7 +31,7 @@
 
 #define WORLD_CENTER (WORLD_SIZE_IN_CELLS / 2)
 
-#define TOWER_WIREFRAME (FALSE)
+#define TOWER_WIREFRAME FALSE
 
 #define TOWER_BORDER 16
 #define TOWER_SIZE (WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER)
@@ -59,7 +59,7 @@
 #define FALLING_GRAVITY_MODIFIER 1.7f
 
 #define JUDGE_DEFAULT_MOVE_SPEED 12.0f
-#define JUDGE_DEFAULT_FLY_SPEED 32.0f
+#define JUDGE_DEFAULT_DEBUG_SPEED 32.0f
 #define JUDGE_DEFAULT_JUMP_SPEED 46.0f
 
 #define PLATFORM_SIZE_X 16
@@ -187,7 +187,7 @@ typedef enum MovementType MovementType;
 enum MovementType
 {
     MOVEMENT_TYPE_GROUND,
-    MOVEMENT_TYPE_FLYING,
+    MOVEMENT_TYPE_DEBUG,
 
     MOVEMENT_TYPE_COUNT,
 };
@@ -241,8 +241,11 @@ typedef struct Time Time;
 struct Time
 {
     f32 delta_time;
-
     u64 tick_count;
+    
+    u64 second_count;
+
+    f32 time_rate;
 };
 
 typedef struct Sim Sim;
@@ -263,6 +266,8 @@ struct Sim
     Physics physics;
     
     Cell *cell_array;
+    
+    IntRectArray tower_room_array[FLOOR_COUNT];
 };
 
 #endif

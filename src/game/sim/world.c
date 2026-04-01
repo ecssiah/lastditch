@@ -492,13 +492,6 @@ static void setup_elevator(Sim *sim)
     ivec3 elevator_origin;
     world_get_elevator_origin(0, elevator_origin);
     
-    world_set_block_type_box(
-        sim,
-        elevator_origin[0], elevator_origin[1], elevator_origin[2],
-        ELEVATOR_SIZE, ELEVATOR_SIZE, 1,
-        BLOCK_TYPE_METAL_3
-    );
-
     world_set_block_type_cube(
         sim,
         elevator_origin[0] + 1, elevator_origin[1] + 1, elevator_origin[2] + 1,
@@ -512,20 +505,55 @@ static void setup_elevator(Sim *sim)
         const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
 
         world_get_elevator_origin(floor_number, elevator_origin);
-        
-        world_set_block_type_wireframe(
-            sim,
-            elevator_origin[0], elevator_origin[1], elevator_origin[2],
-            ELEVATOR_SIZE, ELEVATOR_SIZE, FLOOR_SIZE_Z,
-            BLOCK_TYPE_CAUTION_3
-        );
+
+        if (TOWER_WIREFRAME)
+        {
+            world_set_block_type_wireframe(
+                sim,
+                elevator_origin[0], elevator_origin[1], elevator_origin[2],
+                ELEVATOR_SIZE, ELEVATOR_SIZE, FLOOR_SIZE_Z,
+                BLOCK_TYPE_CAUTION_3
+            );
+        }
+        else
+        {
+            const i32 elevator_door_offset = 3;
+            
+            world_set_block_type_box(
+                sim,
+                elevator_origin[0], elevator_origin[1], elevator_origin[2],
+                ELEVATOR_SIZE, ELEVATOR_SIZE, FLOOR_SIZE_Z,
+                BLOCK_TYPE_METAL_2
+            );
+
+            world_set_block_type_cube(
+                sim,
+                elevator_origin[0] + elevator_door_offset, elevator_origin[1], elevator_origin[2] + 1,
+                ELEVATOR_SIZE - 2 * elevator_door_offset, ELEVATOR_SIZE, FLOOR_SIZE_Z - 5,
+                BLOCK_TYPE_NONE
+            );
+            
+            world_set_block_type_cube(
+                sim,
+                elevator_origin[0], elevator_origin[1] + elevator_door_offset, elevator_origin[2] + 1,
+                ELEVATOR_SIZE, ELEVATOR_SIZE - 2 * elevator_door_offset, FLOOR_SIZE_Z - 5,
+                BLOCK_TYPE_NONE
+            );
+        }
     }
+
+    world_set_block_type_cube(
+        sim,
+        elevator_origin[0] + 3, elevator_origin[1] + 3, 1,
+        ELEVATOR_SIZE - 6, ELEVATOR_SIZE - 6, TOWER_ROOF_Z,
+        BLOCK_TYPE_NONE
+    );
 }
 
 static void setup_rooms(Sim *sim)
 {
     const u32 room_max = 4 * (1 << ROOM_EXPANSION_ITERATION_COUNT);
-    
+
     IntRectArray room_array_a = { 0, room_max, malloc(room_max * sizeof(IntRect)) };
     IntRectArray room_array_b = { 0, room_max, malloc(room_max * sizeof(IntRect)) };
     
@@ -640,6 +668,12 @@ static void setup_rooms(Sim *sim)
             room_array_expanded->count = 0;
         }
 
+        IntRectArray *room_array_floor = &sim->tower_room_array[floor_number];
+        
+        room_array_floor->count = 0;
+        room_array_floor->capacity = room_max;
+        room_array_floor->rect_array = malloc(room_max * sizeof(IntRect));
+        
         i32 room_index;
         for (room_index = 0; room_index < room_array_current->count; ++room_index)
         {
@@ -667,12 +701,65 @@ static void setup_rooms(Sim *sim)
                     sim,
                     room_rect->min[0], room_rect->min[1], floor_number * FLOOR_SIZE_Z,
                     room_size[0], room_size[1], room_size[2],
-                    BLOCK_TYPE_SMOOTH_3
+                    BLOCK_TYPE_METAL_2
                 );
             }
+
+            room_array_floor->rect_array[room_array_floor->count++] = *room_rect;
         }
     }
 
+    for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    {
+        const IntRectArray *room_array = &sim->tower_room_array[floor_number];
+        
+        i32 room_index;
+        for (room_index = 0; room_index < room_array->count; ++room_index)
+        {
+            const IntRect *room_rect = &room_array->rect_array[room_index]; 
+            
+            const ivec2 room_size =
+            {
+                room_rect->max[AXIS_X] - room_rect->min[AXIS_X],
+                room_rect->max[AXIS_Y] - room_rect->min[AXIS_Y]
+            };
+
+            const i32 east_door_position_y = room_rect->min[AXIS_Y] + rand() % (room_size[AXIS_Y] - 2);
+            const i32 west_door_position_y = room_rect->min[AXIS_Y] + rand() % (room_size[AXIS_Y] - 2);
+
+            const i32 north_door_position_x = room_rect->min[AXIS_X] + rand() % (room_size[AXIS_X] - 2);
+            const i32 south_door_position_x = room_rect->min[AXIS_X] + rand() % (room_size[AXIS_X] - 2);
+
+            world_set_block_type_cube(
+                sim,
+                room_rect->max[AXIS_X], east_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
+                1, 1, 3,
+                BLOCK_TYPE_NONE
+            );
+            
+            world_set_block_type_cube(
+                sim,
+                room_rect->min[AXIS_X], west_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
+                1, 1, 3,
+                BLOCK_TYPE_NONE
+            );
+
+            world_set_block_type_cube(
+                sim,
+                north_door_position_x, room_rect->max[AXIS_Y], floor_number * FLOOR_SIZE_Z + 1,
+                1, 1, 3,
+                BLOCK_TYPE_NONE
+            );
+            
+            world_set_block_type_cube(
+                sim,
+                south_door_position_x, room_rect->min[AXIS_Y], floor_number * FLOOR_SIZE_Z + 1,
+                1, 1, 3,
+                BLOCK_TYPE_NONE
+            );
+        }
+    }
+    
     free(room_array_a.rect_array);
     free(room_array_b.rect_array);
 }
@@ -850,6 +937,14 @@ static void setup_horse_temple(Sim *sim)
 
 void world_init(Sim *sim)
 {
+    sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
+
+    i32 cell_index;
+    for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    {
+        sim->cell_array[cell_index].cell_index = cell_index;
+    }
+    
     setup_tower(sim);
     setup_roof(sim);
     setup_elevator(sim);

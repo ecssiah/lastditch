@@ -296,7 +296,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     switch (judge->movement_type)
     {
     case MOVEMENT_TYPE_GROUND: strcpy(movement_type_text, "Ground"); break;
-    case MOVEMENT_TYPE_FLYING: strcpy(movement_type_text, "Flying"); break;
+    case MOVEMENT_TYPE_DEBUG: strcpy(movement_type_text, "Flying"); break;
     default: break;
     }
 
