@@ -29,6 +29,7 @@ void world_get_elevator_origin(u32 floor_number, ivec3 out_origin);
 void world_get_quadrant_origin(Quadrant quadrant, u32 floor_number, ivec3 out_origin);
 
 b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z);
+b32 world_is_clear(Sim *sim, i32 x, i32 y, i32 z, u8 direction_mask);
 
 BlockType world_block_type_from_string(const char *block_type_string);
 

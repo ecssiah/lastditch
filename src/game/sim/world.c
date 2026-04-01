@@ -218,6 +218,27 @@ b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
     return cell->block_type != BLOCK_TYPE_NONE;
 }
 
+b32 world_is_clear(Sim *sim, i32 x, i32 y, i32 z, u8 direction_mask)
+{
+    i32 direction_index;
+    for (direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    {
+        if (direction_mask & (1 << direction_index))
+        {
+            const i32 neighbor_x = x + DIRECTION_NORMAL_ARRAY[direction_index][0];
+            const i32 neighbor_y = y + DIRECTION_NORMAL_ARRAY[direction_index][1];
+            const i32 neighbor_z = z + DIRECTION_NORMAL_ARRAY[direction_index][2];
+
+            if (world_is_solid(sim, neighbor_x, neighbor_y, neighbor_z))
+            {
+                return FALSE;
+            }
+        }
+    }
+
+    return TRUE;
+}
+
 u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
 {
     u8 direction_mask = 0;
@@ -701,7 +722,7 @@ static void setup_rooms(Sim *sim)
                     sim,
                     room_rect->min[0], room_rect->min[1], floor_number * FLOOR_SIZE_Z,
                     room_size[0], room_size[1], room_size[2],
-                    BLOCK_TYPE_METAL_2
+                    BLOCK_TYPE_PANEL_3
                 );
             }
 
@@ -732,10 +753,17 @@ static void setup_rooms(Sim *sim)
             {
                 const i32 east_door_position_y = room_rect->min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
 
-                if (
-                    !world_is_solid(sim, room_rect->max[AXIS_X] - 1 + 1, east_door_position_y, floor_number * FLOOR_SIZE_Z + 1) &&
-                    !world_is_solid(sim, room_rect->max[AXIS_X] - 1 - 1, east_door_position_y, floor_number * FLOOR_SIZE_Z + 1)
-                ) {
+                const b32 east_door_clear =
+                    world_is_clear(
+                        sim,
+                        room_rect->max[AXIS_X] - 1,
+                        east_door_position_y,
+                        floor_number * FLOOR_SIZE_Z + 1,
+                        (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
+                    );
+                
+                if (east_door_clear)
+                {
                     world_set_block_type_cube(
                         sim,
                         room_rect->max[AXIS_X] - 1, east_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
@@ -750,11 +778,18 @@ static void setup_rooms(Sim *sim)
             for (index = 0; index < door_attempt_count; ++index)
             {
                 const i32 west_door_position_y = room_rect->min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
-            
-                if (
-                    !world_is_solid(sim, room_rect->min[AXIS_X] + 1, west_door_position_y, floor_number * FLOOR_SIZE_Z + 1) &&
-                    !world_is_solid(sim, room_rect->min[AXIS_X] - 1, west_door_position_y, floor_number * FLOOR_SIZE_Z + 1)
-                ) {
+
+                const b32 west_door_clear =
+                    world_is_clear(
+                        sim,
+                        room_rect->min[AXIS_X],
+                        west_door_position_y,
+                        floor_number * FLOOR_SIZE_Z + 1,
+                        (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
+                    );
+                
+                if (west_door_clear)
+                {
                     world_set_block_type_cube(
                         sim,
                         room_rect->min[AXIS_X], west_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
@@ -769,11 +804,18 @@ static void setup_rooms(Sim *sim)
             for (index = 0; index < door_attempt_count; ++index)
             {
                 const i32 north_door_position_x = room_rect->min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
-            
-                if (
-                    !world_is_solid(sim, north_door_position_x, room_rect->max[AXIS_Y] - 1 + 1, floor_number * FLOOR_SIZE_Z + 1) &&
-                    !world_is_solid(sim, north_door_position_x, room_rect->max[AXIS_Y] - 1 - 1, floor_number * FLOOR_SIZE_Z + 1)
-                ) {
+
+                const b32 north_door_clear =
+                    world_is_clear(
+                        sim,
+                        north_door_position_x,
+                        room_rect->max[AXIS_Y] - 1,
+                        floor_number * FLOOR_SIZE_Z + 1,
+                        (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
+                    );
+                                      
+                if (north_door_clear)
+                {
                     world_set_block_type_cube(
                         sim,
                         north_door_position_x, room_rect->max[AXIS_Y] - 1, floor_number * FLOOR_SIZE_Z + 1,
@@ -788,11 +830,18 @@ static void setup_rooms(Sim *sim)
             for (index = 0; index < door_attempt_count; ++index)
             {
                 const i32 south_door_position_x = room_rect->min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
-            
-                if (
-                    !world_is_solid(sim, south_door_position_x, room_rect->min[AXIS_Y] + 1, floor_number * FLOOR_SIZE_Z + 1) &&
-                    !world_is_solid(sim, south_door_position_x, room_rect->min[AXIS_Y] - 1, floor_number * FLOOR_SIZE_Z + 1)
-                ) {
+
+                const south_door_clear =
+                    world_is_clear(
+                        sim,
+                        south_door_position_x,
+                        room_rect->min[AXIS_Y],
+                        floor_number * FLOOR_SIZE_Z + 1,
+                        (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
+                    );
+                
+                if (south_door_clear)
+                {
                     world_set_block_type_cube(
                         sim,
                         south_door_position_x, room_rect->min[AXIS_Y], floor_number * FLOOR_SIZE_Z + 1,
@@ -982,6 +1031,14 @@ static void setup_horse_temple(Sim *sim)
     );
 }
 
+static void test_world_is_clear(Sim *sim)
+{
+    world_set_block_type(sim, 120, 120, TOWER_ROOF_Z + 1, BLOCK_TYPE_WOLF_SYMBOL);
+    /* world_set_block_type(sim, 120, 121, TOWER_ROOF_Z + 1, BLOCK_TYPE_WOLF_SYMBOL); */
+
+    const b32 clear_north_south = world_is_clear(sim, 120, 120, TOWER_ROOF_Z + 1, (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH));
+}
+
 void world_init(Sim *sim)
 {
     sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
@@ -1002,6 +1059,8 @@ void world_init(Sim *sim)
     setup_wolf_temple(sim);
     setup_lion_temple(sim);
     setup_horse_temple(sim);
+
+    /* test_world_is_clear(sim); */
     
     init_direction_mask(sim);
 }
