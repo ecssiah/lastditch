@@ -1,11 +1,12 @@
 #include "game/sim/world.h"
 
 #include <string.h>
+#include <stdlib.h>
 
-#include "game/sim/sim_data.h"
 #include "jsk_log.h"
 
 #include "core/core_data.h"
+#include "game/sim/sim_data.h"
 
 const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
 {
@@ -483,46 +484,6 @@ static void setup_tower(Sim *sim)
                 BLOCK_TYPE_METAL_5
             );
         }
-
-        ivec3 quadrant_1_origin;
-        world_get_quadrant_origin(QUADRANT_1, floor_number, quadrant_1_origin);
-        
-        world_set_block_type_wireframe(
-            sim,
-            quadrant_1_origin[0], quadrant_1_origin[1], quadrant_1_origin[2],
-            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z,
-            BLOCK_TYPE_CAUTION_2
-        );
-
-        ivec3 quadrant_2_origin;
-        world_get_quadrant_origin(QUADRANT_2, floor_number, quadrant_2_origin);
-        
-        world_set_block_type_wireframe(
-            sim,
-            quadrant_2_origin[0], quadrant_2_origin[1], quadrant_2_origin[2],
-            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z,
-            BLOCK_TYPE_CAUTION_2
-        );
-
-        ivec3 quadrant_3_origin;
-        world_get_quadrant_origin(QUADRANT_3, floor_number, quadrant_3_origin);
-        
-        world_set_block_type_wireframe(
-            sim,
-            quadrant_3_origin[0], quadrant_3_origin[1], quadrant_3_origin[2],
-            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z,
-            BLOCK_TYPE_CAUTION_2
-        );
-
-        ivec3 quadrant_4_origin;
-        world_get_quadrant_origin(QUADRANT_4, floor_number, quadrant_4_origin);
-
-        world_set_block_type_wireframe(
-            sim,
-            quadrant_4_origin[0], quadrant_4_origin[1], quadrant_4_origin[2],
-            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z,
-            BLOCK_TYPE_CAUTION_2
-        );
     }
 }
 
@@ -559,6 +520,149 @@ static void setup_elevator(Sim *sim)
             BLOCK_TYPE_CAUTION_3
         );
     }
+}
+
+static void setup_rooms(Sim *sim)
+{
+    const u32 room_max = 4 * (1 << ROOM_EXPANSION_ITERATION_COUNT);
+    
+    IntRectArray room_array_a = { 0, room_max, malloc(room_max * sizeof(IntRect)) };
+    IntRectArray room_array_b = { 0, room_max, malloc(room_max * sizeof(IntRect)) };
+    
+    u32 floor_number;
+    for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    {
+        room_array_a.count = 0;
+        room_array_b.count = 0;
+        
+        ivec3 quadrant_1_origin;
+        world_get_quadrant_origin(QUADRANT_1, floor_number, quadrant_1_origin);
+
+        ivec3 quadrant_2_origin;
+        world_get_quadrant_origin(QUADRANT_2, floor_number, quadrant_2_origin);
+
+        ivec3 quadrant_3_origin;
+        world_get_quadrant_origin(QUADRANT_3, floor_number, quadrant_3_origin);
+
+        ivec3 quadrant_4_origin;
+        world_get_quadrant_origin(QUADRANT_4, floor_number, quadrant_4_origin);
+
+        IntRect *quadrant_1_rect = &room_array_a.rect_array[room_array_a.count];
+        
+        quadrant_1_rect->min[0] = quadrant_1_origin[0];
+        quadrant_1_rect->min[1] = quadrant_1_origin[1];
+        quadrant_1_rect->max[0] = quadrant_1_origin[0] + TOWER_QUADRANT_SIZE;
+        quadrant_1_rect->max[1] = quadrant_1_origin[1] + TOWER_QUADRANT_SIZE;
+
+        room_array_a.count++;
+
+        IntRect *quadrant_2_rect = &room_array_a.rect_array[room_array_a.count];
+        
+        quadrant_2_rect->min[0] = quadrant_2_origin[0];
+        quadrant_2_rect->min[1] = quadrant_2_origin[1];
+        quadrant_2_rect->max[0] = quadrant_2_origin[0] + TOWER_QUADRANT_SIZE;
+        quadrant_2_rect->max[1] = quadrant_2_origin[1] + TOWER_QUADRANT_SIZE;
+
+        room_array_a.count++;
+
+        IntRect *quadrant_3_rect = &room_array_a.rect_array[room_array_a.count];
+                
+        quadrant_3_rect->min[0] = quadrant_3_origin[0];
+        quadrant_3_rect->min[1] = quadrant_3_origin[1];
+        quadrant_3_rect->max[0] = quadrant_3_origin[0] + TOWER_QUADRANT_SIZE;
+        quadrant_3_rect->max[1] = quadrant_3_origin[1] + TOWER_QUADRANT_SIZE;
+
+        room_array_a.count++;
+
+        IntRect *quadrant_4_rect = &room_array_a.rect_array[room_array_a.count];
+
+        quadrant_4_rect->min[0] = quadrant_4_origin[0];
+        quadrant_4_rect->min[1] = quadrant_4_origin[1];
+        quadrant_4_rect->max[0] = quadrant_4_origin[0] + TOWER_QUADRANT_SIZE;
+        quadrant_4_rect->max[1] = quadrant_4_origin[1] + TOWER_QUADRANT_SIZE;
+        
+        room_array_a.count++;
+
+        IntRectArray *room_array_current = &room_array_a;
+        IntRectArray *room_array_expanded = &room_array_b;
+        
+        i32 iteration;
+        for (iteration = 0; iteration < ROOM_EXPANSION_ITERATION_COUNT; ++iteration)
+        {
+            i32 room_index;
+            for (room_index = 0; room_index < room_array_current->count; ++room_index)
+            {
+                const IntRect *room_rect = &room_array_current->rect_array[room_index];
+
+                const ivec3 room_size =
+                {
+                    room_rect->max[0] - room_rect->min[0],
+                    room_rect->max[1] - room_rect->min[1],
+                    FLOOR_SIZE_Z
+                };             
+                
+                const Axis axis_split = room_size[AXIS_X] > room_size[AXIS_Y] ? AXIS_X : AXIS_Y;
+
+                if (room_size[axis_split] >= ROOM_EXPANSION_ROOM_SIZE_MIN)
+                {
+                    IntRect *room_a = &room_array_expanded->rect_array[room_array_expanded->count++];
+                    IntRect *room_b = &room_array_expanded->rect_array[room_array_expanded->count++];
+
+                    const Axis axis_constant = axis_split == AXIS_X ? AXIS_Y : AXIS_X;
+
+                    const i32 split_center =  room_rect->min[axis_split] + room_size[axis_split] / 2;
+                    const i32 split_offset = (rand() % 2 ? -1 : 1) * room_size[axis_split] / 4;
+                    
+                    const i32 split_position = split_center + split_offset;
+
+                    room_a->min[axis_split] = room_rect->min[axis_split];
+                    room_a->min[axis_constant] = room_rect->min[axis_constant];
+
+                    room_a->max[axis_split] = split_position + 1;
+                    room_a->max[axis_constant] = room_rect->max[axis_constant];
+
+                    room_b->min[axis_split] = split_position;
+                    room_b->min[axis_constant] = room_rect->min[axis_constant];
+
+                    room_b->max[axis_split] = room_rect->max[axis_split];
+                    room_b->max[axis_constant] = room_rect->max[axis_constant];
+                }
+                else
+                {
+                    room_array_expanded->rect_array[room_array_expanded->count++] = *room_rect;
+                }
+            }
+
+            IntRectArray *swap_temp = room_array_current;
+            room_array_current = room_array_expanded;
+            room_array_expanded = swap_temp;
+
+            room_array_expanded->count = 0;
+        }
+
+        i32 room_index;
+        for (room_index = 0; room_index < room_array_current->count; ++room_index)
+        {
+            const IntRect *room_rect = &room_array_current->rect_array[room_index];
+
+            const ivec3 room_size =
+            {
+                room_rect->max[0] - room_rect->min[0],
+                room_rect->max[1] - room_rect->min[1],
+                FLOOR_SIZE_Z
+            };
+
+            world_set_block_type_wireframe(
+                sim,
+                room_rect->min[0], room_rect->min[1], floor_number * FLOOR_SIZE_Z,
+                room_size[0], room_size[1], room_size[2],
+                BLOCK_TYPE_CAUTION_2
+            );
+        }
+    }
+
+    free(room_array_a.rect_array);
+    free(room_array_b.rect_array);
 }
 
 static void setup_roof(Sim *sim)
@@ -737,6 +841,8 @@ void world_init(Sim *sim)
     setup_tower(sim);
     setup_roof(sim);
     setup_elevator(sim);
+
+    setup_rooms(sim);
 
     setup_eagle_temple(sim);
     setup_wolf_temple(sim);

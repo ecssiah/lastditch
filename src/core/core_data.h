@@ -41,6 +41,29 @@ enum Axis
     AXIS_COUNT,
 };
 
+typedef struct IntRect IntRect;
+struct IntRect
+{
+    ivec2 min;
+    ivec2 max;
+};
+
+typedef struct IntRectArray IntRectArray;
+struct IntRectArray
+{
+    u32 count;
+    u32 capacity;
+
+    IntRect *rect_array;
+};
+
+typedef struct FloatRect FloatRect;
+struct FloatRect
+{
+    vec2 min;
+    vec2 max;
+};
+
 typedef struct IntBounds IntBounds;
 struct IntBounds
 {
