@@ -11,7 +11,7 @@
 #include "game/sim/world.h"
 #include "game/shell/viewpoint.h"
 
-const f32 CELL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
+const f32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
 {
     // +X
     {
@@ -50,17 +50,7 @@ const f32 CELL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
     },
 };
 
-const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
-{
-    { +1, +0, +0 },
-    { -1, +0, +0 },
-    { +0, +1, +0 },
-    { +0, -1, +0 },
-    { +0, +0, +1 },
-    { +0, +0, -1 },
-};
-
-const f32 CELL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
+const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
 {
     // +X
     { +0, +1, +0 },
@@ -210,7 +200,7 @@ void render_setup_opengl(Shell *shell)
 
     render->u_uv_projection_table_location = glGetUniformLocation(render->program_id, "u_uv_projection_table");
 
-    glUniform3fv(render->u_uv_projection_table_location, DIRECTION_COUNT * 2, &CELL_UV_PROJECTION_ARRAY[0][0]);
+    glUniform3fv(render->u_uv_projection_table_location, DIRECTION_COUNT * 2, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
 
     render->u_projection_location = glGetUniformLocation(render->program_id, "u_projection_matrix");
     render->u_view_location = glGetUniformLocation(render->program_id, "u_view_matrix");
@@ -293,9 +283,9 @@ void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
         {
             for (cell_x = sector_cell_coordinate[0]; cell_x < sector_cell_coordinate[0] + SECTOR_SIZE_IN_CELLS; ++cell_x)
             {
-                i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
+                const i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
 		
-                Cell *cell = &sim->cell_array[cell_index];
+                const Cell *cell = &sim->cell_array[cell_index];
 
                 if (cell->block_type == BLOCK_TYPE_NONE)
                 {
@@ -333,9 +323,9 @@ void render_emit_sector_face(SectorQuad *sector_quad, GpuMesh *gpu_mesh)
     i32 vertex_index;
     for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-        u32 x = sector_quad->local_coordinate[0] + CELL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0];
-        u32 y = sector_quad->local_coordinate[1] + CELL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1];
-        u32 z = sector_quad->local_coordinate[2] + CELL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2];
+        u32 x = sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0];
+        u32 y = sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1];
+        u32 z = sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2];
 
         VertexAttributes vertex_attributes;
 

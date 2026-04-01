@@ -147,9 +147,9 @@ static void integrate_axis(Sim *sim, Actor *actor, Axis axis, f32 delta_time)
         {
             for (x = overlap_bounds.min[AXIS_X]; x <= overlap_bounds.max[AXIS_X]; ++x)
             {
-                ivec3 cell_coordinate = { x, y, z };
+                const ivec3 cell_coordinate = { x, y, z };
                     
-                Cell *cell = world_get_cell(sim, x, y, z);
+                const Cell *cell = world_get_cell(sim, x, y, z);
 
                 if (!cell)
                 {

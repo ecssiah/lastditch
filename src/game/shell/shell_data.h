@@ -5,6 +5,7 @@
 #include "jsk_config.h"
 
 #include "core/core_data.h"
+#include "game/sim/sim_data.h"
 
 #define TEXTURE_SIZE 64
 
@@ -18,8 +19,8 @@ struct VertexAttributes
     u32 a_face;
 };
 
-extern const f32 CELL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3];
-extern const f32 CELL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3];
+extern const f32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3];
+extern const f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3];
 
 typedef struct GpuMesh GpuMesh;
 struct GpuMesh

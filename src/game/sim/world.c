@@ -2,7 +2,9 @@
 
 #include <string.h>
 
+#include "game/sim/sim_data.h"
 #include "jsk_log.h"
+
 #include "core/core_data.h"
 
 const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
@@ -23,6 +25,16 @@ const i32 DIRECTION_STRIDE[DIRECTION_COUNT] =
     -WORLD_STRIDE_Y,
     +WORLD_STRIDE_Z,
     -WORLD_STRIDE_Z,
+};
+
+const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
+{
+    { +1, +0, +0 },
+    { -1, +0, +0 },
+    { +0, +1, +0 },
+    { +0, -1, +0 },
+    { +0, +0, +1 },
+    { +0, +0, -1 },
 };
 
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
@@ -154,7 +166,7 @@ b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
     
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
     
-    Cell *cell = &sim->cell_array[cell_index];
+    const Cell *cell = &sim->cell_array[cell_index];
 
     return cell->block_type != BLOCK_TYPE_NONE;
 }
@@ -307,16 +319,12 @@ static void init_direction_mask(Sim *sim)
 
 static void setup_tower(Sim *sim)
 {
-    const ivec3 floor_size = { FLOOR_SIZE, FLOOR_SIZE, FLOOR_HEIGHT	};
+    const ivec3 floor_size = { TOWER_SIZE, TOWER_SIZE, FLOOR_SIZE_Z	};
 
     i32 floor_number;
-    for (floor_number = FLOOR_COUNT; floor_number > 0; --floor_number)
+    for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        const ivec3 floor_origin = {
-            TOWER_BORDER,
-            TOWER_BORDER,
-            TOWER_ROOF - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT
-        };
+        const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
 	
         LOG_INFO("Floor %i at %i", floor_number, floor_origin[2]);
 
@@ -342,7 +350,7 @@ static void setup_tower(Sim *sim)
         {
             i32 north_position_z, north_size_z;
 	    
-            const i32 north_offset = rand() % (FLOOR_HEIGHT - 2);
+            const i32 north_offset = rand() % (FLOOR_SIZE_Z - 2);
 
             if (rand() % 2)
             {
@@ -352,7 +360,7 @@ static void setup_tower(Sim *sim)
             else
             {
                 north_position_z = cell_z + 1 + north_offset;
-                north_size_z = (FLOOR_HEIGHT - 2) - north_offset;
+                north_size_z = (FLOOR_SIZE_Z - 2) - north_offset;
             }
 	    
             world_set_block_type_cube(
@@ -364,7 +372,7 @@ static void setup_tower(Sim *sim)
 
             i32 south_position_z, south_size_z;
 
-            const i32 south_offset = rand() % (FLOOR_HEIGHT - 2);
+            const i32 south_offset = rand() % (FLOOR_SIZE_Z - 2);
 
             if (rand() % 2)
             {
@@ -374,7 +382,7 @@ static void setup_tower(Sim *sim)
             else
             {
                 south_position_z = cell_z + 1 + south_offset;
-                south_size_z = (FLOOR_HEIGHT - 2) - south_offset;
+                south_size_z = (FLOOR_SIZE_Z - 2) - south_offset;
             }
 
             world_set_block_type_cube(
@@ -389,7 +397,7 @@ static void setup_tower(Sim *sim)
         {
             i32 east_position_z, east_size_z;
 
-            const i32 east_offset = rand() % (FLOOR_HEIGHT - 2);
+            const i32 east_offset = rand() % (FLOOR_SIZE_Z - 2);
 
             if (rand() % 2)
             {
@@ -399,7 +407,7 @@ static void setup_tower(Sim *sim)
             else
             {
                 east_position_z = cell_z + 1 + east_offset;
-                east_size_z = (FLOOR_HEIGHT - 2) - east_offset;
+                east_size_z = (FLOOR_SIZE_Z - 2) - east_offset;
             }
 	    
             world_set_block_type_cube(
@@ -411,7 +419,7 @@ static void setup_tower(Sim *sim)
 
             i32 west_position_z, west_size_z;
 
-            const i32 west_offset = rand() % (FLOOR_HEIGHT - 2);
+            const i32 west_offset = rand() % (FLOOR_SIZE_Z - 2);
 
             if (rand() % 2)
             {
@@ -421,7 +429,7 @@ static void setup_tower(Sim *sim)
             else
             {
                 west_position_z = cell_z + 1 + west_offset;
-                west_size_z = (FLOOR_HEIGHT - 2) - west_offset;
+                west_size_z = (FLOOR_SIZE_Z - 2) - west_offset;
             }
 
             world_set_block_type_cube(
@@ -480,27 +488,23 @@ static void setup_elevator(Sim *sim)
     world_set_block_type_cube(
         sim,
         WORLD_CENTER - ELEVATOR_EXTENT + 1, WORLD_CENTER - ELEVATOR_EXTENT + 1, 1,
-        ELEVATOR_SIZE - 2, ELEVATOR_SIZE - 2, TOWER_ROOF + FLOOR_HEIGHT,
+        ELEVATOR_SIZE - 2, ELEVATOR_SIZE - 2, TOWER_ROOF_Z + FLOOR_SIZE_Z,
         BLOCK_TYPE_NONE
     );
 
     world_set_block_type_wireframe(
         sim,
-        WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, TOWER_ROOF,
+        WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, TOWER_ROOF_Z,
         ELEVATOR_SIZE, ELEVATOR_SIZE, 12,
         BLOCK_TYPE_CAUTION_3
     );
 
-    const ivec3 floor_size = { FLOOR_SIZE, FLOOR_SIZE, FLOOR_HEIGHT	};
+    const ivec3 floor_size = { TOWER_SIZE, TOWER_SIZE, FLOOR_SIZE_Z	};
     
     i32 floor_number;
-    for (floor_number = FLOOR_COUNT; floor_number > 0; --floor_number)
+    for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        const ivec3 floor_origin = {
-            TOWER_BORDER,
-            TOWER_BORDER,
-            TOWER_ROOF - (FLOOR_COUNT - floor_number + 1) * FLOOR_HEIGHT
-        };
+        const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
         
         world_set_block_type_wireframe(
             sim,
@@ -513,44 +517,50 @@ static void setup_elevator(Sim *sim)
 
 static void setup_roof(Sim *sim)
 {
-    LOG_INFO("Floor R at %i", TOWER_ROOF);
+    LOG_INFO("Floor R at %i", TOWER_ROOF_Z);
     
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER, TOWER_BORDER, TOWER_ROOF,
+        TOWER_BORDER, TOWER_BORDER, TOWER_ROOF_Z,
         WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
         BLOCK_TYPE_SMOOTH_1
     );
 }
 
-void setup_nation_bases(Sim *sim)
+static void setup_wolf_temple(Sim *sim)
 {
-    // Wolf Trading Platform
+    const ivec3 wolf_platform_origin =
+    {
+        TOWER_BORDER + TOWER_SIZE,
+        WORLD_CENTER - PLATFORM_SIZE_X / 2,
+        TOWER_ROOF_Z
+    };
+    
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER + TOWER_SIZE, WORLD_CENTER - TRADING_PLATFORM_WIDTH / 2, TOWER_ROOF,
-        TRADING_PLATFORM_LENGTH, TRADING_PLATFORM_WIDTH, 1,
+        wolf_platform_origin[0], wolf_platform_origin[1], wolf_platform_origin[2],
+        PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
-    // Wolf Temple
-    const ivec3 wolf_temple_origin = {
+    const ivec3 wolf_temple_origin =
+    {
         TOWER_BORDER + TOWER_SIZE - 32,
-        WORLD_CENTER - TEMPLE_WIDTH / 2,
-        TOWER_ROOF + 1,
+        WORLD_CENTER - TEMPLE_SIZE_X / 2,
+        TOWER_ROOF_Z + 1,
     };
     
     world_set_block_type_cube(
         sim,
         wolf_temple_origin[0], wolf_temple_origin[1], wolf_temple_origin[2],
-        TEMPLE_LENGTH, TEMPLE_WIDTH, 1,
+        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_3
     );
 
     world_set_block_type_cube(
         sim,
         wolf_temple_origin[0] + 1, wolf_temple_origin[1] + 1, wolf_temple_origin[2] + 1,
-        TEMPLE_LENGTH - 2, TEMPLE_WIDTH - 2, 1,
+        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BLOCK_TYPE_SMOOTH_3
     );
 
@@ -563,21 +573,21 @@ void setup_nation_bases(Sim *sim)
 
     world_set_block_type_cube(
         sim,
-        wolf_temple_origin[0] + 4, wolf_temple_origin[1] + TEMPLE_WIDTH - 5, wolf_temple_origin[2] + 2,
+        wolf_temple_origin[0] + 4, wolf_temple_origin[1] + TEMPLE_SIZE_X - 5, wolf_temple_origin[2] + 2,
         1, 1, 16,
         BLOCK_TYPE_WOLF_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
-        wolf_temple_origin[0] + TEMPLE_LENGTH - 5, wolf_temple_origin[1] + 4, wolf_temple_origin[2] + 2,
+        wolf_temple_origin[0] + TEMPLE_SIZE_Y - 5, wolf_temple_origin[1] + 4, wolf_temple_origin[2] + 2,
         1, 1, 16,
         BLOCK_TYPE_WOLF_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
-        wolf_temple_origin[0] + TEMPLE_LENGTH - 5, wolf_temple_origin[1] + TEMPLE_WIDTH - 5, wolf_temple_origin[2] + 2,
+        wolf_temple_origin[0] + TEMPLE_SIZE_Y - 5, wolf_temple_origin[1] + TEMPLE_SIZE_X - 5, wolf_temple_origin[2] + 2,
         1, 1, 16,
         BLOCK_TYPE_WOLF_SYMBOL
     );
@@ -585,36 +595,38 @@ void setup_nation_bases(Sim *sim)
     world_set_block_type_cube(
         sim,
         wolf_temple_origin[0] + 1, wolf_temple_origin[1] + 1, wolf_temple_origin[2] + 18,
-        TEMPLE_LENGTH - 2, TEMPLE_WIDTH - 2, 1,
+        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BLOCK_TYPE_SMOOTH_3
     );
+}
 
-    // Eagle Trading Platform
+static void setup_eagle_temple(Sim *sim)
+{
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER - TRADING_PLATFORM_LENGTH, WORLD_CENTER - TRADING_PLATFORM_WIDTH / 2, TOWER_ROOF,
-        TRADING_PLATFORM_LENGTH, TRADING_PLATFORM_WIDTH, 1,
+        TOWER_BORDER - PLATFORM_SIZE_Y, WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
+        PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
-    // Eagle Temple
-    const ivec3 eagle_temple_origin = {
+    const ivec3 eagle_temple_origin =
+    {
         TOWER_BORDER + 32,
-        WORLD_CENTER - TEMPLE_WIDTH / 2,
-        TOWER_ROOF + 1,
+        WORLD_CENTER - TEMPLE_SIZE_X / 2,
+        TOWER_ROOF_Z + 1,
     };
 
     world_set_block_type_cube(
         sim,
         eagle_temple_origin[0], eagle_temple_origin[1], eagle_temple_origin[2],
-        TEMPLE_LENGTH, TEMPLE_WIDTH, 1,
+        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_3
     );
 
     world_set_block_type_cube(
         sim,
         eagle_temple_origin[0] + 1, eagle_temple_origin[1] + 1, eagle_temple_origin[2] + 1,
-        TEMPLE_LENGTH - 2, TEMPLE_WIDTH - 2, 1,
+        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BLOCK_TYPE_SMOOTH_3
     );
 
@@ -627,21 +639,21 @@ void setup_nation_bases(Sim *sim)
 
     world_set_block_type_cube(
         sim,
-        eagle_temple_origin[0] + 4, eagle_temple_origin[1] + TEMPLE_WIDTH - 5, eagle_temple_origin[2] + 2,
+        eagle_temple_origin[0] + 4, eagle_temple_origin[1] + TEMPLE_SIZE_X - 5, eagle_temple_origin[2] + 2,
         1, 1, 16,
         BLOCK_TYPE_EAGLE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
-        eagle_temple_origin[0] + TEMPLE_LENGTH - 5, eagle_temple_origin[1] + 4, eagle_temple_origin[2] + 2,
+        eagle_temple_origin[0] + TEMPLE_SIZE_Y - 5, eagle_temple_origin[1] + 4, eagle_temple_origin[2] + 2,
         1, 1, 16,
         BLOCK_TYPE_EAGLE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
-        eagle_temple_origin[0] + TEMPLE_LENGTH - 5, eagle_temple_origin[1] + TEMPLE_WIDTH - 5, eagle_temple_origin[2] + 2,
+        eagle_temple_origin[0] + TEMPLE_SIZE_Y - 5, eagle_temple_origin[1] + TEMPLE_SIZE_X - 5, eagle_temple_origin[2] + 2,
         1, 1, 16,
         BLOCK_TYPE_EAGLE_SYMBOL
     );
@@ -649,23 +661,27 @@ void setup_nation_bases(Sim *sim)
     world_set_block_type_cube(
         sim,
         eagle_temple_origin[0] + 1, eagle_temple_origin[1] + 1, eagle_temple_origin[2] + 18,
-        TEMPLE_LENGTH - 2, TEMPLE_WIDTH - 2, 1,
+        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BLOCK_TYPE_SMOOTH_3
     );
+}
 
-    // Lion Trading Platform
+static void setup_lion_temple(Sim *sim)
+{
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - TRADING_PLATFORM_WIDTH / 2, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF,
-        TRADING_PLATFORM_WIDTH, TRADING_PLATFORM_LENGTH, 1,
+        WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF_Z,
+        PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_2
     );
+}
 
-    // Horse Trading Platform
+static void setup_horse_temple(Sim *sim)
+{
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - TRADING_PLATFORM_WIDTH / 2, TOWER_BORDER - TRADING_PLATFORM_WIDTH / 2, TOWER_ROOF,
-        TRADING_PLATFORM_WIDTH, TRADING_PLATFORM_LENGTH, 1,
+        WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
+        PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 }
@@ -675,7 +691,11 @@ void world_init(Sim *sim)
     setup_tower(sim);
     setup_roof(sim);
     setup_elevator(sim);
-    setup_nation_bases(sim);
+
+    setup_eagle_temple(sim);
+    setup_wolf_temple(sim);
+    setup_lion_temple(sim);
+    setup_horse_temple(sim);
     
     init_direction_mask(sim);
 }

@@ -33,7 +33,8 @@ static void actors_init(Sim *sim)
     
     judge.position[0] = WORLD_CENTER;
     judge.position[1] = WORLD_CENTER - 12;
-    judge.position[2] = TOWER_ROOF + 5;
+    judge.position[2] = TOWER_ROOF_Z
+ + 5;
 
     judge.rotation[0] = 0.0f;
     judge.rotation[1] = 0.0f;
