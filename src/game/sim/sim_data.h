@@ -31,6 +31,8 @@
 
 #define WORLD_CENTER (WORLD_SIZE_IN_CELLS / 2)
 
+#define TOWER_WIREFRAME (FALSE)
+
 #define TOWER_BORDER 16
 #define TOWER_SIZE (WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER)
 
@@ -167,6 +169,8 @@ enum NationType
 typedef struct BoxCollider BoxCollider;
 struct BoxCollider
 {
+    b32 collision_enabled;
+    
     vec3 radius;
 };
 

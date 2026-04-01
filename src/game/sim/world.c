@@ -652,12 +652,24 @@ static void setup_rooms(Sim *sim)
                 FLOOR_SIZE_Z
             };
 
-            world_set_block_type_wireframe(
-                sim,
-                room_rect->min[0], room_rect->min[1], floor_number * FLOOR_SIZE_Z,
-                room_size[0], room_size[1], room_size[2],
-                BLOCK_TYPE_CAUTION_2
-            );
+            if (TOWER_WIREFRAME)
+            {
+                world_set_block_type_wireframe(
+                    sim,
+                    room_rect->min[0], room_rect->min[1], floor_number * FLOOR_SIZE_Z,
+                    room_size[0], room_size[1], room_size[2],
+                    BLOCK_TYPE_CAUTION_2
+                );
+            }
+            else
+            {
+                world_set_block_type_box(
+                    sim,
+                    room_rect->min[0], room_rect->min[1], floor_number * FLOOR_SIZE_Z,
+                    room_size[0], room_size[1], room_size[2],
+                    BLOCK_TYPE_SMOOTH_3
+                );
+            }
         }
     }
 

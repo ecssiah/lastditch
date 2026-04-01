@@ -98,8 +98,8 @@ static void get_overlap_bounds_from_float_bounds(FloatBounds *float_bounds, IntB
     if (out_int_bounds->max[2] >= WORLD_SIZE_IN_CELLS) out_int_bounds->max[2] = WORLD_SIZE_IN_CELLS - 1;
 }
 
-static void integrate_axis(Sim *sim, Actor *actor, Axis axis, f32 delta_time)
-{           
+static void resolve_axis_collisions(Sim *sim, Actor *actor, Axis axis, f32 delta_time)
+{
     if (actor->velocity[axis] == 0.0f)
     {
         return;
@@ -245,25 +245,35 @@ void physics_integrate(Sim *sim, Actor *actor)
         }
     }
 
-    const f32 move_x = fabsf(sim->time.delta_time * actor->velocity[0]);
-    const f32 move_y = fabsf(sim->time.delta_time * actor->velocity[1]);
-    const f32 move_z = fabsf(sim->time.delta_time * actor->velocity[2]);
-
-    const f32 max_move = fmaxf(move_x, fmaxf(move_y, move_z));
-
-    i32 step_count = (i32)ceilf(max_move);
-    if (step_count < 1)
+    if (actor->box_collider.collision_enabled)
     {
-        step_count = 1;
+        const f32 move_x = fabsf(sim->time.delta_time * actor->velocity[0]);
+        const f32 move_y = fabsf(sim->time.delta_time * actor->velocity[1]);
+        const f32 move_z = fabsf(sim->time.delta_time * actor->velocity[2]);
+
+        const f32 max_move = fmaxf(move_x, fmaxf(move_y, move_z));
+
+        i32 step_count = (i32)ceilf(max_move);
+        if (step_count < 1)
+        {
+            step_count = 1;
+        }
+
+        const f32 step_delta_time = sim->time.delta_time / (f32)step_count;
+
+        i32 step_index;
+        for (step_index = 0; step_index < step_count; ++step_index)
+        {
+            resolve_axis_collisions(sim, actor, AXIS_X, step_delta_time);
+            resolve_axis_collisions(sim, actor, AXIS_Y, step_delta_time);
+            resolve_axis_collisions(sim, actor, AXIS_Z, step_delta_time);
+        }
     }
-
-    const f32 step_delta_time = sim->time.delta_time / (f32)step_count;
-
-    i32 step_index;
-    for (step_index = 0; step_index < step_count; ++step_index)
+    else
     {
-        integrate_axis(sim, actor, AXIS_X, step_delta_time);
-        integrate_axis(sim, actor, AXIS_Y, step_delta_time);
-        integrate_axis(sim, actor, AXIS_Z, step_delta_time);
+        vec3 displacement;
+        glm_vec3_scale(actor->velocity, sim->time.delta_time, displacement);
+        
+        glm_vec3_add(actor->position, displacement, actor->position);
     }
 }
