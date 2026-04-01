@@ -25,6 +25,7 @@ void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_lo
 void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position);
 void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
 
+void world_get_elevator_origin(u32 floor_number, ivec3 out_origin);
 void world_get_quadrant_origin(Quadrant quadrant, u32 floor_number, ivec3 out_origin);
 
 b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z);

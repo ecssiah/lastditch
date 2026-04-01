@@ -143,6 +143,13 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
     out_cell_coordinate[2] = (i32)floorf(z);
 }
 
+void world_get_elevator_origin(u32 floor_number, ivec3 out_origin)
+{
+    out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + ELEVATOR_SIZE / 2;
+    out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + ELEVATOR_SIZE / 2;
+    out_origin[2] = floor_number * FLOOR_SIZE_Z;
+}
+
 void world_get_quadrant_origin(Quadrant quadrant, u32 floor_number, ivec3 out_origin)
 {
     switch (quadrant)
@@ -358,8 +365,6 @@ static void init_direction_mask(Sim *sim)
 
 static void setup_tower(Sim *sim)
 {
-    const ivec3 floor_size = { TOWER_SIZE, TOWER_SIZE, FLOOR_SIZE_Z	};
-
     i32 floor_number;
     for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
@@ -370,14 +375,14 @@ static void setup_tower(Sim *sim)
         world_set_block_type_cube(
             sim,
             floor_origin[0], floor_origin[1], floor_origin[2],
-            floor_size[0], floor_size[1], 1,
+            TOWER_SIZE, TOWER_SIZE, 1,
             BLOCK_TYPE_SMOOTH_2
         );
 
         world_set_block_type_wireframe(
             sim,
             floor_origin[0], floor_origin[1], floor_origin[2],
-            floor_size[0], floor_size[1], floor_size[2],
+            TOWER_SIZE, TOWER_SIZE, FLOOR_SIZE_Z,
             BLOCK_TYPE_CAUTION_1
         );
 
@@ -385,7 +390,7 @@ static void setup_tower(Sim *sim)
 	
         cell_z = floor_origin[2];
 
-        for (cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + floor_size[0] - 1; ++cell_x)
+        for (cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + TOWER_SIZE - 1; ++cell_x)
         {
             i32 north_position_z, north_size_z;
 	    
@@ -404,7 +409,7 @@ static void setup_tower(Sim *sim)
 	    
             world_set_block_type_cube(
                 sim,
-                cell_x, floor_origin[0] + floor_size[0] - 1, north_position_z,
+                cell_x, floor_origin[0] + TOWER_SIZE - 1, north_position_z,
                 1, 1, north_size_z,
                 BLOCK_TYPE_METAL_5
             );
@@ -432,7 +437,7 @@ static void setup_tower(Sim *sim)
             );
         }
 	
-        for (cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + floor_size[1] - 1; ++cell_y)
+        for (cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + TOWER_SIZE - 1; ++cell_y)
         {
             i32 east_position_z, east_size_z;
 
@@ -451,7 +456,7 @@ static void setup_tower(Sim *sim)
 	    
             world_set_block_type_cube(
                 sim,
-                floor_origin[1] + floor_size[1] - 1, cell_y, east_position_z,
+                floor_origin[1] + TOWER_SIZE - 1, cell_y, east_position_z,
                 1, 1, east_size_z,
                 BLOCK_TYPE_METAL_5
             );
@@ -485,7 +490,7 @@ static void setup_tower(Sim *sim)
         world_set_block_type_wireframe(
             sim,
             quadrant_1_origin[0], quadrant_1_origin[1], quadrant_1_origin[2],
-            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, floor_size[2],
+            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z,
             BLOCK_TYPE_CAUTION_2
         );
 
@@ -495,7 +500,7 @@ static void setup_tower(Sim *sim)
         world_set_block_type_wireframe(
             sim,
             quadrant_2_origin[0], quadrant_2_origin[1], quadrant_2_origin[2],
-            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, floor_size[2],
+            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z,
             BLOCK_TYPE_CAUTION_2
         );
 
@@ -505,7 +510,7 @@ static void setup_tower(Sim *sim)
         world_set_block_type_wireframe(
             sim,
             quadrant_3_origin[0], quadrant_3_origin[1], quadrant_3_origin[2],
-            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, floor_size[2],
+            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z,
             BLOCK_TYPE_CAUTION_2
         );
 
@@ -515,7 +520,7 @@ static void setup_tower(Sim *sim)
         world_set_block_type_wireframe(
             sim,
             quadrant_4_origin[0], quadrant_4_origin[1], quadrant_4_origin[2],
-            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, floor_size[2],
+            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z,
             BLOCK_TYPE_CAUTION_2
         );
     }
@@ -523,31 +528,34 @@ static void setup_tower(Sim *sim)
 
 static void setup_elevator(Sim *sim)
 {
+    ivec3 elevator_origin;
+    world_get_elevator_origin(0, elevator_origin);
+    
     world_set_block_type_box(
         sim,
-        WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, 0,
+        elevator_origin[0], elevator_origin[1], elevator_origin[2],
         ELEVATOR_SIZE, ELEVATOR_SIZE, 1,
         BLOCK_TYPE_METAL_3
     );
 
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - ELEVATOR_EXTENT + 1, WORLD_CENTER - ELEVATOR_EXTENT + 1, 1,
+        elevator_origin[0] + 1, elevator_origin[1] + 1, elevator_origin[2] + 1,
         ELEVATOR_SIZE - 2, ELEVATOR_SIZE - 2, TOWER_ROOF_Z + FLOOR_SIZE_Z,
         BLOCK_TYPE_NONE
     );
 
-    const ivec3 floor_size = { TOWER_SIZE, TOWER_SIZE, FLOOR_SIZE_Z	};
-    
     i32 floor_number;
     for (floor_number = 0; floor_number < FLOOR_COUNT + 1; ++floor_number)
     {
         const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
+
+        world_get_elevator_origin(floor_number, elevator_origin);
         
         world_set_block_type_wireframe(
             sim,
-            WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, floor_origin[2],
-            ELEVATOR_SIZE, ELEVATOR_SIZE, floor_size[2],
+            elevator_origin[0], elevator_origin[1], elevator_origin[2],
+            ELEVATOR_SIZE, ELEVATOR_SIZE, FLOOR_SIZE_Z,
             BLOCK_TYPE_CAUTION_3
         );
     }
