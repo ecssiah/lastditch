@@ -13,11 +13,11 @@
 
 static void actors_init(Sim *sim)
 {
-    sim->actor_pool.free_count = MAX_ACTORS;
+    sim->actor_pool.free_count = ACTOR_MAX;
     sim->actor_pool.active_count = 0;
 
     i32 actor_index;
-    for (actor_index = 0; actor_index < MAX_ACTORS; ++actor_index)
+    for (actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
     {
         sim->actor_pool.free_array[actor_index] = actor_index;
         sim->actor_pool.generation_array[actor_index] = 0;
@@ -203,7 +203,7 @@ static void update_actor(Sim *sim, Actor *actor)
 static void update_actors(Sim *sim)
 {   
     i32 actor_index;
-    for (actor_index = 0; actor_index < MAX_ACTORS; ++actor_index)
+    for (actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
     {
         if (sim->actor_pool.generation_array[actor_index] == 0)
         {

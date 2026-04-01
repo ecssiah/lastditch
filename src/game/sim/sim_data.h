@@ -34,10 +34,10 @@
 #define TOWER_BORDER 16
 #define TOWER_SIZE (WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER)
 
-#define TOWER_CENTER_HALL_SIZE 10
-#define TOWER_OUTER_HALL_SIZE 4
+#define TOWER_CENTER_HALL_SIZE 24
+#define TOWER_OUTER_HALL_SIZE 6
 
-#define TOWER_QUADRANT_SIZE (TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2 + 1)
+#define TOWER_QUADRANT_SIZE (TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2)
 
 #define FLOOR_COUNT 6
 #define FLOOR_SIZE_Z 12
@@ -47,7 +47,7 @@
 #define ELEVATOR_EXTENT 6
 #define ELEVATOR_SIZE (2 * ELEVATOR_EXTENT)
 
-#define MAX_ACTORS 256
+#define ACTOR_MAX 256
 
 #define GRAVITY_DEFAULT -90.0f
 
@@ -140,6 +140,15 @@ struct Cell
     u8 direction_mask;
 };
 
+typedef enum Quadrant Quadrant;
+enum Quadrant
+{
+    QUADRANT_1,
+    QUADRANT_2,
+    QUADRANT_3,
+    QUADRANT_4
+};
+
 #define FOR_LIST_NATION_TYPE(DO) \
     DO( NATION_TYPE_WOLF ) \
     DO( NATION_TYPE_EAGLE ) \
@@ -205,14 +214,14 @@ struct Actor
 typedef struct ActorPool ActorPool;
 struct ActorPool
 {
-    Actor actor_array[MAX_ACTORS];
+    Actor actor_array[ACTOR_MAX];
 
-    u32 generation_array[MAX_ACTORS];
+    u32 generation_array[ACTOR_MAX];
 
-    u32 active_array[MAX_ACTORS];
+    u32 active_array[ACTOR_MAX];
     u32 active_count;
     
-    u32 free_array[MAX_ACTORS];
+    u32 free_array[ACTOR_MAX];
     u32 free_count;
 };
 

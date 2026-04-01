@@ -45,7 +45,7 @@ ActorHandle actor_add_to_pool(Actor *actor, ActorPool* actor_pool)
     actor_pool->active_array[actor_index] = actor_pool->active_count;
     actor_pool->active_array[actor_pool->active_count++] = actor_index;
 
-    assert(actor_pool->free_count + actor_pool->active_count == MAX_ACTORS);
+    assert(actor_pool->free_count + actor_pool->active_count == ACTOR_MAX);
 
     ActorHandle actor_handle = { actor_index, actor_generation };
     

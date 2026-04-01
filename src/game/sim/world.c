@@ -143,6 +143,45 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
     out_cell_coordinate[2] = (i32)floorf(z);
 }
 
+void world_get_quadrant_origin(Quadrant quadrant, u32 floor_number, ivec3 out_origin)
+{
+    switch (quadrant)
+    {
+    case QUADRANT_1:
+    {
+        out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE;
+        out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE;
+        out_origin[2] = floor_number * FLOOR_SIZE_Z;
+            
+        break;
+    }
+    case QUADRANT_2:
+    {
+        out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE;
+        out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE;
+        out_origin[2] = floor_number * FLOOR_SIZE_Z;
+
+        break;
+    }
+    case QUADRANT_3:
+    {
+        out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE;
+        out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE;
+        out_origin[2] = floor_number * FLOOR_SIZE_Z;
+        
+        break;
+    }
+    case QUADRANT_4:
+    {
+        out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE;
+        out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE;
+        out_origin[2] = floor_number * FLOOR_SIZE_Z;
+        
+        break;
+    }
+    }
+}
+
 BlockType world_block_type_from_string(const char *block_type_string)
 {
     i32 index;
@@ -440,37 +479,43 @@ static void setup_tower(Sim *sim)
             );
         }
 
-        const u32 main_room_size = TOWER_SIZE / 2 - TOWER_BORDER - TOWER_CENTER_HALL_SIZE / 2 + 1;
+        ivec3 quadrant_1_origin;
+        world_get_quadrant_origin(QUADRANT_1, floor_number, quadrant_1_origin);
         
-        // South West
         world_set_block_type_wireframe(
             sim,
-            TOWER_BORDER + 6, TOWER_BORDER + 6, floor_origin[2],
-            main_room_size, main_room_size, floor_size[2],
+            quadrant_1_origin[0], quadrant_1_origin[1], quadrant_1_origin[2],
+            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, floor_size[2],
             BLOCK_TYPE_CAUTION_2
         );
 
-        // South East
+        ivec3 quadrant_2_origin;
+        world_get_quadrant_origin(QUADRANT_2, floor_number, quadrant_2_origin);
+        
         world_set_block_type_wireframe(
             sim,
-            WORLD_CENTER + 14, TOWER_BORDER + 6, floor_origin[2],
-            main_room_size, main_room_size, floor_size[2],
+            quadrant_2_origin[0], quadrant_2_origin[1], quadrant_2_origin[2],
+            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, floor_size[2],
             BLOCK_TYPE_CAUTION_2
         );
 
-        // North East
+        ivec3 quadrant_3_origin;
+        world_get_quadrant_origin(QUADRANT_3, floor_number, quadrant_3_origin);
+        
         world_set_block_type_wireframe(
             sim,
-            WORLD_CENTER + 14, WORLD_CENTER + 14, floor_origin[2],
-            main_room_size, main_room_size, floor_size[2],
+            quadrant_3_origin[0], quadrant_3_origin[1], quadrant_3_origin[2],
+            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, floor_size[2],
             BLOCK_TYPE_CAUTION_2
         );
 
-        // North West
+        ivec3 quadrant_4_origin;
+        world_get_quadrant_origin(QUADRANT_4, floor_number, quadrant_4_origin);
+
         world_set_block_type_wireframe(
             sim,
-            TOWER_BORDER + 6, WORLD_CENTER + 14, floor_origin[2],
-            main_room_size, main_room_size, floor_size[2],
+            quadrant_4_origin[0], quadrant_4_origin[1], quadrant_4_origin[2],
+            TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, floor_size[2],
             BLOCK_TYPE_CAUTION_2
         );
     }
@@ -492,17 +537,10 @@ static void setup_elevator(Sim *sim)
         BLOCK_TYPE_NONE
     );
 
-    world_set_block_type_wireframe(
-        sim,
-        WORLD_CENTER - ELEVATOR_EXTENT, WORLD_CENTER - ELEVATOR_EXTENT, TOWER_ROOF_Z,
-        ELEVATOR_SIZE, ELEVATOR_SIZE, 12,
-        BLOCK_TYPE_CAUTION_3
-    );
-
     const ivec3 floor_size = { TOWER_SIZE, TOWER_SIZE, FLOOR_SIZE_Z	};
     
     i32 floor_number;
-    for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    for (floor_number = 0; floor_number < FLOOR_COUNT + 1; ++floor_number)
     {
         const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
         
