@@ -724,39 +724,86 @@ static void setup_rooms(Sim *sim)
                 room_rect->max[AXIS_Y] - room_rect->min[AXIS_Y]
             };
 
-            const i32 east_door_position_y = room_rect->min[AXIS_Y] + rand() % (room_size[AXIS_Y] - 2);
-            const i32 west_door_position_y = room_rect->min[AXIS_Y] + rand() % (room_size[AXIS_Y] - 2);
-
-            const i32 north_door_position_x = room_rect->min[AXIS_X] + rand() % (room_size[AXIS_X] - 2);
-            const i32 south_door_position_x = room_rect->min[AXIS_X] + rand() % (room_size[AXIS_X] - 2);
-
-            world_set_block_type_cube(
-                sim,
-                room_rect->max[AXIS_X], east_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
-                1, 1, 3,
-                BLOCK_TYPE_NONE
-            );
+            const i32 door_attempt_count = 3;
             
-            world_set_block_type_cube(
-                sim,
-                room_rect->min[AXIS_X], west_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
-                1, 1, 3,
-                BLOCK_TYPE_NONE
-            );
+            i32 index;
 
-            world_set_block_type_cube(
-                sim,
-                north_door_position_x, room_rect->max[AXIS_Y], floor_number * FLOOR_SIZE_Z + 1,
-                1, 1, 3,
-                BLOCK_TYPE_NONE
-            );
+            for (index = 0; index < door_attempt_count; ++index)
+            {
+                const i32 east_door_position_y = room_rect->min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
+
+                if (
+                    !world_is_solid(sim, room_rect->max[AXIS_X] - 1 + 1, east_door_position_y, floor_number * FLOOR_SIZE_Z + 1) &&
+                    !world_is_solid(sim, room_rect->max[AXIS_X] - 1 - 1, east_door_position_y, floor_number * FLOOR_SIZE_Z + 1)
+                ) {
+                    world_set_block_type_cube(
+                        sim,
+                        room_rect->max[AXIS_X] - 1, east_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
+                        1, 1, 2,
+                        BLOCK_TYPE_NONE
+                    );
+
+                    break;
+                }
+            }
+
+            for (index = 0; index < door_attempt_count; ++index)
+            {
+                const i32 west_door_position_y = room_rect->min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
             
-            world_set_block_type_cube(
-                sim,
-                south_door_position_x, room_rect->min[AXIS_Y], floor_number * FLOOR_SIZE_Z + 1,
-                1, 1, 3,
-                BLOCK_TYPE_NONE
-            );
+                if (
+                    !world_is_solid(sim, room_rect->min[AXIS_X] + 1, west_door_position_y, floor_number * FLOOR_SIZE_Z + 1) &&
+                    !world_is_solid(sim, room_rect->min[AXIS_X] - 1, west_door_position_y, floor_number * FLOOR_SIZE_Z + 1)
+                ) {
+                    world_set_block_type_cube(
+                        sim,
+                        room_rect->min[AXIS_X], west_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
+                        1, 1, 2,
+                        BLOCK_TYPE_NONE
+                    );
+
+                    break;
+                }
+            }
+
+            for (index = 0; index < door_attempt_count; ++index)
+            {
+                const i32 north_door_position_x = room_rect->min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
+            
+                if (
+                    !world_is_solid(sim, north_door_position_x, room_rect->max[AXIS_Y] - 1 + 1, floor_number * FLOOR_SIZE_Z + 1) &&
+                    !world_is_solid(sim, north_door_position_x, room_rect->max[AXIS_Y] - 1 - 1, floor_number * FLOOR_SIZE_Z + 1)
+                ) {
+                    world_set_block_type_cube(
+                        sim,
+                        north_door_position_x, room_rect->max[AXIS_Y] - 1, floor_number * FLOOR_SIZE_Z + 1,
+                        1, 1, 2,
+                        BLOCK_TYPE_NONE
+                    );
+
+                    break;
+                }
+            }
+
+            for (index = 0; index < door_attempt_count; ++index)
+            {
+                const i32 south_door_position_x = room_rect->min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
+            
+                if (
+                    !world_is_solid(sim, south_door_position_x, room_rect->min[AXIS_Y] + 1, floor_number * FLOOR_SIZE_Z + 1) &&
+                    !world_is_solid(sim, south_door_position_x, room_rect->min[AXIS_Y] - 1, floor_number * FLOOR_SIZE_Z + 1)
+                ) {
+                    world_set_block_type_cube(
+                        sim,
+                        south_door_position_x, room_rect->min[AXIS_Y], floor_number * FLOOR_SIZE_Z + 1,
+                        1, 1, 2,
+                        BLOCK_TYPE_NONE
+                    );
+
+                    break;
+                }
+
+            }
         }
     }
     
