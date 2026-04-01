@@ -19,7 +19,7 @@ static void load_textures(Screen *screen, const char *textures_path)
 
     stbi_set_flip_vertically_on_load(0);
 
-    unsigned char *data = stbi_load(path, &width, &height, &channels, 0);
+    u8 *data = stbi_load(path, &width, &height, &channels, 0);
 
     if (!data)
     {
@@ -77,98 +77,64 @@ static void load_textures(Screen *screen, const char *textures_path)
     stbi_image_free(data);
 }
 
-static void get_orthographic_projection_matrix(float width, float height, mat4 out_projection_matrix)
+static void get_orthographic_projection_matrix(f32 width, f32 height, mat4 out_projection_matrix)
 {
     glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, out_projection_matrix);
 }
 
-void screen_draw_text(Shell *shell, const char *text, f32 x, f32 y)
+static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
 {
-    float scale = 2.0f;
+    f32 scale = 2.0f;
     
-    float char_w = 8.0f * scale;
-    float char_h = 8.0f * scale;
+    f32 char_width = 8.0f * scale;
+    f32 char_height = 8.0f * scale;
 
-    float cell_w = 1.0f / 8.0f;
-    float cell_h = 1.0f / 12.0f;
+    f32 cell_width = 1.0f / 8.0f;
+    f32 cell_height = 1.0f / 12.0f;
 
-    size_t len = strlen(text);
+    u32 len = strlen(text);
 
-    size_t max_vertices = len * 6;
-    TextVertex text_vertex_array[max_vertices];
+    u32 vertex_count = 0;
+    u32 vertex_max = len * 6;
+    
+    TextVertex text_vertex_array[vertex_max];
 
-    size_t vertex_count = 0;
+    f32 cursor_x = x;
 
-    float cursor_x = x;
-
-    size_t i;
-    for (i = 0; i < len; i++)
+    u32 text_index;
+    for (text_index = 0; text_index < len; text_index++)
     {
-        unsigned char c = text[i];
+        u8 text_char = text[text_index];
 
-        if (c < 32 || c > 126)
+        if (text_char < 32 || text_char > 126)
         {
-            cursor_x += char_w;
+            cursor_x += char_width;
             continue;
         }
 
-        int index = c - 32;
+        i32 ascii_value = text_char - 32;
 
-        int col = index % 8;
-        int row = index / 8;
+        i32 texture_col = ascii_value % 8;
+        i32 texture_row = ascii_value / 8;
 
-        float u0 = col * cell_w;
-        float v0 = row * cell_h;
+        f32 u0 = texture_col * cell_width;
+        f32 v0 = texture_row * cell_height;
 
-        float u1 = u0 + cell_w;
-        float v1 = v0 + cell_h;
+        f32 u1 = u0 + cell_width;
+        f32 v1 = v0 + cell_height;
 
-        float x0 = cursor_x;
-        float y0 = y;
-        float x1 = cursor_x + char_w;
-        float y1 = y + char_h;
+        f32 x0 = cursor_x;
+        f32 y0 = y;
+        f32 x1 = cursor_x + char_width;
+        f32 y1 = y + char_height;
 
-        TextVertex text_vertex0;
-        text_vertex0.position[0] = x0;
-        text_vertex0.position[1] = y0;
-	
-        text_vertex0.uv[0] = u0;
-        text_vertex0.uv[1] = v0;
+        TextVertex text_vertex0 = { x0, y0, u0, v0 };
+        TextVertex text_vertex1 = { x1, y0, u1, v0 };
+        TextVertex text_vertex2 = { x1, y1, u1, v1 };
 
-        TextVertex text_vertex1;
-        text_vertex1.position[0] = x1;
-        text_vertex1.position[1] = y0;
-	
-        text_vertex1.uv[0] = u1;
-        text_vertex1.uv[1] = v0;
-
-        TextVertex text_vertex2;
-        text_vertex2.position[0] = x1;
-        text_vertex2.position[1] = y1;
-	
-        text_vertex2.uv[0] = u1;
-        text_vertex2.uv[1] = v1;
-
-        TextVertex text_vertex3;
-        text_vertex3.position[0] = x0;
-        text_vertex3.position[1] = y0;
-	
-        text_vertex3.uv[0] = u0;
-        text_vertex3.uv[1] = v0;
-
-        TextVertex text_vertex4;
-        text_vertex4.position[0] = x1;
-        text_vertex4.position[1] = y1;
-	
-        text_vertex4.uv[0] = u1;
-        text_vertex4.uv[1] = v1;
-
-        TextVertex text_vertex5;
-        text_vertex5.position[0] = x0;
-        text_vertex5.position[1] = y1;
-	
-        text_vertex5.uv[0] = u0;
-        text_vertex5.uv[1] = v1;
+        TextVertex text_vertex3 = { x0, y0, u0, v0 };
+        TextVertex text_vertex4 = { x1, y1, u1, v1 };
+        TextVertex text_vertex5 = { x0, y1, u0, v1 };
 	
         text_vertex_array[vertex_count++] = text_vertex0;
         text_vertex_array[vertex_count++] = text_vertex1;
@@ -178,7 +144,7 @@ void screen_draw_text(Shell *shell, const char *text, f32 x, f32 y)
         text_vertex_array[vertex_count++] = text_vertex4;
         text_vertex_array[vertex_count++] = text_vertex5;
 
-        cursor_x += char_w;
+        cursor_x += char_width;
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, shell->screen.vbo_id);
@@ -329,29 +295,16 @@ static void draw_debug_info(Shell *shell, Sim *sim)
 
     switch (judge->movement_type)
     {
-    case MOVEMENT_TYPE_GROUND:
-    {
-        strcpy(movement_type_text, "Ground");
-        
-        break;
-    }
-    case MOVEMENT_TYPE_FLYING:
-    {
-        strcpy(movement_type_text, "Flying");
-
-        break;
-    }
-    default:
-    {
-        break;
-    }
+    case MOVEMENT_TYPE_GROUND: strcpy(movement_type_text, "Ground"); break;
+    case MOVEMENT_TYPE_FLYING: strcpy(movement_type_text, "Flying"); break;
+    default: break;
     }
 
-    screen_draw_text(shell, position_text, 20, 20);
-    screen_draw_text(shell, velocity_text, 20, 40);
-    screen_draw_text(shell, cell_coordinate_text, 20, 60);
-    screen_draw_text(shell, sector_coordinate_text, 20, 80);
-    screen_draw_text(shell, movement_type_text, 20, 100);
+    draw_text(shell, position_text, 20, 20);
+    draw_text(shell, velocity_text, 20, 40);
+    draw_text(shell, cell_coordinate_text, 20, 60);
+    draw_text(shell, sector_coordinate_text, 20, 80);
+    draw_text(shell, movement_type_text, 20, 100);
 }
 
 void screen_update(Shell *shell, Sim *sim)
