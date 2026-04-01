@@ -15,34 +15,34 @@ static void queue_move_action(Platform *platform, Sim *sim)
 {
     vec3 action_value;
 
-    if (platform_key_is_down(platform, KEY_A))
+    if (platform_button_is_down(platform, BUTTON_A))
     {
         action_value[0] -= 1.0f;
     }
     
-    if (platform_key_is_down(platform, KEY_D))
+    if (platform_button_is_down(platform, BUTTON_D))
     {
         action_value[0] += 1.0f;
     }
 
-    if (platform_key_is_down(platform, KEY_W))
+    if (platform_button_is_down(platform, BUTTON_W))
     {
         action_value[1] += 1.0f;
     }
     
-    if (platform_key_is_down(platform, KEY_S))
+    if (platform_button_is_down(platform, BUTTON_S))
     {
         action_value[1] -= 1.0f;
     }
     
     glm_vec3_normalize(action_value);
 
-    if (platform_key_is_down(platform, KEY_E))
+    if (platform_button_is_down(platform, BUTTON_E))
     {
         action_value[2] += 1.0f;
     }
     
-    if (platform_key_is_down(platform, KEY_Q))
+    if (platform_button_is_down(platform, BUTTON_Q))
     {
         action_value[2] -= 1.0f;
     }
@@ -59,8 +59,8 @@ static void queue_rotate_action(Platform *platform, Sim *sim)
 {
     Action rotate_action;
     rotate_action.type = ACTION_ROTATE;
-    rotate_action.action_value[0] = platform->input.mouse_delta_x;
-    rotate_action.action_value[1] = platform->input.mouse_delta_y;
+    rotate_action.action_value[0] = platform->input.pointer_delta_x;
+    rotate_action.action_value[1] = platform->input.pointer_delta_y;
     rotate_action.action_value[2] = 0.0f;
 
     action_add(&sim->action_queue, rotate_action);
@@ -97,17 +97,17 @@ void shell_update(Shell *shell, Platform *platform, Sim *sim)
 
     queue_move_action(platform, sim);
     
-    if (fabs(platform->input.mouse_delta_x) > 1e-12f || fabs(platform->input.mouse_delta_y) > 1e-12f)
+    if (fabs(platform->input.pointer_delta_x) > 1e-12f || fabs(platform->input.pointer_delta_y) > 1e-12f)
     {
         queue_rotate_action(platform, sim);
     }
 
-    if (platform_key_is_pressed(platform, KEY_SPACE))
+    if (platform_button_is_pressed(platform, BUTTON_SPACE))
     {
         queue_jump_action(platform, sim);
     }
 
-    if (platform_key_is_released(platform, KEY_TAB))
+    if (platform_button_is_released(platform, BUTTON_TAB))
     {
         queue_debug_mode_action(platform, sim);
     }

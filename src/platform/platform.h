@@ -5,9 +5,9 @@
 
 #include "platform/platform_data.h"
 
-b32 platform_key_is_down(Platform *platform, Key key);
-b32 platform_key_is_pressed(Platform *platform, Key key);
-b32 platform_key_is_released(Platform *platform, Key key);
+b32 platform_button_is_down(Platform *platform, Button key);
+b32 platform_button_is_pressed(Platform *platform, Button key);
+b32 platform_button_is_released(Platform *platform, Button key);
 
 void platform_init(Platform *platform, const char *window_title);
 void platform_begin_frame(Platform *platform);

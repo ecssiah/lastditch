@@ -1,6 +1,7 @@
 #include "game/sim/sim.h"
 
 #include <string.h>
+#include <time.h>
 
 #include "jsk_log.h"
 
@@ -218,9 +219,10 @@ void sim_init(Sim *sim)
 {
     sim->active = TRUE;
     sim->evolving = TRUE;
+
+    const b32 random_seed = FALSE;
     
-    sim->seed = 813;
-    // u32 seed = (u32)time(NULL);
+    sim->seed = random_seed ? (u32)time(NULL) : 813;
     
     srand(sim->seed);
 

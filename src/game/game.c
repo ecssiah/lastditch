@@ -4,7 +4,6 @@
 
 #include "game/sim/sim_data.h"
 #include "game/sim/sim.h"
-#include "game/sim/world.h"
 #include "game/shell/render.h"
 #include "game/shell/screen.h"
 #include "game/shell/shell_data.h"
@@ -20,9 +19,8 @@ int main()
 {
     platform_init(&platform, "Last Ditch");
     shell_init(&shell);
-    sim_init(&sim);
     
-    world_init(&sim);
+    sim_init(&sim);
     
     render_init(&shell, &platform, &sim);
     screen_init(&shell, &platform);
@@ -39,6 +37,7 @@ int main()
     }
 
     sim_close(&sim);
+    
     shell_close(&shell);
     platform_close(&platform);
 }

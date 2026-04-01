@@ -18,17 +18,13 @@ find_library(COREVIDEO_FRAMEWORK CoreVideo)
 
 find_package(glfw3 CONFIG REQUIRED)
 
-###########
-# LD Game #
-###########
-
 add_executable(
-    ld_game
+    lastditch
     src/game/game.c
 )
 
 target_include_directories(
-    ld_game 
+    lastditch 
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/external/jsk
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
@@ -37,14 +33,14 @@ target_include_directories(
 )
 
 target_link_libraries(
-    ld_game 
+    lastditch 
     PRIVATE
     glfw
 )
 
 if(APPLE)
 	target_link_libraries(
-		ld_game
+		lastditch
 		PRIVATE
         glfw
 		${OPENGL_FRAMEWORK}
@@ -55,7 +51,7 @@ if(APPLE)
 endif()
 
 target_sources(
-    ld_game 
+    lastditch
     PRIVATE
     external/glad/src/glad.c
     external/jsk/jsk_config.c
@@ -75,7 +71,7 @@ target_sources(
 )
 
 target_compile_definitions(
-    ld_game
+    lastditch
     PRIVATE
     GLFW_INCLUDE_NONE
     GL_SILENCE_DEPRECATION
@@ -83,84 +79,10 @@ target_compile_definitions(
 
 add_custom_command(
     TARGET
-    ld_game
+    lastditch
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Assets..."
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/assets
-	        $<TARGET_FILE_DIR:ld_game>/assets
+	        $<TARGET_FILE_DIR:lastditch>/assets
 )
-
-#############
-# LD Editor #
-#############
-
-add_executable(
-    ld_edit
-    src/edit/edit.c
-)
-
-target_include_directories(
-    ld_edit
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/jsk
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/stb/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-target_link_libraries(
-    ld_edit
-    PRIVATE
-    glfw
-)
-
-if(APPLE)
-	target_link_libraries(
-		ld_edit
-		PRIVATE
-        glfw
-		${OPENGL_FRAMEWORK}
-		${COCOA_FRAMEWORK}
-		${IOKIT_FRAMEWORK}
-		${COREVIDEO_FRAMEWORK}
-	)
-endif()
-
-target_sources(
-    ld_edit
-    PRIVATE
-    external/glad/src/glad.c
-    external/jsk/jsk_config.c
-    external/jsk/jsk_gl.c
-    external/jsk/jsk_log.c      
-    external/stb/src/stb_image.c
-    src/core/action.c
-    src/edit/sim/actor.c
-    src/edit/sim/physics.c
-    src/edit/sim/sim.c
-    src/edit/sim/world.c
-    src/edit/shell/render.c
-    src/edit/shell/screen.c
-    src/edit/shell/shell.c
-    src/edit/shell/viewpoint.c
-    src/platform/platform.c
-)
-
-target_compile_definitions(
-    ld_edit
-    PRIVATE
-    GLFW_INCLUDE_NONE
-    GL_SILENCE_DEPRECATION
-)
-
-add_custom_command(
-    TARGET
-    ld_edit
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "Assets..."
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/assets
-	        $<TARGET_FILE_DIR:ld_edit>/assets
-)
-
