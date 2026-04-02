@@ -64,3 +64,4 @@ TAGS
 # -------------------------------------------------
 # assets/generated/
 # assets/cache/
+!assets/models/*.obj
