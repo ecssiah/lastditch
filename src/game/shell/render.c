@@ -1,10 +1,9 @@
 #include "game/shell/render.h"
 
+#include <glad/glad.h>
 #include <stdlib.h>
 #include <string.h>
-#include <glad/glad.h>
 
-#include "game/shell/shell_data.h"
 #include "stb_image.h"
 
 #include "jsk_log.h"
@@ -12,9 +11,10 @@
 
 #include "core/core_data.h"
 #include "game/sim/world.h"
+#include "game/shell/shell_data.h"
 #include "game/shell/viewpoint.h"
 
-const u32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
+const i32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
 {
     // +X
     {
