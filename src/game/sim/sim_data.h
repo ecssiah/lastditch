@@ -135,6 +135,20 @@ enum BlockType
 
 extern const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT];
 
+typedef struct BlockTypeList BlockTypeList;
+struct BlockTypeList
+{
+    const BlockType *block_type_array;
+
+    i32 count;
+};
+
+extern const BlockType ROOM_CONTENT_ARRAY_LEVEL_1[];
+extern const BlockType ROOM_CONTENT_ARRAY_LEVEL_2[];
+extern const BlockType ROOM_CONTENT_ARRAY_LEVEL_3[];
+
+extern const BlockTypeList ROOM_CONTENT_MASTER_LIST[FLOOR_COUNT];
+
 typedef struct Cell Cell;
 struct Cell
 {

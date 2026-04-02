@@ -13,6 +13,32 @@ const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
     FOR_LIST_BLOCK_TYPE(DEFINE_LIST_STRING)
 };
 
+const BlockType ROOM_CONTENT_ARRAY_LEVEL_1[] =
+{
+    BLOCK_TYPE_SERVER_1,
+};
+
+const BlockType ROOM_CONTENT_ARRAY_LEVEL_2[] =
+{
+    BLOCK_TYPE_SERVER_1,
+    BLOCK_TYPE_SERVER_2,
+};
+
+const BlockType ROOM_CONTENT_ARRAY_LEVEL_3[] =
+{
+    BLOCK_TYPE_SERVER_1,
+    BLOCK_TYPE_SERVER_2,
+    BLOCK_TYPE_SERVER_3,
+    BLOCK_TYPE_SERVER_4,
+};
+
+const BlockTypeList ROOM_CONTENT_MASTER_LIST[FLOOR_COUNT] =
+{
+    { ROOM_CONTENT_ARRAY_LEVEL_1, 1 },
+    { ROOM_CONTENT_ARRAY_LEVEL_2, 2 },
+    { ROOM_CONTENT_ARRAY_LEVEL_3, 4 },
+};
+
 const char *DIRECTION_STRING[DIRECTION_COUNT] =
 {
     FOR_LIST_DIRECTION(DEFINE_LIST_STRING)
@@ -307,6 +333,13 @@ void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 si
             }
         }
     }
+}
+
+i32 world_get_content_level(i32 floor_number)
+{
+    const i32 level_range = floor_number / 2;
+
+    return 2 - level_range;
 }
 
 void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
@@ -717,9 +750,39 @@ static void setup_rooms(Sim *sim)
             }
 
             room_list->room_array[room_list->count++] = *room;
+
+            const i32 content_level = world_get_content_level(floor_number);
+            
+            const BlockTypeList *block_type_list = &ROOM_CONTENT_MASTER_LIST[content_level];
+
+            const i32 stack_count = (room_size[0] * room_size[1] / 8);
+
+            for (i32 stack_index = 0; stack_index < stack_count; ++stack_index)
+            {
+                const ivec2 stack_position =
+                {
+                    room->room_rect.min[0] + 1 + rand() % (room->room_rect.max[0] - room->room_rect.min[0] + 1 - 3),
+                    room->room_rect.min[1] + 1 + rand() % (room->room_rect.max[1] - room->room_rect.min[1] + 1 - 3),
+                };
+
+                const i32 stack_height = rand() % FLOOR_SIZE_Z - 4;
+
+                world_set_block_type_cube(
+                    sim,
+                    stack_position[0], stack_position[1], floor_number * FLOOR_SIZE_Z + 1,
+                    1, 1, stack_height,
+                    block_type_list->block_type_array[rand() % block_type_list->count]
+                );
+            }
         }
     }
 
+    free(room_list_a.room_array);
+    free(room_list_b.room_array);
+}
+
+static void setup_doors(Sim *sim)
+{
     for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         const RoomList *room_list = &sim->tower.room_list_array[floor_number];
@@ -842,9 +905,6 @@ static void setup_rooms(Sim *sim)
             }
         }
     }
-    
-    free(room_list_a.room_array);
-    free(room_list_b.room_array);
 }
 
 static void setup_roof(Sim *sim)
@@ -1028,11 +1088,12 @@ void world_init(Sim *sim)
     }
     
     setup_tower(sim);
+    setup_rooms(sim);
+    setup_doors(sim);
+
     setup_roof(sim);
     setup_elevator(sim);
-
-    setup_rooms(sim);
-
+    
     setup_eagle_temple(sim);
     setup_wolf_temple(sim);
     setup_lion_temple(sim);
