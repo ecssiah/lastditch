@@ -1,6 +1,7 @@
 #include "game/shell/render.h"
 
 #include <string.h>
+#include <glad/glad.h>
 
 #include "stb_image.h"
 
@@ -11,7 +12,7 @@
 #include "game/sim/world.h"
 #include "game/shell/viewpoint.h"
 
-const f32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
+const u32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
 {
     // +X
     {
@@ -77,7 +78,7 @@ const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     { +0, -1, +0 },
 };
 
-static void get_projection_matrix(Render *render, mat4 out_projection_matrix)
+static void get_projection_matrix(mat4 out_projection_matrix)
 {
     glm_perspective(
         glm_rad(60.0f),
@@ -101,7 +102,7 @@ void render_load_texture(Shell *shell, const char *texture_path, const GLint lay
     int height;
     int channels;
 
-    stbi_set_flip_vertically_on_load(TRUE);
+    stbi_set_flip_vertically_on_load(true);
     
     unsigned char *pixel_data_array = stbi_load(texture_path, &width, &height, &channels, 4);
 
@@ -147,8 +148,7 @@ void render_load_textures(Shell *shell, const char *textures_path)
         NULL
     );
 
-    i32 layer_index;
-    for (layer_index = 0; layer_index < render->block_types_config->entry_count; ++layer_index)
+    for (i32 layer_index = 0; layer_index < render->block_types_config->entry_count; ++layer_index)
     {
         JSK_ConfigEntry *config_entry = &render->block_types_config->config_entry_array[layer_index];
 
@@ -275,13 +275,11 @@ void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
     sector_cell_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
     sector_cell_coordinate[2] = 0;
 
-    i32 cell_x, cell_y, cell_z;
-    
-    for (cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
+    for (i32 cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
     {
-        for (cell_y = sector_cell_coordinate[1]; cell_y < sector_cell_coordinate[1] + SECTOR_SIZE_IN_CELLS; ++cell_y)
+        for (i32 cell_y = sector_cell_coordinate[1]; cell_y < sector_cell_coordinate[1] + SECTOR_SIZE_IN_CELLS; ++cell_y)
         {
-            for (cell_x = sector_cell_coordinate[0]; cell_x < sector_cell_coordinate[0] + SECTOR_SIZE_IN_CELLS; ++cell_x)
+            for (i32 cell_x = sector_cell_coordinate[0]; cell_x < sector_cell_coordinate[0] + SECTOR_SIZE_IN_CELLS; ++cell_x)
             {
                 const i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
 		
@@ -320,12 +318,11 @@ void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
 
 void render_emit_sector_face(SectorQuad *sector_quad, GpuMesh *gpu_mesh)
 {
-    i32 vertex_index;
-    for (vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
+    for (i32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-        u32 x = sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0];
-        u32 y = sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1];
-        u32 z = sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2];
+        const u32 x = (u32)sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0];
+        const u32 y = (u32)sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1];
+        const u32 z = (u32)sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2];
 
         VertexAttributes vertex_attributes;
 
@@ -359,8 +356,7 @@ void render_convert_sector_mesh_to_gpu_mesh(Render *render, SectorMesh *sector_m
     gpu_mesh.position[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
     gpu_mesh.position[2] = 0.0f;
 
-    i32 quad_index;
-    for (quad_index = 0; quad_index < sector_mesh->sector_quad_count; ++quad_index)
+    for (i32 quad_index = 0; quad_index < sector_mesh->sector_quad_count; ++quad_index)
     {
         SectorQuad *sector_quad = &sector_mesh->sector_quad_array[quad_index];
 
@@ -441,7 +437,7 @@ void render_init(Shell *shell, Platform *platform, Sim *sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->texture_array_id);
 
-    get_projection_matrix(render, render->viewpoint.projection_matrix);
+    get_projection_matrix(render->viewpoint.projection_matrix);
 
     glUniformMatrix4fv(render->u_projection_location, 1, GL_FALSE, (f32 *)render->viewpoint.projection_matrix);
 

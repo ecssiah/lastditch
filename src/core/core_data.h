@@ -51,8 +51,8 @@ struct IntRect
 typedef struct IntRectArray IntRectArray;
 struct IntRectArray
 {
-    u32 count;
-    u32 capacity;
+    i32 count;
+    i32 capacity;
 
     IntRect *rect_array;
 };
@@ -102,8 +102,8 @@ struct ActionQueue
 {
     Action action_array[ACTION_QUEUE_CAPACITY];
 
-    u32 head_index;
-    u32 tail_index;
+    i32 head_index;
+    i32 tail_index;
 };
 
 #endif

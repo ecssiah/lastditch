@@ -31,7 +31,7 @@
 
 #define WORLD_CENTER (WORLD_SIZE_IN_CELLS / 2)
 
-#define TOWER_WIREFRAME FALSE
+#define TOWER_WIREFRAME false
 
 #define TOWER_BORDER 16
 #define TOWER_SIZE (WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER)
@@ -169,7 +169,7 @@ enum NationType
 typedef struct BoxCollider BoxCollider;
 struct BoxCollider
 {
-    b32 collision_enabled;
+    bool collision_enabled;
     
     vec3 radius;
 };
@@ -195,8 +195,8 @@ enum MovementType
 typedef struct ActorHandle ActorHandle;
 struct ActorHandle
 {
-    u32 index;
-    u32 generation;
+    i32 index;
+    i32 generation;
 };
 
 typedef struct Actor Actor;
@@ -209,7 +209,7 @@ struct Actor
 
     MovementType movement_type;
 
-    b32 is_grounded;
+    bool is_grounded;
     
     f32 speed;
     vec3 velocity;
@@ -222,13 +222,13 @@ struct ActorPool
 {
     Actor actor_array[ACTOR_MAX];
 
-    u32 generation_array[ACTOR_MAX];
+    i32 generation_array[ACTOR_MAX];
 
-    u32 active_array[ACTOR_MAX];
-    u32 active_count;
+    i32 active_array[ACTOR_MAX];
+    i32 active_count;
     
-    u32 free_array[ACTOR_MAX];
-    u32 free_count;
+    i32 free_array[ACTOR_MAX];
+    i32 free_count;
 };
 
 typedef struct Physics Physics;
@@ -251,8 +251,8 @@ struct Time
 typedef struct Sim Sim;
 struct Sim
 {
-    b32 active;
-    b32 evolving;
+    bool active;
+    bool evolving;
     
     u32 seed;
 

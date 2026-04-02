@@ -38,7 +38,7 @@ const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
     { +0, +0, -1 },
 };
 
-b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
+bool world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
 {   
     return (
         x >= 0 && x < WORLD_SIZE_IN_CELLS &&
@@ -47,7 +47,7 @@ b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
     );
 }
 
-b32 world_sector_coordinate_is_valid(i32 x, i32 y)
+bool world_sector_coordinate_is_valid(i32 x, i32 y)
 {
     return (
         x >= 0 && x < WORLD_SIZE_IN_SECTORS &&
@@ -93,16 +93,16 @@ void world_cell_index_to_coordinate(i32 cell_index, ivec3 out_cell_coordinate)
     out_cell_coordinate[2] = (cell_index >> (2 * WORLD_SIZE_IN_CELLS_LOG2));
 }
 
-void world_cell_coordinate_to_sector_coordinate(i32 x, i32 y, i32 z, ivec2 out_sector_coordinate)
+void world_cell_coordinate_to_sector_coordinate(i32 x, i32 y, ivec2 out_sector_coordinate)
 {
     out_sector_coordinate[0] = x >> SECTOR_SIZE_IN_CELLS_LOG2;
     out_sector_coordinate[1] = y >> SECTOR_SIZE_IN_CELLS_LOG2;
 }
 
-i32 world_cell_coordinate_to_sector_index(i32 x, i32 y, i32 z)
+i32 world_cell_coordinate_to_sector_index(i32 x, i32 y)
 {
     ivec2 sector_coordinate;
-    world_cell_coordinate_to_sector_coordinate(x, y, z, sector_coordinate);
+    world_cell_coordinate_to_sector_coordinate(x, y, sector_coordinate);
 
     const i32 sector_index = world_sector_coordinate_to_index(sector_coordinate);
 
@@ -144,14 +144,14 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
     out_cell_coordinate[2] = (i32)floorf(z);
 }
 
-void world_get_elevator_origin(u32 floor_number, ivec3 out_origin)
+void world_get_elevator_origin(i32 floor_number, ivec3 out_origin)
 {
     out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + ELEVATOR_SIZE / 2;
     out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + ELEVATOR_SIZE / 2;
     out_origin[2] = floor_number * FLOOR_SIZE_Z;
 }
 
-void world_get_quadrant_origin(Quadrant quadrant, u32 floor_number, ivec3 out_origin)
+void world_get_quadrant_origin(i32 floor_number, Quadrant quadrant, ivec3 out_origin)
 {
     switch (quadrant)
     {
@@ -192,8 +192,7 @@ void world_get_quadrant_origin(Quadrant quadrant, u32 floor_number, ivec3 out_or
 
 BlockType world_block_type_from_string(const char *block_type_string)
 {
-    i32 index;
-    for (index = 0; index < BLOCK_TYPE_COUNT; ++index)
+    for (i32 index = 0; index < BLOCK_TYPE_COUNT; ++index)
     {
         if (strcmp(block_type_string, BLOCK_TYPE_STRING[index]) == 0)
         {
@@ -204,11 +203,11 @@ BlockType world_block_type_from_string(const char *block_type_string)
     return BLOCK_TYPE_NONE;
 }
 
-b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
+bool world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
 {   
     if (!world_cell_coordinate_is_valid(x, y, z))
     {
-        return FALSE;
+        return false;
     }
     
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
@@ -218,25 +217,24 @@ b32 world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
     return cell->block_type != BLOCK_TYPE_NONE;
 }
 
-b32 world_is_clear(Sim *sim, i32 x, i32 y, i32 z, u8 direction_mask)
+bool world_is_clear(Sim *sim, i32 x, i32 y, i32 z, u8 direction_mask)
 {
-    i32 direction_index;
-    for (direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
         if (direction_mask & (1 << direction_index))
         {
-            const i32 neighbor_x = x + DIRECTION_NORMAL_ARRAY[direction_index][0];
-            const i32 neighbor_y = y + DIRECTION_NORMAL_ARRAY[direction_index][1];
-            const i32 neighbor_z = z + DIRECTION_NORMAL_ARRAY[direction_index][2];
+            const i32 neighbor_x = x + (i32)DIRECTION_NORMAL_ARRAY[direction_index][0];
+            const i32 neighbor_y = y + (i32)DIRECTION_NORMAL_ARRAY[direction_index][1];
+            const i32 neighbor_z = z + (i32)DIRECTION_NORMAL_ARRAY[direction_index][2];
 
             if (world_is_solid(sim, neighbor_x, neighbor_y, neighbor_z))
             {
-                return FALSE;
+                return false;
             }
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
@@ -245,14 +243,13 @@ u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
 
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
 
-    i32 direction_index;
-    for (direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
-        const i32 neighbor_x = x + DIRECTION_NORMAL_ARRAY[direction_index][0];
-        const i32 neighbor_y = y + DIRECTION_NORMAL_ARRAY[direction_index][1];
-        const i32 neighbor_z = z + DIRECTION_NORMAL_ARRAY[direction_index][2];
+        const i32 neighbor_x = x + (i32)DIRECTION_NORMAL_ARRAY[direction_index][0];
+        const i32 neighbor_y = y + (i32)DIRECTION_NORMAL_ARRAY[direction_index][1];
+        const i32 neighbor_z = z + (i32)DIRECTION_NORMAL_ARRAY[direction_index][2];
 
-        const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
+        const bool valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
         
         if (!valid_neighbor)
         {
@@ -300,13 +297,11 @@ void world_set_block_type(Sim *sim, i32 x, i32 y, i32 z, BlockType block_type)
 
 void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    i32 cell_x, cell_y, cell_z;
-
-    for (cell_z = z; cell_z < z + size_z; ++cell_z)
+    for (i32 cell_z = z; cell_z < z + size_z; ++cell_z)
     {
-        for (cell_y = y; cell_y < y + size_y; ++cell_y)
+        for (i32 cell_y = y; cell_y < y + size_y; ++cell_y)
         {
-            for (cell_x = x; cell_x < x + size_x; ++cell_x)
+            for (i32 cell_x = x; cell_x < x + size_x; ++cell_x)
             {
                 world_set_block_type(sim, cell_x, cell_y, cell_z, block_type);
             }
@@ -316,13 +311,11 @@ void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 si
 
 void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    i32 cell_x, cell_y, cell_z;
-
-    for (cell_z = z; cell_z < z + size_z; ++cell_z)
+    for (i32 cell_z = z; cell_z < z + size_z; ++cell_z)
     {
-        for (cell_y = y; cell_y < y + size_y; ++cell_y)
+        for (i32 cell_y = y; cell_y < y + size_y; ++cell_y)
         {
-            for (cell_x = x; cell_x < x + size_x; ++cell_x)
+            for (i32 cell_x = x; cell_x < x + size_x; ++cell_x)
             {
                 if (
                     cell_x == x || cell_x == x + size_x - 1 ||
@@ -338,17 +331,15 @@ void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 siz
 
 void world_set_block_type_wireframe(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    i32 cell_x, cell_y, cell_z;
-
     const i32 max_x = x + size_x - 1;
     const i32 max_y = y + size_y - 1;
     const i32 max_z = z + size_z - 1;
 
-    for (cell_z = z; cell_z <= max_z; ++cell_z)
+    for (i32 cell_z = z; cell_z <= max_z; ++cell_z)
     {
-        for (cell_y = y; cell_y <= max_y; ++cell_y)
+        for (i32 cell_y = y; cell_y <= max_y; ++cell_y)
         {
-            for (cell_x = x; cell_x <= max_x; ++cell_x)
+            for (i32 cell_x = x; cell_x <= max_x; ++cell_x)
             {
                 i32 boundary_count = 0;
 
@@ -367,9 +358,7 @@ void world_set_block_type_wireframe(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i
 
 static void init_direction_mask(Sim *sim)
 {
-    i32 cell_index;
-    
-    for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
         Cell *cell = &sim->cell_array[cell_index];
 
@@ -387,8 +376,7 @@ static void init_direction_mask(Sim *sim)
 
 static void setup_tower(Sim *sim)
 {
-    i32 floor_number;
-    for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
 	
@@ -408,11 +396,9 @@ static void setup_tower(Sim *sim)
             BLOCK_TYPE_CAUTION_1
         );
 
-        i32 cell_x, cell_y, cell_z;
+        const i32 cell_z = floor_origin[2];
 	
-        cell_z = floor_origin[2];
-
-        for (cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + TOWER_SIZE - 1; ++cell_x)
+        for (i32 cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + TOWER_SIZE - 1; ++cell_x)
         {
             i32 north_position_z, north_size_z;
 	    
@@ -459,7 +445,7 @@ static void setup_tower(Sim *sim)
             );
         }
 	
-        for (cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + TOWER_SIZE - 1; ++cell_y)
+        for (i32 cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + TOWER_SIZE - 1; ++cell_y)
         {
             i32 east_position_z, east_size_z;
 
@@ -480,7 +466,7 @@ static void setup_tower(Sim *sim)
                 sim,
                 floor_origin[1] + TOWER_SIZE - 1, cell_y, east_position_z,
                 1, 1, east_size_z,
-                BLOCK_TYPE_METAL_5
+                BLOCK_TYPE_PANEL_2
             );
 
             i32 west_position_z, west_size_z;
@@ -502,7 +488,7 @@ static void setup_tower(Sim *sim)
                 sim,
                 floor_origin[1], cell_y, west_position_z,
                 1, 1, west_size_z,
-                BLOCK_TYPE_METAL_5
+                BLOCK_TYPE_PANEL_2
             );
         }
     }
@@ -520,11 +506,8 @@ static void setup_elevator(Sim *sim)
         BLOCK_TYPE_NONE
     );
 
-    i32 floor_number;
-    for (floor_number = 0; floor_number < FLOOR_COUNT + 1; ++floor_number)
+    for (i32 floor_number = 0; floor_number < FLOOR_COUNT + 1; ++floor_number)
     {
-        const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
-
         world_get_elevator_origin(floor_number, elevator_origin);
 
         if (TOWER_WIREFRAME)
@@ -573,28 +556,27 @@ static void setup_elevator(Sim *sim)
 
 static void setup_rooms(Sim *sim)
 {
-    const u32 room_max = 4 * (1 << ROOM_EXPANSION_ITERATION_COUNT);
+    const i32 room_max = 4 * (1 << ROOM_EXPANSION_ITERATION_COUNT);
 
     IntRectArray room_array_a = { 0, room_max, malloc(room_max * sizeof(IntRect)) };
     IntRectArray room_array_b = { 0, room_max, malloc(room_max * sizeof(IntRect)) };
     
-    u32 floor_number;
-    for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         room_array_a.count = 0;
         room_array_b.count = 0;
         
         ivec3 quadrant_1_origin;
-        world_get_quadrant_origin(QUADRANT_1, floor_number, quadrant_1_origin);
+        world_get_quadrant_origin(floor_number, QUADRANT_1, quadrant_1_origin);
 
         ivec3 quadrant_2_origin;
-        world_get_quadrant_origin(QUADRANT_2, floor_number, quadrant_2_origin);
+        world_get_quadrant_origin(floor_number, QUADRANT_2, quadrant_2_origin);
 
         ivec3 quadrant_3_origin;
-        world_get_quadrant_origin(QUADRANT_3, floor_number, quadrant_3_origin);
+        world_get_quadrant_origin(floor_number, QUADRANT_3, quadrant_3_origin);
 
         ivec3 quadrant_4_origin;
-        world_get_quadrant_origin(QUADRANT_4, floor_number, quadrant_4_origin);
+        world_get_quadrant_origin(floor_number, QUADRANT_4, quadrant_4_origin);
 
         IntRect *quadrant_1_rect = &room_array_a.rect_array[room_array_a.count];
         
@@ -635,11 +617,9 @@ static void setup_rooms(Sim *sim)
         IntRectArray *room_array_current = &room_array_a;
         IntRectArray *room_array_expanded = &room_array_b;
         
-        i32 iteration;
-        for (iteration = 0; iteration < ROOM_EXPANSION_ITERATION_COUNT; ++iteration)
+        for (i32 iteration = 0; iteration < ROOM_EXPANSION_ITERATION_COUNT; ++iteration)
         {
-            i32 room_index;
-            for (room_index = 0; room_index < room_array_current->count; ++room_index)
+            for (i32 room_index = 0; room_index < room_array_current->count; ++room_index)
             {
                 const IntRect *room_rect = &room_array_current->rect_array[room_index];
 
@@ -695,8 +675,7 @@ static void setup_rooms(Sim *sim)
         room_array_floor->capacity = room_max;
         room_array_floor->rect_array = malloc(room_max * sizeof(IntRect));
         
-        i32 room_index;
-        for (room_index = 0; room_index < room_array_current->count; ++room_index)
+        for (i32 room_index = 0; room_index < room_array_current->count; ++room_index)
         {
             const IntRect *room_rect = &room_array_current->rect_array[room_index];
 
@@ -722,7 +701,7 @@ static void setup_rooms(Sim *sim)
                     sim,
                     room_rect->min[0], room_rect->min[1], floor_number * FLOOR_SIZE_Z,
                     room_size[0], room_size[1], room_size[2],
-                    BLOCK_TYPE_PANEL_3
+                    BLOCK_TYPE_METAL_1
                 );
             }
 
@@ -730,12 +709,11 @@ static void setup_rooms(Sim *sim)
         }
     }
 
-    for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         const IntRectArray *room_array = &sim->tower_room_array[floor_number];
         
-        i32 room_index;
-        for (room_index = 0; room_index < room_array->count; ++room_index)
+        for (i32 room_index = 0; room_index < room_array->count; ++room_index)
         {
             const IntRect *room_rect = &room_array->rect_array[room_index]; 
             
@@ -747,13 +725,11 @@ static void setup_rooms(Sim *sim)
 
             const i32 door_attempt_count = 3;
             
-            i32 index;
-
-            for (index = 0; index < door_attempt_count; ++index)
+            for (i32 index = 0; index < door_attempt_count; ++index)
             {
                 const i32 east_door_position_y = room_rect->min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
 
-                const b32 east_door_clear =
+                const bool east_door_clear =
                     world_is_clear(
                         sim,
                         room_rect->max[AXIS_X] - 1,
@@ -775,11 +751,11 @@ static void setup_rooms(Sim *sim)
                 }
             }
 
-            for (index = 0; index < door_attempt_count; ++index)
+            for (i32 index = 0; index < door_attempt_count; ++index)
             {
                 const i32 west_door_position_y = room_rect->min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
 
-                const b32 west_door_clear =
+                const bool west_door_clear =
                     world_is_clear(
                         sim,
                         room_rect->min[AXIS_X],
@@ -801,11 +777,11 @@ static void setup_rooms(Sim *sim)
                 }
             }
 
-            for (index = 0; index < door_attempt_count; ++index)
+            for (i32 index = 0; index < door_attempt_count; ++index)
             {
                 const i32 north_door_position_x = room_rect->min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
 
-                const b32 north_door_clear =
+                const bool north_door_clear =
                     world_is_clear(
                         sim,
                         north_door_position_x,
@@ -827,11 +803,11 @@ static void setup_rooms(Sim *sim)
                 }
             }
 
-            for (index = 0; index < door_attempt_count; ++index)
+            for (i32 index = 0; index < door_attempt_count; ++index)
             {
                 const i32 south_door_position_x = room_rect->min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
 
-                const south_door_clear =
+                const bool south_door_clear =
                     world_is_clear(
                         sim,
                         south_door_position_x,
@@ -1031,20 +1007,11 @@ static void setup_horse_temple(Sim *sim)
     );
 }
 
-static void test_world_is_clear(Sim *sim)
-{
-    world_set_block_type(sim, 120, 120, TOWER_ROOF_Z + 1, BLOCK_TYPE_WOLF_SYMBOL);
-    /* world_set_block_type(sim, 120, 121, TOWER_ROOF_Z + 1, BLOCK_TYPE_WOLF_SYMBOL); */
-
-    const b32 clear_north_south = world_is_clear(sim, 120, 120, TOWER_ROOF_Z + 1, (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH));
-}
-
 void world_init(Sim *sim)
 {
     sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
 
-    i32 cell_index;
-    for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
         sim->cell_array[cell_index].cell_index = cell_index;
     }
@@ -1060,7 +1027,5 @@ void world_init(Sim *sim)
     setup_lion_temple(sim);
     setup_horse_temple(sim);
 
-    /* test_world_is_clear(sim); */
-    
     init_direction_mask(sim);
 }

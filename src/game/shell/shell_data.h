@@ -19,7 +19,7 @@ struct VertexAttributes
     u32 a_face;
 };
 
-extern const f32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3];
+extern const u32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3];
 extern const f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3];
 
 typedef struct GpuMesh GpuMesh;
@@ -30,8 +30,8 @@ struct GpuMesh
     GLuint vao_id;
     GLuint vbo_id;
 
-    u32 vertex_attributes_count;
-    u32 vertex_attributes_capacity;
+    i32 vertex_attributes_count;
+    i32 vertex_attributes_capacity;
     
     VertexAttributes *vertex_attributes_array;
 };
@@ -50,8 +50,8 @@ struct SectorMesh
 {
     i32 sector_index;
     
-    u32 sector_quad_count;
-    u32 sector_quad_capacity;
+    i32 sector_quad_count;
+    i32 sector_quad_capacity;
 
     SectorQuad *sector_quad_array;
 };
@@ -95,13 +95,13 @@ struct Render
 
     u8 block_type_layer_array[BLOCK_TYPE_COUNT - 1];
 
-    u32 sector_mesh_count;
-    u32 sector_mesh_capacity;
+    i32 sector_mesh_count;
+    i32 sector_mesh_capacity;
 
     SectorMesh *sector_mesh_array;
 
-    u32 gpu_mesh_count;
-    u32 gpu_mesh_capacity;
+    i32 gpu_mesh_count;
+    i32 gpu_mesh_capacity;
     
     GpuMesh *gpu_mesh_array;
 
@@ -126,7 +126,7 @@ struct Screen
 typedef struct Shell Shell;
 struct Shell
 {
-    b32 active;
+    bool active;
     
     Screen screen;
     Render render;

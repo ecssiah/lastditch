@@ -1,6 +1,6 @@
 #include "jsk_gl.h"
+#include "jsk_log.h"
 
-#include <malloc/_malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,10 +28,17 @@ static char* read_file(const char *path)
     }
 
     fseek(file, 0, SEEK_END);
-    long size = ftell(file);
+    const long size = ftell(file);
+
+    if (size < 0)
+    {
+        LOG_WARN("File read file: %s\n", path);
+        return NULL;
+    }
+    
     rewind(file);
 
-    char* buffer = (char*)malloc(size + 1);
+    char* buffer = (char*)malloc((size_t)size + 1);
     
     if (!buffer)
     {
@@ -39,7 +46,7 @@ static char* read_file(const char *path)
         return NULL;
     }
 
-    fread(buffer, 1, size, file);
+    fread(buffer, 1, (size_t)size, file);
     buffer[size] = '\0';
 
     fclose(file);
@@ -53,10 +60,12 @@ void jskgl_check_error(const char* label)
 
     while ((err = glGetError()) != GL_NO_ERROR)
     {
-        printf("GL ERROR [%s]: %s (0x%x)\n",
-               label,
-               get_error_string(err),
-               err);
+        printf(
+            "GL ERROR [%s]: %s (0x%x)\n",
+            label,
+            get_error_string(err),
+            err
+        );
     }
 }
 
@@ -64,7 +73,7 @@ GLuint jskgl_compile_shader(GLenum type, const char* filepath)
 {
     char* src_string = read_file(filepath);
     
-    GLuint shader_id = glCreateShader(type);
+    const GLuint shader_id = glCreateShader(type);
     
     glShaderSource(shader_id, 1, (const char* const*)&src_string, NULL);
     glCompileShader(shader_id);

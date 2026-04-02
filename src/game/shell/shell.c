@@ -59,8 +59,8 @@ static void queue_rotate_action(Platform *platform, Sim *sim)
 {
     Action rotate_action;
     rotate_action.type = ACTION_ROTATE;
-    rotate_action.action_value[0] = platform->input.pointer_delta_x;
-    rotate_action.action_value[1] = platform->input.pointer_delta_y;
+    rotate_action.action_value[0] = (f32)platform->input.pointer_delta_x;
+    rotate_action.action_value[1] = (f32)platform->input.pointer_delta_y;
     rotate_action.action_value[2] = 0.0f;
 
     action_add(&sim->action_queue, rotate_action);
@@ -88,7 +88,7 @@ void shell_init(Shell *shell)
 {
     log_init();
     
-    shell->active = TRUE;
+    shell->active = true;
 }
 
 void shell_update(Shell *shell, Platform *platform, Sim *sim)

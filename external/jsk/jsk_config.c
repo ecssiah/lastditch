@@ -24,13 +24,13 @@ static void strip_newline(char *str)
     }
 }
 
-static b32 parse_line(char *line, JSK_ConfigEntry *out_config_entry)
+static bool parse_line(char *line, JSK_ConfigEntry *out_config_entry)
 {
     strip_newline(line);
 
     if (line[0] == '\0')
     {
-        return FALSE;
+        return false;
     }
 
     char *equal_sign_present = strchr(line, '=');
@@ -39,7 +39,7 @@ static b32 parse_line(char *line, JSK_ConfigEntry *out_config_entry)
     {
         LOG_WARN("Invalid config: %s", line);
 
-        return FALSE;
+        return false;
     }
 
     *equal_sign_present = '\0';
@@ -50,7 +50,7 @@ static b32 parse_line(char *line, JSK_ConfigEntry *out_config_entry)
     out_config_entry->key = strdup(key);
     out_config_entry->value = strdup(value);
 
-    return TRUE;
+    return true;
 }
 
 static void extend_capacity(JSK_Config* config)
@@ -95,7 +95,7 @@ JSK_Config *jsk_load_config(const char* config_path)
     {
         JSK_ConfigEntry *config_entry = &jsk_config->config_entry_array[jsk_config->entry_count];
 		
-        b32 success = parse_line(line, config_entry);
+        bool success = parse_line(line, config_entry);
 
         if (success)
         {
@@ -115,8 +115,7 @@ JSK_Config *jsk_load_config(const char* config_path)
 
 void jsk_destroy_config(JSK_Config *config)
 {
-    size_t i;
-    for (i = 0; i < config->entry_count; ++i)
+    for (size_t i = 0; i < config->entry_count; ++i)
     {
         free((void*)config->config_entry_array[i].key);
         free((void*)config->config_entry_array[i].value);

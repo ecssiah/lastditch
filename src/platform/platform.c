@@ -36,8 +36,8 @@ static void init_buttons(Platform *platform)
     i32 button_index;
     for (button_index = 0; button_index < BUTTON_COUNT; ++button_index)
     {
-        input->button_array_current[button_index] = FALSE;
-        input->button_array_previous[button_index] = FALSE;
+        input->button_array_current[button_index] = false;
+        input->button_array_previous[button_index] = false;
     }
     
     i32 glfw_key_index;
@@ -80,7 +80,7 @@ static void init_mouse(Platform *platform)
     input->pointer_delta_x = 0.0;
     input->pointer_delta_y = 0.0;
 
-    input->ignore_delta = TRUE;
+    input->ignore_delta = true;
 }
 
 static void update_time(Platform *platform)
@@ -102,7 +102,7 @@ static void update_buttons(Platform *platform)
     for (button_index = 0; button_index < BUTTON_COUNT; ++button_index)
     {
         input->button_array_previous[button_index] = input->button_array_current[button_index];
-        input->button_array_current[button_index] = FALSE;
+        input->button_array_current[button_index] = false;
     }
 
     i32 glfw_key_index;
@@ -141,12 +141,12 @@ static void update_pointer(Platform *platform)
     
     glfwGetCursorPos(platform->window.glfw_window, &input->pointer_current_x, &input->pointer_current_y);
     
-    if (input->ignore_delta == TRUE)
+    if (input->ignore_delta == true)
     {
         input->pointer_delta_x = 0.0;
         input->pointer_delta_y = 0.0;
 	
-        input->ignore_delta = FALSE;
+        input->ignore_delta = false;
     }
     else
     {
@@ -155,12 +155,12 @@ static void update_pointer(Platform *platform)
     }
 }
 
-b32 platform_button_is_down(Platform *platform, Button button)
+bool platform_button_is_down(Platform *platform, Button button)
 {
     return platform->input.button_array_current[button];
 }
 
-b32 platform_button_is_pressed(Platform *platform, Button button)
+bool platform_button_is_pressed(Platform *platform, Button button)
 {
     return (
         platform->input.button_array_current[button] &&
@@ -168,7 +168,7 @@ b32 platform_button_is_pressed(Platform *platform, Button button)
     );
 }
 
-b32 platform_button_is_released(Platform *platform, Button button)
+bool platform_button_is_released(Platform *platform, Button button)
 {
     return (
         !platform->input.button_array_current[button] &&
@@ -178,7 +178,7 @@ b32 platform_button_is_released(Platform *platform, Button button)
 
 void platform_init(Platform *platform, const char *window_title)
 {
-    platform->active = TRUE;
+    platform->active = true;
     
     platform->time_current = 0.0;
     platform->time_previous = 0.0;
@@ -203,7 +203,7 @@ void platform_end_frame(Platform *platform)
 {
     if (platform_button_is_pressed(platform, BUTTON_ESCAPE))
     {
-        platform->active = FALSE;
+        platform->active = false;
         
         glfwSetWindowShouldClose(platform->window.glfw_window, 1);
     }

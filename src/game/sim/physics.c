@@ -10,16 +10,15 @@
 
 static void get_int_bounds(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
 {
-    out_int_bounds->min[0] = position[0] - box_collider->radius[0];
-    out_int_bounds->min[1] = position[1] - box_collider->radius[1];
-    out_int_bounds->min[2] = position[2] - box_collider->radius[2];
+    out_int_bounds->min[0] = (i32)(position[0] - box_collider->radius[0]);
+    out_int_bounds->min[1] = (i32)(position[1] - box_collider->radius[1]);
+    out_int_bounds->min[2] = (i32)(position[2] - box_collider->radius[2]);
 
-    out_int_bounds->max[0] = position[0] + box_collider->radius[0];
-    out_int_bounds->max[1] = position[1] + box_collider->radius[1];
-    out_int_bounds->max[2] = position[2] + box_collider->radius[2];
+    out_int_bounds->max[0] = (i32)(position[0] + box_collider->radius[0]);
+    out_int_bounds->max[1] = (i32)(position[1] + box_collider->radius[1]);
+    out_int_bounds->max[2] = (i32)(position[2] + box_collider->radius[2]);
 
-    i32 axis_index;
-    for (axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    for (i32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
         if (out_int_bounds->min[axis_index] < 0)
         {
@@ -45,8 +44,7 @@ static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBoun
 
     const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
 
-    i32 axis_index;
-    for (axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    for (i32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
         if (out_float_bounds->min[axis_index] < 0.0f)
         {
@@ -60,7 +58,7 @@ static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBoun
     }
 }
 
-static void get_overlap_bounds(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
+static void get_overlap(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
 {
     out_int_bounds->min[0] = (i32)floorf(position[0] - box_collider->radius[0]);
     out_int_bounds->min[1] = (i32)floorf(position[1] - box_collider->radius[1]);
@@ -79,7 +77,7 @@ static void get_overlap_bounds(BoxCollider *box_collider, vec3 position, IntBoun
     out_int_bounds->max[2] = out_int_bounds->max[2] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[2];
 }
 
-static void get_overlap_bounds_from_float_bounds(FloatBounds *float_bounds, IntBounds *out_int_bounds)
+static void get_overlap_from_float_bounds(FloatBounds *float_bounds, IntBounds *out_int_bounds)
 {
     out_int_bounds->min[0] = (i32)floorf(float_bounds->min[0]);
     out_int_bounds->min[1] = (i32)floorf(float_bounds->min[1]);
@@ -125,7 +123,7 @@ static void resolve_axis_collisions(Sim *sim, Actor *actor, Axis axis, f32 delta
     }
     
     IntBounds overlap_bounds;
-    get_overlap_bounds_from_float_bounds(&swept_bounds, &overlap_bounds);
+    get_overlap_from_float_bounds(&swept_bounds, &overlap_bounds);
 
     const f32 actor_min_prev = actor_bounds.min[axis];
     const f32 actor_max_prev = actor_bounds.max[axis];
@@ -136,16 +134,14 @@ static void resolve_axis_collisions(Sim *sim, Actor *actor, Axis axis, f32 delta
     const i32 axis_s = (axis + 1) % AXIS_COUNT;
     const i32 axis_t = (axis + 2) % AXIS_COUNT;
     
-    b32 found = FALSE;
+    bool found = false;
     f32 best = actor->velocity[axis] > 0 ? INFINITY : -INFINITY;
     
-    i32 x, y, z;
-
-    for (z = overlap_bounds.min[AXIS_Z]; z <= overlap_bounds.max[AXIS_Z]; ++z)
+    for (i32 z = overlap_bounds.min[AXIS_Z]; z <= overlap_bounds.max[AXIS_Z]; ++z)
     {
-        for (y = overlap_bounds.min[AXIS_Y]; y <= overlap_bounds.max[AXIS_Y]; ++y)
+        for (i32 y = overlap_bounds.min[AXIS_Y]; y <= overlap_bounds.max[AXIS_Y]; ++y)
         {
-            for (x = overlap_bounds.min[AXIS_X]; x <= overlap_bounds.max[AXIS_X]; ++x)
+            for (i32 x = overlap_bounds.min[AXIS_X]; x <= overlap_bounds.max[AXIS_X]; ++x)
             {
                 const ivec3 cell_coordinate = { x, y, z };
                     
@@ -185,7 +181,7 @@ static void resolve_axis_collisions(Sim *sim, Actor *actor, Axis axis, f32 delta
                         block_min < best
                     ) {
                         best = block_min;
-                        found = TRUE;
+                        found = true;
                     }
                 }
                 else
@@ -198,7 +194,7 @@ static void resolve_axis_collisions(Sim *sim, Actor *actor, Axis axis, f32 delta
                         block_max > best
                     ) {
                         best = block_max;
-                        found = TRUE;
+                        found = true;
                     }
                 }
             }
@@ -217,7 +213,7 @@ static void resolve_axis_collisions(Sim *sim, Actor *actor, Axis axis, f32 delta
 
             if (axis == AXIS_Z)
             {
-                actor->is_grounded = TRUE;
+                actor->is_grounded = true;
             }
         }
 
@@ -231,7 +227,7 @@ static void resolve_axis_collisions(Sim *sim, Actor *actor, Axis axis, f32 delta
 
 void physics_integrate(Sim *sim, Actor *actor)
 {
-    actor->is_grounded = FALSE;
+    actor->is_grounded = false;
     
     if (actor->movement_type == MOVEMENT_TYPE_GROUND)
     {

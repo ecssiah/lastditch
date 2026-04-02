@@ -52,7 +52,7 @@ struct Input
     f64 pointer_delta_x;
     f64 pointer_delta_y;
 
-    b32 ignore_delta;
+    bool ignore_delta;
 };
 
 typedef struct Window Window;
@@ -69,7 +69,7 @@ struct Window
 typedef struct Platform Platform;
 struct Platform
 {
-    b32 active;
+    bool active;
 
     f64 time_current;
     f64 time_previous;

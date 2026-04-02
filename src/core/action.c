@@ -18,16 +18,16 @@ void action_add(ActionQueue *action_queue, Action action)
     action_queue->tail_index = tail_index_next;
 }
 
-b32 action_pop(ActionQueue *action_queue, Action *out_action)
+bool action_pop(ActionQueue *action_queue, Action *out_action)
 {
     if (action_queue->tail_index == action_queue->head_index)
     {
-        return FALSE;
+        return false;
     }
 
     *out_action = action_queue->action_array[action_queue->head_index];
 
     action_queue->head_index = (action_queue->head_index + 1) % ACTION_QUEUE_CAPACITY;
 
-    return TRUE;
+    return true;
 }

@@ -30,7 +30,7 @@ static void load_textures(Screen *screen, const char *textures_path)
     glGenTextures(1, &screen->font_texture_id);
     glBindTexture(GL_TEXTURE_2D, screen->font_texture_id);
 
-    GLenum internal_format;
+    GLint internal_format;
     GLenum format;
 
     if (channels == 1)
@@ -92,19 +92,18 @@ static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
     f32 cell_width = 1.0f / 8.0f;
     f32 cell_height = 1.0f / 12.0f;
 
-    u32 len = strlen(text);
+    u64 len = strlen(text);
 
-    u32 vertex_count = 0;
-    u32 vertex_max = len * 6;
+    i32 vertex_count = 0;
+    u64 vertex_max = len * 6;
     
     TextVertex text_vertex_array[vertex_max];
 
     f32 cursor_x = x;
 
-    u32 text_index;
-    for (text_index = 0; text_index < len; text_index++)
+    for (i32 text_index = 0; text_index < (i32)len; text_index++)
     {
-        u8 text_char = text[text_index];
+        const char text_char = text[text_index];
 
         if (text_char < 32 || text_char > 126)
         {
@@ -128,13 +127,13 @@ static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
         f32 x1 = cursor_x + char_width;
         f32 y1 = y + char_height;
 
-        TextVertex text_vertex0 = { x0, y0, u0, v0 };
-        TextVertex text_vertex1 = { x1, y0, u1, v0 };
-        TextVertex text_vertex2 = { x1, y1, u1, v1 };
+        TextVertex text_vertex0 = { { x0, y0 }, { u0, v0 } };
+        TextVertex text_vertex1 = { { x1, y0 }, { u1, v0 } };
+        TextVertex text_vertex2 = { { x1, y1 }, { u1, v1 } };
 
-        TextVertex text_vertex3 = { x0, y0, u0, v0 };
-        TextVertex text_vertex4 = { x1, y1, u1, v1 };
-        TextVertex text_vertex5 = { x0, y1, u0, v1 };
+        TextVertex text_vertex3 = { { x0, y0 }, { u0, v0 } };
+        TextVertex text_vertex4 = { { x1, y1 }, { u1, v1 } };
+        TextVertex text_vertex5 = { { x0, y1 }, { u0, v1 } };
 	
         text_vertex_array[vertex_count++] = text_vertex0;
         text_vertex_array[vertex_count++] = text_vertex1;
@@ -148,14 +147,13 @@ static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, shell->screen.vbo_id);
-    glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(TextVertex), text_vertex_array, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)((u64)vertex_count * sizeof(TextVertex)), text_vertex_array, GL_DYNAMIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
 
 void screen_init(Shell *shell, Platform *platform)
 {
-    Render *render = &shell->render;
     Screen *screen = &shell->screen;
     
     GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
@@ -228,7 +226,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     world_position_to_cell_coordinate(judge->position[0], judge->position[1], judge->position[2], cell_coordinate);
 
     ivec2 sector_coordinate;
-    world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2], sector_coordinate);
+    world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], sector_coordinate);
     
     char position_text[64];
     char velocity_text[64];

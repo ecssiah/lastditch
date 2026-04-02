@@ -21,9 +21,17 @@
 ** Done
 - Room generation algorithm
 - Door generation algorithm
+- Introduce world_is_clear
 
 ** Next
 - Tower wireframe option
 - Store rooms for later reference
 - Door generation placement refinement
 - Nation temple construction
+* <2026-04-02 Thu>
+** Done
+-
+  
+** Next
+-
+  

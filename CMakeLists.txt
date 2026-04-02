@@ -6,8 +6,9 @@ project(
     LANGUAGES C
 )
 
-set(CMAKE_C_STANDARD 90)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -75,6 +76,14 @@ target_compile_definitions(
     PRIVATE
     GLFW_INCLUDE_NONE
     GL_SILENCE_DEPRECATION
+)
+
+target_compile_options(
+    lastditch
+    PRIVATE
+    -Wall
+    -Wextra
+    -Wshadow
 )
 
 add_custom_command(

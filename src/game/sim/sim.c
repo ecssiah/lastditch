@@ -37,7 +37,7 @@ static void actors_init(Sim *sim)
     judge.actor_type = ACTOR_TYPE_JUDGE;
     judge.movement_type = MOVEMENT_TYPE_DEBUG;
 
-    judge.box_collider.collision_enabled = FALSE;
+    judge.box_collider.collision_enabled = false;
     
     judge.box_collider.radius[0] = 0.4f;
     judge.box_collider.radius[1] = 0.4f;
@@ -57,7 +57,7 @@ static void actors_init(Sim *sim)
     judge.velocity[1] = 0.0f;
     judge.velocity[2] = 0.0f;
 
-    judge.is_grounded = FALSE;
+    judge.is_grounded = false;
 
     sim->judge_handle = actor_add_to_pool(&judge, &sim->actor_pool);
 
@@ -169,7 +169,7 @@ static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
         actor->movement_type = MOVEMENT_TYPE_DEBUG;
         actor->speed = JUDGE_DEFAULT_DEBUG_SPEED;
 
-        actor->box_collider.collision_enabled = FALSE;
+        actor->box_collider.collision_enabled = false;
 
         break;
     }
@@ -178,7 +178,7 @@ static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
         actor->movement_type = MOVEMENT_TYPE_GROUND;
         actor->speed = JUDGE_DEFAULT_MOVE_SPEED;
 
-        actor->box_collider.collision_enabled = TRUE;
+        actor->box_collider.collision_enabled = true;
         
         break;
     }
@@ -239,10 +239,10 @@ static void update_actors(Sim *sim)
 
 void sim_init(Sim *sim)
 {
-    sim->active = TRUE;
-    sim->evolving = TRUE;
+    sim->active = true;
+    sim->evolving = true;
 
-    const b32 random_seed = FALSE;
+    const bool random_seed = false;
     
     sim->seed = random_seed ? (u32)time(NULL) : 813;
     
