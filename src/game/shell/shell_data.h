@@ -93,7 +93,7 @@ struct Render
 
     JSK_Config *block_types_config;
 
-    u8 block_type_layer_array[BLOCK_TYPE_COUNT - 1];
+    u8 block_type_layer_array[BLOCK_TYPE_COUNT];
 
     i32 sector_mesh_count;
     i32 sector_mesh_capacity;

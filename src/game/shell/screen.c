@@ -3,6 +3,7 @@
 #include <string.h>
 #include <glad/glad.h>
 
+#include "game/sim/sim_data.h"
 #include "stb_image.h"
 
 #include "jsk_gl.h"
@@ -232,6 +233,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     char velocity_text[64];
     char cell_coordinate_text[64];
     char sector_coordinate_text[64];
+    char floor_text[64];
     char movement_type_text[128];
     
     snprintf(
@@ -265,11 +267,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     }
     else
     {
-        snprintf(
-            cell_coordinate_text,
-            sizeof(cell_coordinate_text),
-            "CEL - - -"
-        );
+        strcpy(cell_coordinate_text, "CEL - - -");
     }
 
     if (world_sector_coordinate_is_valid(sector_coordinate[0], sector_coordinate[1]))
@@ -284,17 +282,33 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     }
     else
     {
+        strcpy(sector_coordinate_text, "SEC - - -");
+    }
+
+    const i32 floor_result = world_get_floor(cell_coordinate[2]);
+
+    if (cell_coordinate[2] > TOWER_ROOF_Z)
+    {
+        strcpy(floor_text, "FLR R");
+    }
+    else if (cell_coordinate[2] < 0)
+    {
+        strcpy(floor_text, "FLR -");
+    }
+    else
+    {
         snprintf(
-            sector_coordinate_text,
-            sizeof(sector_coordinate_text),
-            "SEC - -"
+            floor_text,
+            sizeof(floor_text),
+            "FLR %i",
+            floor_result
         );
     }
 
     switch (judge->movement_type)
     {
-    case MOVEMENT_TYPE_GROUND: strcpy(movement_type_text, "Ground"); break;
-    case MOVEMENT_TYPE_DEBUG: strcpy(movement_type_text, "Flying"); break;
+    case MOVEMENT_TYPE_GROUND: strcpy(movement_type_text, "MOV Ground"); break;
+    case MOVEMENT_TYPE_DEBUG: strcpy(movement_type_text, "MOV Debug"); break;
     default: break;
     }
 
@@ -302,7 +316,8 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     draw_text(shell, velocity_text, 20, 40);
     draw_text(shell, cell_coordinate_text, 20, 60);
     draw_text(shell, sector_coordinate_text, 20, 80);
-    draw_text(shell, movement_type_text, 20, 100);
+    draw_text(shell, floor_text, 20, 100);
+    draw_text(shell, movement_type_text, 20, 120);
 }
 
 void screen_update(Shell *shell, Sim *sim)

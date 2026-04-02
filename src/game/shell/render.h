@@ -14,10 +14,10 @@ void render_load_textures(Shell *shell, const char *textures_path);
 void render_setup_opengl(Shell *shell);
 
 void render_add_sector_quad(SectorMesh *sector_mesh, SectorQuad sector_quad);
-void render_add_sector_mesh(Render *render, SectorMesh sector_mesh);
+void render_add_sector_mesh(Render *render, SectorMesh *sector_mesh);
 
 void render_add_vertex_attributes(GpuMesh* gpu_mesh, VertexAttributes vertex_attributes);
-void render_add_gpu_mesh(Render *render, GpuMesh gpu_mesh);
+void render_add_gpu_mesh(Render *render, GpuMesh *gpu_mesh);
 
 void render_emit_sector_quad(SectorQuad *sector_quad, GpuMesh *gpu_mesh);
 

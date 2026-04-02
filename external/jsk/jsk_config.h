@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+#include "jsk.h"
+
 typedef struct JSK_ConfigEntry JSK_ConfigEntry;
 struct JSK_ConfigEntry
 {
@@ -13,8 +15,8 @@ struct JSK_ConfigEntry
 typedef struct JSK_Config JSK_Config;
 struct JSK_Config
 {
-    size_t entry_count;
-    size_t entry_capacity;
+    i32 entry_count;
+    i32 entry_capacity;
     
     JSK_ConfigEntry *config_entry_array;
 };

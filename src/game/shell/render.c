@@ -1,8 +1,10 @@
 #include "game/shell/render.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <glad/glad.h>
 
+#include "game/shell/shell_data.h"
 #include "stb_image.h"
 
 #include "jsk_log.h"
@@ -106,7 +108,9 @@ void render_load_texture(Shell *shell, const char *texture_path, const GLint lay
     
     unsigned char *pixel_data_array = stbi_load(texture_path, &width, &height, &channels, 4);
 
-    assert(width == TEXTURE_SIZE && height == TEXTURE_SIZE);
+    assert(pixel_data_array);
+    assert(width == TEXTURE_SIZE);
+    assert(height == TEXTURE_SIZE);
 
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -148,6 +152,8 @@ void render_load_textures(Shell *shell, const char *textures_path)
         NULL
     );
 
+    assert(render->block_types_config->entry_count <= BLOCK_TYPE_COUNT);
+
     for (i32 layer_index = 0; layer_index < render->block_types_config->entry_count; ++layer_index)
     {
         JSK_ConfigEntry *config_entry = &render->block_types_config->config_entry_array[layer_index];
@@ -157,6 +163,9 @@ void render_load_textures(Shell *shell, const char *textures_path)
         snprintf(texture_path, sizeof(texture_path), "%s/%s", textures_path, config_entry->value);
 
         const BlockType block_type = world_block_type_from_string(config_entry->key);
+
+        assert(block_type >= 0);
+        assert(block_type < BLOCK_TYPE_COUNT);
 
         render->block_type_layer_array[(i32)block_type] = layer_index;
 	
@@ -220,21 +229,34 @@ void render_add_sector_quad(SectorMesh *sector_mesh, SectorQuad sector_quad)
     if (sector_mesh->sector_quad_count == sector_mesh->sector_quad_capacity)
     {
         sector_mesh->sector_quad_capacity = sector_mesh->sector_quad_capacity ? sector_mesh->sector_quad_capacity * 2 : 64;
-        sector_mesh->sector_quad_array = realloc(sector_mesh->sector_quad_array, sector_mesh->sector_quad_capacity * sizeof(sector_quad));
+        sector_mesh->sector_quad_array = realloc(sector_mesh->sector_quad_array, sector_mesh->sector_quad_capacity * sizeof(SectorQuad));
     }
 
     sector_mesh->sector_quad_array[sector_mesh->sector_quad_count++] = sector_quad;
 }
 
-void render_add_sector_mesh(Render *render, SectorMesh sector_mesh)
+void render_add_sector_mesh(Render *render, SectorMesh *sector_mesh)
 {
     if (render->sector_mesh_count == render->sector_mesh_capacity)
     {
-        render->sector_mesh_capacity = render->sector_mesh_capacity ? render->sector_mesh_capacity * 2 : 64;
-        render->sector_mesh_array = realloc(render->sector_mesh_array, render->sector_mesh_capacity * sizeof(sector_mesh));
+        const i32 new_capacity = render->sector_mesh_capacity ? render->sector_mesh_capacity * 2 : 64;
+
+        SectorMesh *new_array = realloc(
+            render->sector_mesh_array,
+            (size_t)new_capacity * sizeof(SectorMesh)
+        );
+
+        assert(new_array);
+
+        render->sector_mesh_array = new_array;
+        render->sector_mesh_capacity = new_capacity;
     }
 
-    render->sector_mesh_array[render->sector_mesh_count++] = sector_mesh;
+    render->sector_mesh_array[render->sector_mesh_count++] = *sector_mesh;
+
+    sector_mesh->sector_quad_array = NULL;
+    sector_mesh->sector_quad_count = 0;
+    sector_mesh->sector_quad_capacity = 0;
 }
 
 void render_add_vertex_attributes(GpuMesh *gpu_mesh, VertexAttributes vertex_attributes)
@@ -242,21 +264,34 @@ void render_add_vertex_attributes(GpuMesh *gpu_mesh, VertexAttributes vertex_att
     if (gpu_mesh->vertex_attributes_count == gpu_mesh->vertex_attributes_capacity)
     {
         gpu_mesh->vertex_attributes_capacity = gpu_mesh->vertex_attributes_capacity ? gpu_mesh->vertex_attributes_capacity * 2 : 64;
-        gpu_mesh->vertex_attributes_array = realloc(gpu_mesh->vertex_attributes_array, gpu_mesh->vertex_attributes_capacity * sizeof(vertex_attributes));
+        gpu_mesh->vertex_attributes_array = realloc(gpu_mesh->vertex_attributes_array, gpu_mesh->vertex_attributes_capacity * sizeof(VertexAttributes));
     }
 
     gpu_mesh->vertex_attributes_array[gpu_mesh->vertex_attributes_count++] = vertex_attributes;
 }
 
-void render_add_gpu_mesh(Render *render, GpuMesh gpu_mesh)
+void render_add_gpu_mesh(Render *render, GpuMesh *gpu_mesh)
 {
     if (render->gpu_mesh_count == render->gpu_mesh_capacity)
     {
-        render->gpu_mesh_capacity = render->gpu_mesh_capacity ? render->gpu_mesh_capacity * 2 : 64;
-        render->gpu_mesh_array = realloc(render->gpu_mesh_array, render->gpu_mesh_capacity * sizeof(gpu_mesh));
+        const i32 new_capacity = render->gpu_mesh_capacity ? render->gpu_mesh_capacity * 2 : 64;
+
+        GpuMesh *new_array = realloc(
+            render->gpu_mesh_array,
+            (size_t)new_capacity * sizeof(GpuMesh)
+        );
+
+        assert(new_array);
+
+        render->gpu_mesh_array = new_array;
+        render->gpu_mesh_capacity = new_capacity;
     }
 
-    render->gpu_mesh_array[render->gpu_mesh_count++] = gpu_mesh;
+    render->gpu_mesh_array[render->gpu_mesh_count++] = *gpu_mesh;
+
+    gpu_mesh->vertex_attributes_array = NULL;
+    gpu_mesh->vertex_attributes_count = 0;
+    gpu_mesh->vertex_attributes_capacity = 0;
 }
 
 void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
@@ -313,7 +348,7 @@ void render_generate_sector_mesh(Shell *shell, Sim *sim, i32 sector_index)
         }
     }
 
-    render_add_sector_mesh(&shell->render, sector_mesh);
+    render_add_sector_mesh(&shell->render, &sector_mesh);
 }
 
 void render_emit_sector_face(SectorQuad *sector_quad, GpuMesh *gpu_mesh)
@@ -363,7 +398,7 @@ void render_convert_sector_mesh_to_gpu_mesh(Render *render, SectorMesh *sector_m
         render_emit_sector_face(sector_quad, &gpu_mesh);
     }
 
-    render_add_gpu_mesh(render, gpu_mesh);
+    render_add_gpu_mesh(render, &gpu_mesh);
 }
 
 void render_upload_gpu_mesh(GpuMesh *gpu_mesh)
@@ -441,16 +476,26 @@ void render_init(Shell *shell, Platform *platform, Sim *sim)
 
     glUniformMatrix4fv(render->u_projection_location, 1, GL_FALSE, (f32 *)render->viewpoint.projection_matrix);
 
+    LOG_INFO("Use Program");
+    
     for (i32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
         render_generate_sector_mesh(shell, sim, sector_index);
     }
+
+    LOG_INFO("Sector Meshes Generated");
 
     for (i32 sector_mesh_index = 0; sector_mesh_index < render->sector_mesh_count; ++sector_mesh_index)
     {
         SectorMesh *sector_mesh = &render->sector_mesh_array[sector_mesh_index];
 	  
         render_convert_sector_mesh_to_gpu_mesh(render, sector_mesh);
+        
+        free(sector_mesh->sector_quad_array);
+        
+        sector_mesh->sector_quad_array = NULL;
+        sector_mesh->sector_quad_count = 0;
+        sector_mesh->sector_quad_capacity = 0;
     }
 
     for (i32 gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
@@ -499,6 +544,9 @@ void render_update(Shell* shell, Sim* sim)
     viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
 
     glUniformMatrix4fv(render->u_view_location, 1, GL_FALSE, (f32 *)render->viewpoint.view_matrix);
+
+
+    LOG_INFO("Render update");
 
     for (i32 gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
     {

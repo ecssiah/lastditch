@@ -16,27 +16,33 @@ const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
 const BlockType ROOM_CONTENT_ARRAY_LEVEL_1[] =
 {
     BLOCK_TYPE_SERVER_1,
+    BLOCK_TYPE_SERVER_2,
+    BLOCK_TYPE_SERVER_3,
 };
 
 const BlockType ROOM_CONTENT_ARRAY_LEVEL_2[] =
 {
     BLOCK_TYPE_SERVER_1,
     BLOCK_TYPE_SERVER_2,
+    BLOCK_TYPE_SERVER_3,
+    BLOCK_TYPE_SERVER_4,
+    BLOCK_TYPE_SERVER_5
 };
 
 const BlockType ROOM_CONTENT_ARRAY_LEVEL_3[] =
 {
-    BLOCK_TYPE_SERVER_1,
-    BLOCK_TYPE_SERVER_2,
     BLOCK_TYPE_SERVER_3,
     BLOCK_TYPE_SERVER_4,
+    BLOCK_TYPE_SERVER_5,
+    BLOCK_TYPE_SERVER_6,
+    BLOCK_TYPE_SERVER_7,
 };
 
 const BlockTypeList ROOM_CONTENT_MASTER_LIST[FLOOR_COUNT] =
 {
-    { ROOM_CONTENT_ARRAY_LEVEL_1, 1 },
-    { ROOM_CONTENT_ARRAY_LEVEL_2, 2 },
-    { ROOM_CONTENT_ARRAY_LEVEL_3, 4 },
+    { ROOM_CONTENT_ARRAY_LEVEL_1, 3 },
+    { ROOM_CONTENT_ARRAY_LEVEL_2, 5 },
+    { ROOM_CONTENT_ARRAY_LEVEL_3, 5 },
 };
 
 const char *DIRECTION_STRING[DIRECTION_COUNT] =
@@ -106,6 +112,9 @@ i32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z)
         (y << (1 * WORLD_SIZE_IN_CELLS_LOG2)) +
         (z << (2 * WORLD_SIZE_IN_CELLS_LOG2))
     );
+
+    assert(cell_index >= 0);
+    assert(cell_index < WORLD_VOLUME_IN_CELLS);
 	    
     return cell_index;
 }
@@ -168,6 +177,18 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
     out_cell_coordinate[0] = (i32)floorf(x);
     out_cell_coordinate[1] = (i32)floorf(y);
     out_cell_coordinate[2] = (i32)floorf(z);
+}
+
+i32 world_get_floor(i32 z)
+{
+    if (z >= 0 && z <= TOWER_ROOF_Z)
+    {
+        return z / FLOOR_SIZE_Z;
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 void world_get_elevator_origin(i32 floor_number, ivec3 out_origin)
@@ -452,7 +473,7 @@ static void setup_tower(Sim *sim)
                 sim,
                 cell_x, floor_origin[0] + TOWER_SIZE - 1, north_position_z,
                 1, 1, north_size_z,
-                BLOCK_TYPE_METAL_5
+                BLOCK_TYPE_PANEL_2
             );
 
             i32 south_position_z, south_size_z;
@@ -474,7 +495,7 @@ static void setup_tower(Sim *sim)
                 sim,
                 cell_x, floor_origin[0], south_position_z,
                 1, 1, south_size_z,
-                BLOCK_TYPE_METAL_5
+                BLOCK_TYPE_PANEL_2
             );
         }
 	
@@ -560,7 +581,7 @@ static void setup_elevator(Sim *sim)
                 sim,
                 elevator_origin[0], elevator_origin[1], elevator_origin[2],
                 ELEVATOR_SIZE, ELEVATOR_SIZE, FLOOR_SIZE_Z,
-                BLOCK_TYPE_METAL_2
+                BLOCK_TYPE_PANEL_2
             );
 
             world_set_block_type_cube(
@@ -1100,4 +1121,6 @@ void world_init(Sim *sim)
     setup_horse_temple(sim);
 
     init_direction_mask(sim);
+
+    LOG_INFO("World init");
 }
