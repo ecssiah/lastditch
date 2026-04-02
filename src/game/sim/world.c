@@ -62,12 +62,12 @@ const i32 DIRECTION_STRIDE[DIRECTION_COUNT] =
 
 const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
 {
-    { +1, +0, +0 },
-    { -1, +0, +0 },
-    { +0, +1, +0 },
-    { +0, -1, +0 },
-    { +0, +0, +1 },
-    { +0, +0, -1 },
+    { +1.0f, +0.0f, +0.0f },
+    { -1.0f, +0.0f, +0.0f },
+    { +0.0f, +1.0f, +0.0f },
+    { +0.0f, -1.0f, +0.0f },
+    { +0.0f, +0.0f, +1.0f },
+    { +0.0f, +0.0f, -1.0f },
 };
 
 bool world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
@@ -803,14 +803,24 @@ static void setup_rooms(Sim *sim)
 }
 
 static void setup_doors(Sim *sim)
-{
+{   
     for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         const RoomList *room_list = &sim->tower.room_list_array[floor_number];
+
+        DoorList* door_list = &sim->tower.door_list_array[floor_number];
+
+        door_list->count = 0;
+        door_list->capacity = 4 * room_list->count;
+        door_list->door_array = malloc(door_list->capacity * sizeof(DoorList));
         
         for (i32 room_index = 0; room_index < room_list->count; ++room_index)
         {
-            const Room *room = &room_list->room_array[room_index]; 
+            Room *room = &room_list->room_array[room_index];
+
+            room->door_count = 0;
+            room->door_capacity = 4;
+            room->door_index_array = malloc(4 * sizeof(i32));
             
             const ivec2 room_size =
             {
@@ -822,14 +832,14 @@ static void setup_doors(Sim *sim)
             
             for (i32 index = 0; index < door_attempt_count; ++index)
             {
-                const i32 east_door_position_y = room->room_rect.min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
-
+                const i32 door_x = room->room_rect.max[AXIS_X] - 1;
+                const i32 door_y = room->room_rect.min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
+                const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
+                
                 const bool east_door_clear =
                     world_is_clear(
                         sim,
-                        room->room_rect.max[AXIS_X] - 1,
-                        east_door_position_y,
-                        floor_number * FLOOR_SIZE_Z + 1,
+                        door_x, door_y, door_z,
                         (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
                     );
                 
@@ -837,10 +847,21 @@ static void setup_doors(Sim *sim)
                 {
                     world_set_block_type_cube(
                         sim,
-                        room->room_rect.max[AXIS_X] - 1, east_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
+                        door_x, door_y, door_z,
                         1, 1, 2,
                         BLOCK_TYPE_NONE
                     );
+
+                    Door *door = &door_list->door_array[door_list->count];
+
+                    door->door_index = door_list->count;
+                    door->direction = DIRECTION_EAST;
+                    
+                    door->cell_coordinate[0] = door_x;
+                    door->cell_coordinate[1] = door_y;
+                    door->cell_coordinate[2] = door_z;
+
+                    door_list->count++;
 
                     break;
                 }
@@ -848,14 +869,14 @@ static void setup_doors(Sim *sim)
 
             for (i32 index = 0; index < door_attempt_count; ++index)
             {
-                const i32 west_door_position_y = room->room_rect.min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
-
+                const i32 door_x = room->room_rect.min[AXIS_X];
+                const i32 door_y = room->room_rect.min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
+                const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
+                
                 const bool west_door_clear =
                     world_is_clear(
                         sim,
-                        room->room_rect.min[AXIS_X],
-                        west_door_position_y,
-                        floor_number * FLOOR_SIZE_Z + 1,
+                        door_x, door_y, door_z,
                         (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
                     );
                 
@@ -863,10 +884,21 @@ static void setup_doors(Sim *sim)
                 {
                     world_set_block_type_cube(
                         sim,
-                        room->room_rect.min[AXIS_X], west_door_position_y, floor_number * FLOOR_SIZE_Z + 1,
+                        door_x, door_y, door_z,
                         1, 1, 2,
                         BLOCK_TYPE_NONE
                     );
+
+                    Door *door = &door_list->door_array[door_list->count];
+
+                    door->door_index = door_list->count;
+                    door->direction = DIRECTION_WEST;
+                    
+                    door->cell_coordinate[0] = door_x;
+                    door->cell_coordinate[1] = door_y;
+                    door->cell_coordinate[2] = door_z;
+
+                    door_list->count++;
 
                     break;
                 }
@@ -874,14 +906,14 @@ static void setup_doors(Sim *sim)
 
             for (i32 index = 0; index < door_attempt_count; ++index)
             {
-                const i32 north_door_position_x = room->room_rect.min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
-
+                const i32 door_x = room->room_rect.min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
+                const i32 door_y = room->room_rect.max[AXIS_Y] - 1;
+                const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
+                
                 const bool north_door_clear =
                     world_is_clear(
                         sim,
-                        north_door_position_x,
-                        room->room_rect.max[AXIS_Y] - 1,
-                        floor_number * FLOOR_SIZE_Z + 1,
+                        door_x,door_y, door_z,
                         (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
                     );
                                       
@@ -889,10 +921,21 @@ static void setup_doors(Sim *sim)
                 {
                     world_set_block_type_cube(
                         sim,
-                        north_door_position_x, room->room_rect.max[AXIS_Y] - 1, floor_number * FLOOR_SIZE_Z + 1,
+                        door_x, door_y, door_z,
                         1, 1, 2,
                         BLOCK_TYPE_NONE
                     );
+
+                    Door *door = &door_list->door_array[door_list->count];
+
+                    door->door_index = door_list->count;
+                    door->direction = DIRECTION_NORTH;
+                    
+                    door->cell_coordinate[0] = door_x;
+                    door->cell_coordinate[1] = door_y;
+                    door->cell_coordinate[2] = door_z;
+
+                    door_list->count++;
 
                     break;
                 }
@@ -900,14 +943,14 @@ static void setup_doors(Sim *sim)
 
             for (i32 index = 0; index < door_attempt_count; ++index)
             {
-                const i32 south_door_position_x = room->room_rect.min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
-
+                const i32 door_x = room->room_rect.min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
+                const i32 door_y = room->room_rect.min[AXIS_Y];
+                const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
+                
                 const bool south_door_clear =
                     world_is_clear(
                         sim,
-                        south_door_position_x,
-                        room->room_rect.min[AXIS_Y],
-                        floor_number * FLOOR_SIZE_Z + 1,
+                        door_x, door_y, door_z,
                         (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
                     );
                 
@@ -915,10 +958,21 @@ static void setup_doors(Sim *sim)
                 {
                     world_set_block_type_cube(
                         sim,
-                        south_door_position_x, room->room_rect.min[AXIS_Y], floor_number * FLOOR_SIZE_Z + 1,
+                        door_x, door_y, door_z,
                         1, 1, 2,
                         BLOCK_TYPE_NONE
                     );
+
+                    Door *door = &door_list->door_array[door_list->count];
+
+                    door->door_index = door_list->count;
+                    door->direction = DIRECTION_SOUTH;
+                    
+                    door->cell_coordinate[0] = door_x;
+                    door->cell_coordinate[1] = door_y;
+                    door->cell_coordinate[2] = door_z;
+
+                    door_list->count++;
 
                     break;
                 }

@@ -166,7 +166,8 @@ struct Door
 {
     i32 door_index;
 
-    ivec3 position;
+    ivec3 cell_coordinate;
+    Direction direction;
 
     i32 room_a_index;
     i32 room_b_index;
