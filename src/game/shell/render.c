@@ -98,7 +98,7 @@ void render_load_texture_config(Shell *shell)
     shell->render.block_types_config = jsk_load_config(texture_config_path);
 }
 
-void render_load_texture(Shell *shell, const char *texture_path, const GLint layer_index)
+void render_load_texture(const char *texture_path, const GLint layer_index)
 {
     int width;
     int height;
@@ -169,7 +169,7 @@ void render_load_textures(Shell *shell, const char *textures_path)
 
         render->block_type_layer_array[(i32)block_type] = layer_index;
 	
-        render_load_texture(shell, texture_path, layer_index);
+        render_load_texture(texture_path, layer_index);
     }
 }
 
@@ -544,9 +544,6 @@ void render_update(Shell* shell, Sim* sim)
     viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
 
     glUniformMatrix4fv(render->u_view_location, 1, GL_FALSE, (f32 *)render->viewpoint.view_matrix);
-
-
-    LOG_INFO("Render update");
 
     for (i32 gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
     {

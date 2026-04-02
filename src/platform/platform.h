@@ -12,6 +12,6 @@ bool platform_button_is_released(Platform *platform, Button key);
 void platform_init(Platform *platform, const char *window_title);
 void platform_begin_frame(Platform *platform);
 void platform_end_frame(Platform *platform);
-void platform_close(Platform *platform);
+void platform_close();
 
 #endif

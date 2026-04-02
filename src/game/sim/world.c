@@ -1002,14 +1002,14 @@ static void setup_roof(Sim *sim)
 
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - ROOF_CENTER_PATH_SIZE / 2, TOWER_BORDER + 1, TOWER_ROOF_Z,
+        WORLD_CENTER_I32 - ROOF_CENTER_PATH_SIZE / 2, TOWER_BORDER + 1, TOWER_ROOF_Z,
         ROOF_CENTER_PATH_SIZE, TOWER_SIZE - 2, 1,
         BLOCK_TYPE_SMOOTH_1
     );
 
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER + 1, WORLD_CENTER - ROOF_CENTER_PATH_SIZE / 2, TOWER_ROOF_Z,
+        TOWER_BORDER + 1, WORLD_CENTER_I32 - ROOF_CENTER_PATH_SIZE / 2, TOWER_ROOF_Z,
         TOWER_SIZE - 2, ROOF_CENTER_PATH_SIZE, 1,
         BLOCK_TYPE_SMOOTH_1
     );
@@ -1019,22 +1019,22 @@ static void setup_wolf_temple(Sim *sim)
 {
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER + TOWER_SIZE - 1, WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z + 1,
+        TOWER_BORDER + TOWER_SIZE - 1, WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z + 1,
         1, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_NONE
     );
     
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER + TOWER_SIZE, WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
+        TOWER_BORDER + TOWER_SIZE, WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
         PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
     const ivec3 temple_origin =
     {
-        TOWER_SIZE - 24,
-        WORLD_CENTER - TEMPLE_SIZE_X / 2,
+        TOWER_SIZE - TEMPLE_BORDER_OFFSET,
+        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_ROOF_Z + 1,
     };
 
@@ -1127,22 +1127,22 @@ static void setup_eagle_temple(Sim *sim)
 {
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER, WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z + 1,
+        TOWER_BORDER, WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z + 1,
         1, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_NONE
     );
     
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER - PLATFORM_SIZE_Y, WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
+        TOWER_BORDER - PLATFORM_SIZE_Y, WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
         PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
     const ivec3 temple_origin =
     {
-        TOWER_BORDER + 24,
-        WORLD_CENTER - TEMPLE_SIZE_X / 2,
+        TOWER_BORDER + TEMPLE_BORDER_OFFSET,
+        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_ROOF_Z + 1,
     };
 
@@ -1235,22 +1235,22 @@ static void setup_lion_temple(Sim *sim)
 {
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE - 1, TOWER_ROOF_Z + 1,
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE - 1, TOWER_ROOF_Z + 1,
         PLATFORM_SIZE_X, 1, 1,
         BLOCK_TYPE_NONE
     );
     
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF_Z,
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF_Z,
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
     const ivec3 temple_origin =
     {
-        WORLD_CENTER - TEMPLE_SIZE_X / 2,
-        TOWER_SIZE - 24,
+        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
+        TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         TOWER_ROOF_Z + 1,
     };
 
@@ -1343,22 +1343,22 @@ static void setup_horse_temple(Sim *sim)
 {
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER + 1, TOWER_ROOF_Z + 1,
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_BORDER + 1, TOWER_ROOF_Z + 1,
         PLATFORM_SIZE_X, 1, 1,
         BLOCK_TYPE_NONE
     );
     
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER - PLATFORM_SIZE_Y, TOWER_ROOF_Z,
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_BORDER - PLATFORM_SIZE_Y, TOWER_ROOF_Z,
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
     const ivec3 temple_origin =
     {
-        WORLD_CENTER - TEMPLE_SIZE_X / 2,
-        TOWER_BORDER + 24,
+        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
+        TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         TOWER_ROOF_Z + 1,
     };
 

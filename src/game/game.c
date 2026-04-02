@@ -28,7 +28,7 @@ int main()
     while (platform.active)
     {
         platform_begin_frame(&platform);
-        shell_update(&shell, &platform, &sim);
+        shell_update(&platform, &sim);
 
         sim_update(&sim);
         
@@ -38,6 +38,6 @@ int main()
 
     sim_close(&sim);
     
-    shell_close(&shell);
-    platform_close(&platform);
+    shell_close();
+    platform_close();
 }

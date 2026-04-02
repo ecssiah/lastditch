@@ -205,7 +205,7 @@ void platform_end_frame(Platform *platform)
     glfwSwapBuffers(platform->window.glfw_window);
 }
 
-void platform_close(Platform *platform)
+void platform_close()
 {
     glfwTerminate();
 }

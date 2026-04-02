@@ -8,6 +8,7 @@
 
 #include <math.h>
 
+#if 0
 static void get_int_bounds(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
 {
     out_int_bounds->min[0] = (i32)(position[0] - box_collider->radius[0]);
@@ -31,6 +32,7 @@ static void get_int_bounds(BoxCollider *box_collider, vec3 position, IntBounds *
         }
     }
 }
+#endif
 
 static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBounds *out_float_bounds)
 {
@@ -58,6 +60,7 @@ static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBoun
     }
 }
 
+#if 0
 static void get_overlap(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
 {
     out_int_bounds->min[0] = (i32)floorf(position[0] - box_collider->radius[0]);
@@ -76,6 +79,7 @@ static void get_overlap(BoxCollider *box_collider, vec3 position, IntBounds *out
     out_int_bounds->max[1] = out_int_bounds->max[1] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[1];
     out_int_bounds->max[2] = out_int_bounds->max[2] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[2];
 }
+#endif
 
 static void get_overlap_from_float_bounds(FloatBounds *float_bounds, IntBounds *out_int_bounds)
 {

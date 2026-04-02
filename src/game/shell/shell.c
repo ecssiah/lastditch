@@ -66,7 +66,7 @@ static void queue_rotate_action(Platform *platform, Sim *sim)
     action_add(&sim->action_queue, rotate_action);
 }
 
-static void queue_jump_action(Platform *platform, Sim *sim)
+static void queue_jump_action(Sim *sim)
 {
     Action jump_action;
     jump_action.type = ACTION_JUMP;
@@ -75,7 +75,7 @@ static void queue_jump_action(Platform *platform, Sim *sim)
     action_add(&sim->action_queue, jump_action);
 }
 
-static void queue_debug_mode_action(Platform *platform, Sim *sim)
+static void queue_debug_mode_action(Sim *sim)
 {
     Action debug_action;
     debug_action.type = ACTION_DEBUG_MODE;
@@ -91,7 +91,7 @@ void shell_init(Shell *shell)
     shell->active = true;
 }
 
-void shell_update(Shell *shell, Platform *platform, Sim *sim)
+void shell_update(Platform *platform, Sim *sim)
 {
     sim->time.delta_time = platform->delta_time;
 
@@ -104,12 +104,12 @@ void shell_update(Shell *shell, Platform *platform, Sim *sim)
 
     if (platform_button_is_pressed(platform, BUTTON_SPACE))
     {
-        queue_jump_action(platform, sim);
+        queue_jump_action(sim);
     }
 
     if (platform_button_is_released(platform, BUTTON_TAB))
     {
-        queue_debug_mode_action(platform, sim);
+        queue_debug_mode_action(sim);
     }
 }
 
@@ -119,7 +119,7 @@ void shell_present(Shell *shell, Sim *sim)
     screen_update(shell, sim);
 }
 
-void shell_close(Shell *shell)
+void shell_close()
 {
     log_close();
 }

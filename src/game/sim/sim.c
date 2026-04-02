@@ -42,8 +42,8 @@ static void actors_init(Sim *sim)
     judge.box_collider.radius[1] = 0.4f;
     judge.box_collider.radius[2] = 0.9f;
     
-    judge.position[0] = WORLD_CENTER;
-    judge.position[1] = WORLD_CENTER - 12;
+    judge.position[0] = WORLD_CENTER_F32;
+    judge.position[1] = WORLD_CENTER_F32 - 12;
     judge.position[2] = TOWER_ROOF_Z + 5;
 
     judge.rotation[0] = 0.0f;
@@ -70,7 +70,7 @@ static void physics_init(Sim *sim)
     sim->physics.gravity[2] = GRAVITY_DEFAULT;
 }
 
-static void apply_move_action(Sim *sim, Actor *actor, Action *action)
+static void apply_move_action(Actor *actor, Action *action)
 {
     vec3 velocity_forward;
     vec3 velocity_right;
@@ -135,7 +135,7 @@ static void apply_move_action(Sim *sim, Actor *actor, Action *action)
     }
 }
 
-static void apply_rotate_action(Sim *sim, Actor *actor, Action *action)
+static void apply_rotate_action(Actor *actor, Action *action)
 {
     actor->rotation[2] -= CAMERA_SENSITIVITY_X * action->action_value[0];
     actor->rotation[0] -= CAMERA_SENSITIVITY_Y * action->action_value[1];
@@ -151,7 +151,7 @@ static void apply_rotate_action(Sim *sim, Actor *actor, Action *action)
     }
 }
 
-static void apply_jump_action(Sim *sim, Actor *actor, Action *action)
+static void apply_jump_action(Actor *actor)
 {
     if (actor->is_grounded)
     {
@@ -159,7 +159,7 @@ static void apply_jump_action(Sim *sim, Actor *actor, Action *action)
     }
 }
 
-static void apply_debug_mode_action(Sim *sim, Actor *actor, Action *action)
+static void apply_debug_mode_action(Actor *actor)
 {
     switch (actor->movement_type)
     {
@@ -191,10 +191,10 @@ static void apply_action(Sim *sim, Action *action)
 
     switch (action->type)
     {
-    case ACTION_MOVE: apply_move_action(sim, actor, action); break;
-    case ACTION_ROTATE: apply_rotate_action(sim, actor, action); break;
-    case ACTION_JUMP: apply_jump_action(sim, actor, action); break;
-    case ACTION_DEBUG_MODE: apply_debug_mode_action(sim, actor, action); break;
+    case ACTION_MOVE: apply_move_action(actor, action); break;
+    case ACTION_ROTATE: apply_rotate_action(actor, action); break;
+    case ACTION_JUMP: apply_jump_action(actor); break;
+    case ACTION_DEBUG_MODE: apply_debug_mode_action(actor); break;
     default: break;
     }
 }

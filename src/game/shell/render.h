@@ -8,7 +8,7 @@
 #include "game/shell/shell_data.h"
 
 void render_load_texture_config(Shell *shell);
-void render_load_texture(Shell *shell, const char *texture_path, const GLint layer_index);
+void render_load_texture(const char *texture_path, const GLint layer_index);
 void render_load_textures(Shell *shell, const char *textures_path);
 
 void render_setup_opengl(Shell *shell);
