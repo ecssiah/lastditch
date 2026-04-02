@@ -257,8 +257,7 @@ void physics_integrate(Sim *sim, Actor *actor)
 
         const f32 step_delta_time = sim->time.delta_time / (f32)step_count;
 
-        i32 step_index;
-        for (step_index = 0; step_index < step_count; ++step_index)
+        for (i32 step_index = 0; step_index < step_count; ++step_index)
         {
             resolve_axis_collisions(sim, actor, AXIS_X, step_delta_time);
             resolve_axis_collisions(sim, actor, AXIS_Y, step_delta_time);

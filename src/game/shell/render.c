@@ -441,22 +441,19 @@ void render_init(Shell *shell, Platform *platform, Sim *sim)
 
     glUniformMatrix4fv(render->u_projection_location, 1, GL_FALSE, (f32 *)render->viewpoint.projection_matrix);
 
-    i32 sector_index;
-    for (sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    for (i32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
         render_generate_sector_mesh(shell, sim, sector_index);
     }
 
-    i32 sector_mesh_index;
-    for (sector_mesh_index = 0; sector_mesh_index < render->sector_mesh_count; ++sector_mesh_index)
+    for (i32 sector_mesh_index = 0; sector_mesh_index < render->sector_mesh_count; ++sector_mesh_index)
     {
         SectorMesh *sector_mesh = &render->sector_mesh_array[sector_mesh_index];
 	  
         render_convert_sector_mesh_to_gpu_mesh(render, sector_mesh);
     }
 
-    i32 gpu_mesh_index;
-    for (gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
+    for (i32 gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
     {
         GpuMesh *gpu_mesh = &render->gpu_mesh_array[gpu_mesh_index];
 	
@@ -503,8 +500,7 @@ void render_update(Shell* shell, Sim* sim)
 
     glUniformMatrix4fv(render->u_view_location, 1, GL_FALSE, (f32 *)render->viewpoint.view_matrix);
 
-    i32 gpu_mesh_index;
-    for (gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
+    for (i32 gpu_mesh_index = 0; gpu_mesh_index < render->gpu_mesh_count; ++gpu_mesh_index)
     {
         GpuMesh *gpu_mesh = &render->gpu_mesh_array[gpu_mesh_index];
 

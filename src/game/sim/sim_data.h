@@ -144,6 +144,46 @@ struct Cell
     u8 direction_mask;
 };
 
+typedef struct Door Door;
+struct Door
+{
+    i32 door_index;
+
+    ivec3 position;
+
+    i32 room_a_index;
+    i32 room_b_index;
+};
+
+typedef struct DoorList DoorList;
+struct DoorList
+{
+    i32 count;
+    i32 capacity;
+
+    Door *door_array;
+};
+
+typedef struct Room Room;
+struct Room
+{
+    IntRect room_rect;
+
+    i32 door_count;
+    i32 door_capacity;
+    
+    i32 *door_index_array;
+};
+
+typedef struct RoomList RoomList;
+struct RoomList
+{
+    i32 count;
+    i32 capacity;
+
+    Room *room_array;
+};
+
 typedef enum Quadrant Quadrant;
 enum Quadrant
 {
@@ -248,6 +288,13 @@ struct Time
     f32 time_rate;
 };
 
+typedef struct Tower Tower;
+struct Tower
+{
+    RoomList room_list_array[FLOOR_COUNT];
+    DoorList door_list_array[FLOOR_COUNT];
+};
+
 typedef struct Sim Sim;
 struct Sim
 {
@@ -266,8 +313,8 @@ struct Sim
     Physics physics;
     
     Cell *cell_array;
-    
-    IntRectArray tower_room_array[FLOOR_COUNT];
+
+    Tower tower;
 };
 
 #endif

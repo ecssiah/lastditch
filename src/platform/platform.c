@@ -33,21 +33,18 @@ static void init_buttons(Platform *platform)
 {
     Input *input = &platform->input;
     
-    i32 button_index;
-    for (button_index = 0; button_index < BUTTON_COUNT; ++button_index)
+    for (i32 button_index = 0; button_index < BUTTON_COUNT; ++button_index)
     {
         input->button_array_current[button_index] = false;
         input->button_array_previous[button_index] = false;
     }
     
-    i32 glfw_key_index;
-    for (glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
+    for (i32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
         input->glfw_keymap[glfw_key_index] = BUTTON_NONE;
     }
 
-    i32 glfw_button_index;
-    for (glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
+    for (i32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
         input->glfw_buttonmap[glfw_button_index] = BUTTON_NONE; 
     }
@@ -98,15 +95,13 @@ static void update_buttons(Platform *platform)
 {
     Input *input = &platform->input;
 
-    i32 button_index;
-    for (button_index = 0; button_index < BUTTON_COUNT; ++button_index)
+    for (i32 button_index = 0; button_index < BUTTON_COUNT; ++button_index)
     {
         input->button_array_previous[button_index] = input->button_array_current[button_index];
         input->button_array_current[button_index] = false;
     }
 
-    i32 glfw_key_index;
-    for (glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
+    for (i32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
         const Button button = input->glfw_keymap[glfw_key_index];
 
@@ -118,8 +113,7 @@ static void update_buttons(Platform *platform)
         input->button_array_current[button] = glfwGetKey(platform->window.glfw_window, glfw_key_index) == GLFW_PRESS;
     }
 
-    i32 glfw_button_index;
-    for (glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
+    for (i32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
         const Button button = input->glfw_buttonmap[glfw_button_index];
 
