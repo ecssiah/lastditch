@@ -985,172 +985,156 @@ static void setup_doors(Sim *sim)
 static void setup_roof(Sim *sim)
 {
     LOG_INFO("Floor R at %i", TOWER_ROOF_Z);
+
+    world_set_block_type_wireframe(
+        sim,
+        TOWER_BORDER, TOWER_BORDER, TOWER_ROOF_Z,
+        WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 2,
+        BLOCK_TYPE_SMOOTH_4
+    );
     
     world_set_block_type_cube(
         sim,
         TOWER_BORDER, TOWER_BORDER, TOWER_ROOF_Z,
         WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
+        BLOCK_TYPE_CARVED_3
+    );
+
+    world_set_block_type_cube(
+        sim,
+        WORLD_CENTER - ROOF_CENTER_PATH_SIZE / 2, TOWER_BORDER + 1, TOWER_ROOF_Z,
+        ROOF_CENTER_PATH_SIZE, TOWER_SIZE - 2, 1,
+        BLOCK_TYPE_SMOOTH_1
+    );
+
+    world_set_block_type_cube(
+        sim,
+        TOWER_BORDER + 1, WORLD_CENTER - ROOF_CENTER_PATH_SIZE / 2, TOWER_ROOF_Z,
+        TOWER_SIZE - 2, ROOF_CENTER_PATH_SIZE, 1,
         BLOCK_TYPE_SMOOTH_1
     );
 }
 
 static void setup_wolf_temple(Sim *sim)
 {
-    const ivec3 wolf_platform_origin =
-    {
-        TOWER_BORDER + TOWER_SIZE,
-        WORLD_CENTER - PLATFORM_SIZE_X / 2,
-        TOWER_ROOF_Z
-    };
-    
-    world_set_block_type_cube(
-        sim,
-        wolf_platform_origin[0], wolf_platform_origin[1], wolf_platform_origin[2],
-        PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
-        BLOCK_TYPE_SMOOTH_2
-    );
-
-    const ivec3 wolf_temple_origin =
-    {
-        TOWER_BORDER + TOWER_SIZE - 32,
-        WORLD_CENTER - TEMPLE_SIZE_X / 2,
-        TOWER_ROOF_Z + 1,
-    };
-    
-    world_set_block_type_cube(
-        sim,
-        wolf_temple_origin[0], wolf_temple_origin[1], wolf_temple_origin[2],
-        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
-        BLOCK_TYPE_SMOOTH_3
-    );
-
-    world_set_block_type_cube(
-        sim,
-        wolf_temple_origin[0] + 1, wolf_temple_origin[1] + 1, wolf_temple_origin[2] + 1,
-        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
-        BLOCK_TYPE_SMOOTH_3
-    );
-
-    world_set_block_type_cube(
-        sim,
-        wolf_temple_origin[0] + 4, wolf_temple_origin[1] + 4, wolf_temple_origin[2] + 2,
-        1, 1, 16,
-        BLOCK_TYPE_WOLF_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        wolf_temple_origin[0] + 4, wolf_temple_origin[1] + TEMPLE_SIZE_X - 5, wolf_temple_origin[2] + 2,
-        1, 1, 16,
-        BLOCK_TYPE_WOLF_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        wolf_temple_origin[0] + TEMPLE_SIZE_Y - 5, wolf_temple_origin[1] + 4, wolf_temple_origin[2] + 2,
-        1, 1, 16,
-        BLOCK_TYPE_WOLF_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        wolf_temple_origin[0] + TEMPLE_SIZE_Y - 5, wolf_temple_origin[1] + TEMPLE_SIZE_X - 5, wolf_temple_origin[2] + 2,
-        1, 1, 16,
-        BLOCK_TYPE_WOLF_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        wolf_temple_origin[0] + 1, wolf_temple_origin[1] + 1, wolf_temple_origin[2] + 18,
-        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
-        BLOCK_TYPE_SMOOTH_3
-    );
 }
 
 static void setup_eagle_temple(Sim *sim)
 {
-    world_set_block_type_cube(
-        sim,
-        TOWER_BORDER - PLATFORM_SIZE_Y, WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
-        PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
-        BLOCK_TYPE_SMOOTH_2
-    );
 
-    const ivec3 eagle_temple_origin =
-    {
-        TOWER_BORDER + 32,
-        WORLD_CENTER - TEMPLE_SIZE_X / 2,
-        TOWER_ROOF_Z + 1,
-    };
-
-    world_set_block_type_cube(
-        sim,
-        eagle_temple_origin[0], eagle_temple_origin[1], eagle_temple_origin[2],
-        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
-        BLOCK_TYPE_SMOOTH_3
-    );
-
-    world_set_block_type_cube(
-        sim,
-        eagle_temple_origin[0] + 1, eagle_temple_origin[1] + 1, eagle_temple_origin[2] + 1,
-        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
-        BLOCK_TYPE_SMOOTH_3
-    );
-
-    world_set_block_type_cube(
-        sim,
-        eagle_temple_origin[0] + 4, eagle_temple_origin[1] + 4, eagle_temple_origin[2] + 2,
-        1, 1, 16,
-        BLOCK_TYPE_EAGLE_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        eagle_temple_origin[0] + 4, eagle_temple_origin[1] + TEMPLE_SIZE_X - 5, eagle_temple_origin[2] + 2,
-        1, 1, 16,
-        BLOCK_TYPE_EAGLE_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        eagle_temple_origin[0] + TEMPLE_SIZE_Y - 5, eagle_temple_origin[1] + 4, eagle_temple_origin[2] + 2,
-        1, 1, 16,
-        BLOCK_TYPE_EAGLE_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        eagle_temple_origin[0] + TEMPLE_SIZE_Y - 5, eagle_temple_origin[1] + TEMPLE_SIZE_X - 5, eagle_temple_origin[2] + 2,
-        1, 1, 16,
-        BLOCK_TYPE_EAGLE_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        eagle_temple_origin[0] + 1, eagle_temple_origin[1] + 1, eagle_temple_origin[2] + 18,
-        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
-        BLOCK_TYPE_SMOOTH_3
-    );
 }
 
 static void setup_lion_temple(Sim *sim)
 {
     world_set_block_type_cube(
         sim,
+        WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE - 1, TOWER_ROOF_Z + 1,
+        PLATFORM_SIZE_X, 1, 1,
+        BLOCK_TYPE_NONE
+    );
+    
+    world_set_block_type_cube(
+        sim,
         WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF_Z,
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_2
+    );
+
+    const ivec3 temple_origin =
+    {
+        WORLD_CENTER - TEMPLE_SIZE_X / 2,
+        TOWER_SIZE - 24,
+        TOWER_ROOF_Z + 1,
+    };
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0], temple_origin[1], temple_origin[2],
+        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + 1,
+        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
+        BLOCK_TYPE_ENGRAVED_3
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + 2,
+        TEMPLE_SIZE_X - 4, TEMPLE_SIZE_Y - 4, 1,
+        BLOCK_TYPE_LION_STONE
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 3, temple_origin[1] + 3, temple_origin[2] + 2,
+        TEMPLE_SIZE_X - 6, TEMPLE_SIZE_Y - 6, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 4, temple_origin[1] + 4, temple_origin[2] + 3,
+        1, 1, TEMPLE_COLUMN_HEIGHT,
+        BLOCK_TYPE_LION_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + TEMPLE_SIZE_X - 5, temple_origin[1] + 4, temple_origin[2] + 3,
+        1, 1, TEMPLE_COLUMN_HEIGHT,
+        BLOCK_TYPE_LION_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 4, temple_origin[1] + TEMPLE_SIZE_Y - 5, temple_origin[2] + 3,
+        1, 1, TEMPLE_COLUMN_HEIGHT,
+        BLOCK_TYPE_LION_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + TEMPLE_SIZE_X - 5, temple_origin[1] + TEMPLE_SIZE_Y - 5, temple_origin[2] + 3,
+        1, 1, TEMPLE_COLUMN_HEIGHT,
+        BLOCK_TYPE_LION_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
+        TEMPLE_SIZE_X - 4, TEMPLE_SIZE_Y - 4, 1,
+        BLOCK_TYPE_LION_STONE
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 3, temple_origin[1] + 3, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
+        TEMPLE_SIZE_X - 6, TEMPLE_SIZE_Y - 6, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 2,
+        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
+        BLOCK_TYPE_ENGRAVED_3
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0], temple_origin[1], temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 3,
+        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
+        BLOCK_TYPE_SMOOTH_4
     );
 }
 
 static void setup_horse_temple(Sim *sim)
 {
-    world_set_block_type_cube(
-        sim,
-        WORLD_CENTER - PLATFORM_SIZE_X / 2, TOWER_BORDER - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
-        PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
-        BLOCK_TYPE_SMOOTH_2
-    );
+
 }
 
 void world_init(Sim *sim)
