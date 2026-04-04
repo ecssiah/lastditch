@@ -235,6 +235,8 @@ enum NationType
     NATION_TYPE_COUNT
 };
 
+extern const char *NATION_TYPE_STRING[NATION_TYPE_COUNT];
+
 typedef struct BoxCollider BoxCollider;
 struct BoxCollider
 {
@@ -276,11 +278,11 @@ typedef struct Actor Actor;
 struct Actor
 {
     ActorType actor_type;
-
+    MovementType movement_type;
+    NationType nation_type;
+    
     vec3 position;
     vec3 rotation;
-
-    MovementType movement_type;
 
     bool is_grounded;
     
@@ -322,14 +324,22 @@ struct World
     DoorList door_list_array[FLOOR_COUNT];
 };
 
+typedef struct Nation Nation;
+struct Nation
+{
+    NationType nation_type;
+
+    ivec3 home_coordinate;
+};
+
 typedef struct Population Population;
 struct Population
 {
-    Actor *actor_array;
-
     ActorHandle judge_handle;
     
     ActorPool actor_pool;
+
+    Nation nation_array[NATION_TYPE_COUNT];
 };
 
 typedef struct Sim Sim;

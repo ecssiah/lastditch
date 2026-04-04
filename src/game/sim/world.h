@@ -39,6 +39,8 @@ u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z);
 
 Cell *world_get_cell(Sim *sim, i32 x, i32 y, i32 z);
 
+Cell *world_get_free_cell(Sim *sim, i32 x, i32 y, i32 z);
+
 void world_set_block_type(Sim *sim, i32 x, i32 y, i32 z, BlockType block_type);
 void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
 void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);

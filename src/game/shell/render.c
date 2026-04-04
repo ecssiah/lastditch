@@ -5,17 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "game/sim/sim_data.h"
-#include "jsk.h"
-#include "jsk_config.h"
 #include "stb_image.h"
 
+#include "jsk.h"
+#include "jsk_config.h"
 #include "jsk_gl.h"
 #include "jsk_log.h"
 
 #include "core/core_data.h"
-#include "game/sim/world.h"
+#include "game/sim/sim_data.h"
 #include "game/sim/population.h"
+#include "game/sim/world.h"
 #include "game/shell/shell_data.h"
 #include "game/shell/viewpoint.h"
 
@@ -193,7 +193,7 @@ static void load_actor_texture_directory(Shell *shell)
         NULL
     );
 
-    assert(model_render->actor_config->entry_count <= ACTOR_TYPE_COUNT);
+    assert(model_render->actor_config->entry_count <= NATION_TYPE_COUNT);
 
     for (i32 layer_index = 0; layer_index < model_render->actor_config->entry_count; ++layer_index)
     {
@@ -203,12 +203,12 @@ static void load_actor_texture_directory(Shell *shell)
 
         snprintf(texture_path, sizeof(texture_path), "%s/%s", actor_texture_directory, config_entry->value);
 
-        const i32 actor_type_index = population_actor_type_index_from_string(config_entry->key);
+        const i32 nation_type_index = population_nation_type_index_from_string(config_entry->key);
 
-        assert(actor_type_index >= 0);
-        assert(actor_type_index < ACTOR_TYPE_COUNT);
+        assert(nation_type_index >= 0);
+        assert(nation_type_index < NATION_TYPE_COUNT);
 
-        model_render->actor_type_layer_array[actor_type_index] = layer_index;
+        model_render->actor_type_layer_array[nation_type_index] = layer_index;
 	
         load_texture_array_layer(texture_path, layer_index);
     }
@@ -801,10 +801,14 @@ static void init_model_render(Shell *shell, Sim *sim)
         {
             continue;
         }
+
+        const Actor *actor = &sim->population.actor_pool.actor_array[actor_index];
         
         ModelGpuData model_gpu_data;
     
         load_model_obj("assets/model/actor.obj", &model_gpu_data);
+
+        model_gpu_data.texture_layer = model_render->actor_type_layer_array[(i32)actor->nation_type];
 
         add_model_gpu_data(model_render, actor_index, &model_gpu_data);
 
@@ -816,10 +820,10 @@ static void update_viewpoint(Render *render, Sim *sim)
 {
     const Actor *judge = &sim->population.actor_pool.actor_array[sim->population.judge_handle.index];
 
-    vec3 judge_eye_offset = GLM_VEC3_ZERO_INIT;
+    const vec3 judge_eye_offset = { 0.0f, 0.0f, 1.0f };
     
     vec3 judge_eye_position;
-    glm_vec3_add((f32 *)judge->position, judge_eye_offset, judge_eye_position);
+    glm_vec3_add((f32 *)judge->position, (f32 *)judge_eye_offset, judge_eye_position);
     
     glm_vec3_copy(judge_eye_position, render->viewpoint.position);
     glm_vec3_copy((f32 *)judge->rotation, render->viewpoint.rotation);

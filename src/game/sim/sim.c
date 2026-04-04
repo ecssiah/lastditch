@@ -169,31 +169,6 @@ static void apply_action_queue(Sim *sim)
     }
 }
 
-static void update_actor(Sim *sim, Actor *actor)
-{
-    switch (actor->movement_type)
-    {
-    case MOVEMENT_TYPE_GROUND: physics_integrate(sim, actor); break;
-    case MOVEMENT_TYPE_DEBUG: physics_integrate(sim, actor); break;
-    default: break;
-    }
-}
-
-static void update_actors(Sim *sim)
-{   
-    for (i32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
-    {
-        if (sim->population.actor_pool.generation_array[actor_index] == 0)
-        {
-            continue;
-        }
-        
-        Actor *actor = &sim->population.actor_pool.actor_array[actor_index];
-
-        update_actor(sim, actor);
-    }
-}
-
 void sim_init(Sim *sim)
 {
     sim->active = true;
@@ -215,7 +190,7 @@ void sim_update(Sim *sim)
 {
     apply_action_queue(sim);
 
-    update_actors(sim);
+    population_update(sim);
 }
 
 void sim_close(Sim *sim)
