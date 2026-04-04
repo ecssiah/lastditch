@@ -7,6 +7,8 @@
 
 #define EPSILON 1e-5f
 
+#define CELL_SIZE 1.0f
+
 #define SECTOR_SIZE_IN_CELLS_LOG2 5
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 

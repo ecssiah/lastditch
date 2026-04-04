@@ -123,8 +123,8 @@ static void init_judge(Population *population)
 
     judge.box_collider.collision_enabled = true;
     
-    judge.box_collider.radius[0] = 0.45f;
-    judge.box_collider.radius[1] = 0.45f;
+    judge.box_collider.radius[0] = 0.40f;
+    judge.box_collider.radius[1] = 0.40f;
     judge.box_collider.radius[2] = 0.9f;
     
     judge.position[0] = WORLD_CENTER_F32;
@@ -169,9 +169,9 @@ static void init_agents(Population* population)
 
             agent.box_collider.collision_enabled = true;
     
-            agent.box_collider.radius[0] = 0.45f;
-            agent.box_collider.radius[1] = 0.45f;
-            agent.box_collider.radius[2] = 0.9f;
+            agent.box_collider.radius[0] = 0.40f;
+            agent.box_collider.radius[1] = 0.40f;
+            agent.box_collider.radius[2] = 0.90f;
 
             const Nation *nation = &population->nation_array[agent.nation_type];
             
@@ -236,7 +236,12 @@ static void update_actor(Sim *sim, Actor *actor)
             actor->actor_control.decision_clock = 0;
         }
 
-        actor->rotation[2] = math_lerp_to(actor->rotation[2], actor->rotation_target[2], 5.0f, sim->world.delta_time);
+        actor->rotation[2] = math_lerp_to(
+            actor->rotation[2],
+            actor->rotation_target[2],
+            8.0f,
+            sim->world.delta_time
+        );
     }
     
     switch (actor->movement_type)

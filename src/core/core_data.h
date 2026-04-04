@@ -6,8 +6,6 @@
 
 #include "jsk.h"
 
-#define CELL_SIZE 1.0f
-
 #define ACTION_QUEUE_CAPACITY 1024
 
 #define FOR_LIST_DIRECTION(DO) \
