@@ -1,5 +1,6 @@
 #include "game/sim/population.h"
 
+#include <math.h>
 #include <string.h>
 
 #include "jsk.h"
@@ -109,37 +110,41 @@ static void init_nations(Population* population)
 
     horse_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
     horse_nation->home_coordinate[1] = WORLD_CENTER_F32 - nation_offset;
-    horse_nation->home_coordinate[2] = TOWER_ROOF_Z + 5.0f;
+    horse_nation->home_coordinate[2] = TOWER_ROOF_Z + 1.0f;
 }
 
 static void init_judge(Population *population)
 {
     Actor judge;
     judge.actor_type = ACTOR_TYPE_JUDGE;
-    judge.movement_type = MOVEMENT_TYPE_DEBUG;
+    judge.movement_type = MOVEMENT_TYPE_GROUND;
     judge.nation_type = NATION_TYPE_LION;
 
-    judge.box_collider.collision_enabled = false;
+    judge.box_collider.collision_enabled = true;
     
     judge.box_collider.radius[0] = 0.4f;
     judge.box_collider.radius[1] = 0.4f;
     judge.box_collider.radius[2] = 0.9f;
     
     judge.position[0] = WORLD_CENTER_F32;
-    judge.position[1] = WORLD_CENTER_F32 - 12;
-    judge.position[2] = TOWER_ROOF_Z + 5;
+    judge.position[1] = WORLD_CENTER_F32 - 12.0f;
+    judge.position[2] = TOWER_ROOF_Z + 4.0f;
 
     judge.rotation[0] = 0.0f;
     judge.rotation[1] = 0.0f;
     judge.rotation[2] = 90.0f;
 
-    judge.speed = JUDGE_DEFAULT_DEBUG_SPEED;
+    judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
 
     judge.velocity[0] = 0.0f;
     judge.velocity[1] = 0.0f;
     judge.velocity[2] = 0.0f;
 
     judge.is_grounded = false;
+
+    judge.actor_control.active = false;
+    judge.actor_control.decision_clock = 0;
+    judge.actor_control.decision_period = 0;
 
     population->judge_handle = add_actor(population, &judge);
 
@@ -167,12 +172,12 @@ static void init_agents(Population* population)
             
             agent.position[0] = nation->home_coordinate[0] - 10 + rand() % 20;
             agent.position[1] = nation->home_coordinate[1] - 10 + rand() % 20;
-            agent.position[2] = nation->home_coordinate[2] + 8;
+            agent.position[2] = nation->home_coordinate[2] + 30;
 
             agent.rotation[0] = 0.0f;
             agent.rotation[1] = 0.0f;
             agent.rotation[2] = rand() % 360;
-
+            
             agent.speed = AGENT_DEFAULT_GROUND_SPEED;
 
             agent.velocity[0] = 0.0f;
@@ -180,6 +185,10 @@ static void init_agents(Population* population)
             agent.velocity[2] = 0.0f;
 
             agent.is_grounded = false;
+
+            agent.actor_control.active = true;
+            agent.actor_control.decision_clock = rand() % 500;
+            agent.actor_control.decision_period = 500;
 
             const ActorHandle agent_handle = add_actor(population, &agent);
 
@@ -195,6 +204,26 @@ static void init_agents(Population* population)
 
 static void update_actor(Sim *sim, Actor *actor)
 {
+    if (actor->actor_control.active)
+    {
+        if (actor->actor_control.decision_clock < actor->actor_control.decision_period)
+        {
+            actor->actor_control.decision_clock++;
+        }
+        else
+        {
+            const i32 direction_angle = rand() % 360;
+            const vec2 direction = { cosf(glm_rad(direction_angle)), sinf(glm_rad(direction_angle)) };
+
+            actor->velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;
+            actor->velocity[1] = direction[1] * AGENT_DEFAULT_GROUND_SPEED;
+
+            actor->rotation[2] = direction_angle;
+            
+            actor->actor_control.decision_clock = 0;
+        }
+    }
+    
     switch (actor->movement_type)
     {
     case MOVEMENT_TYPE_GROUND: physics_integrate(sim, actor); break;
@@ -217,7 +246,6 @@ static void update_actors(Sim *sim)
         update_actor(sim, actor);
     }
 }
-
 
 void population_init(Sim *sim)
 {

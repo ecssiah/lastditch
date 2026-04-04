@@ -68,7 +68,7 @@
 
 #define AGENT_INITIAL_POPULATION 12
 
-#define AGENT_DEFAULT_GROUND_SPEED 8.0f
+#define AGENT_DEFAULT_GROUND_SPEED 4.0f
 #define AGENT_DEFAULT_JUMP_SPEED 28.0f
 
 #define GRAVITY_DEFAULT -90.0f
@@ -274,6 +274,15 @@ struct ActorHandle
     i32 generation;
 };
 
+typedef struct ActorControl ActorControl;
+struct ActorControl
+{
+    bool active;
+    
+    i32 decision_clock;
+    i32 decision_period;
+};
+
 typedef struct Actor Actor;
 struct Actor
 {
@@ -290,6 +299,8 @@ struct Actor
     vec3 velocity;
 
     BoxCollider box_collider;
+
+    ActorControl actor_control;
 };
 
 typedef struct ActorPool ActorPool;
