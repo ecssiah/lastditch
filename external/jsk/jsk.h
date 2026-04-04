@@ -2,8 +2,8 @@
 #define JSK_H
 
 #include <assert.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef uint8_t     u8;
 typedef int8_t      i8;

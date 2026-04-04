@@ -60,6 +60,7 @@ target_sources(
     external/jsk/jsk_log.c      
     external/stb/src/stb_image.c
     src/core/action.c
+    src/core/math/math.c
     src/game/sim/actor.c
     src/game/sim/physics.c
     src/game/sim/population.c

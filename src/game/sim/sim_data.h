@@ -5,6 +5,8 @@
 
 #include "core/core_data.h"
 
+#define EPSILON 1e-5f
+
 #define SECTOR_SIZE_IN_CELLS_LOG2 5
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 
@@ -68,7 +70,7 @@
 
 #define AGENT_INITIAL_POPULATION 12
 
-#define AGENT_DEFAULT_GROUND_SPEED 4.0f
+#define AGENT_DEFAULT_GROUND_SPEED 1.0f
 #define AGENT_DEFAULT_JUMP_SPEED 28.0f
 
 #define GRAVITY_DEFAULT -90.0f
@@ -291,7 +293,10 @@ struct Actor
     NationType nation_type;
     
     vec3 position;
+    vec3 position_target;
+    
     vec3 rotation;
+    vec3 rotation_target;
 
     bool is_grounded;
     

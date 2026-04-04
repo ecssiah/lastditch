@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "core/math/math.h"
 #include "jsk.h"
 #include "jsk_log.h"
 
@@ -78,7 +79,7 @@ static void init_actor_pool(Population *population)
 
 static void init_nations(Population* population)
 {
-    const f32 nation_offset = 32.0f;
+    const f32 nation_offset = 76.0f;
     
     Nation *wolf_nation = &population->nation_array[NATION_TYPE_WOLF];
     
@@ -86,7 +87,7 @@ static void init_nations(Population* population)
 
     wolf_nation->home_coordinate[0] = WORLD_CENTER_F32 + nation_offset;
     wolf_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
-    wolf_nation->home_coordinate[2] = TOWER_ROOF_Z + 5.0f;
+    wolf_nation->home_coordinate[2] = TOWER_ROOF_Z + 3.0f;
 
     Nation *eagle_nation = &population->nation_array[NATION_TYPE_EAGLE];
     
@@ -94,7 +95,7 @@ static void init_nations(Population* population)
 
     eagle_nation->home_coordinate[0] = WORLD_CENTER_F32 - nation_offset;
     eagle_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
-    eagle_nation->home_coordinate[2] = TOWER_ROOF_Z + 5.0f;
+    eagle_nation->home_coordinate[2] = TOWER_ROOF_Z + 3.0f;
 
     Nation *lion_nation = &population->nation_array[NATION_TYPE_LION];
 
@@ -102,7 +103,7 @@ static void init_nations(Population* population)
 
     lion_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
     lion_nation->home_coordinate[1] = WORLD_CENTER_F32 + nation_offset;
-    lion_nation->home_coordinate[2] = TOWER_ROOF_Z + 5.0f;
+    lion_nation->home_coordinate[2] = TOWER_ROOF_Z + 3.0f;
 
     Nation *horse_nation = &population->nation_array[NATION_TYPE_HORSE];
     
@@ -122,17 +123,21 @@ static void init_judge(Population *population)
 
     judge.box_collider.collision_enabled = true;
     
-    judge.box_collider.radius[0] = 0.4f;
-    judge.box_collider.radius[1] = 0.4f;
+    judge.box_collider.radius[0] = 0.45f;
+    judge.box_collider.radius[1] = 0.45f;
     judge.box_collider.radius[2] = 0.9f;
     
     judge.position[0] = WORLD_CENTER_F32;
     judge.position[1] = WORLD_CENTER_F32 - 12.0f;
     judge.position[2] = TOWER_ROOF_Z + 4.0f;
 
+    glm_vec3_copy(judge.position, judge.position_target);
+    
     judge.rotation[0] = 0.0f;
     judge.rotation[1] = 0.0f;
     judge.rotation[2] = 90.0f;
+
+    glm_vec3_copy(judge.rotation, judge.rotation_target);
 
     judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
 
@@ -164,19 +169,23 @@ static void init_agents(Population* population)
 
             agent.box_collider.collision_enabled = true;
     
-            agent.box_collider.radius[0] = 0.4f;
-            agent.box_collider.radius[1] = 0.4f;
+            agent.box_collider.radius[0] = 0.45f;
+            agent.box_collider.radius[1] = 0.45f;
             agent.box_collider.radius[2] = 0.9f;
 
             const Nation *nation = &population->nation_array[agent.nation_type];
             
-            agent.position[0] = nation->home_coordinate[0] - 10 + rand() % 20;
-            agent.position[1] = nation->home_coordinate[1] - 10 + rand() % 20;
-            agent.position[2] = nation->home_coordinate[2] + 30;
+            agent.position[0] = nation->home_coordinate[0] - 6 + rand() % 12;
+            agent.position[1] = nation->home_coordinate[1] - 6 + rand() % 12;
+            agent.position[2] = nation->home_coordinate[2] + 4;
 
+            glm_vec3_copy(agent.position, agent.position_target);
+            
             agent.rotation[0] = 0.0f;
             agent.rotation[1] = 0.0f;
             agent.rotation[2] = rand() % 360;
+
+            glm_vec3_copy(agent.rotation, agent.rotation_target);
             
             agent.speed = AGENT_DEFAULT_GROUND_SPEED;
 
@@ -213,15 +222,21 @@ static void update_actor(Sim *sim, Actor *actor)
         else
         {
             const i32 direction_angle = rand() % 360;
-            const vec2 direction = { cosf(glm_rad(direction_angle)), sinf(glm_rad(direction_angle)) };
+
+            const vec2 direction = {
+                cosf(glm_rad(direction_angle)),
+                sinf(glm_rad(direction_angle))
+            };
 
             actor->velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;
             actor->velocity[1] = direction[1] * AGENT_DEFAULT_GROUND_SPEED;
 
-            actor->rotation[2] = direction_angle;
-            
+            actor->rotation_target[2] = direction_angle;
+
             actor->actor_control.decision_clock = 0;
         }
+
+        actor->rotation[2] = math_lerp_to(actor->rotation[2], actor->rotation_target[2], 5.0f, sim->world.delta_time);
     }
     
     switch (actor->movement_type)
