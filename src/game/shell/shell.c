@@ -93,7 +93,7 @@ void shell_init(Shell *shell)
 
 void shell_update(Platform *platform, Sim *sim)
 {
-    sim->time.delta_time = platform->delta_time;
+    sim->world.delta_time = platform->delta_time;
 
     queue_move_action(platform, sim);
     

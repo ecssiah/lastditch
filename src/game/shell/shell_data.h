@@ -7,33 +7,59 @@
 #include "core/core_data.h"
 #include "game/sim/sim_data.h"
 
-#define TEXTURE_SIZE 64
+#define BLOCK_TEXTURE_SIZE 64
+#define ACTOR_TEXTURE_SIZE 128
 
 #define FACE_COUNT_PER_VOXEL 6
 #define VERTEX_COUNT_PER_FACE 6
 
-typedef struct VertexAttributes VertexAttributes;
-struct VertexAttributes
+extern const i32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3];
+extern const f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3];
+
+typedef struct VoxelVertex VoxelVertex;
+struct VoxelVertex
 {
     u32 a_vertex;
     u32 a_face;
 };
 
-extern const i32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3];
-extern const f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3];
-
-typedef struct GpuMesh GpuMesh;
-struct GpuMesh
+typedef struct VoxelGpuData VoxelGpuData;
+struct VoxelGpuData
 {
     vec3 position;
     
     GLuint vao_id;
     GLuint vbo_id;
 
-    i32 vertex_attributes_count;
-    i32 vertex_attributes_capacity;
+    i32 voxel_vertex_count;
+    i32 voxel_vertex_capacity;
     
-    VertexAttributes *vertex_attributes_array;
+    VoxelVertex *voxel_vertex_array;
+};
+
+typedef struct ModelVertex ModelVertex;
+struct ModelVertex
+{
+    f32 a_position[3];
+    f32 a_normal[3];
+    f32 a_uv[2];
+};
+
+typedef struct ModelGpuData ModelGpuData;
+struct ModelGpuData
+{
+    vec3 position;
+    vec3 rotation;
+
+    u32 texture_layer;
+
+    GLuint vao_id;
+    GLuint vbo_id;
+
+    i32 model_vertex_count;
+    i32 model_vertex_capacity;
+    
+    ModelVertex *model_vertex_array;
 };
 
 typedef struct SectorQuad SectorQuad;
@@ -56,7 +82,6 @@ struct SectorMesh
     SectorQuad *sector_quad_array;
 };
 
-
 typedef struct Viewpoint Viewpoint;
 struct Viewpoint
 {
@@ -67,7 +92,6 @@ struct Viewpoint
     mat4 view_matrix;
 };
 
-
 typedef struct TextVertex TextVertex;
 struct TextVertex
 {
@@ -75,8 +99,8 @@ struct TextVertex
     f32 uv[2];
 };
 
-typedef struct Render Render;
-struct Render
+typedef struct VoxelRender VoxelRender;
+struct VoxelRender
 {
     GLuint program_id;
 
@@ -91,8 +115,8 @@ struct Render
     GLint u_view_location;
     GLint u_model_location;
 
-    JSK_Config *block_types_config;
-
+    JSK_Config *block_config;
+    
     u8 block_type_layer_array[BLOCK_TYPE_COUNT];
 
     i32 sector_mesh_count;
@@ -100,10 +124,39 @@ struct Render
 
     SectorMesh *sector_mesh_array;
 
-    i32 gpu_mesh_count;
-    i32 gpu_mesh_capacity;
+    i32 voxel_gpu_data_count;
+    i32 voxel_gpu_data_capacity;
     
-    GpuMesh *gpu_mesh_array;
+    VoxelGpuData *voxel_gpu_data_array;
+};
+
+typedef struct ModelRender ModelRender;
+struct ModelRender
+{
+    GLuint program_id;
+
+    GLuint texture_array_id;
+
+    GLint u_texture_sampler_location;
+
+    GLint u_projection_location;
+    GLint u_view_location;
+    GLint u_model_location;
+
+    GLint u_texture_layer_location;
+
+    JSK_Config *actor_config;
+
+    u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
+
+    ModelGpuData model_gpu_data_array[ACTOR_MAX];
+};
+
+typedef struct Render Render;
+struct Render
+{
+    VoxelRender voxel_render;
+    ModelRender model_render;
 
     Viewpoint viewpoint;
 };

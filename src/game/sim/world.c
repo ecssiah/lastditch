@@ -237,17 +237,17 @@ void world_get_quadrant_origin(i32 floor_number, Quadrant quadrant, ivec3 out_or
     }
 }
 
-BlockType world_block_type_from_string(const char *block_type_string)
+i32 world_block_type_index_from_string(const char *block_type_string)
 {
-    for (i32 index = 0; index < BLOCK_TYPE_COUNT; ++index)
+    for (i32 block_type_index = 0; block_type_index < BLOCK_TYPE_COUNT; ++block_type_index)
     {
-        if (strcmp(block_type_string, BLOCK_TYPE_STRING[index]) == 0)
+        if (strcmp(block_type_string, BLOCK_TYPE_STRING[block_type_index]) == 0)
         {
-            return (BlockType)index;
+            return block_type_index;
         }
     }
 
-    return BLOCK_TYPE_NONE;
+    return -1;
 }
 
 bool world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
@@ -259,7 +259,7 @@ bool world_is_solid(Sim *sim, i32 x, i32 y, i32 z)
     
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
     
-    const Cell *cell = &sim->cell_array[cell_index];
+    const Cell *cell = &sim->world.cell_array[cell_index];
 
     return cell->block_type != BLOCK_TYPE_NONE;
 }
@@ -306,7 +306,7 @@ u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z)
         {
             const i32 neighbor_cell_index = cell_index + DIRECTION_STRIDE[direction_index];
 
-            if (sim->cell_array[neighbor_cell_index].block_type == BLOCK_TYPE_NONE)
+            if (sim->world.cell_array[neighbor_cell_index].block_type == BLOCK_TYPE_NONE)
             {
                 direction_mask |= (1u << direction_index);
             }
@@ -325,7 +325,7 @@ Cell *world_get_cell(Sim *sim, i32 x, i32 y, i32 z)
 
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
     
-    return &sim->cell_array[cell_index];
+    return &sim->world.cell_array[cell_index];
 }
 
 void world_set_block_type(Sim *sim, i32 x, i32 y, i32 z, BlockType block_type)
@@ -414,7 +414,7 @@ static void init_direction_mask(Sim *sim)
 {
     for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
-        Cell *cell = &sim->cell_array[cell_index];
+        Cell *cell = &sim->world.cell_array[cell_index];
 
         ivec3 cell_coordinate;
         world_cell_index_to_coordinate(cell_index, cell_coordinate);
@@ -734,7 +734,7 @@ static void setup_rooms(Sim *sim)
             room_list_expanded->count = 0;
         }
 
-        RoomList *room_list = &sim->tower.room_list_array[floor_number];
+        RoomList *room_list = &sim->world.room_list_array[floor_number];
         
         room_list->count = 0;
         room_list->capacity = room_max;
@@ -806,9 +806,9 @@ static void setup_doors(Sim *sim)
 {   
     for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        const RoomList *room_list = &sim->tower.room_list_array[floor_number];
+        const RoomList *room_list = &sim->world.room_list_array[floor_number];
 
-        DoorList* door_list = &sim->tower.door_list_array[floor_number];
+        DoorList* door_list = &sim->world.door_list_array[floor_number];
 
         door_list->count = 0;
         door_list->capacity = 4 * room_list->count;
@@ -1449,11 +1449,11 @@ static void setup_horse_temple(Sim *sim)
 
 void world_init(Sim *sim)
 {
-    sim->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
+    sim->world.cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
 
     for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
-        sim->cell_array[cell_index].cell_index = cell_index;
+        sim->world.cell_array[cell_index].cell_index = cell_index;
     }
     
     setup_tower(sim);
@@ -1471,4 +1471,9 @@ void world_init(Sim *sim)
     init_direction_mask(sim);
 
     LOG_INFO("World init");
+}
+
+void world_close(Sim *sim)
+{
+    free(sim->world.cell_array);
 }

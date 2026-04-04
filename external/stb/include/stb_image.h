@@ -3694,10 +3694,10 @@ static void stbi__YCbCr_to_RGB_simd(stbi_uc *out, stbi_uc const *y, stbi_uc cons
    if (step == 4) {
       // this is a fairly straightforward implementation and not super-optimized.
       __m128i signflip  = _mm_set1_epi8(-0x80);
-      __m128i cr_const0 = _mm_set1_epi16(   (short) ( 1.40200f*4096.0f+BLOCK_RADIUS));
-      __m128i cr_const1 = _mm_set1_epi16( - (short) ( 0.71414f*4096.0f+BLOCK_RADIUS));
-      __m128i cb_const0 = _mm_set1_epi16( - (short) ( 0.34414f*4096.0f+BLOCK_RADIUS));
-      __m128i cb_const1 = _mm_set1_epi16(   (short) ( 1.77200f*4096.0f+BLOCK_RADIUS));
+      __m128i cr_const0 = _mm_set1_epi16(   (short) ( 1.40200f*4096.0f+0.5f));
+      __m128i cr_const1 = _mm_set1_epi16( - (short) ( 0.71414f*4096.0f+0.5f));
+      __m128i cb_const0 = _mm_set1_epi16( - (short) ( 0.34414f*4096.0f+0.5f));
+      __m128i cb_const1 = _mm_set1_epi16(   (short) ( 1.77200f*4096.0f+0.5f));
       __m128i y_bias = _mm_set1_epi8((char) (unsigned char) 128);
       __m128i xw = _mm_set1_epi16(255); // alpha channel
 
@@ -3753,10 +3753,10 @@ static void stbi__YCbCr_to_RGB_simd(stbi_uc *out, stbi_uc const *y, stbi_uc cons
    if (step == 4) {
       // this is a fairly straightforward implementation and not super-optimized.
       uint8x8_t signflip = vdup_n_u8(0x80);
-      int16x8_t cr_const0 = vdupq_n_s16(   (short) ( 1.40200f*4096.0f+BLOCK_RADIUS));
-      int16x8_t cr_const1 = vdupq_n_s16( - (short) ( 0.71414f*4096.0f+BLOCK_RADIUS));
-      int16x8_t cb_const0 = vdupq_n_s16( - (short) ( 0.34414f*4096.0f+BLOCK_RADIUS));
-      int16x8_t cb_const1 = vdupq_n_s16(   (short) ( 1.77200f*4096.0f+BLOCK_RADIUS));
+      int16x8_t cr_const0 = vdupq_n_s16(   (short) ( 1.40200f*4096.0f+0.5f));
+      int16x8_t cr_const1 = vdupq_n_s16( - (short) ( 0.71414f*4096.0f+0.5f));
+      int16x8_t cb_const0 = vdupq_n_s16( - (short) ( 0.34414f*4096.0f+0.5f));
+      int16x8_t cb_const1 = vdupq_n_s16(   (short) ( 1.77200f*4096.0f+0.5f));
 
       for (; i+7 < count; i += 8) {
          // load

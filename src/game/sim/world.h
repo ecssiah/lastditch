@@ -33,7 +33,7 @@ void world_get_quadrant_origin(i32 floor_number, Quadrant quadrant, ivec3 out_or
 bool world_is_solid(Sim *sim, i32 x, i32 y, i32 z);
 bool world_is_clear(Sim *sim, i32 x, i32 y, i32 z, u8 direction_mask);
 
-BlockType world_block_type_from_string(const char *block_type_string);
+i32 world_block_type_index_from_string(const char *block_type_string);
 
 u8 world_get_direction_mask(Sim *sim, i32 x, i32 y, i32 z);
 
@@ -46,5 +46,6 @@ void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 si
 i32 world_get_content_level(i32 floor_number);
 
 void world_init(Sim *sim);
+void world_close(Sim *sim);
 
 #endif

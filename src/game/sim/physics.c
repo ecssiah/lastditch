@@ -237,19 +237,19 @@ void physics_integrate(Sim *sim, Actor *actor)
     {
         if (actor->velocity[AXIS_Z] < 0.0f)
         {
-            actor->velocity[AXIS_Z] += sim->time.delta_time * FALLING_GRAVITY_MODIFIER * sim->physics.gravity[AXIS_Z];
+            actor->velocity[AXIS_Z] += sim->world.delta_time * FALLING_GRAVITY_MODIFIER * sim->world.gravity[AXIS_Z];
         }
         else
         {
-            actor->velocity[AXIS_Z] += sim->time.delta_time * RISING_GRAVITY_MODIFIER * sim->physics.gravity[AXIS_Z];
+            actor->velocity[AXIS_Z] += sim->world.delta_time * RISING_GRAVITY_MODIFIER * sim->world.gravity[AXIS_Z];
         }
     }
 
     if (actor->box_collider.collision_enabled)
     {
-        const f32 move_x = fabsf(sim->time.delta_time * actor->velocity[0]);
-        const f32 move_y = fabsf(sim->time.delta_time * actor->velocity[1]);
-        const f32 move_z = fabsf(sim->time.delta_time * actor->velocity[2]);
+        const f32 move_x = fabsf(sim->world.delta_time * actor->velocity[0]);
+        const f32 move_y = fabsf(sim->world.delta_time * actor->velocity[1]);
+        const f32 move_z = fabsf(sim->world.delta_time * actor->velocity[2]);
 
         const f32 max_move = fmaxf(move_x, fmaxf(move_y, move_z));
 
@@ -259,7 +259,7 @@ void physics_integrate(Sim *sim, Actor *actor)
             step_count = 1;
         }
 
-        const f32 step_delta_time = sim->time.delta_time / (f32)step_count;
+        const f32 step_delta_time = sim->world.delta_time / (f32)step_count;
 
         for (i32 step_index = 0; step_index < step_count; ++step_index)
         {
@@ -271,7 +271,7 @@ void physics_integrate(Sim *sim, Actor *actor)
     else
     {
         vec3 displacement;
-        glm_vec3_scale(actor->velocity, sim->time.delta_time, displacement);
+        glm_vec3_scale(actor->velocity, sim->world.delta_time, displacement);
         
         glm_vec3_add(actor->position, displacement, actor->position);
     }

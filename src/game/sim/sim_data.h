@@ -66,14 +66,19 @@
 
 #define ACTOR_MAX 256
 
+#define AGENT_INITIAL_POPULATION 12
+
+#define AGENT_DEFAULT_GROUND_SPEED 8.0f
+#define AGENT_DEFAULT_JUMP_SPEED 28.0f
+
 #define GRAVITY_DEFAULT -90.0f
 
 #define RISING_GRAVITY_MODIFIER 1.0f
 #define FALLING_GRAVITY_MODIFIER 1.7f
 
-#define JUDGE_DEFAULT_MOVE_SPEED 12.0f
-#define JUDGE_DEFAULT_DEBUG_SPEED 32.0f
+#define JUDGE_DEFAULT_GROUND_SPEED 12.0f
 #define JUDGE_DEFAULT_JUMP_SPEED 46.0f
+#define JUDGE_DEFAULT_DEBUG_SPEED 32.0f
 
 #define CAMERA_SENSITIVITY_X 0.1f
 #define CAMERA_SENSITIVITY_Y 0.1f
@@ -238,14 +243,18 @@ struct BoxCollider
     vec3 radius;
 };
 
+#define FOR_LIST_ACTOR_TYPE(DO) \
+    DO( ACTOR_TYPE_JUDGE ) \
+    DO( ACTOR_TYPE_AGENT ) \
+
 typedef enum ActorType ActorType;
 enum ActorType
 {
-    ACTOR_TYPE_JUDGE,
-    ACTOR_TYPE_AGENT,
-
+    FOR_LIST_ACTOR_TYPE( DEFINE_LIST_ENUMERATION )
     ACTOR_TYPE_COUNT,
 };
+
+extern const char *ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT];
 
 typedef enum MovementType MovementType;
 enum MovementType
@@ -295,14 +304,8 @@ struct ActorPool
     i32 free_count;
 };
 
-typedef struct Physics Physics;
-struct Physics
-{
-    vec3 gravity;
-};
-
-typedef struct Time Time;
-struct Time
+typedef struct World World;
+struct World
 {
     f32 delta_time;
     u64 tick_count;
@@ -310,13 +313,23 @@ struct Time
     u64 second_count;
 
     f32 time_rate;
-};
+    
+    vec3 gravity;
 
-typedef struct Tower Tower;
-struct Tower
-{
+    Cell *cell_array;
+
     RoomList room_list_array[FLOOR_COUNT];
     DoorList door_list_array[FLOOR_COUNT];
+};
+
+typedef struct Population Population;
+struct Population
+{
+    Actor *actor_array;
+
+    ActorHandle judge_handle;
+    
+    ActorPool actor_pool;
 };
 
 typedef struct Sim Sim;
@@ -327,18 +340,10 @@ struct Sim
     
     u32 seed;
 
-    Time time;
-
-    ActorHandle judge_handle;
-
     ActionQueue action_queue;
-    ActorPool actor_pool;
 
-    Physics physics;
-    
-    Cell *cell_array;
-
-    Tower tower;
+    World world;
+    Population population;
 };
 
 #endif
