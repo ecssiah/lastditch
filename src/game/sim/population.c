@@ -227,6 +227,11 @@ static void update_actor(Sim *sim, Actor *actor)
             actor->velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;
             actor->velocity[1] = direction[1] * AGENT_DEFAULT_GROUND_SPEED;
 
+            if (rand() % 100 < 50)
+            {
+                actor->velocity[2] = 24.0f;
+            }
+
             actor->rotation_target[2] = direction_angle;
 
             actor->actor_control.decision_clock = 0;
