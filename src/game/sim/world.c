@@ -688,25 +688,15 @@ static void setup_areas(Sim *sim)
                     Area *area_a = &area_list_expanded->area_array[area_list_expanded->count++];
                     Area *area_b = &area_list_expanded->area_array[area_list_expanded->count++];
 
-                    const Axis axis_constant = axis_split == AXIS_X ? AXIS_Y : AXIS_X;
+                    *area_a = *area;
+                    *area_b = *area;
 
-                    const i32 split_size = 1 + rand() % (area->size[axis_split] - 1);
-
-                    area_a->position[axis_split] = area->position[axis_split];
-                    area_a->position[axis_constant] = area->position[axis_constant];
-                    area_a->position[AXIS_Z] = area->position[AXIS_Z];
+                    const i32 split_size = 2 + rand() % (area->size[axis_split] - 2);
 
                     area_a->size[axis_split] = split_size;
-                    area_a->size[axis_constant] = area->size[axis_constant];
-                    area_a->size[AXIS_Z] = area->size[AXIS_Z];
 
                     area_b->position[axis_split] = area->position[axis_split] + split_size - 1;
-                    area_b->position[axis_constant] = area->position[axis_constant];
-                    area_b->position[AXIS_Z] = area->position[AXIS_Z];
-
                     area_b->size[axis_split] = area->size[axis_split] - (split_size - 1);
-                    area_b->size[axis_constant] = area->size[axis_constant];
-                    area_b->size[AXIS_Z] = area->size[AXIS_Z];
                 }
                 else
                 {
@@ -775,17 +765,17 @@ static void setup_areas(Sim *sim)
             for (i32 stack_index = 0; stack_index < stack_count; ++stack_index)
             {
                 const ivec3 stack_position = {
-                    area->position[0] + 1 + rand() % (area->size[0] - 3),
-                    area->position[1] + 1 + rand() % (area->size[1] - 3),
+                    area->position[0] + 1 + rand() % (area->size[0] - 2),
+                    area->position[1] + 1 + rand() % (area->size[1] - 2),
                     floor_number * FLOOR_SIZE_Z + 1
                 };
 
-                const i32 stack_height = rand() % (FLOOR_SIZE_Z - 4);
+                const i32 stack_size_z = rand() % (FLOOR_SIZE_Z - 4);
 
                 world_set_block_type_cube(
                     sim,
                     stack_position[0], stack_position[1], stack_position[2],
-                    1, 1, stack_height,
+                    1, 1, stack_size_z,
                     block_type_list->block_type_array[rand() % block_type_list->count]
                 );
             }
@@ -823,7 +813,7 @@ static void setup_connects(Sim *sim)
                 const ivec3 connect_position = {
                     area->position[0] + area->size[0] - 1,
                     area->position[1] + 1 + rand() % (area->size[1] - 2),
-                    floor_number * FLOOR_SIZE_Z + 1,
+                    area->position[2] + 1
                 };
                                 
                 const bool east_connect_clear =
@@ -860,7 +850,7 @@ static void setup_connects(Sim *sim)
                 const ivec3 connect_position = {
                     area->position[0],
                     area->position[1] + 1 + rand() % (area->size[1] - 2),
-                    floor_number * FLOOR_SIZE_Z + 1,
+                    area->position[2] + 1
                 };
                 
                 const bool west_connect_clear =
@@ -897,7 +887,7 @@ static void setup_connects(Sim *sim)
                 const ivec3 connect_position = {
                     area->position[0] + 1 + rand() % (area->size[0] - 2),
                     area->position[1] + area->size[1] - 1,
-                    floor_number * FLOOR_SIZE_Z + 1,
+                    area->position[2] + 1
                 };
                 
                 const bool north_connect_clear =
@@ -934,7 +924,7 @@ static void setup_connects(Sim *sim)
                 const ivec3 connect_position = {
                     area->position[0] + 1 + rand() % (area->size[0] - 2),
                     area->position[1],
-                    floor_number * FLOOR_SIZE_Z + 1,
+                    area->position[2] + 1,
                 };
                 
                 const bool south_connect_clear =
