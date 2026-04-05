@@ -336,10 +336,6 @@ void world_set_block_type(Sim *sim, i32 x, i32 y, i32 z, BlockType block_type)
     {
         cell->block_type = block_type;
     }
-    else
-    {
-        LOG_WARN("Block set at invalid coordinate: %d %d %d", x, y, z);
-    }
 }
 
 void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
@@ -439,6 +435,13 @@ static void setup_tower(Sim *sim)
         world_set_block_type_cube(
             sim,
             floor_origin[0], floor_origin[1], floor_origin[2],
+            TOWER_SIZE, TOWER_SIZE, 1,
+            BLOCK_TYPE_SMOOTH_2
+        );
+
+        world_set_block_type_cube(
+            sim,
+            floor_origin[0], floor_origin[1], floor_origin[2] + FLOOR_SIZE_Z - 1,
             TOWER_SIZE, TOWER_SIZE, 1,
             BLOCK_TYPE_SMOOTH_2
         );
@@ -629,52 +632,44 @@ static void setup_areas(Sim *sim)
         area_list_a.count = 0;
         area_list_b.count = 0;
         
-        ivec3 quadrant_1_origin;
-        world_get_quadrant_origin(floor_number, QUADRANT_1, quadrant_1_origin);
-
-        ivec3 quadrant_2_origin;
-        world_get_quadrant_origin(floor_number, QUADRANT_2, quadrant_2_origin);
-
-        ivec3 quadrant_3_origin;
-        world_get_quadrant_origin(floor_number, QUADRANT_3, quadrant_3_origin);
-
-        ivec3 quadrant_4_origin;
-        world_get_quadrant_origin(floor_number, QUADRANT_4, quadrant_4_origin);
-
         Area *area_quadrant_1 = &area_list_a.area_array[area_list_a.count];
-        
-        area_quadrant_1->area_rect.min[0] = quadrant_1_origin[0];
-        area_quadrant_1->area_rect.min[1] = quadrant_1_origin[1];
-        area_quadrant_1->area_rect.max[0] = quadrant_1_origin[0] + TOWER_QUADRANT_SIZE;
-        area_quadrant_1->area_rect.max[1] = quadrant_1_origin[1] + TOWER_QUADRANT_SIZE;
+
+        world_get_quadrant_origin(floor_number, QUADRANT_1, area_quadrant_1->position);
+
+        area_quadrant_1->size[0] = TOWER_QUADRANT_SIZE;
+        area_quadrant_1->size[1] = TOWER_QUADRANT_SIZE;
+        area_quadrant_1->size[2] = FLOOR_SIZE_Z;
 
         area_list_a.count++;
- 
+
         Area *area_quadrant_2 = &area_list_a.area_array[area_list_a.count];
+
+        world_get_quadrant_origin(floor_number, QUADRANT_2, area_quadrant_2->position);
         
-        area_quadrant_2->area_rect.min[0] = quadrant_2_origin[0];
-        area_quadrant_2->area_rect.min[1] = quadrant_2_origin[1];
-        area_quadrant_2->area_rect.max[0] = quadrant_2_origin[0] + TOWER_QUADRANT_SIZE;
-        area_quadrant_2->area_rect.max[1] = quadrant_2_origin[1] + TOWER_QUADRANT_SIZE;
+        area_quadrant_2->size[0] = TOWER_QUADRANT_SIZE;
+        area_quadrant_2->size[1] = TOWER_QUADRANT_SIZE;
+        area_quadrant_2->size[2] = FLOOR_SIZE_Z;
 
         area_list_a.count++;
 
         Area *area_quadrant_3 = &area_list_a.area_array[area_list_a.count];
-                
-        area_quadrant_3->area_rect.min[0] = quadrant_3_origin[0];
-        area_quadrant_3->area_rect.min[1] = quadrant_3_origin[1];
-        area_quadrant_3->area_rect.max[0] = quadrant_3_origin[0] + TOWER_QUADRANT_SIZE;
-        area_quadrant_3->area_rect.max[1] = quadrant_3_origin[1] + TOWER_QUADRANT_SIZE;
+
+        world_get_quadrant_origin(floor_number, QUADRANT_3, area_quadrant_3->position);
+        
+        area_quadrant_3->size[0] = TOWER_QUADRANT_SIZE;
+        area_quadrant_3->size[1] = TOWER_QUADRANT_SIZE;
+        area_quadrant_3->size[2] = FLOOR_SIZE_Z;
 
         area_list_a.count++;
 
         Area *area_quadrant_4 = &area_list_a.area_array[area_list_a.count];
 
-        area_quadrant_4->area_rect.min[0] = quadrant_4_origin[0];
-        area_quadrant_4->area_rect.min[1] = quadrant_4_origin[1];
-        area_quadrant_4->area_rect.max[0] = quadrant_4_origin[0] + TOWER_QUADRANT_SIZE;
-        area_quadrant_4->area_rect.max[1] = quadrant_4_origin[1] + TOWER_QUADRANT_SIZE;
+        world_get_quadrant_origin(floor_number, QUADRANT_4, area_quadrant_4->position);
         
+        area_quadrant_4->size[0] = TOWER_QUADRANT_SIZE;
+        area_quadrant_4->size[1] = TOWER_QUADRANT_SIZE;
+        area_quadrant_4->size[2] = FLOOR_SIZE_Z;
+
         area_list_a.count++;
 
         AreaList *area_list_current = &area_list_a;
@@ -684,44 +679,38 @@ static void setup_areas(Sim *sim)
         {
             for (i32 area_index = 0; area_index < area_list_current->count; ++area_index)
             {
-                const Area *area_rect = &area_list_current->area_array[area_index];
+                const Area *area = &area_list_current->area_array[area_index];
 
-                const ivec3 area_size =
-                {
-                    area_rect->area_rect.max[0] - area_rect->area_rect.min[0],
-                    area_rect->area_rect.max[1] - area_rect->area_rect.min[1],
-                    FLOOR_SIZE_Z
-                };             
-                
-                const Axis axis_split = area_size[AXIS_X] > area_size[AXIS_Y] ? AXIS_X : AXIS_Y;
+                const Axis axis_split = area->size[AXIS_X] > area->size[AXIS_Y] ? AXIS_X : AXIS_Y;
 
-                if (area_size[axis_split] >= AREA_EXPANSION_AREA_SIZE_MIN)
+                if (area->size[axis_split] >= AREA_EXPANSION_SIZE_MIN)
                 {
                     Area *area_a = &area_list_expanded->area_array[area_list_expanded->count++];
                     Area *area_b = &area_list_expanded->area_array[area_list_expanded->count++];
 
                     const Axis axis_constant = axis_split == AXIS_X ? AXIS_Y : AXIS_X;
 
-                    const i32 split_center = area_rect->area_rect.min[axis_split] + area_size[axis_split] / 2;
-                    const i32 split_offset = (rand() % 2 ? -1 : 1) * area_size[axis_split] / 4;
-                    
-                    const i32 split_position = split_center + split_offset;
+                    const i32 split_size = 1 + rand() % (area->size[axis_split] - 1);
 
-                    area_a->area_rect.min[axis_split] = area_rect->area_rect.min[axis_split];
-                    area_a->area_rect.min[axis_constant] = area_rect->area_rect.min[axis_constant];
+                    area_a->position[axis_split] = area->position[axis_split];
+                    area_a->position[axis_constant] = area->position[axis_constant];
+                    area_a->position[AXIS_Z] = area->position[AXIS_Z];
 
-                    area_a->area_rect.max[axis_split] = split_position + 1;
-                    area_a->area_rect.max[axis_constant] = area_rect->area_rect.max[axis_constant];
+                    area_a->size[axis_split] = split_size;
+                    area_a->size[axis_constant] = area->size[axis_constant];
+                    area_a->size[AXIS_Z] = area->size[AXIS_Z];
 
-                    area_b->area_rect.min[axis_split] = split_position;
-                    area_b->area_rect.min[axis_constant] = area_rect->area_rect.min[axis_constant];
+                    area_b->position[axis_split] = area->position[axis_split] + split_size - 1;
+                    area_b->position[axis_constant] = area->position[axis_constant];
+                    area_b->position[AXIS_Z] = area->position[AXIS_Z];
 
-                    area_b->area_rect.max[axis_split] = area_rect->area_rect.max[axis_split];
-                    area_b->area_rect.max[axis_constant] = area_rect->area_rect.max[axis_constant];
+                    area_b->size[axis_split] = area->size[axis_split] - (split_size - 1);
+                    area_b->size[axis_constant] = area->size[axis_constant];
+                    area_b->size[AXIS_Z] = area->size[AXIS_Z];
                 }
                 else
                 {
-                    area_list_expanded->area_array[area_list_expanded->count++] = *area_rect;
+                    area_list_expanded->area_array[area_list_expanded->count++] = *area;
                 }
             }
 
@@ -742,19 +731,12 @@ static void setup_areas(Sim *sim)
         {
             const Area *area = &area_list_current->area_array[area_index];
 
-            const ivec3 area_size =
-            {
-                area->area_rect.max[0] - area->area_rect.min[0],
-                area->area_rect.max[1] - area->area_rect.min[1],
-                FLOOR_SIZE_Z
-            };
-
             if (TOWER_WIREFRAME)
             {
                 world_set_block_type_wireframe(
                     sim,
-                    area->area_rect.min[0], area->area_rect.min[1], floor_number * FLOOR_SIZE_Z,
-                    area_size[0], area_size[1], area_size[2],
+                    area->position[0], area->position[1], area->position[2] ,
+                    area->size[0], area->size[1], area->size[2],
                     BLOCK_TYPE_CAUTION_2
                 );
             }
@@ -762,9 +744,23 @@ static void setup_areas(Sim *sim)
             {
                 world_set_block_type_box(
                     sim,
-                    area->area_rect.min[0], area->area_rect.min[1], floor_number * FLOOR_SIZE_Z,
-                    area_size[0], area_size[1], area_size[2],
+                    area->position[0], area->position[1], area->position[2],
+                    area->size[0], area->size[1], area->size[2],
+                    BLOCK_TYPE_METAL_5
+                );
+
+                world_set_block_type_cube(
+                    sim,
+                    area->position[0], area->position[1], area->position[2],
+                    area->size[0], area->size[1], 1,
                     BLOCK_TYPE_METAL_1
+                );
+
+                world_set_block_type_cube(
+                    sim,
+                    area->position[0], area->position[1], area->position[2] + FLOOR_SIZE_Z - 1,
+                    area->size[0], area->size[1], 1,
+                    BLOCK_TYPE_METAL_4
                 );
             }
 
@@ -774,21 +770,21 @@ static void setup_areas(Sim *sim)
             
             const BlockTypeList *block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
 
-            const i32 stack_count = (area_size[0] * area_size[1] / 8);
+            const i32 stack_count = (area->size[0] * area->size[1] / 8);
 
             for (i32 stack_index = 0; stack_index < stack_count; ++stack_index)
             {
-                const ivec2 stack_position =
-                {
-                    area->area_rect.min[0] + 1 + rand() % (area->area_rect.max[0] - area->area_rect.min[0] + 1 - 3),
-                    area->area_rect.min[1] + 1 + rand() % (area->area_rect.max[1] - area->area_rect.min[1] + 1 - 3),
+                const ivec3 stack_position = {
+                    area->position[0] + 1 + rand() % (area->size[0] - 3),
+                    area->position[1] + 1 + rand() % (area->size[1] - 3),
+                    floor_number * FLOOR_SIZE_Z + 1
                 };
 
-                const i32 stack_height = rand() % FLOOR_SIZE_Z - 4;
+                const i32 stack_height = rand() % (FLOOR_SIZE_Z - 4);
 
                 world_set_block_type_cube(
                     sim,
-                    stack_position[0], stack_position[1], floor_number * FLOOR_SIZE_Z + 1,
+                    stack_position[0], stack_position[1], stack_position[2],
                     1, 1, stack_height,
                     block_type_list->block_type_array[rand() % block_type_list->count]
                 );
@@ -800,177 +796,171 @@ static void setup_areas(Sim *sim)
     free(area_list_b.area_array);
 }
 
-static void setup_doors(Sim *sim)
+static void setup_connects(Sim *sim)
 {   
     for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         const AreaList *area_list = &sim->world.area_list_array[floor_number];
 
-        DoorList* door_list = &sim->world.door_list_array[floor_number];
+        ConnectList* connect_list = &sim->world.connect_list_array[floor_number];
 
-        door_list->count = 0;
-        door_list->capacity = 4 * area_list->count;
-        door_list->door_array = malloc(door_list->capacity * sizeof(DoorList));
+        connect_list->count = 0;
+        connect_list->capacity = 4 * area_list->count;
+        connect_list->connect_array = malloc(connect_list->capacity * sizeof(Connect));
         
         for (i32 area_index = 0; area_index < area_list->count; ++area_index)
         {
             Area *area = &area_list->area_array[area_index];
 
-            area->door_count = 0;
-            area->door_capacity = 4;
-            area->door_index_array = malloc(4 * sizeof(i32));
+            area->connect_count = 0;
+            area->connect_capacity = 4;
+            area->connect_index_array = malloc(4 * sizeof(i32));
             
-            const ivec2 area_size =
-            {
-                area->area_rect.max[AXIS_X] - area->area_rect.min[AXIS_X],
-                area->area_rect.max[AXIS_Y] - area->area_rect.min[AXIS_Y]
-            };
-
-            const i32 door_attempt_count = 3;
+            const i32 connect_attempt_count = 3;
             
-            for (i32 index = 0; index < door_attempt_count; ++index)
+            for (i32 index = 0; index < connect_attempt_count; ++index)
             {
-                const i32 door_x = area->area_rect.max[AXIS_X] - 1;
-                const i32 door_y = area->area_rect.min[AXIS_Y] + 1 + rand() % (area_size[AXIS_Y] - 3);
-                const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
-                
-                const bool east_door_clear =
+                const ivec3 connect_position = {
+                    area->position[0] + area->size[0] - 1,
+                    area->position[1] + 1 + rand() % (area->size[1] - 2),
+                    floor_number * FLOOR_SIZE_Z + 1,
+                };
+                                
+                const bool east_connect_clear =
                     world_is_clear(
                         sim,
-                        door_x, door_y, door_z,
+                        connect_position[0], connect_position[1], connect_position[2],
                         (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
                     );
                 
-                if (east_door_clear)
+                if (east_connect_clear)
                 {
                     world_set_block_type_cube(
                         sim,
-                        door_x, door_y, door_z,
+                        connect_position[0], connect_position[1], connect_position[2],
                         1, 1, 2,
                         BLOCK_TYPE_NONE
                     );
 
-                    Door *door = &door_list->door_array[door_list->count];
+                    Connect *connect = &connect_list->connect_array[connect_list->count];
 
-                    door->door_index = door_list->count;
-                    door->direction = DIRECTION_EAST;
-                    
-                    door->cell_coordinate[0] = door_x;
-                    door->cell_coordinate[1] = door_y;
-                    door->cell_coordinate[2] = door_z;
+                    connect->connect_index = connect_list->count;
+                    connect->direction = DIRECTION_EAST;
 
-                    door_list->count++;
+                    glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
+
+                    connect_list->count++;
 
                     break;
                 }
             }
 
-            for (i32 index = 0; index < door_attempt_count; ++index)
+            for (i32 index = 0; index < connect_attempt_count; ++index)
             {
-                const i32 door_x = area->area_rect.min[AXIS_X];
-                const i32 door_y = area->area_rect.min[AXIS_Y] + 1 + rand() % (area_size[AXIS_Y] - 3);
-                const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
+                const ivec3 connect_position = {
+                    area->position[0],
+                    area->position[1] + 1 + rand() % (area->size[1] - 2),
+                    floor_number * FLOOR_SIZE_Z + 1,
+                };
                 
-                const bool west_door_clear =
+                const bool west_connect_clear =
                     world_is_clear(
                         sim,
-                        door_x, door_y, door_z,
+                        connect_position[0], connect_position[1], connect_position[2],
                         (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
                     );
                 
-                if (west_door_clear)
+                if (west_connect_clear)
                 {
                     world_set_block_type_cube(
                         sim,
-                        door_x, door_y, door_z,
+                        connect_position[0], connect_position[1], connect_position[2],
                         1, 1, 2,
                         BLOCK_TYPE_NONE
                     );
 
-                    Door *door = &door_list->door_array[door_list->count];
+                    Connect *connect = &connect_list->connect_array[connect_list->count];
 
-                    door->door_index = door_list->count;
-                    door->direction = DIRECTION_WEST;
+                    connect->connect_index = connect_list->count;
+                    connect->direction = DIRECTION_WEST;
+
+                    glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
                     
-                    door->cell_coordinate[0] = door_x;
-                    door->cell_coordinate[1] = door_y;
-                    door->cell_coordinate[2] = door_z;
-
-                    door_list->count++;
+                    connect_list->count++;
 
                     break;
                 }
             }
 
-            for (i32 index = 0; index < door_attempt_count; ++index)
+            for (i32 index = 0; index < connect_attempt_count; ++index)
             {
-                const i32 door_x = area->area_rect.min[AXIS_X] + 1 + rand() % (area_size[AXIS_X] - 3);
-                const i32 door_y = area->area_rect.max[AXIS_Y] - 1;
-                const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
+                const ivec3 connect_position = {
+                    area->position[0] + 1 + rand() % (area->size[0] - 2),
+                    area->position[1] + area->size[1] - 1,
+                    floor_number * FLOOR_SIZE_Z + 1,
+                };
                 
-                const bool north_door_clear =
+                const bool north_connect_clear =
                     world_is_clear(
                         sim,
-                        door_x,door_y, door_z,
+                        connect_position[0], connect_position[1], connect_position[2],
                         (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
                     );
                                       
-                if (north_door_clear)
+                if (north_connect_clear)
                 {
                     world_set_block_type_cube(
                         sim,
-                        door_x, door_y, door_z,
+                        connect_position[0], connect_position[1], connect_position[2],
                         1, 1, 2,
                         BLOCK_TYPE_NONE
                     );
 
-                    Door *door = &door_list->door_array[door_list->count];
+                    Connect *connect = &connect_list->connect_array[connect_list->count];
 
-                    door->door_index = door_list->count;
-                    door->direction = DIRECTION_NORTH;
+                    connect->connect_index = connect_list->count;
+                    connect->direction = DIRECTION_NORTH;
                     
-                    door->cell_coordinate[0] = door_x;
-                    door->cell_coordinate[1] = door_y;
-                    door->cell_coordinate[2] = door_z;
+                    glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
 
-                    door_list->count++;
+                    connect_list->count++;
 
                     break;
                 }
             }
 
-            for (i32 index = 0; index < door_attempt_count; ++index)
+            for (i32 index = 0; index < connect_attempt_count; ++index)
             {
-                const i32 door_x = area->area_rect.min[AXIS_X] + 1 + rand() % (area_size[AXIS_X] - 3);
-                const i32 door_y = area->area_rect.min[AXIS_Y];
-                const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
+                const ivec3 connect_position = {
+                    area->position[0] + 1 + rand() % (area->size[0] - 2),
+                    area->position[1],
+                    floor_number * FLOOR_SIZE_Z + 1,
+                };
                 
-                const bool south_door_clear =
+                const bool south_connect_clear =
                     world_is_clear(
                         sim,
-                        door_x, door_y, door_z,
+                        connect_position[0], connect_position[1], connect_position[2],
                         (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
                     );
                 
-                if (south_door_clear)
+                if (south_connect_clear)
                 {
                     world_set_block_type_cube(
                         sim,
-                        door_x, door_y, door_z,
+                        connect_position[0], connect_position[1], connect_position[2],
                         1, 1, 2,
                         BLOCK_TYPE_NONE
                     );
 
-                    Door *door = &door_list->door_array[door_list->count];
+                    Connect *connect = &connect_list->connect_array[connect_list->count];
 
-                    door->door_index = door_list->count;
-                    door->direction = DIRECTION_SOUTH;
-                    
-                    door->cell_coordinate[0] = door_x;
-                    door->cell_coordinate[1] = door_y;
-                    door->cell_coordinate[2] = door_z;
+                    connect->connect_index = connect_list->count;
+                    connect->direction = DIRECTION_SOUTH;
 
-                    door_list->count++;
+                    glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
+
+                    connect_list->count++;
 
                     break;
                 }
@@ -1013,8 +1003,105 @@ static void setup_roof(Sim *sim)
     );
 }
 
-static void setup_wolf_temple(Sim *sim)
+static void setup_wolf_territory(Sim *sim)
 {
+    const ivec3 temple_origin = {
+        TOWER_SIZE - TEMPLE_BORDER_OFFSET,
+        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
+        TOWER_ROOF_Z + 1,
+    };
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0], temple_origin[1], temple_origin[2],
+        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + 1,
+        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
+        BLOCK_TYPE_ENGRAVED_3
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + 2,
+        TEMPLE_SIZE_Y - 4, TEMPLE_SIZE_X - 4, 1,
+        BLOCK_TYPE_WOLF_STONE
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 3, temple_origin[1] + 3, temple_origin[2] + 2,
+        TEMPLE_SIZE_Y - 6, TEMPLE_SIZE_X - 6, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+    
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 4, temple_origin[1] + 4, temple_origin[2] + 3,
+        1, 1, TEMPLE_COLUMN_HEIGHT,
+        BLOCK_TYPE_WOLF_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + TEMPLE_SIZE_Y - 5, temple_origin[1] + 4, temple_origin[2] + 3,
+        1, 1, TEMPLE_COLUMN_HEIGHT,
+        BLOCK_TYPE_WOLF_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 4, temple_origin[1] + TEMPLE_SIZE_X - 5, temple_origin[2] + 3,
+        1, 1, TEMPLE_COLUMN_HEIGHT,
+        BLOCK_TYPE_WOLF_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + TEMPLE_SIZE_Y - 5, temple_origin[1] + TEMPLE_SIZE_X - 5, temple_origin[2] + 3,
+        1, 1, TEMPLE_COLUMN_HEIGHT,
+        BLOCK_TYPE_WOLF_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
+        TEMPLE_SIZE_Y - 4, TEMPLE_SIZE_X - 4, 1,
+        BLOCK_TYPE_WOLF_STONE
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 3, temple_origin[1] + 3, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
+        TEMPLE_SIZE_Y - 6, TEMPLE_SIZE_X - 6, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 2,
+        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
+        BLOCK_TYPE_ENGRAVED_3
+    );
+
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0], temple_origin[1], temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 3,
+        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+    
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + TEMPLE_SIZE_Y / 2 - 1, temple_origin[1] + TEMPLE_SIZE_X / 2 - 1, temple_origin[2] + 2,
+        2, 2, 1,
+        BLOCK_TYPE_WOLF_FLAG
+    );
+
     const ivec3 platform_origin = {
         TOWER_BORDER + TOWER_SIZE,
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
@@ -1048,13 +1135,16 @@ static void setup_wolf_temple(Sim *sim)
         2, 2, 2,
         BLOCK_TYPE_SERVER_2
     );
+}
 
+static void setup_eagle_territory(Sim *sim)
+{
     const ivec3 temple_origin = {
-        TOWER_SIZE - TEMPLE_BORDER_OFFSET,
+        TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_ROOF_Z + 1,
     };
-
+    
     world_set_block_type_cube(
         sim,
         temple_origin[0], temple_origin[1], temple_origin[2],
@@ -1073,7 +1163,7 @@ static void setup_wolf_temple(Sim *sim)
         sim,
         temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + 2,
         TEMPLE_SIZE_Y - 4, TEMPLE_SIZE_X - 4, 1,
-        BLOCK_TYPE_WOLF_STONE
+        BLOCK_TYPE_EAGLE_STONE
     );
 
     world_set_block_type_cube(
@@ -1087,35 +1177,35 @@ static void setup_wolf_temple(Sim *sim)
         sim,
         temple_origin[0] + 4, temple_origin[1] + 4, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_WOLF_SYMBOL
+        BLOCK_TYPE_EAGLE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + TEMPLE_SIZE_Y - 5, temple_origin[1] + 4, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_WOLF_SYMBOL
+        BLOCK_TYPE_EAGLE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 4, temple_origin[1] + TEMPLE_SIZE_X - 5, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_WOLF_SYMBOL
+        BLOCK_TYPE_EAGLE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + TEMPLE_SIZE_Y - 5, temple_origin[1] + TEMPLE_SIZE_X - 5, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_WOLF_SYMBOL
+        BLOCK_TYPE_EAGLE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
         TEMPLE_SIZE_Y - 4, TEMPLE_SIZE_X - 4, 1,
-        BLOCK_TYPE_WOLF_STONE
+        BLOCK_TYPE_EAGLE_STONE
     );
 
     world_set_block_type_cube(
@@ -1138,10 +1228,14 @@ static void setup_wolf_temple(Sim *sim)
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_4
     );
-}
 
-static void setup_eagle_temple(Sim *sim)
-{
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + TEMPLE_SIZE_Y / 2 - 1, temple_origin[1] + TEMPLE_SIZE_X / 2 - 1, temple_origin[2] + 2,
+        2, 2, 1,
+        BLOCK_TYPE_EAGLE_FLAG
+    );
+
     const ivec3 platform_origin = {
         TOWER_BORDER - PLATFORM_SIZE_Y,
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
@@ -1175,100 +1269,107 @@ static void setup_eagle_temple(Sim *sim)
         2, 2, 2,
         BLOCK_TYPE_SERVER_2
     );
+}
 
+static void setup_lion_territory(Sim *sim)
+{
     const ivec3 temple_origin = {
-        TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
+        TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         TOWER_ROOF_Z + 1,
     };
-
+    
     world_set_block_type_cube(
         sim,
         temple_origin[0], temple_origin[1], temple_origin[2],
-        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
+        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_4
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + 1,
-        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
+        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
         BLOCK_TYPE_ENGRAVED_3
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + 2,
-        TEMPLE_SIZE_Y - 4, TEMPLE_SIZE_X - 4, 1,
-        BLOCK_TYPE_EAGLE_STONE
+        TEMPLE_SIZE_X - 4, TEMPLE_SIZE_Y - 4, 1,
+        BLOCK_TYPE_LION_STONE
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 3, temple_origin[1] + 3, temple_origin[2] + 2,
-        TEMPLE_SIZE_Y - 6, TEMPLE_SIZE_X - 6, 1,
+        TEMPLE_SIZE_X - 6, TEMPLE_SIZE_Y - 6, 1,
         BLOCK_TYPE_SMOOTH_4
     );
-    
+
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 4, temple_origin[1] + 4, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_EAGLE_SYMBOL
+        BLOCK_TYPE_LION_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
-        temple_origin[0] + TEMPLE_SIZE_Y - 5, temple_origin[1] + 4, temple_origin[2] + 3,
+        temple_origin[0] + TEMPLE_SIZE_X - 5, temple_origin[1] + 4, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_EAGLE_SYMBOL
+        BLOCK_TYPE_LION_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
-        temple_origin[0] + 4, temple_origin[1] + TEMPLE_SIZE_X - 5, temple_origin[2] + 3,
+        temple_origin[0] + 4, temple_origin[1] + TEMPLE_SIZE_Y - 5, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_EAGLE_SYMBOL
+        BLOCK_TYPE_LION_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
-        temple_origin[0] + TEMPLE_SIZE_Y - 5, temple_origin[1] + TEMPLE_SIZE_X - 5, temple_origin[2] + 3,
+        temple_origin[0] + TEMPLE_SIZE_X - 5, temple_origin[1] + TEMPLE_SIZE_Y - 5, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_EAGLE_SYMBOL
+        BLOCK_TYPE_LION_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
-        TEMPLE_SIZE_Y - 4, TEMPLE_SIZE_X - 4, 1,
-        BLOCK_TYPE_EAGLE_STONE
+        TEMPLE_SIZE_X - 4, TEMPLE_SIZE_Y - 4, 1,
+        BLOCK_TYPE_LION_STONE
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 3, temple_origin[1] + 3, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
-        TEMPLE_SIZE_Y - 6, TEMPLE_SIZE_X - 6, 1,
+        TEMPLE_SIZE_X - 6, TEMPLE_SIZE_Y - 6, 1,
         BLOCK_TYPE_SMOOTH_4
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 2,
-        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
+        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
         BLOCK_TYPE_ENGRAVED_3
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0], temple_origin[1], temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 3,
-        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
+        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_4
     );
-}
 
-static void setup_lion_temple(Sim *sim)
-{
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + TEMPLE_SIZE_X / 2 - 1, temple_origin[1] + TEMPLE_SIZE_Y / 2 - 1, temple_origin[2] + 2,
+        2, 2, 1,
+        BLOCK_TYPE_LION_FLAG
+    );
+
     const ivec3 platform_origin = {
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
         TOWER_BORDER + TOWER_SIZE,
@@ -1302,13 +1403,16 @@ static void setup_lion_temple(Sim *sim)
         2, 2, 2,
         BLOCK_TYPE_SERVER_2
     );
+}
 
+static void setup_horse_territory(Sim *sim)
+{
     const ivec3 temple_origin = {
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
-        TOWER_SIZE - TEMPLE_BORDER_OFFSET,
+        TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         TOWER_ROOF_Z + 1,
     };
-
+    
     world_set_block_type_cube(
         sim,
         temple_origin[0], temple_origin[1], temple_origin[2],
@@ -1327,7 +1431,7 @@ static void setup_lion_temple(Sim *sim)
         sim,
         temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + 2,
         TEMPLE_SIZE_X - 4, TEMPLE_SIZE_Y - 4, 1,
-        BLOCK_TYPE_LION_STONE
+        BLOCK_TYPE_HORSE_STONE
     );
 
     world_set_block_type_cube(
@@ -1341,35 +1445,35 @@ static void setup_lion_temple(Sim *sim)
         sim,
         temple_origin[0] + 4, temple_origin[1] + 4, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_LION_SYMBOL
+        BLOCK_TYPE_HORSE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + TEMPLE_SIZE_X - 5, temple_origin[1] + 4, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_LION_SYMBOL
+        BLOCK_TYPE_HORSE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 4, temple_origin[1] + TEMPLE_SIZE_Y - 5, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_LION_SYMBOL
+        BLOCK_TYPE_HORSE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + TEMPLE_SIZE_X - 5, temple_origin[1] + TEMPLE_SIZE_Y - 5, temple_origin[2] + 3,
         1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_LION_SYMBOL
+        BLOCK_TYPE_HORSE_SYMBOL
     );
 
     world_set_block_type_cube(
         sim,
         temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
         TEMPLE_SIZE_X - 4, TEMPLE_SIZE_Y - 4, 1,
-        BLOCK_TYPE_LION_STONE
+        BLOCK_TYPE_HORSE_STONE
     );
 
     world_set_block_type_cube(
@@ -1392,10 +1496,14 @@ static void setup_lion_temple(Sim *sim)
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_4
     );
-}
 
-static void setup_horse_temple(Sim *sim)
-{
+    world_set_block_type_cube(
+        sim,
+        temple_origin[0] + TEMPLE_SIZE_X / 2 - 1, temple_origin[1] + TEMPLE_SIZE_Y / 2 - 1, temple_origin[2] + 2,
+        2, 2, 1,
+        BLOCK_TYPE_HORSE_FLAG
+    );
+
     const ivec3 platform_origin = {
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
         TOWER_BORDER - PLATFORM_SIZE_Y,
@@ -1429,96 +1537,6 @@ static void setup_horse_temple(Sim *sim)
         2, 2, 2,
         BLOCK_TYPE_SERVER_2
     );
-
-    const ivec3 temple_origin = {
-        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
-        TOWER_BORDER + TEMPLE_BORDER_OFFSET,
-        TOWER_ROOF_Z + 1,
-    };
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0], temple_origin[1], temple_origin[2],
-        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
-        BLOCK_TYPE_SMOOTH_4
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + 1,
-        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
-        BLOCK_TYPE_ENGRAVED_3
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + 2,
-        TEMPLE_SIZE_X - 4, TEMPLE_SIZE_Y - 4, 1,
-        BLOCK_TYPE_HORSE_STONE
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + 3, temple_origin[1] + 3, temple_origin[2] + 2,
-        TEMPLE_SIZE_X - 6, TEMPLE_SIZE_Y - 6, 1,
-        BLOCK_TYPE_SMOOTH_4
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + 4, temple_origin[1] + 4, temple_origin[2] + 3,
-        1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_HORSE_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + TEMPLE_SIZE_X - 5, temple_origin[1] + 4, temple_origin[2] + 3,
-        1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_HORSE_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + 4, temple_origin[1] + TEMPLE_SIZE_Y - 5, temple_origin[2] + 3,
-        1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_HORSE_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + TEMPLE_SIZE_X - 5, temple_origin[1] + TEMPLE_SIZE_Y - 5, temple_origin[2] + 3,
-        1, 1, TEMPLE_COLUMN_HEIGHT,
-        BLOCK_TYPE_HORSE_SYMBOL
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + 2, temple_origin[1] + 2, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
-        TEMPLE_SIZE_X - 4, TEMPLE_SIZE_Y - 4, 1,
-        BLOCK_TYPE_HORSE_STONE
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + 3, temple_origin[1] + 3, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 1,
-        TEMPLE_SIZE_X - 6, TEMPLE_SIZE_Y - 6, 1,
-        BLOCK_TYPE_SMOOTH_4
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 2,
-        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
-        BLOCK_TYPE_ENGRAVED_3
-    );
-
-    world_set_block_type_cube(
-        sim,
-        temple_origin[0], temple_origin[1], temple_origin[2] + TEMPLE_COLUMN_HEIGHT + 3,
-        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
-        BLOCK_TYPE_SMOOTH_4
-    );
 }
 
 void world_init(Sim *sim)
@@ -1532,15 +1550,15 @@ void world_init(Sim *sim)
     
     setup_tower(sim);
     setup_areas(sim);
-    setup_doors(sim);
+    setup_connects(sim);
 
     setup_roof(sim);
     setup_elevator(sim);
     
-    setup_eagle_temple(sim);
-    setup_wolf_temple(sim);
-    setup_lion_temple(sim);
-    setup_horse_temple(sim);
+    setup_eagle_territory(sim);
+    setup_wolf_territory(sim);
+    setup_lion_territory(sim);
+    setup_horse_territory(sim);
 
     init_direction_mask(sim);
 

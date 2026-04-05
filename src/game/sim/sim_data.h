@@ -66,7 +66,7 @@
 #define ELEVATOR_SIZE 12
 
 #define AREA_EXPANSION_ITERATION_COUNT 5
-#define AREA_EXPANSION_AREA_SIZE_MIN 8
+#define AREA_EXPANSION_SIZE_MIN 8
 
 #define ACTOR_MAX 256
 
@@ -95,6 +95,10 @@
     DO( BLOCK_TYPE_CARDINAL_WEST ) \
     DO( BLOCK_TYPE_CARDINAL_NORTH ) \
     DO( BLOCK_TYPE_CARDINAL_SOUTH ) \
+    DO( BLOCK_TYPE_WOLF_FLAG ) \
+    DO( BLOCK_TYPE_EAGLE_FLAG )    \
+    DO( BLOCK_TYPE_LION_FLAG ) \
+    DO( BLOCK_TYPE_HORSE_FLAG ) \
     DO( BLOCK_TYPE_WOLF_STONE ) \
     DO( BLOCK_TYPE_EAGLE_STONE ) \
     DO( BLOCK_TYPE_LION_STONE ) \
@@ -176,10 +180,10 @@ struct Cell
     u8 direction_mask;
 };
 
-typedef struct Door Door;
-struct Door
+typedef struct Connect Connect;
+struct Connect
 {
-    i32 door_index;
+    i32 connect_index;
 
     ivec3 cell_coordinate;
     Direction direction;
@@ -188,24 +192,25 @@ struct Door
     i32 area_b_index;
 };
 
-typedef struct DoorList DoorList;
-struct DoorList
+typedef struct ConnectList ConnectList;
+struct ConnectList
 {
     i32 count;
     i32 capacity;
 
-    Door *door_array;
+    Connect *connect_array;
 };
 
 typedef struct Area Area;
 struct Area
 {
-    IntRect area_rect;
-
-    i32 door_count;
-    i32 door_capacity;
+    ivec3 position;
+    ivec3 size;
     
-    i32 *door_index_array;
+    i32 connect_count;
+    i32 connect_capacity;
+    
+    i32 *connect_index_array;
 };
 
 typedef struct AreaList AreaList;
@@ -338,7 +343,7 @@ struct World
     Cell *cell_array;
 
     AreaList area_list_array[FLOOR_COUNT];
-    DoorList door_list_array[FLOOR_COUNT];
+    ConnectList connect_list_array[FLOOR_COUNT];
 };
 
 typedef struct Nation Nation;
