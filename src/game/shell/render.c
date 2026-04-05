@@ -266,11 +266,13 @@ static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)
         {
             f32 vertex[3];
 
-            sscanf(
+            const i32 vertex_scan = sscanf(
                 line,
                 "v %f %f %f",
                 &vertex[0], &vertex[1], &vertex[2]
             );
+
+            assert(vertex_scan == 3);
 
             memcpy(&vertex_array[vertex_index], vertex, 3 * sizeof(f32));
 
@@ -280,11 +282,13 @@ static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)
         {
             f32 normal[3];
 
-            sscanf(
+            const i32 normal_scan = sscanf(
                 line,
                 "vn %f %f %f",
                 &normal[0], &normal[1], &normal[2]
             );
+
+            assert(normal_scan == 3);
 
             memcpy(&normal_array[normal_index], normal, 3 * sizeof(f32));
 
@@ -294,11 +298,13 @@ static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)
         {
             f32 uv[2];
 
-            sscanf(
+            const i32 uv_scan = sscanf(
                 line,
                 "vt %f %f",
                 &uv[0], &uv[1]
             );
+
+            assert(uv_scan == 2);
 
             memcpy(&uv_array[uv_index], uv, 2 * sizeof(f32));
 
@@ -820,7 +826,7 @@ static void update_viewpoint(Render *render, Sim *sim)
 {
     const Actor *judge = &sim->population.actor_pool.actor_array[sim->population.judge_handle.index];
 
-    const vec3 judge_eye_offset = { 0.0f, 0.0f, 1.0f };
+    const vec3 judge_eye_offset = { 0.0f, 0.0f, 0.7f };
     
     vec3 judge_eye_position;
     glm_vec3_add((f32 *)judge->position, (f32 *)judge_eye_offset, judge_eye_position);
@@ -829,7 +835,7 @@ static void update_viewpoint(Render *render, Sim *sim)
     glm_vec3_copy((f32 *)judge->rotation, render->viewpoint.rotation);
 }
 
-static void update_voxel_render(Render *render, const Sim *sim)
+static void update_voxel_render(Render *render)
 {
     glUseProgram(render->voxel_render.program_id);
 
@@ -924,7 +930,7 @@ void render_update(Shell* shell, Sim* sim)
 
     update_viewpoint(&shell->render, sim);
     
-    update_voxel_render(&shell->render, sim);
+    update_voxel_render(&shell->render);
     update_model_render(&shell->render, sim);
 }
 

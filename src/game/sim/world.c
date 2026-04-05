@@ -13,14 +13,14 @@ const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
     FOR_LIST_BLOCK_TYPE(DEFINE_LIST_STRING)
 };
 
-const BlockType ROOM_CONTENT_ARRAY_LEVEL_1[] =
+const BlockType AREA_CONTENT_ARRAY_LEVEL_1[] =
 {
     BLOCK_TYPE_SERVER_1,
     BLOCK_TYPE_SERVER_2,
     BLOCK_TYPE_SERVER_3,
 };
 
-const BlockType ROOM_CONTENT_ARRAY_LEVEL_2[] =
+const BlockType AREA_CONTENT_ARRAY_LEVEL_2[] =
 {
     BLOCK_TYPE_SERVER_1,
     BLOCK_TYPE_SERVER_2,
@@ -29,7 +29,7 @@ const BlockType ROOM_CONTENT_ARRAY_LEVEL_2[] =
     BLOCK_TYPE_SERVER_5
 };
 
-const BlockType ROOM_CONTENT_ARRAY_LEVEL_3[] =
+const BlockType AREA_CONTENT_ARRAY_LEVEL_3[] =
 {
     BLOCK_TYPE_SERVER_3,
     BLOCK_TYPE_SERVER_4,
@@ -38,11 +38,11 @@ const BlockType ROOM_CONTENT_ARRAY_LEVEL_3[] =
     BLOCK_TYPE_SERVER_7,
 };
 
-const BlockTypeList ROOM_CONTENT_MASTER_LIST[FLOOR_COUNT] =
+const BlockTypeList AREA_CONTENT_MASTER_LIST[FLOOR_COUNT] =
 {
-    { ROOM_CONTENT_ARRAY_LEVEL_1, 3 },
-    { ROOM_CONTENT_ARRAY_LEVEL_2, 5 },
-    { ROOM_CONTENT_ARRAY_LEVEL_3, 5 },
+    { AREA_CONTENT_ARRAY_LEVEL_1, 3 },
+    { AREA_CONTENT_ARRAY_LEVEL_2, 5 },
+    { AREA_CONTENT_ARRAY_LEVEL_3, 5 },
 };
 
 const char *DIRECTION_STRING[DIRECTION_COUNT] =
@@ -608,28 +608,26 @@ static void setup_elevator(Sim *sim)
     );
 }
 
-static void setup_rooms(Sim *sim)
+static void setup_areas(Sim *sim)
 {
-    const i32 room_max = 4 * (1 << ROOM_EXPANSION_ITERATION_COUNT);
+    const i32 area_max = 4 * (1 << AREA_EXPANSION_ITERATION_COUNT);
 
-    RoomList room_list_a =
-    {
+    AreaList area_list_a = {
         .count = 0,
-        .capacity = room_max,
-        .room_array = malloc(room_max * sizeof(Room))
+        .capacity = area_max,
+        .area_array = malloc(area_max * sizeof(Area))
     };
 
-    RoomList room_list_b =
-    {
+    AreaList area_list_b = {
         .count = 0,
-        .capacity = room_max,
-        .room_array = malloc(room_max * sizeof(Room))
+        .capacity = area_max,
+        .area_array = malloc(area_max * sizeof(Area))
     };
     
     for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        room_list_a.count = 0;
-        room_list_b.count = 0;
+        area_list_a.count = 0;
+        area_list_b.count = 0;
         
         ivec3 quadrant_1_origin;
         world_get_quadrant_origin(floor_number, QUADRANT_1, quadrant_1_origin);
@@ -643,111 +641,111 @@ static void setup_rooms(Sim *sim)
         ivec3 quadrant_4_origin;
         world_get_quadrant_origin(floor_number, QUADRANT_4, quadrant_4_origin);
 
-        Room *room_quadrant_1 = &room_list_a.room_array[room_list_a.count];
+        Area *area_quadrant_1 = &area_list_a.area_array[area_list_a.count];
         
-        room_quadrant_1->room_rect.min[0] = quadrant_1_origin[0];
-        room_quadrant_1->room_rect.min[1] = quadrant_1_origin[1];
-        room_quadrant_1->room_rect.max[0] = quadrant_1_origin[0] + TOWER_QUADRANT_SIZE;
-        room_quadrant_1->room_rect.max[1] = quadrant_1_origin[1] + TOWER_QUADRANT_SIZE;
+        area_quadrant_1->area_rect.min[0] = quadrant_1_origin[0];
+        area_quadrant_1->area_rect.min[1] = quadrant_1_origin[1];
+        area_quadrant_1->area_rect.max[0] = quadrant_1_origin[0] + TOWER_QUADRANT_SIZE;
+        area_quadrant_1->area_rect.max[1] = quadrant_1_origin[1] + TOWER_QUADRANT_SIZE;
 
-        room_list_a.count++;
+        area_list_a.count++;
  
-        Room *room_quadrant_2 = &room_list_a.room_array[room_list_a.count];
+        Area *area_quadrant_2 = &area_list_a.area_array[area_list_a.count];
         
-        room_quadrant_2->room_rect.min[0] = quadrant_2_origin[0];
-        room_quadrant_2->room_rect.min[1] = quadrant_2_origin[1];
-        room_quadrant_2->room_rect.max[0] = quadrant_2_origin[0] + TOWER_QUADRANT_SIZE;
-        room_quadrant_2->room_rect.max[1] = quadrant_2_origin[1] + TOWER_QUADRANT_SIZE;
+        area_quadrant_2->area_rect.min[0] = quadrant_2_origin[0];
+        area_quadrant_2->area_rect.min[1] = quadrant_2_origin[1];
+        area_quadrant_2->area_rect.max[0] = quadrant_2_origin[0] + TOWER_QUADRANT_SIZE;
+        area_quadrant_2->area_rect.max[1] = quadrant_2_origin[1] + TOWER_QUADRANT_SIZE;
 
-        room_list_a.count++;
+        area_list_a.count++;
 
-        Room *room_quadrant_3 = &room_list_a.room_array[room_list_a.count];
+        Area *area_quadrant_3 = &area_list_a.area_array[area_list_a.count];
                 
-        room_quadrant_3->room_rect.min[0] = quadrant_3_origin[0];
-        room_quadrant_3->room_rect.min[1] = quadrant_3_origin[1];
-        room_quadrant_3->room_rect.max[0] = quadrant_3_origin[0] + TOWER_QUADRANT_SIZE;
-        room_quadrant_3->room_rect.max[1] = quadrant_3_origin[1] + TOWER_QUADRANT_SIZE;
+        area_quadrant_3->area_rect.min[0] = quadrant_3_origin[0];
+        area_quadrant_3->area_rect.min[1] = quadrant_3_origin[1];
+        area_quadrant_3->area_rect.max[0] = quadrant_3_origin[0] + TOWER_QUADRANT_SIZE;
+        area_quadrant_3->area_rect.max[1] = quadrant_3_origin[1] + TOWER_QUADRANT_SIZE;
 
-        room_list_a.count++;
+        area_list_a.count++;
 
-        Room *room_quadrant_4 = &room_list_a.room_array[room_list_a.count];
+        Area *area_quadrant_4 = &area_list_a.area_array[area_list_a.count];
 
-        room_quadrant_4->room_rect.min[0] = quadrant_4_origin[0];
-        room_quadrant_4->room_rect.min[1] = quadrant_4_origin[1];
-        room_quadrant_4->room_rect.max[0] = quadrant_4_origin[0] + TOWER_QUADRANT_SIZE;
-        room_quadrant_4->room_rect.max[1] = quadrant_4_origin[1] + TOWER_QUADRANT_SIZE;
+        area_quadrant_4->area_rect.min[0] = quadrant_4_origin[0];
+        area_quadrant_4->area_rect.min[1] = quadrant_4_origin[1];
+        area_quadrant_4->area_rect.max[0] = quadrant_4_origin[0] + TOWER_QUADRANT_SIZE;
+        area_quadrant_4->area_rect.max[1] = quadrant_4_origin[1] + TOWER_QUADRANT_SIZE;
         
-        room_list_a.count++;
+        area_list_a.count++;
 
-        RoomList *room_list_current = &room_list_a;
-        RoomList *room_list_expanded = &room_list_b;
+        AreaList *area_list_current = &area_list_a;
+        AreaList *area_list_expanded = &area_list_b;
         
-        for (i32 iteration = 0; iteration < ROOM_EXPANSION_ITERATION_COUNT; ++iteration)
+        for (i32 iteration = 0; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
         {
-            for (i32 room_index = 0; room_index < room_list_current->count; ++room_index)
+            for (i32 area_index = 0; area_index < area_list_current->count; ++area_index)
             {
-                const Room *room_rect = &room_list_current->room_array[room_index];
+                const Area *area_rect = &area_list_current->area_array[area_index];
 
-                const ivec3 room_size =
+                const ivec3 area_size =
                 {
-                    room_rect->room_rect.max[0] - room_rect->room_rect.min[0],
-                    room_rect->room_rect.max[1] - room_rect->room_rect.min[1],
+                    area_rect->area_rect.max[0] - area_rect->area_rect.min[0],
+                    area_rect->area_rect.max[1] - area_rect->area_rect.min[1],
                     FLOOR_SIZE_Z
                 };             
                 
-                const Axis axis_split = room_size[AXIS_X] > room_size[AXIS_Y] ? AXIS_X : AXIS_Y;
+                const Axis axis_split = area_size[AXIS_X] > area_size[AXIS_Y] ? AXIS_X : AXIS_Y;
 
-                if (room_size[axis_split] >= ROOM_EXPANSION_ROOM_SIZE_MIN)
+                if (area_size[axis_split] >= AREA_EXPANSION_AREA_SIZE_MIN)
                 {
-                    Room *room_a = &room_list_expanded->room_array[room_list_expanded->count++];
-                    Room *room_b = &room_list_expanded->room_array[room_list_expanded->count++];
+                    Area *area_a = &area_list_expanded->area_array[area_list_expanded->count++];
+                    Area *area_b = &area_list_expanded->area_array[area_list_expanded->count++];
 
                     const Axis axis_constant = axis_split == AXIS_X ? AXIS_Y : AXIS_X;
 
-                    const i32 split_center = room_rect->room_rect.min[axis_split] + room_size[axis_split] / 2;
-                    const i32 split_offset = (rand() % 2 ? -1 : 1) * room_size[axis_split] / 4;
+                    const i32 split_center = area_rect->area_rect.min[axis_split] + area_size[axis_split] / 2;
+                    const i32 split_offset = (rand() % 2 ? -1 : 1) * area_size[axis_split] / 4;
                     
                     const i32 split_position = split_center + split_offset;
 
-                    room_a->room_rect.min[axis_split] = room_rect->room_rect.min[axis_split];
-                    room_a->room_rect.min[axis_constant] = room_rect->room_rect.min[axis_constant];
+                    area_a->area_rect.min[axis_split] = area_rect->area_rect.min[axis_split];
+                    area_a->area_rect.min[axis_constant] = area_rect->area_rect.min[axis_constant];
 
-                    room_a->room_rect.max[axis_split] = split_position + 1;
-                    room_a->room_rect.max[axis_constant] = room_rect->room_rect.max[axis_constant];
+                    area_a->area_rect.max[axis_split] = split_position + 1;
+                    area_a->area_rect.max[axis_constant] = area_rect->area_rect.max[axis_constant];
 
-                    room_b->room_rect.min[axis_split] = split_position;
-                    room_b->room_rect.min[axis_constant] = room_rect->room_rect.min[axis_constant];
+                    area_b->area_rect.min[axis_split] = split_position;
+                    area_b->area_rect.min[axis_constant] = area_rect->area_rect.min[axis_constant];
 
-                    room_b->room_rect.max[axis_split] = room_rect->room_rect.max[axis_split];
-                    room_b->room_rect.max[axis_constant] = room_rect->room_rect.max[axis_constant];
+                    area_b->area_rect.max[axis_split] = area_rect->area_rect.max[axis_split];
+                    area_b->area_rect.max[axis_constant] = area_rect->area_rect.max[axis_constant];
                 }
                 else
                 {
-                    room_list_expanded->room_array[room_list_expanded->count++] = *room_rect;
+                    area_list_expanded->area_array[area_list_expanded->count++] = *area_rect;
                 }
             }
 
-            RoomList *swap_temp = room_list_current;
-            room_list_current = room_list_expanded;
-            room_list_expanded = swap_temp;
+            AreaList *swap_temp = area_list_current;
+            area_list_current = area_list_expanded;
+            area_list_expanded = swap_temp;
 
-            room_list_expanded->count = 0;
+            area_list_expanded->count = 0;
         }
 
-        RoomList *room_list = &sim->world.room_list_array[floor_number];
+        AreaList *area_list = &sim->world.area_list_array[floor_number];
         
-        room_list->count = 0;
-        room_list->capacity = room_max;
-        room_list->room_array = malloc(room_max * sizeof(Room));
+        area_list->count = 0;
+        area_list->capacity = area_max;
+        area_list->area_array = malloc(area_max * sizeof(Area));
         
-        for (i32 room_index = 0; room_index < room_list_current->count; ++room_index)
+        for (i32 area_index = 0; area_index < area_list_current->count; ++area_index)
         {
-            const Room *room = &room_list_current->room_array[room_index];
+            const Area *area = &area_list_current->area_array[area_index];
 
-            const ivec3 room_size =
+            const ivec3 area_size =
             {
-                room->room_rect.max[0] - room->room_rect.min[0],
-                room->room_rect.max[1] - room->room_rect.min[1],
+                area->area_rect.max[0] - area->area_rect.min[0],
+                area->area_rect.max[1] - area->area_rect.min[1],
                 FLOOR_SIZE_Z
             };
 
@@ -755,8 +753,8 @@ static void setup_rooms(Sim *sim)
             {
                 world_set_block_type_wireframe(
                     sim,
-                    room->room_rect.min[0], room->room_rect.min[1], floor_number * FLOOR_SIZE_Z,
-                    room_size[0], room_size[1], room_size[2],
+                    area->area_rect.min[0], area->area_rect.min[1], floor_number * FLOOR_SIZE_Z,
+                    area_size[0], area_size[1], area_size[2],
                     BLOCK_TYPE_CAUTION_2
                 );
             }
@@ -764,26 +762,26 @@ static void setup_rooms(Sim *sim)
             {
                 world_set_block_type_box(
                     sim,
-                    room->room_rect.min[0], room->room_rect.min[1], floor_number * FLOOR_SIZE_Z,
-                    room_size[0], room_size[1], room_size[2],
+                    area->area_rect.min[0], area->area_rect.min[1], floor_number * FLOOR_SIZE_Z,
+                    area_size[0], area_size[1], area_size[2],
                     BLOCK_TYPE_METAL_1
                 );
             }
 
-            room_list->room_array[room_list->count++] = *room;
+            area_list->area_array[area_list->count++] = *area;
 
             const i32 content_level = world_get_content_level(floor_number);
             
-            const BlockTypeList *block_type_list = &ROOM_CONTENT_MASTER_LIST[content_level];
+            const BlockTypeList *block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
 
-            const i32 stack_count = (room_size[0] * room_size[1] / 8);
+            const i32 stack_count = (area_size[0] * area_size[1] / 8);
 
             for (i32 stack_index = 0; stack_index < stack_count; ++stack_index)
             {
                 const ivec2 stack_position =
                 {
-                    room->room_rect.min[0] + 1 + rand() % (room->room_rect.max[0] - room->room_rect.min[0] + 1 - 3),
-                    room->room_rect.min[1] + 1 + rand() % (room->room_rect.max[1] - room->room_rect.min[1] + 1 - 3),
+                    area->area_rect.min[0] + 1 + rand() % (area->area_rect.max[0] - area->area_rect.min[0] + 1 - 3),
+                    area->area_rect.min[1] + 1 + rand() % (area->area_rect.max[1] - area->area_rect.min[1] + 1 - 3),
                 };
 
                 const i32 stack_height = rand() % FLOOR_SIZE_Z - 4;
@@ -798,42 +796,42 @@ static void setup_rooms(Sim *sim)
         }
     }
 
-    free(room_list_a.room_array);
-    free(room_list_b.room_array);
+    free(area_list_a.area_array);
+    free(area_list_b.area_array);
 }
 
 static void setup_doors(Sim *sim)
 {   
     for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        const RoomList *room_list = &sim->world.room_list_array[floor_number];
+        const AreaList *area_list = &sim->world.area_list_array[floor_number];
 
         DoorList* door_list = &sim->world.door_list_array[floor_number];
 
         door_list->count = 0;
-        door_list->capacity = 4 * room_list->count;
+        door_list->capacity = 4 * area_list->count;
         door_list->door_array = malloc(door_list->capacity * sizeof(DoorList));
         
-        for (i32 room_index = 0; room_index < room_list->count; ++room_index)
+        for (i32 area_index = 0; area_index < area_list->count; ++area_index)
         {
-            Room *room = &room_list->room_array[room_index];
+            Area *area = &area_list->area_array[area_index];
 
-            room->door_count = 0;
-            room->door_capacity = 4;
-            room->door_index_array = malloc(4 * sizeof(i32));
+            area->door_count = 0;
+            area->door_capacity = 4;
+            area->door_index_array = malloc(4 * sizeof(i32));
             
-            const ivec2 room_size =
+            const ivec2 area_size =
             {
-                room->room_rect.max[AXIS_X] - room->room_rect.min[AXIS_X],
-                room->room_rect.max[AXIS_Y] - room->room_rect.min[AXIS_Y]
+                area->area_rect.max[AXIS_X] - area->area_rect.min[AXIS_X],
+                area->area_rect.max[AXIS_Y] - area->area_rect.min[AXIS_Y]
             };
 
             const i32 door_attempt_count = 3;
             
             for (i32 index = 0; index < door_attempt_count; ++index)
             {
-                const i32 door_x = room->room_rect.max[AXIS_X] - 1;
-                const i32 door_y = room->room_rect.min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
+                const i32 door_x = area->area_rect.max[AXIS_X] - 1;
+                const i32 door_y = area->area_rect.min[AXIS_Y] + 1 + rand() % (area_size[AXIS_Y] - 3);
                 const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
                 
                 const bool east_door_clear =
@@ -869,8 +867,8 @@ static void setup_doors(Sim *sim)
 
             for (i32 index = 0; index < door_attempt_count; ++index)
             {
-                const i32 door_x = room->room_rect.min[AXIS_X];
-                const i32 door_y = room->room_rect.min[AXIS_Y] + 1 + rand() % (room_size[AXIS_Y] - 3);
+                const i32 door_x = area->area_rect.min[AXIS_X];
+                const i32 door_y = area->area_rect.min[AXIS_Y] + 1 + rand() % (area_size[AXIS_Y] - 3);
                 const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
                 
                 const bool west_door_clear =
@@ -906,8 +904,8 @@ static void setup_doors(Sim *sim)
 
             for (i32 index = 0; index < door_attempt_count; ++index)
             {
-                const i32 door_x = room->room_rect.min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
-                const i32 door_y = room->room_rect.max[AXIS_Y] - 1;
+                const i32 door_x = area->area_rect.min[AXIS_X] + 1 + rand() % (area_size[AXIS_X] - 3);
+                const i32 door_y = area->area_rect.max[AXIS_Y] - 1;
                 const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
                 
                 const bool north_door_clear =
@@ -943,8 +941,8 @@ static void setup_doors(Sim *sim)
 
             for (i32 index = 0; index < door_attempt_count; ++index)
             {
-                const i32 door_x = room->room_rect.min[AXIS_X] + 1 + rand() % (room_size[AXIS_X] - 3);
-                const i32 door_y = room->room_rect.min[AXIS_Y];
+                const i32 door_x = area->area_rect.min[AXIS_X] + 1 + rand() % (area_size[AXIS_X] - 3);
+                const i32 door_y = area->area_rect.min[AXIS_Y];
                 const i32 door_z = floor_number * FLOOR_SIZE_Z + 1;
                 
                 const bool south_door_clear =
@@ -1017,22 +1015,41 @@ static void setup_roof(Sim *sim)
 
 static void setup_wolf_temple(Sim *sim)
 {
-    world_set_block_type_cube(
-        sim,
-        TOWER_BORDER + TOWER_SIZE - 1, WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z + 1,
-        1, PLATFORM_SIZE_X, 1,
-        BLOCK_TYPE_NONE
-    );
+    const ivec3 platform_origin = {
+        TOWER_BORDER + TOWER_SIZE,
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
+        TOWER_ROOF_Z
+    };
     
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER + TOWER_SIZE, WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
+        platform_origin[0], platform_origin[1], platform_origin[2],
         PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
-    const ivec3 temple_origin =
-    {
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] - 1, platform_origin[1], platform_origin[2] + 1,
+        PLATFORM_SIZE_Y + 1, PLATFORM_SIZE_X, 1,
+        BLOCK_TYPE_NONE
+    );
+
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] + 2, platform_origin[1] + 2, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_1
+    );
+
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] + 6, platform_origin[1] + 2, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_2
+    );
+
+    const ivec3 temple_origin = {
         TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_ROOF_Z + 1,
@@ -1125,22 +1142,41 @@ static void setup_wolf_temple(Sim *sim)
 
 static void setup_eagle_temple(Sim *sim)
 {
+    const ivec3 platform_origin = {
+        TOWER_BORDER - PLATFORM_SIZE_Y,
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
+        TOWER_ROOF_Z
+    };
+    
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER, WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z + 1,
-        1, PLATFORM_SIZE_X, 1,
-        BLOCK_TYPE_NONE
+        platform_origin[0], platform_origin[1], platform_origin[2],
+        PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
+        BLOCK_TYPE_SMOOTH_2
     );
     
     world_set_block_type_cube(
         sim,
-        TOWER_BORDER - PLATFORM_SIZE_Y, WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_ROOF_Z,
-        PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
-        BLOCK_TYPE_SMOOTH_2
+        platform_origin[0], platform_origin[1], platform_origin[2] + 1,        
+        PLATFORM_SIZE_Y + 1, PLATFORM_SIZE_X, 1,
+        BLOCK_TYPE_NONE
     );
 
-    const ivec3 temple_origin =
-    {
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] + PLATFORM_SIZE_Y - 4, platform_origin[1] + PLATFORM_SIZE_X - 4, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_1
+    );
+
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] + PLATFORM_SIZE_Y - 8, platform_origin[1] + PLATFORM_SIZE_X - 4, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_2
+    );
+
+    const ivec3 temple_origin = {
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_ROOF_Z + 1,
@@ -1233,22 +1269,41 @@ static void setup_eagle_temple(Sim *sim)
 
 static void setup_lion_temple(Sim *sim)
 {
-    world_set_block_type_cube(
-        sim,
-        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE - 1, TOWER_ROOF_Z + 1,
-        PLATFORM_SIZE_X, 1, 1,
-        BLOCK_TYPE_NONE
-    );
+    const ivec3 platform_origin = {
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
+        TOWER_BORDER + TOWER_SIZE,
+        TOWER_ROOF_Z
+    };
     
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_BORDER + TOWER_SIZE, TOWER_ROOF_Z,
+        platform_origin[0], platform_origin[1], platform_origin[2],
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
-    const ivec3 temple_origin =
-    {
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0], platform_origin[1] - 1, platform_origin[2] + 1,
+        PLATFORM_SIZE_X, 1, 1,
+        BLOCK_TYPE_NONE
+    );
+
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] + PLATFORM_SIZE_X - 4, platform_origin[1] + 2, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_1
+    );
+
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] + PLATFORM_SIZE_X - 4, platform_origin[1] + 6, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_2
+    );
+
+    const ivec3 temple_origin = {
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         TOWER_ROOF_Z + 1,
@@ -1341,22 +1396,41 @@ static void setup_lion_temple(Sim *sim)
 
 static void setup_horse_temple(Sim *sim)
 {
+    const ivec3 platform_origin = {
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
+        TOWER_BORDER - PLATFORM_SIZE_Y,
+        TOWER_ROOF_Z,
+    };
+
     world_set_block_type_cube(
         sim,
-        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_BORDER + 1, TOWER_ROOF_Z + 1,
-        PLATFORM_SIZE_X, 1, 1,
-        BLOCK_TYPE_NONE
-    );
-    
-    world_set_block_type_cube(
-        sim,
-        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2, TOWER_BORDER - PLATFORM_SIZE_Y, TOWER_ROOF_Z,
+        platform_origin[0], platform_origin[1], platform_origin[2],
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
-    const ivec3 temple_origin =
-    {
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0], platform_origin[1], platform_origin[2] + 1,
+        PLATFORM_SIZE_X, PLATFORM_SIZE_Y + 1, 1,
+        BLOCK_TYPE_NONE
+    );
+
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] + 2, platform_origin[1] + PLATFORM_SIZE_Y - 4, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_1
+    );
+
+    world_set_block_type_cube(
+        sim,
+        platform_origin[0] + 2, platform_origin[1] + PLATFORM_SIZE_Y - 8, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_2
+    );
+
+    const ivec3 temple_origin = {
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         TOWER_ROOF_Z + 1,
@@ -1457,7 +1531,7 @@ void world_init(Sim *sim)
     }
     
     setup_tower(sim);
-    setup_rooms(sim);
+    setup_areas(sim);
     setup_doors(sim);
 
     setup_roof(sim);

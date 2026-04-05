@@ -8,6 +8,6 @@ i32 population_nation_type_index_from_string(const char *nation_type_string);
     
 void population_init(Sim *sim);
 void population_update(Sim *sim);
-void population_close(Sim *sim);
+void population_close();
 
 #endif

@@ -65,8 +65,8 @@
 
 #define ELEVATOR_SIZE 12
 
-#define ROOM_EXPANSION_ITERATION_COUNT 5
-#define ROOM_EXPANSION_ROOM_SIZE_MIN 8
+#define AREA_EXPANSION_ITERATION_COUNT 5
+#define AREA_EXPANSION_AREA_SIZE_MIN 8
 
 #define ACTOR_MAX 256
 
@@ -161,11 +161,11 @@ struct BlockTypeList
     i32 count;
 };
 
-extern const BlockType ROOM_CONTENT_ARRAY_LEVEL_1[];
-extern const BlockType ROOM_CONTENT_ARRAY_LEVEL_2[];
-extern const BlockType ROOM_CONTENT_ARRAY_LEVEL_3[];
+extern const BlockType AREA_CONTENT_ARRAY_LEVEL_1[];
+extern const BlockType AREA_CONTENT_ARRAY_LEVEL_2[];
+extern const BlockType AREA_CONTENT_ARRAY_LEVEL_3[];
 
-extern const BlockTypeList ROOM_CONTENT_MASTER_LIST[FLOOR_COUNT];
+extern const BlockTypeList AREA_CONTENT_MASTER_LIST[FLOOR_COUNT];
 
 typedef struct Cell Cell;
 struct Cell
@@ -184,8 +184,8 @@ struct Door
     ivec3 cell_coordinate;
     Direction direction;
 
-    i32 room_a_index;
-    i32 room_b_index;
+    i32 area_a_index;
+    i32 area_b_index;
 };
 
 typedef struct DoorList DoorList;
@@ -197,10 +197,10 @@ struct DoorList
     Door *door_array;
 };
 
-typedef struct Room Room;
-struct Room
+typedef struct Area Area;
+struct Area
 {
-    IntRect room_rect;
+    IntRect area_rect;
 
     i32 door_count;
     i32 door_capacity;
@@ -208,13 +208,13 @@ struct Room
     i32 *door_index_array;
 };
 
-typedef struct RoomList RoomList;
-struct RoomList
+typedef struct AreaList AreaList;
+struct AreaList
 {
     i32 count;
     i32 capacity;
 
-    Room *room_array;
+    Area *area_array;
 };
 
 typedef enum Quadrant Quadrant;
@@ -295,7 +295,6 @@ struct Actor
     NationType nation_type;
     
     vec3 position;
-    vec3 position_target;
     
     vec3 rotation;
     vec3 rotation_target;
@@ -338,7 +337,7 @@ struct World
 
     Cell *cell_array;
 
-    RoomList room_list_array[FLOOR_COUNT];
+    AreaList area_list_array[FLOOR_COUNT];
     DoorList door_list_array[FLOOR_COUNT];
 };
 

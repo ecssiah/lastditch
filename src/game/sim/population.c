@@ -3,10 +3,10 @@
 #include <math.h>
 #include <string.h>
 
-#include "core/math/math.h"
 #include "jsk.h"
 #include "jsk_log.h"
 
+#include "core/math/math.h"
 #include "game/sim/sim_data.h"
 #include "game/sim/physics.h"
 
@@ -131,8 +131,6 @@ static void init_judge(Population *population)
     judge.position[1] = WORLD_CENTER_F32 - 12.0f;
     judge.position[2] = TOWER_ROOF_Z + 4.0f;
 
-    glm_vec3_copy(judge.position, judge.position_target);
-    
     judge.rotation[0] = 0.0f;
     judge.rotation[1] = 0.0f;
     judge.rotation[2] = 90.0f;
@@ -179,8 +177,6 @@ static void init_agents(Population* population)
             agent.position[1] = nation->home_coordinate[1] - 6 + rand() % 12;
             agent.position[2] = nation->home_coordinate[2] + 4;
 
-            glm_vec3_copy(agent.position, agent.position_target);
-            
             agent.rotation[0] = 0.0f;
             agent.rotation[1] = 0.0f;
             agent.rotation[2] = rand() % 360;
@@ -202,7 +198,7 @@ static void init_agents(Population* population)
             const ActorHandle agent_handle = add_actor(population, &agent);
 
             LOG_INFO(
-                "Generated %s Agent, Index: %i at %f %f %f",
+                "Generated %s Agent, Index: %i at (%.1f %.1f %.1f)",
                 NATION_TYPE_STRING[agent.nation_type],
                 agent_handle.index,
                 agent.position[0], agent.position[1], agent.position[2]
@@ -284,7 +280,7 @@ void population_update(Sim *sim)
     update_actors(sim);
 }
 
-void population_close(Sim *sim)
+void population_close()
 {
 
 }
