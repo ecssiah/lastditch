@@ -145,7 +145,7 @@ static void init_judge(Population *population)
 
     judge.is_grounded = false;
 
-    judge.actor_control.active = false;
+    judge.actor_control.control_type = CONTROL_TYPE_NONE;
     judge.actor_control.decision_clock = 0;
     judge.actor_control.decision_period = 0;
 
@@ -191,7 +191,7 @@ static void init_agents(Population* population)
 
             agent.is_grounded = false;
 
-            agent.actor_control.active = true;
+            agent.actor_control.control_type = CONTROL_TYPE_WANDER;
             agent.actor_control.decision_clock = rand() % 500;
             agent.actor_control.decision_period = 500;
 
@@ -207,10 +207,17 @@ static void init_agents(Population* population)
     }
 }
 
-static void update_actor(Sim *sim, Actor *actor)
+static void control_actor(Sim *sim, Actor *actor)
 {
-    if (actor->actor_control.active)
+    switch (actor->actor_control.control_type)
     {
+    case CONTROL_TYPE_WANDER:
+    {
+        if (actor->actor_control.control_type == CONTROL_TYPE_NONE)
+        {
+            return;
+        }
+
         if (actor->actor_control.decision_clock < actor->actor_control.decision_period)
         {
             actor->actor_control.decision_clock++;
@@ -243,7 +250,21 @@ static void update_actor(Sim *sim, Actor *actor)
             8.0f,
             sim->world.delta_time
         );
+
+        break;
     }
+    case CONTROL_TYPE_SEEK:
+    {
+        break;
+    }
+    case CONTROL_TYPE_NONE: break;
+    default: break;
+    }
+}
+
+static void update_actor(Sim *sim, Actor *actor)
+{
+    control_actor(sim, actor);
     
     switch (actor->movement_type)
     {

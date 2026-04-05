@@ -283,10 +283,18 @@ struct ActorHandle
     i32 generation;
 };
 
+typedef enum ControlType ControlType;
+enum ControlType
+{
+    CONTROL_TYPE_NONE,
+    CONTROL_TYPE_WANDER,
+    CONTROL_TYPE_SEEK,
+};
+
 typedef struct ActorControl ActorControl;
 struct ActorControl
 {
-    bool active;
+    ControlType control_type;
     
     i32 decision_clock;
     i32 decision_period;
@@ -326,6 +334,34 @@ struct ActorPool
     
     i32 free_array[ACTOR_MAX];
     i32 free_count;
+};
+
+typedef enum NodeType NodeType;
+enum NodeType
+{
+    NODE_TYPE_OPEN,
+    NODE_TYPE_CLOSED,
+    NODE_TYPE_UNVISITED,
+};
+
+typedef struct NodeRecord NodeRecord;
+struct NodeRecord
+{
+    i32 node;
+    i32 connection;
+    
+    i32 cost;
+    i32 estimated_total_cost;
+
+    NodeType node_type;
+
+    i32 node_record_next;
+};
+
+typedef struct Graph Graph;
+struct Graph
+{
+    NodeRecord *node_record_array;
 };
 
 typedef struct World World;

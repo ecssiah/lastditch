@@ -195,6 +195,6 @@ void sim_update(Sim *sim)
 
 void sim_close(Sim *sim)
 {
-    population_close(sim);
+    population_close();
     world_close(sim);
 }
