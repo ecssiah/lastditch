@@ -178,7 +178,7 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
 
 i32 world_get_floor(i32 z)
 {
-    if (z >= 0 && z <= TOWER_ROOF_Z)
+    if (z >= 0)
     {
         return z / FLOOR_SIZE_Z;
     }

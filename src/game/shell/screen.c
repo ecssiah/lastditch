@@ -286,20 +286,25 @@ static void draw_debug_info(Shell *shell, Sim *sim)
 
     const i32 floor_result = world_get_floor(cell_coordinate[2]);
 
-    if (cell_coordinate[2] > TOWER_ROOF_Z)
-    {
-        strcpy(floor_text, "FLR R");
-    }
-    else if (cell_coordinate[2] < 0)
+    if (floor_result < 0)
     {
         strcpy(floor_text, "FLR -");
+    }
+    else if (floor_result >= FLOOR_COUNT)
+    {
+        snprintf(
+            floor_text,
+            sizeof(floor_text),
+            "FLR R-%i",
+            floor_result
+        );
     }
     else
     {
         snprintf(
             floor_text,
             sizeof(floor_text),
-            "FLR %i",
+            "FLR T-%i",
             floor_result
         );
     }
