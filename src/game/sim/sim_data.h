@@ -165,9 +165,9 @@ struct BlockTypeList
     i32 count;
 };
 
+extern const BlockType AREA_CONTENT_ARRAY_LEVEL_0[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_1[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_2[];
-extern const BlockType AREA_CONTENT_ARRAY_LEVEL_3[];
 
 extern const BlockTypeList AREA_CONTENT_MASTER_LIST[FLOOR_COUNT];
 
@@ -206,11 +206,6 @@ struct Area
 {
     ivec3 position;
     ivec3 size;
-    
-    i32 connect_count;
-    i32 connect_capacity;
-    
-    i32 *connect_index_array;
 };
 
 typedef struct AreaList AreaList;
@@ -378,8 +373,8 @@ struct World
 
     Cell *cell_array;
 
-    AreaList area_list_array[FLOOR_COUNT];
-    ConnectList connect_list_array[FLOOR_COUNT];
+    AreaList area_list;
+    ConnectList connect_list;
 };
 
 typedef struct Nation Nation;
@@ -409,6 +404,8 @@ struct Sim
     u32 seed;
 
     ActionQueue action_queue;
+
+    Graph graph;
 
     World world;
     Population population;

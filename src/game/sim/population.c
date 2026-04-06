@@ -213,11 +213,6 @@ static void control_actor(Sim *sim, Actor *actor)
     {
     case CONTROL_TYPE_WANDER:
     {
-        if (actor->actor_control.control_type == CONTROL_TYPE_NONE)
-        {
-            return;
-        }
-
         if (actor->actor_control.decision_clock < actor->actor_control.decision_period)
         {
             actor->actor_control.decision_clock++;
@@ -234,7 +229,7 @@ static void control_actor(Sim *sim, Actor *actor)
             actor->velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;
             actor->velocity[1] = direction[1] * AGENT_DEFAULT_GROUND_SPEED;
 
-            if (rand() % 100 < 50)
+            if (rand() % 100 < 70)
             {
                 actor->velocity[2] = 24.0f;
             }
@@ -255,6 +250,8 @@ static void control_actor(Sim *sim, Actor *actor)
     }
     case CONTROL_TYPE_SEEK:
     {
+        
+        
         break;
     }
     case CONTROL_TYPE_NONE: break;

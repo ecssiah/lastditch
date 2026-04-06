@@ -13,14 +13,14 @@ const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
     FOR_LIST_BLOCK_TYPE(DEFINE_LIST_STRING)
 };
 
-const BlockType AREA_CONTENT_ARRAY_LEVEL_1[] =
+const BlockType AREA_CONTENT_ARRAY_LEVEL_0[] =
 {
     BLOCK_TYPE_SERVER_1,
     BLOCK_TYPE_SERVER_2,
     BLOCK_TYPE_SERVER_3,
 };
 
-const BlockType AREA_CONTENT_ARRAY_LEVEL_2[] =
+const BlockType AREA_CONTENT_ARRAY_LEVEL_1[] =
 {
     BLOCK_TYPE_SERVER_1,
     BLOCK_TYPE_SERVER_2,
@@ -29,7 +29,7 @@ const BlockType AREA_CONTENT_ARRAY_LEVEL_2[] =
     BLOCK_TYPE_SERVER_5
 };
 
-const BlockType AREA_CONTENT_ARRAY_LEVEL_3[] =
+const BlockType AREA_CONTENT_ARRAY_LEVEL_2[] =
 {
     BLOCK_TYPE_SERVER_3,
     BLOCK_TYPE_SERVER_4,
@@ -40,9 +40,9 @@ const BlockType AREA_CONTENT_ARRAY_LEVEL_3[] =
 
 const BlockTypeList AREA_CONTENT_MASTER_LIST[FLOOR_COUNT] =
 {
-    { AREA_CONTENT_ARRAY_LEVEL_1, 3 },
+    { AREA_CONTENT_ARRAY_LEVEL_0, 3 },
+    { AREA_CONTENT_ARRAY_LEVEL_1, 5 },
     { AREA_CONTENT_ARRAY_LEVEL_2, 5 },
-    { AREA_CONTENT_ARRAY_LEVEL_3, 5 },
 };
 
 const char *DIRECTION_STRING[DIRECTION_COUNT] =
@@ -352,11 +352,19 @@ void world_set_block_type_cube(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 si
     }
 }
 
-i32 world_get_content_level(i32 floor_number)
+i32 world_get_content_level(i32 z)
 {
-    const i32 level_range = floor_number / 2;
-
-    return 2 - level_range;
+    if (z >= TOWER_ROOF_Z)
+    {
+        return -1;
+    }
+    else
+    {
+        const i32 floor_number = z / FLOOR_SIZE_Z;
+        const i32 content_level = floor_number / 2;
+    
+        return content_level;
+    }
 }
 
 void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
@@ -404,6 +412,48 @@ void world_set_block_type_wireframe(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i
             }
         }
     }
+}
+
+static void add_area(AreaList *area_list, Area area)
+{
+    if (area_list->count >= area_list->capacity)
+    {
+        const i32 new_capacity = area_list->capacity == 0 ? 256 : 2 * area_list->capacity;
+        
+        Area *new_area_array = realloc(area_list->area_array, new_capacity * sizeof(Area));
+
+        if (!new_area_array)
+        {
+            LOG_WARN("Failed to reallocate memory for AreaList");
+            return;
+        }
+
+        area_list->area_array = new_area_array;
+        area_list->capacity = new_capacity;
+    }
+
+    area_list->area_array[area_list->count++] = area;
+}
+
+static void add_connect(ConnectList *connect_list, Connect connect)
+{
+    if (connect_list->count >= connect_list->capacity)
+    {
+        const i32 new_capacity = connect_list->capacity == 0 ? 256 : 2 * connect_list->capacity;
+        
+        Connect *new_connect_array = realloc(connect_list->connect_array, new_capacity * sizeof(Connect));
+
+        if (!new_connect_array)
+        {
+            LOG_WARN("Failed to reallocate memory for ConnectList");
+            return;
+        }
+
+        connect_list->connect_array = new_connect_array;
+        connect_list->capacity = new_capacity;
+    }
+
+    connect_list->connect_array[connect_list->count++] = connect;
 }
 
 static void init_direction_mask(Sim *sim)
@@ -611,10 +661,15 @@ static void setup_elevator(Sim *sim)
     );
 }
 
-static void setup_areas(Sim *sim)
+static void setup_tower_areas(Sim *sim)
 {
-    const i32 area_max = 4 * (1 << AREA_EXPANSION_ITERATION_COUNT);
+    AreaList *area_list = &sim->world.area_list;
+        
+    area_list->count = 0;
+    area_list->capacity = 0;
 
+    const i32 area_max = 4 * (1 << AREA_EXPANSION_ITERATION_COUNT);
+    
     AreaList area_list_a = {
         .count = 0,
         .capacity = area_max,
@@ -632,46 +687,28 @@ static void setup_areas(Sim *sim)
         area_list_a.count = 0;
         area_list_b.count = 0;
         
-        Area *area_quadrant_1 = &area_list_a.area_array[area_list_a.count];
-
-        world_get_quadrant_origin(floor_number, QUADRANT_1, area_quadrant_1->position);
-
-        area_quadrant_1->size[0] = TOWER_QUADRANT_SIZE;
-        area_quadrant_1->size[1] = TOWER_QUADRANT_SIZE;
-        area_quadrant_1->size[2] = FLOOR_SIZE_Z;
-
-        area_list_a.count++;
-
-        Area *area_quadrant_2 = &area_list_a.area_array[area_list_a.count];
-
-        world_get_quadrant_origin(floor_number, QUADRANT_2, area_quadrant_2->position);
+        Area area_quadrant_1;
+        Area area_quadrant_2;
+        Area area_quadrant_3;
+        Area area_quadrant_4;
         
-        area_quadrant_2->size[0] = TOWER_QUADRANT_SIZE;
-        area_quadrant_2->size[1] = TOWER_QUADRANT_SIZE;
-        area_quadrant_2->size[2] = FLOOR_SIZE_Z;
-
-        area_list_a.count++;
-
-        Area *area_quadrant_3 = &area_list_a.area_array[area_list_a.count];
-
-        world_get_quadrant_origin(floor_number, QUADRANT_3, area_quadrant_3->position);
+        world_get_quadrant_origin(floor_number, QUADRANT_1, area_quadrant_1.position);                
+        world_get_quadrant_origin(floor_number, QUADRANT_2, area_quadrant_2.position);
+        world_get_quadrant_origin(floor_number, QUADRANT_3, area_quadrant_3.position);
+        world_get_quadrant_origin(floor_number, QUADRANT_4, area_quadrant_4.position);
         
-        area_quadrant_3->size[0] = TOWER_QUADRANT_SIZE;
-        area_quadrant_3->size[1] = TOWER_QUADRANT_SIZE;
-        area_quadrant_3->size[2] = FLOOR_SIZE_Z;
+        const ivec3 quadrant_size = { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE, FLOOR_SIZE_Z };
 
-        area_list_a.count++;
+        glm_ivec3_copy((i32 *)quadrant_size, area_quadrant_1.size);
+        glm_ivec3_copy((i32 *)quadrant_size, area_quadrant_2.size);
+        glm_ivec3_copy((i32 *)quadrant_size, area_quadrant_3.size);
+        glm_ivec3_copy((i32 *)quadrant_size, area_quadrant_4.size);
 
-        Area *area_quadrant_4 = &area_list_a.area_array[area_list_a.count];
-
-        world_get_quadrant_origin(floor_number, QUADRANT_4, area_quadrant_4->position);
+        add_area(&area_list_a, area_quadrant_1);
+        add_area(&area_list_a, area_quadrant_2);
+        add_area(&area_list_a, area_quadrant_3);
+        add_area(&area_list_a, area_quadrant_4);
         
-        area_quadrant_4->size[0] = TOWER_QUADRANT_SIZE;
-        area_quadrant_4->size[1] = TOWER_QUADRANT_SIZE;
-        area_quadrant_4->size[2] = FLOOR_SIZE_Z;
-
-        area_list_a.count++;
-
         AreaList *area_list_current = &area_list_a;
         AreaList *area_list_expanded = &area_list_b;
         
@@ -691,7 +728,7 @@ static void setup_areas(Sim *sim)
                     *area_a = *area;
                     *area_b = *area;
 
-                    const i32 split_size = 2 + rand() % (area->size[axis_split] - 2);
+                    const i32 split_size = area->size[axis_split] / 2 + (-2 + (rand() % 5));
 
                     area_a->size[axis_split] = split_size;
 
@@ -711,74 +748,73 @@ static void setup_areas(Sim *sim)
             area_list_expanded->count = 0;
         }
 
-        AreaList *area_list = &sim->world.area_list_array[floor_number];
-        
-        area_list->count = 0;
-        area_list->capacity = area_max;
-        area_list->area_array = malloc(area_max * sizeof(Area));
-        
         for (i32 area_index = 0; area_index < area_list_current->count; ++area_index)
         {
             const Area *area = &area_list_current->area_array[area_index];
-
-            if (TOWER_WIREFRAME)
-            {
-                world_set_block_type_wireframe(
-                    sim,
-                    area->position[0], area->position[1], area->position[2] ,
-                    area->size[0], area->size[1], area->size[2],
-                    BLOCK_TYPE_CAUTION_2
-                );
-            }
-            else
-            {
-                world_set_block_type_box(
-                    sim,
-                    area->position[0], area->position[1], area->position[2],
-                    area->size[0], area->size[1], area->size[2],
-                    BLOCK_TYPE_METAL_5
-                );
-
-                world_set_block_type_cube(
-                    sim,
-                    area->position[0], area->position[1], area->position[2],
-                    area->size[0], area->size[1], 1,
-                    BLOCK_TYPE_METAL_1
-                );
-
-                world_set_block_type_cube(
-                    sim,
-                    area->position[0], area->position[1], area->position[2] + FLOOR_SIZE_Z - 1,
-                    area->size[0], area->size[1], 1,
-                    BLOCK_TYPE_METAL_4
-                );
-            }
-
-            area_list->area_array[area_list->count++] = *area;
-
-            const i32 content_level = world_get_content_level(floor_number);
             
-            const BlockTypeList *block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
+            add_area(area_list, *area);
+        }
+    }
+    
+    for (i32 area_index = 0; area_index < area_list->count; ++area_index)
+    {
+        const Area *area = &area_list->area_array[area_index];
 
-            const i32 stack_count = (area->size[0] * area->size[1] / 8);
+        if (TOWER_WIREFRAME)
+        {
+            world_set_block_type_wireframe(
+                sim,
+                area->position[0], area->position[1], area->position[2] ,
+                area->size[0], area->size[1], area->size[2],
+                BLOCK_TYPE_CAUTION_2
+            );
+        }
+        else
+        {
+            world_set_block_type_box(
+                sim,
+                area->position[0], area->position[1], area->position[2],
+                area->size[0], area->size[1], area->size[2],
+                BLOCK_TYPE_METAL_5
+            );
 
-            for (i32 stack_index = 0; stack_index < stack_count; ++stack_index)
-            {
-                const ivec3 stack_position = {
-                    area->position[0] + 1 + rand() % (area->size[0] - 2),
-                    area->position[1] + 1 + rand() % (area->size[1] - 2),
-                    floor_number * FLOOR_SIZE_Z + 1
-                };
+            world_set_block_type_cube(
+                sim,
+                area->position[0], area->position[1], area->position[2],
+                area->size[0], area->size[1], 1,
+                BLOCK_TYPE_METAL_1
+            );
 
-                const i32 stack_size_z = rand() % (FLOOR_SIZE_Z - 4);
+            world_set_block_type_cube(
+                sim,
+                area->position[0], area->position[1], area->position[2] + FLOOR_SIZE_Z - 1,
+                area->size[0], area->size[1], 1,
+                BLOCK_TYPE_METAL_4
+            );
+        }
 
-                world_set_block_type_cube(
-                    sim,
-                    stack_position[0], stack_position[1], stack_position[2],
-                    1, 1, stack_size_z,
-                    block_type_list->block_type_array[rand() % block_type_list->count]
-                );
-            }
+        const i32 content_level = world_get_content_level(area->position[2]);
+            
+        const BlockTypeList *block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
+
+        const i32 stack_count = (area->size[0] * area->size[1] / 8);
+
+        for (i32 stack_index = 0; stack_index < stack_count; ++stack_index)
+        {
+            const ivec3 stack_position = {
+                area->position[0] + 1 + rand() % (area->size[0] - 2),
+                area->position[1] + 1 + rand() % (area->size[1] - 2),
+                area->position[2] + 1
+            };
+
+            const i32 stack_size_z = rand() % (FLOOR_SIZE_Z - 4);
+
+            world_set_block_type_cube(
+                sim,
+                stack_position[0], stack_position[1], stack_position[2],
+                1, 1, stack_size_z,
+                block_type_list->block_type_array[rand() % block_type_list->count]
+            );
         }
     }
 
@@ -786,176 +822,169 @@ static void setup_areas(Sim *sim)
     free(area_list_b.area_array);
 }
 
-static void setup_connects(Sim *sim)
+static void setup_tower_connects(Sim *sim)
 {   
-    for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
-    {
-        const AreaList *area_list = &sim->world.area_list_array[floor_number];
+    const AreaList *area_list = &sim->world.area_list;
 
-        ConnectList* connect_list = &sim->world.connect_list_array[floor_number];
+    ConnectList* connect_list = &sim->world.connect_list;
 
-        connect_list->count = 0;
-        connect_list->capacity = 4 * area_list->count;
-        connect_list->connect_array = malloc(connect_list->capacity * sizeof(Connect));
+    connect_list->count = 0;
+    connect_list->capacity = 4 * area_list->count;
+    connect_list->connect_array = malloc(connect_list->capacity * sizeof(Connect));
         
-        for (i32 area_index = 0; area_index < area_list->count; ++area_index)
+    for (i32 area_index = 0; area_index < area_list->count; ++area_index)
+    {
+        Area *area = &area_list->area_array[area_index];
+            
+        const i32 connect_attempt_count = 3;
+            
+        for (i32 index = 0; index < connect_attempt_count; ++index)
         {
-            Area *area = &area_list->area_array[area_index];
-
-            area->connect_count = 0;
-            area->connect_capacity = 4;
-            area->connect_index_array = malloc(4 * sizeof(i32));
-            
-            const i32 connect_attempt_count = 3;
-            
-            for (i32 index = 0; index < connect_attempt_count; ++index)
-            {
-                const ivec3 connect_position = {
-                    area->position[0] + area->size[0] - 1,
-                    area->position[1] + 1 + rand() % (area->size[1] - 2),
-                    area->position[2] + 1
-                };
+            const ivec3 connect_position = {
+                area->position[0] + area->size[0] - 1,
+                area->position[1] + 1 + rand() % (area->size[1] - 2),
+                area->position[2] + 1
+            };
                                 
-                const bool east_connect_clear =
-                    world_is_clear(
-                        sim,
-                        connect_position[0], connect_position[1], connect_position[2],
-                        (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
-                    );
+            const bool east_connect_clear =
+                world_is_clear(
+                    sim,
+                    connect_position[0], connect_position[1], connect_position[2],
+                    (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
+                );
                 
-                if (east_connect_clear)
-                {
-                    world_set_block_type_cube(
-                        sim,
-                        connect_position[0], connect_position[1], connect_position[2],
-                        1, 1, 2,
-                        BLOCK_TYPE_NONE
-                    );
-
-                    Connect *connect = &connect_list->connect_array[connect_list->count];
-
-                    connect->connect_index = connect_list->count;
-                    connect->direction = DIRECTION_EAST;
-
-                    glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
-
-                    connect_list->count++;
-
-                    break;
-                }
-            }
-
-            for (i32 index = 0; index < connect_attempt_count; ++index)
+            if (east_connect_clear)
             {
-                const ivec3 connect_position = {
-                    area->position[0],
-                    area->position[1] + 1 + rand() % (area->size[1] - 2),
-                    area->position[2] + 1
-                };
+                world_set_block_type_cube(
+                    sim,
+                    connect_position[0], connect_position[1], connect_position[2],
+                    1, 1, 2,
+                    BLOCK_TYPE_NONE
+                );
+
+                Connect *connect = &connect_list->connect_array[connect_list->count];
+
+                connect->connect_index = connect_list->count;
+                connect->direction = DIRECTION_EAST;
+
+                glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
+
+                connect_list->count++;
+
+                break;
+            }
+        }
+
+        for (i32 index = 0; index < connect_attempt_count; ++index)
+        {
+            const ivec3 connect_position = {
+                area->position[0],
+                area->position[1] + 1 + rand() % (area->size[1] - 2),
+                area->position[2] + 1
+            };
                 
-                const bool west_connect_clear =
-                    world_is_clear(
-                        sim,
-                        connect_position[0], connect_position[1], connect_position[2],
-                        (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
-                    );
+            const bool west_connect_clear =
+                world_is_clear(
+                    sim,
+                    connect_position[0], connect_position[1], connect_position[2],
+                    (1 << DIRECTION_EAST) | (1 << DIRECTION_WEST)
+                );
                 
-                if (west_connect_clear)
-                {
-                    world_set_block_type_cube(
-                        sim,
-                        connect_position[0], connect_position[1], connect_position[2],
-                        1, 1, 2,
-                        BLOCK_TYPE_NONE
-                    );
+            if (west_connect_clear)
+            {
+                world_set_block_type_cube(
+                    sim,
+                    connect_position[0], connect_position[1], connect_position[2],
+                    1, 1, 2,
+                    BLOCK_TYPE_NONE
+                );
 
-                    Connect *connect = &connect_list->connect_array[connect_list->count];
+                Connect *connect = &connect_list->connect_array[connect_list->count];
 
-                    connect->connect_index = connect_list->count;
-                    connect->direction = DIRECTION_WEST;
+                connect->connect_index = connect_list->count;
+                connect->direction = DIRECTION_WEST;
 
-                    glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
+                glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
                     
-                    connect_list->count++;
+                connect_list->count++;
 
-                    break;
-                }
+                break;
             }
+        }
 
-            for (i32 index = 0; index < connect_attempt_count; ++index)
-            {
-                const ivec3 connect_position = {
-                    area->position[0] + 1 + rand() % (area->size[0] - 2),
-                    area->position[1] + area->size[1] - 1,
-                    area->position[2] + 1
-                };
+        for (i32 index = 0; index < connect_attempt_count; ++index)
+        {
+            const ivec3 connect_position = {
+                area->position[0] + 1 + rand() % (area->size[0] - 2),
+                area->position[1] + area->size[1] - 1,
+                area->position[2] + 1
+            };
                 
-                const bool north_connect_clear =
-                    world_is_clear(
-                        sim,
-                        connect_position[0], connect_position[1], connect_position[2],
-                        (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
-                    );
+            const bool north_connect_clear =
+                world_is_clear(
+                    sim,
+                    connect_position[0], connect_position[1], connect_position[2],
+                    (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
+                );
                                       
-                if (north_connect_clear)
-                {
-                    world_set_block_type_cube(
-                        sim,
-                        connect_position[0], connect_position[1], connect_position[2],
-                        1, 1, 2,
-                        BLOCK_TYPE_NONE
-                    );
-
-                    Connect *connect = &connect_list->connect_array[connect_list->count];
-
-                    connect->connect_index = connect_list->count;
-                    connect->direction = DIRECTION_NORTH;
-                    
-                    glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
-
-                    connect_list->count++;
-
-                    break;
-                }
-            }
-
-            for (i32 index = 0; index < connect_attempt_count; ++index)
+            if (north_connect_clear)
             {
-                const ivec3 connect_position = {
-                    area->position[0] + 1 + rand() % (area->size[0] - 2),
-                    area->position[1],
-                    area->position[2] + 1,
-                };
-                
-                const bool south_connect_clear =
-                    world_is_clear(
-                        sim,
-                        connect_position[0], connect_position[1], connect_position[2],
-                        (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
-                    );
-                
-                if (south_connect_clear)
-                {
-                    world_set_block_type_cube(
-                        sim,
-                        connect_position[0], connect_position[1], connect_position[2],
-                        1, 1, 2,
-                        BLOCK_TYPE_NONE
-                    );
+                world_set_block_type_cube(
+                    sim,
+                    connect_position[0], connect_position[1], connect_position[2],
+                    1, 1, 2,
+                    BLOCK_TYPE_NONE
+                );
 
-                    Connect *connect = &connect_list->connect_array[connect_list->count];
+                Connect *connect = &connect_list->connect_array[connect_list->count];
 
-                    connect->connect_index = connect_list->count;
-                    connect->direction = DIRECTION_SOUTH;
+                connect->connect_index = connect_list->count;
+                connect->direction = DIRECTION_NORTH;
+                    
+                glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
 
-                    glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
+                connect_list->count++;
 
-                    connect_list->count++;
-
-                    break;
-                }
-
+                break;
             }
+        }
+
+        for (i32 index = 0; index < connect_attempt_count; ++index)
+        {
+            const ivec3 connect_position = {
+                area->position[0] + 1 + rand() % (area->size[0] - 2),
+                area->position[1],
+                area->position[2] + 1,
+            };
+                
+            const bool south_connect_clear =
+                world_is_clear(
+                    sim,
+                    connect_position[0], connect_position[1], connect_position[2],
+                    (1 << DIRECTION_NORTH) | (1 << DIRECTION_SOUTH)
+                );
+                
+            if (south_connect_clear)
+            {
+                world_set_block_type_cube(
+                    sim,
+                    connect_position[0], connect_position[1], connect_position[2],
+                    1, 1, 2,
+                    BLOCK_TYPE_NONE
+                );
+
+                Connect *connect = &connect_list->connect_array[connect_list->count];
+
+                connect->connect_index = connect_list->count;
+                connect->direction = DIRECTION_SOUTH;
+
+                glm_ivec3_copy((i32 *)connect_position, connect->cell_coordinate);
+
+                connect_list->count++;
+
+                break;
+            }
+
         }
     }
 }
@@ -1529,6 +1558,11 @@ static void setup_horse_territory(Sim *sim)
     );
 }
 
+static void init_graph(Sim *sim)
+{
+    
+}
+
 void world_init(Sim *sim)
 {
     sim->world.cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
@@ -1539,8 +1573,8 @@ void world_init(Sim *sim)
     }
     
     setup_tower(sim);
-    setup_areas(sim);
-    setup_connects(sim);
+    setup_tower_areas(sim);
+    setup_tower_connects(sim);
 
     setup_roof(sim);
     setup_elevator(sim);
@@ -1551,6 +1585,7 @@ void world_init(Sim *sim)
     setup_horse_territory(sim);
 
     init_direction_mask(sim);
+    init_graph(sim);
 
     LOG_INFO("World init");
 }
