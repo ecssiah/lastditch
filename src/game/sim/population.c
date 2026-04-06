@@ -19,67 +19,6 @@ const char *NATION_TYPE_STRING[NATION_TYPE_COUNT] =
     FOR_LIST_NATION_TYPE( DEFINE_LIST_STRING )
 };
 
-void population_get_actor_forward(Actor *actor, vec3 out_forward)
-{
-    const f32 rotation_x = glm_rad(actor->rotation[0]);
-    const f32 rotation_z = glm_rad(actor->rotation[2]);
-
-    out_forward[0] = cosf(rotation_x) * cosf(rotation_z);
-    out_forward[1] = cosf(rotation_x) * sinf(rotation_z);
-    out_forward[2] = sinf(rotation_x);
-
-    glm_vec3_normalize(out_forward);
-}
-
-void population_get_actor_right(Actor *actor, vec3 out_right)
-{
-    vec3 forward;
-    population_get_actor_forward(actor, forward);
-
-    glm_vec3_cross(forward, GLM_ZUP, out_right);
-
-    glm_vec3_normalize(out_right);
-}
-
-void population_get_actor_up(Actor *actor, vec3 out_up)
-{
-    vec3 forward;
-    population_get_actor_forward(actor, forward);
-
-    vec3 right;
-    population_get_actor_right(actor, right);
-
-    glm_vec3_cross(forward, right, out_up);
-    
-    glm_vec3_normalize(out_up);
-}
-
-i32 population_nation_type_index_from_string(const char *nation_type_string)
-{
-    for (i32 nation_type_index = 0; nation_type_index < NATION_TYPE_COUNT; ++nation_type_index)
-    {
-        if (strcmp(nation_type_string, NATION_TYPE_STRING[nation_type_index]) == 0)
-        {
-            return nation_type_index;
-        }
-    }
-
-    return -1;
-}
-
-i32 population_actor_type_index_from_string(const char *actor_type_string)
-{
-    for (i32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
-    {
-        if (strcmp(actor_type_string, ACTOR_TYPE_STRING[actor_type_index]) == 0)
-        {
-            return actor_type_index;
-        }
-    }
-
-    return -1;
-}
-
 static ActorHandle add_actor(Population *population, Actor *actor)
 {
     ActorPool *actor_pool = &population->actor_pool;
@@ -318,6 +257,69 @@ static void update_actors(World *world, Population *population)
         update_actor(world, actor);
     }
 }
+
+
+void population_get_actor_forward(Actor *actor, vec3 out_forward)
+{
+    const f32 rotation_x = glm_rad(actor->rotation[0]);
+    const f32 rotation_z = glm_rad(actor->rotation[2]);
+
+    out_forward[0] = cosf(rotation_x) * cosf(rotation_z);
+    out_forward[1] = cosf(rotation_x) * sinf(rotation_z);
+    out_forward[2] = sinf(rotation_x);
+
+    glm_vec3_normalize(out_forward);
+}
+
+void population_get_actor_right(Actor *actor, vec3 out_right)
+{
+    vec3 forward;
+    population_get_actor_forward(actor, forward);
+
+    glm_vec3_cross(forward, GLM_ZUP, out_right);
+
+    glm_vec3_normalize(out_right);
+}
+
+void population_get_actor_up(Actor *actor, vec3 out_up)
+{
+    vec3 forward;
+    population_get_actor_forward(actor, forward);
+
+    vec3 right;
+    population_get_actor_right(actor, right);
+
+    glm_vec3_cross(forward, right, out_up);
+    
+    glm_vec3_normalize(out_up);
+}
+
+i32 population_nation_type_index_from_string(const char *nation_type_string)
+{
+    for (i32 nation_type_index = 0; nation_type_index < NATION_TYPE_COUNT; ++nation_type_index)
+    {
+        if (strcmp(nation_type_string, NATION_TYPE_STRING[nation_type_index]) == 0)
+        {
+            return nation_type_index;
+        }
+    }
+
+    return -1;
+}
+
+i32 population_actor_type_index_from_string(const char *actor_type_string)
+{
+    for (i32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
+    {
+        if (strcmp(actor_type_string, ACTOR_TYPE_STRING[actor_type_index]) == 0)
+        {
+            return actor_type_index;
+        }
+    }
+
+    return -1;
+}
+
 
 void population_init(Population *population)
 {

@@ -31,4 +31,10 @@ struct Graph
     NodeRecord *node_record_array;
 };
 
+typedef struct Navigation Navigation;
+struct Navigation
+{
+    Graph graph;
+};
+
 #endif

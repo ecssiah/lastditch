@@ -70,6 +70,28 @@
 
 #define GRAVITY_DEFAULT -90.0f
 
+
+#define FOR_LIST_DIRECTION(DO)                  \
+    DO(DIRECTION_EAST)                          \
+    DO(DIRECTION_WEST)                          \
+    DO(DIRECTION_NORTH)                         \
+    DO(DIRECTION_SOUTH)                         \
+    DO(DIRECTION_UP)                            \
+    DO(DIRECTION_DOWN)                          \
+
+typedef enum Direction Direction;
+enum Direction
+{
+    FOR_LIST_DIRECTION(DEFINE_LIST_ENUMERATION)
+    DIRECTION_COUNT
+};
+
+#define DIRECTION_FROM_MASK(mask) (__builtin_ctz(mask))
+
+extern const char *DIRECTION_STRING[DIRECTION_COUNT];
+extern const i32 DIRECTION_STRIDE[DIRECTION_COUNT];
+extern const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3];
+
 #define FOR_LIST_BLOCK_TYPE(DO)                 \
     DO(BLOCK_TYPE_NONE)                         \
     DO(BLOCK_TYPE_CARDINAL_EAST)                \

@@ -3,10 +3,16 @@
 
 #include "jsk.h"
 
-#include "core/core.h"
+#include "game/sim/action.h"
 #include "game/sim/navigation.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
+
+typedef struct Scheduler Scheduler;
+struct Scheduler
+{
+
+};
 
 typedef struct Sim Sim;
 struct Sim
@@ -17,8 +23,7 @@ struct Sim
     u32 seed;
 
     ActionQueue action_queue;
-
-    Graph graph;
+    Navigation navigation;
 
     World world;
     Population population;

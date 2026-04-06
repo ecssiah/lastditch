@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 
-#include "core/action.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
 
@@ -31,8 +30,7 @@ static void apply_move_action(Actor *actor, Action *action)
         glm_vec3_scale(actor_right, action->action_value[0], velocity_right);
         glm_vec3_scale(actor_forward_flat, action->action_value[1], velocity_forward);
 
-        vec3 move_velocity;
-        memset(move_velocity, 0, sizeof(move_velocity));
+        vec3 move_velocity = GLM_VEC3_ZERO_INIT;
 
         glm_vec3_add(move_velocity, velocity_right, move_velocity);
         glm_vec3_add(move_velocity, velocity_forward, move_velocity);

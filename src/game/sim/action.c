@@ -1,6 +1,6 @@
-#include "jsk_log.h"
+#include "game/sim/action.h"
 
-#include "core/action.h"
+#include "jsk_log.h"
 
 void action_add(ActionQueue *action_queue, Action action)
 {
@@ -9,6 +9,7 @@ void action_add(ActionQueue *action_queue, Action action)
     if (tail_index_next == action_queue->head_index)
     {
         LOG_WARN("ActionQueue is full");
+        
         return;
     }
     

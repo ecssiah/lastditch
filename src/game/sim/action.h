@@ -1,0 +1,41 @@
+#ifndef ACTION_H
+#define ACTION_H
+
+#include <cglm/cglm.h>
+
+#include "jsk.h"
+
+#define ACTION_QUEUE_CAPACITY 1024
+
+typedef enum ActionType ActionType;
+enum ActionType
+{
+    ACTION_MOVE,
+    ACTION_ROTATE,
+    ACTION_JUMP,
+    ACTION_DEBUG_MODE,
+
+    ACTION_COUNT,
+};
+
+typedef struct Action Action;
+struct Action
+{
+    ActionType type;
+
+    vec3 action_value;
+};
+
+typedef struct ActionQueue ActionQueue;
+struct ActionQueue
+{
+    Action action_array[ACTION_QUEUE_CAPACITY];
+
+    i32 head_index;
+    i32 tail_index;
+};
+
+void action_add(ActionQueue *action_queue, Action action);
+b32 action_pop(ActionQueue *action_queue, Action *out_action);
+
+#endif
