@@ -1,7 +1,6 @@
 #include "jsk_log.h"
 
 #include "core/action.h"
-#include "core/core_data.h"
 
 void action_add(ActionQueue *action_queue, Action action)
 {

@@ -12,7 +12,6 @@
 #include "jsk_gl.h"
 #include "jsk_log.h"
 
-#include "core/core_data.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
 #include "game/shell/viewpoint.h"

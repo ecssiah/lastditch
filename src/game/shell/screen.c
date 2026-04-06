@@ -7,7 +7,6 @@
 
 #include "jsk_gl.h"
 
-#include "core/core_data.h"
 #include "game/sim/world.h"
 
 static void load_textures(Screen *screen, const char *textures_path)
