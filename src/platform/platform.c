@@ -1,7 +1,5 @@
 #include "platform/platform.h"
 
-#include "platform/platform_data.h"
-
 static void init_glfw(Platform *platform, const char *window_title)
 {
     const int glfw_result = glfwInit();

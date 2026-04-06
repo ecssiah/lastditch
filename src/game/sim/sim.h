@@ -1,7 +1,28 @@
 #ifndef SIM_H
 #define SIM_H
 
-#include "game/sim/sim_data.h"
+#include "jsk.h"
+
+#include "core/core.h"
+#include "game/sim/navigation.h"
+#include "game/sim/population.h"
+#include "game/sim/world.h"
+
+typedef struct Sim Sim;
+struct Sim
+{
+    bool active;
+    bool evolving;
+    
+    u32 seed;
+
+    ActionQueue action_queue;
+
+    Graph graph;
+
+    World world;
+    Population population;
+};
 
 void sim_init(Sim *sim);
 void sim_update(Sim *sim);

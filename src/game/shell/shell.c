@@ -4,12 +4,9 @@
 
 #include "core/action.h"
 #include "core/core_data.h"
-#include "game/sim/sim_data.h"
 #include "game/shell/render.h"
 #include "game/shell/screen.h"
-#include "game/shell/shell_data.h"
 #include "platform/platform.h"
-#include "platform/platform_data.h"
 
 static void queue_move_action(Platform *platform, Sim *sim)
 {

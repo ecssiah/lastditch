@@ -7,7 +7,6 @@
 #include "jsk_log.h"
 
 #include "core/math/math.h"
-#include "game/sim/sim_data.h"
 #include "game/sim/physics.h"
 
 const char *ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =
@@ -207,7 +206,7 @@ static void init_agents(Population* population)
     }
 }
 
-static void control_actor(Sim *sim, Actor *actor)
+static void control_actor(World *world, Actor *actor)
 {
     switch (actor->actor_control.control_type)
     {
@@ -243,7 +242,7 @@ static void control_actor(Sim *sim, Actor *actor)
             actor->rotation[2],
             actor->rotation_target[2],
             8.0f,
-            sim->world.delta_time
+            world->delta_time
         );
 
         break;
@@ -259,37 +258,35 @@ static void control_actor(Sim *sim, Actor *actor)
     }
 }
 
-static void update_actor(Sim *sim, Actor *actor)
+static void update_actor(World *world, Actor *actor)
 {
-    control_actor(sim, actor);
+    control_actor(world, actor);
     
     switch (actor->movement_type)
     {
-    case MOVEMENT_TYPE_GROUND: physics_integrate(sim, actor); break;
-    case MOVEMENT_TYPE_DEBUG: physics_integrate(sim, actor); break;
+    case MOVEMENT_TYPE_GROUND: physics_integrate(world, actor); break;
+    case MOVEMENT_TYPE_DEBUG: physics_integrate(world, actor); break;
     default: break;
     }
 }
 
-static void update_actors(Sim *sim)
+static void update_actors(World *world, Population *population)
 {   
     for (i32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
     {
-        if (sim->population.actor_pool.generation_array[actor_index] == 0)
+        if (population->actor_pool.generation_array[actor_index] == 0)
         {
             continue;
         }
         
-        Actor *actor = &sim->population.actor_pool.actor_array[actor_index];
+        Actor *actor = &population->actor_pool.actor_array[actor_index];
 
-        update_actor(sim, actor);
+        update_actor(world, actor);
     }
 }
 
-void population_init(Sim *sim)
+void population_init(Population *population)
 {
-    Population *population = &sim->population;
-    
     init_actor_pool(population);
 
     init_nations(population);
@@ -298,9 +295,9 @@ void population_init(Sim *sim)
     init_agents(population);
 }
 
-void population_update(Sim *sim)
+void population_update(World *world, Population *population)
 {
-    update_actors(sim);
+    update_actors(world, population);
 }
 
 void population_close()

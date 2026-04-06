@@ -3,13 +3,9 @@
 #include <string.h>
 #include <time.h>
 
-#include "game/sim/population.h"
-#include "jsk_log.h"
-
 #include "core/action.h"
 #include "game/sim/actor.h"
-#include "game/sim/physics.h"
-#include "game/sim/sim_data.h"
+#include "game/sim/population.h"
 #include "game/sim/world.h"
 
 static void time_init(Sim *sim)
@@ -181,8 +177,8 @@ void sim_init(Sim *sim)
     srand(sim->seed);
 
     time_init(sim);
-    population_init(sim);
-    world_init(sim);
+    population_init(&sim->population);
+    world_init(&sim->world);
     physics_init(sim);
 }
 
@@ -190,11 +186,11 @@ void sim_update(Sim *sim)
 {
     apply_action_queue(sim);
 
-    population_update(sim);
+    population_update(&sim->world, &sim->population);
 }
 
 void sim_close(Sim *sim)
 {
     population_close();
-    world_close(sim);
+    world_close(&sim->world);
 }

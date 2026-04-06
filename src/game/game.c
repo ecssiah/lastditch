@@ -3,11 +3,8 @@
 #include "game/shell/render.h"
 #include "game/shell/screen.h"
 #include "game/shell/shell.h"
-#include "game/shell/shell_data.h"
 #include "game/sim/sim.h"
-#include "game/sim/sim_data.h"
 #include "platform/platform.h"
-#include "platform/platform_data.h"
 
 static Platform platform;
 static Shell shell;

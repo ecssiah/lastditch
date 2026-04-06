@@ -13,10 +13,8 @@
 #include "jsk_log.h"
 
 #include "core/core_data.h"
-#include "game/sim/sim_data.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
-#include "game/shell/shell_data.h"
 #include "game/shell/viewpoint.h"
 
 const i32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =

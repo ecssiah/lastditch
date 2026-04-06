@@ -3,7 +3,6 @@
 #include <string.h>
 #include <glad/glad.h>
 
-#include "game/sim/sim_data.h"
 #include "stb_image.h"
 
 #include "jsk_gl.h"

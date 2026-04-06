@@ -1,7 +1,7 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
-#include "game/sim/sim_data.h"
+#include "game/sim/population.h"
 
 void actor_get_forward(Actor *actor, vec3 out_forward);
 void actor_get_right(Actor *actor, vec3 out_right);

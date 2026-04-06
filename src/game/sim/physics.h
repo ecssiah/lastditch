@@ -1,8 +1,9 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#include "game/sim/sim_data.h"
+#include "game/sim/population.h"
+#include "game/sim/world.h"
 
-void physics_integrate(Sim *sim, Actor *actor);
+void physics_integrate(World *world, Actor *actor);
 
 #endif
