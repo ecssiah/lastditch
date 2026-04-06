@@ -392,21 +392,23 @@ void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 siz
 
 void world_set_block_type_wireframe(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    const i32 max_x = x + size_x - 1;
-    const i32 max_y = y + size_y - 1;
-    const i32 max_z = z + size_z - 1;
+    const ivec3 max = {
+        x + size_x - 1,
+        y + size_y - 1,
+        z + size_z - 1
+    };
 
-    for (i32 cell_z = z; cell_z <= max_z; ++cell_z)
+    for (i32 cell_z = z; cell_z <= max[2]; ++cell_z)
     {
-        for (i32 cell_y = y; cell_y <= max_y; ++cell_y)
+        for (i32 cell_y = y; cell_y <= max[1]; ++cell_y)
         {
-            for (i32 cell_x = x; cell_x <= max_x; ++cell_x)
+            for (i32 cell_x = x; cell_x <= max[0]; ++cell_x)
             {
                 i32 boundary_count = 0;
 
-                if (cell_x == x || cell_x == max_x) boundary_count++;
-                if (cell_y == y || cell_y == max_y) boundary_count++;
-                if (cell_z == z || cell_z == max_z) boundary_count++;
+                if (cell_x == x || cell_x == max[0]) boundary_count++;
+                if (cell_y == y || cell_y == max[1]) boundary_count++;
+                if (cell_z == z || cell_z == max[2]) boundary_count++;
 
                 if (boundary_count >= 2)
                 {
@@ -504,6 +506,20 @@ static void setup_tower(Sim *sim)
             floor_origin[0], floor_origin[1], floor_origin[2],
             TOWER_SIZE, TOWER_SIZE, FLOOR_SIZE_Z,
             BLOCK_TYPE_CAUTION_1
+        );
+
+        world_set_block_type_cube(
+            sim,
+            floor_origin[0] + 1, floor_origin[1] + TOWER_SIZE / 2 - TOWER_CENTER_HALL_SIZE / 2 + 4, floor_origin[2],
+            TOWER_SIZE - 2, TOWER_CENTER_HALL_SIZE - 8, 1,
+            BLOCK_TYPE_SMOOTH_1
+        );
+
+        world_set_block_type_cube(
+            sim,
+            floor_origin[0] + TOWER_SIZE / 2 - TOWER_CENTER_HALL_SIZE / 2 + 4, floor_origin[1] + 1, floor_origin[2],
+            TOWER_CENTER_HALL_SIZE - 8, TOWER_SIZE - 2, 1,
+            BLOCK_TYPE_SMOOTH_1
         );
 
         const i32 cell_z = floor_origin[2];
@@ -666,10 +682,10 @@ static void setup_elevator(Sim *sim)
 
 static void setup_tower_areas(Sim *sim)
 {
-    AreaList *area_list = &sim->world.area_list;
+    AreaList *world_area_list = &sim->world.area_list;
         
-    area_list->count = 0;
-    area_list->capacity = 0;
+    world_area_list->count = 0;
+    world_area_list->capacity = 0;
 
     const i32 area_max = 4 * (1 << AREA_EXPANSION_ITERATION_COUNT);
     
@@ -755,13 +771,13 @@ static void setup_tower_areas(Sim *sim)
         {
             const Area *area = &area_list_current->area_array[area_index];
             
-            add_area(area_list, *area);
+            add_area(world_area_list, *area);
         }
     }
     
-    for (i32 area_index = 0; area_index < area_list->count; ++area_index)
+    for (i32 area_index = 0; area_index < world_area_list->count; ++area_index)
     {
-        const Area *area = &area_list->area_array[area_index];
+        const Area *area = &world_area_list->area_array[area_index];
 
         if (TOWER_WIREFRAME)
         {
@@ -785,7 +801,7 @@ static void setup_tower_areas(Sim *sim)
                 sim,
                 area->position[0], area->position[1], area->position[2],
                 area->size[0], area->size[1], 1,
-                BLOCK_TYPE_METAL_1
+                BLOCK_TYPE_PANEL_4
             );
 
             world_set_block_type_cube(
@@ -797,8 +813,7 @@ static void setup_tower_areas(Sim *sim)
         }
 
         const i32 content_level = world_get_content_level(area->position[2]);
-            
-        const BlockTypeList *block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
+        const BlockTypeList *content_block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
 
         const i32 stack_count = (area->size[0] * area->size[1] / 12);
 
@@ -812,11 +827,13 @@ static void setup_tower_areas(Sim *sim)
 
             const i32 stack_size_z = rand() % (FLOOR_SIZE_Z - 4);
 
+            const BlockType content_block_type = content_block_type_list->block_type_array[rand() % content_block_type_list->count];
+
             world_set_block_type_cube(
                 sim,
                 stack_position[0], stack_position[1], stack_position[2],
                 1, 1, stack_size_z,
-                block_type_list->block_type_array[rand() % block_type_list->count]
+                content_block_type
             );
         }
     }
@@ -827,19 +844,19 @@ static void setup_tower_areas(Sim *sim)
 
 static void setup_tower_connects(Sim *sim)
 {   
-    const AreaList *area_list = &sim->world.area_list;
+    const AreaList *world_area_list = &sim->world.area_list;
 
     ConnectList* connect_list = &sim->world.connect_list;
 
     connect_list->count = 0;
-    connect_list->capacity = 4 * area_list->count;
+    connect_list->capacity = 4 * world_area_list->count;
     connect_list->connect_array = malloc(connect_list->capacity * sizeof(Connect));
         
-    for (i32 area_index = 0; area_index < area_list->count; ++area_index)
+    for (i32 area_index = 0; area_index < world_area_list->count; ++area_index)
     {
-        Area *area = &area_list->area_array[area_index];
+        Area *area = &world_area_list->area_array[area_index];
             
-        const i32 connect_attempt_count = 3;
+        const i32 connect_attempt_count = 4;
             
         for (i32 index = 0; index < connect_attempt_count; ++index)
         {
@@ -987,7 +1004,6 @@ static void setup_tower_connects(Sim *sim)
 
                 break;
             }
-
         }
     }
 }
