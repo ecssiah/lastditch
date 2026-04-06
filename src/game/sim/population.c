@@ -19,6 +19,41 @@ const char *NATION_TYPE_STRING[NATION_TYPE_COUNT] =
     FOR_LIST_NATION_TYPE( DEFINE_LIST_STRING )
 };
 
+void population_get_actor_forward(Actor *actor, vec3 out_forward)
+{
+    const f32 rotation_x = glm_rad(actor->rotation[0]);
+    const f32 rotation_z = glm_rad(actor->rotation[2]);
+
+    out_forward[0] = cosf(rotation_x) * cosf(rotation_z);
+    out_forward[1] = cosf(rotation_x) * sinf(rotation_z);
+    out_forward[2] = sinf(rotation_x);
+
+    glm_vec3_normalize(out_forward);
+}
+
+void population_get_actor_right(Actor *actor, vec3 out_right)
+{
+    vec3 forward;
+    population_get_actor_forward(actor, forward);
+
+    glm_vec3_cross(forward, GLM_ZUP, out_right);
+
+    glm_vec3_normalize(out_right);
+}
+
+void population_get_actor_up(Actor *actor, vec3 out_up)
+{
+    vec3 forward;
+    population_get_actor_forward(actor, forward);
+
+    vec3 right;
+    population_get_actor_right(actor, right);
+
+    glm_vec3_cross(forward, right, out_up);
+    
+    glm_vec3_normalize(out_up);
+}
+
 i32 population_nation_type_index_from_string(const char *nation_type_string)
 {
     for (i32 nation_type_index = 0; nation_type_index < NATION_TYPE_COUNT; ++nation_type_index)
@@ -51,12 +86,10 @@ static ActorHandle add_actor(Population *population, Actor *actor)
     
     const u32 actor_index = actor_pool->free_array[--actor_pool->free_count];
     const u32 actor_generation = ++actor_pool->generation_array[actor_index];
-    
+        
+    actor_pool->active_array[actor_pool->active_count++] = actor_index;
     actor_pool->actor_array[actor_index] = *actor;
     
-    actor_pool->active_array[actor_index] = actor_pool->active_count;
-    actor_pool->active_array[actor_pool->active_count++] = actor_index;
-
     assert(actor_pool->free_count + actor_pool->active_count == ACTOR_MAX);
 
     ActorHandle actor_handle = { actor_index, actor_generation };
@@ -71,8 +104,9 @@ static void init_actor_pool(Population *population)
 
     for (i32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
     {
-        population->actor_pool.free_array[actor_index] = actor_index;
+        population->actor_pool.active_array[actor_index] = 0;
         population->actor_pool.generation_array[actor_index] = 0;
+        population->actor_pool.free_array[actor_index] = actor_index;
     }
 }
 

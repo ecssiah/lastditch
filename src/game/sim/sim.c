@@ -4,26 +4,8 @@
 #include <time.h>
 
 #include "core/action.h"
-#include "game/sim/actor.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
-
-static void time_init(Sim *sim)
-{
-    sim->world.delta_time = 0.0f;
-
-    sim->world.second_count = 0;
-    sim->world.tick_count = 0;
-
-    sim->world.time_rate = 1.0f;
-}
-
-static void physics_init(Sim *sim)
-{
-    sim->world.gravity[0] = 0.0f;
-    sim->world.gravity[1] = 0.0f;
-    sim->world.gravity[2] = GRAVITY_DEFAULT;
-}
 
 static void apply_move_action(Actor *actor, Action *action)
 {
@@ -32,10 +14,10 @@ static void apply_move_action(Actor *actor, Action *action)
     vec3 velocity_up;
 
     vec3 actor_forward;
-    actor_get_forward(actor, actor_forward);
+    population_get_actor_forward(actor, actor_forward);
         
     vec3 actor_right;
-    actor_get_right(actor, actor_right);
+    population_get_actor_right(actor, actor_right);
 
     switch (actor->movement_type)
     {
@@ -176,10 +158,8 @@ void sim_init(Sim *sim)
     
     srand(sim->seed);
 
-    time_init(sim);
     population_init(&sim->population);
     world_init(&sim->world);
-    physics_init(sim);
 }
 
 void sim_update(Sim *sim)

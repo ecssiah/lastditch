@@ -1586,6 +1586,17 @@ static void init_graph(World *world)
 
 void world_init(World *world)
 {
+    world->delta_time = 0.0f;
+
+    world->second_count = 0;
+    world->tick_count = 0;
+
+    world->time_rate = 1.0f;
+
+    world->gravity[0] = 0.0f;
+    world->gravity[1] = 0.0f;
+    world->gravity[2] = GRAVITY_DEFAULT;
+
     world->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
 
     for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)

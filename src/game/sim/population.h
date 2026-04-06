@@ -14,8 +14,6 @@
 #define AGENT_DEFAULT_GROUND_SPEED 1.0f
 #define AGENT_DEFAULT_JUMP_SPEED 28.0f
 
-#define GRAVITY_DEFAULT -90.0f
-
 #define RISING_GRAVITY_MODIFIER 1.0f
 #define FALLING_GRAVITY_MODIFIER 1.7f
 
@@ -151,6 +149,10 @@ struct Population
 
     Nation nation_array[NATION_TYPE_COUNT];
 };
+
+void population_get_actor_forward(Actor *actor, vec3 out_forward);
+void population_get_actor_right(Actor *actor, vec3 out_right);
+void population_get_actor_up(Actor *actor, vec3 out_up);
 
 i32 population_actor_type_index_from_string(const char *actor_type_string);
 i32 population_nation_type_index_from_string(const char *nation_type_string);

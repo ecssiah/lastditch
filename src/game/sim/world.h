@@ -68,6 +68,8 @@
 #define AREA_EXPANSION_ITERATION_COUNT 5
 #define AREA_EXPANSION_SIZE_MIN 8
 
+#define GRAVITY_DEFAULT -90.0f
+
 #define FOR_LIST_BLOCK_TYPE(DO)                 \
     DO(BLOCK_TYPE_NONE)                         \
     DO(BLOCK_TYPE_CARDINAL_EAST)                \

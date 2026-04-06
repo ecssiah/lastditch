@@ -61,7 +61,6 @@ target_sources(
     external/stb/src/stb_image.c
     src/core/action.c
     src/core/math/math.c
-    src/game/sim/actor.c
     src/game/sim/physics.c
     src/game/sim/population.c
     src/game/sim/sim.c
