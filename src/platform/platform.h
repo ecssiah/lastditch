@@ -12,20 +12,20 @@
 
 #define WINDOW_ASPECT_RATIO ((f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT)
 
-#define FOR_LIST_BUTTON(DO) \
-    DO( BUTTON_NONE ) \
-    DO( BUTTON_A ) \
-    DO( BUTTON_D ) \
-    DO( BUTTON_E ) \
-    DO( BUTTON_ESCAPE ) \
-    DO( BUTTON_MOUSE_1 ) \
-    DO( BUTTON_MOUSE_2 ) \
-    DO( BUTTON_MOUSE_3 ) \
-    DO( BUTTON_TAB ) \
-    DO( BUTTON_S ) \
-    DO( BUTTON_SPACE ) \
-    DO( BUTTON_W ) \
-    DO( BUTTON_Q ) \
+#define FOR_LIST_BUTTON(DO)                     \
+    DO(BUTTON_NONE)                             \
+    DO(BUTTON_A)                                \
+    DO(BUTTON_D)                                \
+    DO(BUTTON_E)                                \
+    DO(BUTTON_ESCAPE)                           \
+    DO(BUTTON_MOUSE_1)                          \
+    DO(BUTTON_MOUSE_2)                          \
+    DO(BUTTON_MOUSE_3)                          \
+    DO(BUTTON_TAB)                              \
+    DO(BUTTON_S)                                \
+    DO(BUTTON_SPACE)                            \
+    DO(BUTTON_W)                                \
+    DO(BUTTON_Q)                                \
 
 typedef enum Button Button;
 enum Button
@@ -52,7 +52,7 @@ struct Input
     f64 pointer_delta_x;
     f64 pointer_delta_y;
 
-    bool ignore_delta;
+    b32 ignore_delta;
 };
 
 typedef struct Window Window;
@@ -69,7 +69,7 @@ struct Window
 typedef struct Platform Platform;
 struct Platform
 {
-    bool active;
+    b32 active;
 
     f64 time_current;
     f64 time_previous;
@@ -80,9 +80,9 @@ struct Platform
     Input input;
 };
 
-bool platform_button_is_down(Platform *platform, Button key);
-bool platform_button_is_pressed(Platform *platform, Button key);
-bool platform_button_is_released(Platform *platform, Button key);
+b32 platform_button_is_down(Platform *platform, Button key);
+b32 platform_button_is_pressed(Platform *platform, Button key);
+b32 platform_button_is_released(Platform *platform, Button key);
 
 void platform_init(Platform *platform, const char *window_title);
 void platform_begin_frame(Platform *platform);

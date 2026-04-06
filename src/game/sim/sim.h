@@ -11,8 +11,8 @@
 typedef struct Sim Sim;
 struct Sim
 {
-    bool active;
-    bool evolving;
+    b32 active;
+    b32 evolving;
     
     u32 seed;
 

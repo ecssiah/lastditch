@@ -147,12 +147,12 @@ static void update_pointer(Platform *platform)
     }
 }
 
-bool platform_button_is_down(Platform *platform, Button button)
+b32 platform_button_is_down(Platform *platform, Button button)
 {
     return platform->input.button_array_current[button];
 }
 
-bool platform_button_is_pressed(Platform *platform, Button button)
+b32 platform_button_is_pressed(Platform *platform, Button button)
 {
     return (
         platform->input.button_array_current[button] &&
@@ -160,7 +160,7 @@ bool platform_button_is_pressed(Platform *platform, Button button)
     );
 }
 
-bool platform_button_is_released(Platform *platform, Button button)
+b32 platform_button_is_released(Platform *platform, Button button)
 {
     return (
         !platform->input.button_array_current[button] &&

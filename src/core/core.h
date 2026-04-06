@@ -10,13 +10,13 @@
 
 #define ACTION_QUEUE_CAPACITY 1024
 
-#define FOR_LIST_DIRECTION(DO) \
-    DO( DIRECTION_EAST ) \
-    DO( DIRECTION_WEST ) \
-    DO( DIRECTION_NORTH ) \
-    DO( DIRECTION_SOUTH ) \
-    DO( DIRECTION_UP ) \
-    DO( DIRECTION_DOWN ) \
+#define FOR_LIST_DIRECTION(DO)                  \
+    DO(DIRECTION_EAST)                          \
+    DO(DIRECTION_WEST)                          \
+    DO(DIRECTION_NORTH)                         \
+    DO(DIRECTION_SOUTH)                         \
+    DO(DIRECTION_UP)                            \
+    DO(DIRECTION_DOWN)                          \
 
 typedef enum Direction Direction;
 enum Direction

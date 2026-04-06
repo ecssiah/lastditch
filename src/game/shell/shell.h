@@ -180,7 +180,7 @@ struct Screen
 typedef struct Shell Shell;
 struct Shell
 {
-    bool active;
+    b32 active;
     
     Screen screen;
     Render render;

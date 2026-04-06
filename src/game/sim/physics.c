@@ -136,7 +136,7 @@ static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 d
     const i32 axis_s = (axis + 1) % AXIS_COUNT;
     const i32 axis_t = (axis + 2) % AXIS_COUNT;
     
-    bool found = false;
+    b32 found = false;
     f32 best = actor->velocity[axis] > 0 ? INFINITY : -INFINITY;
     
     for (i32 z = overlap_bounds.min[AXIS_Z]; z <= overlap_bounds.max[AXIS_Z]; ++z)

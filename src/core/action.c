@@ -17,7 +17,7 @@ void action_add(ActionQueue *action_queue, Action action)
     action_queue->tail_index = tail_index_next;
 }
 
-bool action_pop(ActionQueue *action_queue, Action *out_action)
+b32 action_pop(ActionQueue *action_queue, Action *out_action)
 {
     if (action_queue->tail_index == action_queue->head_index)
     {

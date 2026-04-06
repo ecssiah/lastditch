@@ -68,64 +68,64 @@
 #define AREA_EXPANSION_ITERATION_COUNT 5
 #define AREA_EXPANSION_SIZE_MIN 8
 
-#define FOR_LIST_BLOCK_TYPE(DO) \
-    DO( BLOCK_TYPE_NONE ) \
-    DO( BLOCK_TYPE_CARDINAL_EAST ) \
-    DO( BLOCK_TYPE_CARDINAL_WEST ) \
-    DO( BLOCK_TYPE_CARDINAL_NORTH ) \
-    DO( BLOCK_TYPE_CARDINAL_SOUTH ) \
-    DO( BLOCK_TYPE_WOLF_FLAG ) \
-    DO( BLOCK_TYPE_EAGLE_FLAG )    \
-    DO( BLOCK_TYPE_LION_FLAG ) \
-    DO( BLOCK_TYPE_HORSE_FLAG ) \
-    DO( BLOCK_TYPE_WOLF_STONE ) \
-    DO( BLOCK_TYPE_EAGLE_STONE ) \
-    DO( BLOCK_TYPE_LION_STONE ) \
-    DO( BLOCK_TYPE_HORSE_STONE ) \
-    DO( BLOCK_TYPE_WOLF_SYMBOL ) \
-    DO( BLOCK_TYPE_EAGLE_SYMBOL ) \
-    DO( BLOCK_TYPE_LION_SYMBOL ) \
-    DO( BLOCK_TYPE_HORSE_SYMBOL ) \
-    DO( BLOCK_TYPE_CARVED_1 ) \
-    DO( BLOCK_TYPE_CARVED_2 ) \
-    DO( BLOCK_TYPE_CARVED_3 ) \
-    DO( BLOCK_TYPE_CARVED_4 ) \
-    DO( BLOCK_TYPE_CAUTION_1 ) \
-    DO( BLOCK_TYPE_CAUTION_2 ) \
-    DO( BLOCK_TYPE_CAUTION_3 ) \
-    DO( BLOCK_TYPE_CAUTION_4 ) \
-    DO( BLOCK_TYPE_ENGRAVED_1 ) \
-    DO( BLOCK_TYPE_ENGRAVED_2 ) \
-    DO( BLOCK_TYPE_ENGRAVED_3 ) \
-    DO( BLOCK_TYPE_ENGRAVED_4 ) \
-    DO( BLOCK_TYPE_METAL_1 ) \
-    DO( BLOCK_TYPE_METAL_2 ) \
-    DO( BLOCK_TYPE_METAL_3 ) \
-    DO( BLOCK_TYPE_METAL_4 ) \
-    DO( BLOCK_TYPE_METAL_5 ) \
-    DO( BLOCK_TYPE_ORNATE_1 ) \
-    DO( BLOCK_TYPE_ORNATE_2 ) \
-    DO( BLOCK_TYPE_ORNATE_3 ) \
-    DO( BLOCK_TYPE_ORNATE_4 ) \
-    DO( BLOCK_TYPE_PANEL_1 ) \
-    DO( BLOCK_TYPE_PANEL_2 ) \
-    DO( BLOCK_TYPE_PANEL_3 ) \
-    DO( BLOCK_TYPE_PANEL_4 ) \
-    DO( BLOCK_TYPE_SERVER_1 ) \
-    DO( BLOCK_TYPE_SERVER_2 ) \
-    DO( BLOCK_TYPE_SERVER_3 ) \
-    DO( BLOCK_TYPE_SERVER_4 ) \
-    DO( BLOCK_TYPE_SERVER_5 ) \
-    DO( BLOCK_TYPE_SERVER_6 ) \
-    DO( BLOCK_TYPE_SERVER_7 ) \
-    DO( BLOCK_TYPE_SMOOTH_1 ) \
-    DO( BLOCK_TYPE_SMOOTH_2 ) \
-    DO( BLOCK_TYPE_SMOOTH_3 ) \
-    DO( BLOCK_TYPE_SMOOTH_4 ) \
-    DO( BLOCK_TYPE_VENT_1 ) \
-    DO( BLOCK_TYPE_VENT_2 ) \
-    DO( BLOCK_TYPE_VENT_3 ) \
-    DO( BLOCK_TYPE_VENT_4 ) \
+#define FOR_LIST_BLOCK_TYPE(DO)                 \
+    DO(BLOCK_TYPE_NONE)                         \
+    DO(BLOCK_TYPE_CARDINAL_EAST)                \
+    DO(BLOCK_TYPE_CARDINAL_WEST)                \
+    DO(BLOCK_TYPE_CARDINAL_NORTH)               \
+    DO(BLOCK_TYPE_CARDINAL_SOUTH)               \
+    DO(BLOCK_TYPE_WOLF_FLAG)                    \
+    DO(BLOCK_TYPE_EAGLE_FLAG)                   \
+    DO(BLOCK_TYPE_LION_FLAG)                    \
+    DO(BLOCK_TYPE_HORSE_FLAG)                   \
+    DO(BLOCK_TYPE_WOLF_STONE)                   \
+    DO(BLOCK_TYPE_EAGLE_STONE)                  \
+    DO(BLOCK_TYPE_LION_STONE)                   \
+    DO(BLOCK_TYPE_HORSE_STONE)                  \
+    DO(BLOCK_TYPE_WOLF_SYMBOL)                  \
+    DO(BLOCK_TYPE_EAGLE_SYMBOL)                 \
+    DO(BLOCK_TYPE_LION_SYMBOL)                  \
+    DO(BLOCK_TYPE_HORSE_SYMBOL)                 \
+    DO(BLOCK_TYPE_CARVED_1)                     \
+    DO(BLOCK_TYPE_CARVED_2)                     \
+    DO(BLOCK_TYPE_CARVED_3)                     \
+    DO(BLOCK_TYPE_CARVED_4)                     \
+    DO(BLOCK_TYPE_CAUTION_1)                    \
+    DO(BLOCK_TYPE_CAUTION_2)                    \
+    DO(BLOCK_TYPE_CAUTION_3)                    \
+    DO(BLOCK_TYPE_CAUTION_4)                    \
+    DO(BLOCK_TYPE_ENGRAVED_1)                   \
+    DO(BLOCK_TYPE_ENGRAVED_2)                   \
+    DO(BLOCK_TYPE_ENGRAVED_3)                   \
+    DO(BLOCK_TYPE_ENGRAVED_4)                   \
+    DO(BLOCK_TYPE_METAL_1)                      \
+    DO(BLOCK_TYPE_METAL_2)                      \
+    DO(BLOCK_TYPE_METAL_3)                      \
+    DO(BLOCK_TYPE_METAL_4)                      \
+    DO(BLOCK_TYPE_METAL_5)                      \
+    DO(BLOCK_TYPE_ORNATE_1)                     \
+    DO(BLOCK_TYPE_ORNATE_2)                     \
+    DO(BLOCK_TYPE_ORNATE_3)                     \
+    DO(BLOCK_TYPE_ORNATE_4)                     \
+    DO(BLOCK_TYPE_PANEL_1)                      \
+    DO(BLOCK_TYPE_PANEL_2)                      \
+    DO(BLOCK_TYPE_PANEL_3)                      \
+    DO(BLOCK_TYPE_PANEL_4)                      \
+    DO(BLOCK_TYPE_SERVER_1)                     \
+    DO(BLOCK_TYPE_SERVER_2)                     \
+    DO(BLOCK_TYPE_SERVER_3)                     \
+    DO(BLOCK_TYPE_SERVER_4)                     \
+    DO(BLOCK_TYPE_SERVER_5)                     \
+    DO(BLOCK_TYPE_SERVER_6)                     \
+    DO(BLOCK_TYPE_SERVER_7)                     \
+    DO(BLOCK_TYPE_SMOOTH_1)                     \
+    DO(BLOCK_TYPE_SMOOTH_2)                     \
+    DO(BLOCK_TYPE_SMOOTH_3)                     \
+    DO(BLOCK_TYPE_SMOOTH_4)                     \
+    DO(BLOCK_TYPE_VENT_1)                       \
+    DO(BLOCK_TYPE_VENT_2)                       \
+    DO(BLOCK_TYPE_VENT_3)                       \
+    DO(BLOCK_TYPE_VENT_4)                       \
 
 typedef enum BlockType BlockType;
 enum BlockType
@@ -210,8 +210,9 @@ typedef struct World World;
 struct World
 {
     f32 delta_time;
+
     u64 tick_count;
-    
+
     u64 second_count;
 
     f32 time_rate;
@@ -224,8 +225,8 @@ struct World
     ConnectList connect_list;
 };
 
-bool world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
-bool world_sector_coordinate_is_valid(i32 x, i32 y);
+b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
+b32 world_sector_coordinate_is_valid(i32 x, i32 y);
 
 i32 world_sector_coordinate_to_index(ivec2 sector_coordinate);
 void world_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordinate);
@@ -247,8 +248,8 @@ i32 world_get_floor(i32 z);
 void world_get_elevator_origin(i32 floor_number, ivec3 out_origin);
 void world_get_quadrant_origin(i32 floor_number, Quadrant quadrant, ivec3 out_origin);
 
-bool world_is_solid(World *world, i32 x, i32 y, i32 z);
-bool world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask);
+b32 world_is_solid(World *world, i32 x, i32 y, i32 z);
+b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask);
 
 i32 world_block_type_index_from_string(const char *block_type_string);
 

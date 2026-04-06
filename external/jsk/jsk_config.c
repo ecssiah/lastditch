@@ -24,7 +24,7 @@ static void strip_newline(char *str)
     }
 }
 
-static bool parse_line(char *line, JSK_ConfigEntry *out_config_entry)
+static b32 parse_line(char *line, JSK_ConfigEntry *out_config_entry)
 {
     strip_newline(line);
 
@@ -95,7 +95,7 @@ JSK_Config *jsk_load_config(const char* config_path)
     {
         JSK_ConfigEntry *config_entry = &jsk_config->config_entry_array[jsk_config->entry_count];
 		
-        bool success = parse_line(line, config_entry);
+        b32 success = parse_line(line, config_entry);
 
         if (success)
         {

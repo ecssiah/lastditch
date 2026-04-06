@@ -67,7 +67,7 @@ const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
     { +0.0f, +0.0f, -1.0f },
 };
 
-bool world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
+b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
 {   
     return (
         x >= 0 && x < WORLD_SIZE_IN_CELLS &&
@@ -76,7 +76,7 @@ bool world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
     );
 }
 
-bool world_sector_coordinate_is_valid(i32 x, i32 y)
+b32 world_sector_coordinate_is_valid(i32 x, i32 y)
 {
     return (
         x >= 0 && x < WORLD_SIZE_IN_SECTORS &&
@@ -247,7 +247,7 @@ i32 world_block_type_index_from_string(const char *block_type_string)
     return -1;
 }
 
-bool world_is_solid(World *world, i32 x, i32 y, i32 z)
+b32 world_is_solid(World *world, i32 x, i32 y, i32 z)
 {   
     if (!world_cell_coordinate_is_valid(x, y, z))
     {
@@ -261,7 +261,7 @@ bool world_is_solid(World *world, i32 x, i32 y, i32 z)
     return cell->block_type != BLOCK_TYPE_NONE;
 }
 
-bool world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask)
+b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask)
 {
     for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
@@ -293,7 +293,7 @@ u8 world_get_direction_mask(World *world, i32 x, i32 y, i32 z)
         const i32 neighbor_y = y + (i32)DIRECTION_NORMAL_ARRAY[direction_index][1];
         const i32 neighbor_z = z + (i32)DIRECTION_NORMAL_ARRAY[direction_index][2];
 
-        const bool valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
+        const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
         
         if (!valid_neighbor)
         {
@@ -372,7 +372,7 @@ void world_set_block_type_box(World *world, i32 x, i32 y, i32 z, i32 size_x, i32
         {
             for (i32 cell_x = x; cell_x < x + size_x; ++cell_x)
             {
-                const bool at_boundary = (
+                const b32 at_boundary = (
                     cell_x == x || cell_x == x + size_x - 1 ||
                     cell_y == y || cell_y == y + size_y - 1 ||
                     cell_z == z || cell_z == z + size_z - 1
@@ -868,7 +868,7 @@ static void setup_tower_connects(World *world)
                 area->position[2] + 1
             };
                                 
-            const bool east_connect_clear =
+            const b32 east_connect_clear =
                 world_is_clear(
                     world,
                     connect_position[0], connect_position[1], connect_position[2],
@@ -905,7 +905,7 @@ static void setup_tower_connects(World *world)
                 area->position[2] + 1
             };
                 
-            const bool west_connect_clear =
+            const b32 west_connect_clear =
                 world_is_clear(
                     world,
                     connect_position[0], connect_position[1], connect_position[2],
@@ -942,7 +942,7 @@ static void setup_tower_connects(World *world)
                 area->position[2] + 1
             };
                 
-            const bool north_connect_clear =
+            const b32 north_connect_clear =
                 world_is_clear(
                     world,
                     connect_position[0], connect_position[1], connect_position[2],
@@ -979,7 +979,7 @@ static void setup_tower_connects(World *world)
                 area->position[2] + 1,
             };
                 
-            const bool south_connect_clear =
+            const b32 south_connect_clear =
                 world_is_clear(
                     world,
                     connect_position[0], connect_position[1], connect_position[2],

@@ -170,7 +170,7 @@ void sim_init(Sim *sim)
     sim->active = true;
     sim->evolving = true;
 
-    const bool random_seed = false;
+    const b32 random_seed = false;
     
     sim->seed = random_seed ? (u32)time(NULL) : 813;
     

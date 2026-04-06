@@ -31,15 +31,15 @@
 typedef struct BoxCollider BoxCollider;
 struct BoxCollider
 {
-    bool collision_enabled;
+    b32 collision_enabled;
     
     vec3 radius;
 };
 
-#define FOR_LIST_ACTOR_TYPE(DO) \
-    DO( ACTOR_TYPE_FREE ) \
-    DO( ACTOR_TYPE_JUDGE ) \
-    DO( ACTOR_TYPE_AGENT ) \
+#define FOR_LIST_ACTOR_TYPE(DO)                 \
+    DO(ACTOR_TYPE_FREE)                         \
+    DO(ACTOR_TYPE_JUDGE)                        \
+    DO(ACTOR_TYPE_AGENT)                        \
 
 typedef enum ActorType ActorType;
 enum ActorType
@@ -83,11 +83,11 @@ struct ActorControl
     i32 decision_period;
 };
 
-#define FOR_LIST_NATION_TYPE(DO) \
-    DO( NATION_TYPE_WOLF ) \
-    DO( NATION_TYPE_EAGLE ) \
-    DO( NATION_TYPE_LION ) \
-    DO( NATION_TYPE_HORSE ) \
+#define FOR_LIST_NATION_TYPE(DO)                \
+    DO(NATION_TYPE_WOLF)                        \
+    DO(NATION_TYPE_EAGLE)                       \
+    DO(NATION_TYPE_LION)                        \
+    DO(NATION_TYPE_HORSE)                       \
 
 typedef enum NationType NationType;
 enum NationType
@@ -118,7 +118,7 @@ struct Actor
     vec3 rotation;
     vec3 rotation_target;
 
-    bool is_grounded;
+    b32 is_grounded;
     
     f32 speed;
     vec3 velocity;

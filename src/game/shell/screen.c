@@ -18,9 +18,9 @@ static void load_textures(Screen *screen, const char *textures_path)
 
     stbi_set_flip_vertically_on_load(0);
 
-    u8 *data = stbi_load(path, &width, &height, &channels, 0);
+    u8 *pixel_data_array = stbi_load(path, &width, &height, &channels, 0);
 
-    if (!data)
+    if (!pixel_data_array)
     {
         printf("Failed to load font texture: %s\n", path);
         return;
@@ -50,7 +50,8 @@ static void load_textures(Screen *screen, const char *textures_path)
     else
     {
         printf("Unsupported channel count: %d\n", channels);
-        stbi_image_free(data);
+        
+        stbi_image_free(pixel_data_array);
 	
         return;
     }
@@ -64,7 +65,7 @@ static void load_textures(Screen *screen, const char *textures_path)
         0,
         format,
         GL_UNSIGNED_BYTE,
-        data
+        pixel_data_array
     );
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -73,7 +74,7 @@ static void load_textures(Screen *screen, const char *textures_path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    stbi_image_free(data);
+    stbi_image_free(pixel_data_array);
 }
 
 static void get_orthographic_projection_matrix(f32 width, f32 height, mat4 out_projection_matrix)
@@ -280,7 +281,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     }
     else
     {
-        strcpy(sector_coordinate_text, "SEC - - -");
+        strcpy(sector_coordinate_text, "SEC - -");
     }
 
     const i32 floor_result = world_get_floor(cell_coordinate[2]);
