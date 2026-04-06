@@ -361,7 +361,7 @@ i32 world_get_content_level(i32 z)
     else
     {
         const i32 floor_number = z / FLOOR_SIZE_Z;
-        const i32 content_level = floor_number / 2;
+        const i32 content_level = (FLOOR_COUNT - 1 - floor_number) / 2;
     
         return content_level;
     }
@@ -375,11 +375,14 @@ void world_set_block_type_box(Sim *sim, i32 x, i32 y, i32 z, i32 size_x, i32 siz
         {
             for (i32 cell_x = x; cell_x < x + size_x; ++cell_x)
             {
-                if (
+                const bool at_boundary = (
                     cell_x == x || cell_x == x + size_x - 1 ||
                     cell_y == y || cell_y == y + size_y - 1 ||
                     cell_z == z || cell_z == z + size_z - 1
-                ) {
+                );
+                
+                if (at_boundary)
+                {
                     world_set_block_type(sim, cell_x, cell_y, cell_z, block_type);
                 }
             }
@@ -797,7 +800,7 @@ static void setup_tower_areas(Sim *sim)
             
         const BlockTypeList *block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
 
-        const i32 stack_count = (area->size[0] * area->size[1] / 8);
+        const i32 stack_count = (area->size[0] * area->size[1] / 12);
 
         for (i32 stack_index = 0; stack_index < stack_count; ++stack_index)
         {
