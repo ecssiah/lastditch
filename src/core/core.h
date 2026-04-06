@@ -21,18 +21,15 @@ enum Axis
 typedef struct IntRect IntRect;
 struct IntRect
 {
-    ivec2 min;
-    ivec2 max;
+    ivec2 position;
+    ivec2 size;
 };
 
-typedef struct IntRectArray IntRectArray;
-struct IntRectArray
-{
-    i32 count;
-    i32 capacity;
+void int_rect_max(const IntRect *rect, ivec2 out_max);
+void int_rect_min(const IntRect *rect, ivec2 out_min);
 
-    IntRect *rect_array;
-};
+b32 int_rect_overlaps(const IntRect *rect_a, const IntRect *rect_b);
+i32 int_rect_subtract(const IntRect *rect_a, const IntRect *rect_b, IntRect *out_array);
 
 typedef struct FloatRect FloatRect;
 struct FloatRect
