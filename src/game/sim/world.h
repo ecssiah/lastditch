@@ -205,9 +205,7 @@ struct ConnectList
 typedef struct Area Area;
 struct Area
 {
-    i32 area_index;
     i32 floor_number;
-
     IntRect rect;
 };
 

@@ -430,13 +430,6 @@ static void add_area(AreaList *area_list, Area *area)
     }
 
     area_list->area_array[area_list->count++] = *area;
-
-//     for (i32 area_index = 0; area_index < area_list->count; ++area_index)
-//     {
-//         const Area *area_test = &area_list->area_array[area_index];
-        
-        
-//     }
 }
 
 static void init_direction_mask(World *world)
@@ -678,28 +671,53 @@ static void setup_tower_rooms(World *world)
         .capacity = area_max,
         .area_array = malloc(area_max * sizeof(Area))
     };
+
+    ivec2 quadrant1_origin;
+    ivec2 quadrant2_origin;
+    ivec2 quadrant3_origin;
+    ivec2 quadrant4_origin;
     
+    world_get_quadrant_origin(QUADRANT_1, quadrant1_origin);                
+    world_get_quadrant_origin(QUADRANT_2, quadrant2_origin);
+    world_get_quadrant_origin(QUADRANT_3, quadrant3_origin);
+    world_get_quadrant_origin(QUADRANT_4, quadrant4_origin);
+        
     for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         area_list_a.count = 0;
         area_list_b.count = 0;
         
-        Area area_quadrant_1;
-        Area area_quadrant_2;
-        Area area_quadrant_3;
-        Area area_quadrant_4;
+        Area area_quadrant_1 = {
+            .floor_number = floor_number,
+            .rect = {
+                { quadrant1_origin[0], quadrant1_origin[1] },
+                { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE }
+            }
+        };
         
-        world_get_quadrant_origin(QUADRANT_1, area_quadrant_1.rect.position);                
-        world_get_quadrant_origin(QUADRANT_2, area_quadrant_2.rect.position);
-        world_get_quadrant_origin(QUADRANT_3, area_quadrant_3.rect.position);
-        world_get_quadrant_origin(QUADRANT_4, area_quadrant_4.rect.position);
-        
-        const ivec2 quadrant_size = { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE };
+        Area area_quadrant_2 = {
+            .floor_number = floor_number,
+            .rect = {
+                { quadrant2_origin[0], quadrant2_origin[1] },
+                { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE }
+            }
+        };
 
-        glm_ivec3_copy((i32 *)quadrant_size, area_quadrant_1.rect.size);
-        glm_ivec3_copy((i32 *)quadrant_size, area_quadrant_2.rect.size);
-        glm_ivec3_copy((i32 *)quadrant_size, area_quadrant_3.rect.size);
-        glm_ivec3_copy((i32 *)quadrant_size, area_quadrant_4.rect.size);
+        Area area_quadrant_3 = {
+            .floor_number = floor_number,
+            .rect = {
+                { quadrant3_origin[0], quadrant3_origin[1] },
+                { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE }
+            }
+        };
+
+        Area area_quadrant_4 = {
+            .floor_number = floor_number,
+            .rect = {
+                { quadrant4_origin[0], quadrant4_origin[1] },
+                { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE }
+            }
+        };
 
         add_area(&area_list_a, &area_quadrant_1);
         add_area(&area_list_a, &area_quadrant_2);
@@ -744,6 +762,18 @@ static void setup_tower_rooms(World *world)
 
             area_list_expanded->count = 0;
         }
+
+        AreaList *area_list = &world->area_list_array[floor_number];
+        area_list->count = area_list_current->count;
+        area_list->capacity = area_list_current->count;
+        area_list->area_array = malloc(area_list->capacity * sizeof(Area));
+
+        LOG_INFO("%i", area_list->capacity);
+
+        for (i32 area_index = 0; area_index < area_list_current->count; ++area_index)
+        {
+            area_list->area_array[area_index] = area_list_current->area_array[area_index];
+        }
     }
 
     for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
@@ -759,7 +789,7 @@ static void setup_tower_rooms(World *world)
             world_set_block_type_box(
                 world,
                 area->rect.position[0], area->rect.position[1], floor_z,
-                area->rect.size[0], area->rect.size[1], area->rect.size[2],
+                area->rect.size[0], area->rect.size[1], FLOOR_SIZE_Z,
                 BLOCK_TYPE_METAL_5
             );
 
@@ -1214,7 +1244,7 @@ void world_init(World *world)
     {
         world->cell_array[cell_index].cell_index = cell_index;
     }
-    
+
     setup_tower(world);
     setup_tower_rooms(world);
     setup_tower_doors(world);
