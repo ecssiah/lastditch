@@ -290,7 +290,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     {
         strcpy(floor_text, "FLR -");
     }
-    else if (floor_result >= FLOOR_COUNT)
+    else if (floor_result >= TOWER_FLOOR_COUNT)
     {
         snprintf(
             floor_text,

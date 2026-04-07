@@ -59,7 +59,7 @@ static void init_nations(Population* population)
 
     wolf_nation->home_coordinate[0] = WORLD_CENTER_F32 + nation_offset;
     wolf_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
-    wolf_nation->home_coordinate[2] = TOWER_ROOF_Z + 3.0f;
+    wolf_nation->home_coordinate[2] = ROOF_Z + 3.0f;
 
     Nation *eagle_nation = &population->nation_array[NATION_TYPE_EAGLE];
     
@@ -67,7 +67,7 @@ static void init_nations(Population* population)
 
     eagle_nation->home_coordinate[0] = WORLD_CENTER_F32 - nation_offset;
     eagle_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
-    eagle_nation->home_coordinate[2] = TOWER_ROOF_Z + 3.0f;
+    eagle_nation->home_coordinate[2] = ROOF_Z + 3.0f;
 
     Nation *lion_nation = &population->nation_array[NATION_TYPE_LION];
 
@@ -75,7 +75,7 @@ static void init_nations(Population* population)
 
     lion_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
     lion_nation->home_coordinate[1] = WORLD_CENTER_F32 + nation_offset;
-    lion_nation->home_coordinate[2] = TOWER_ROOF_Z + 3.0f;
+    lion_nation->home_coordinate[2] = ROOF_Z + 3.0f;
 
     Nation *horse_nation = &population->nation_array[NATION_TYPE_HORSE];
     
@@ -83,7 +83,7 @@ static void init_nations(Population* population)
 
     horse_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
     horse_nation->home_coordinate[1] = WORLD_CENTER_F32 - nation_offset;
-    horse_nation->home_coordinate[2] = TOWER_ROOF_Z + 1.0f;
+    horse_nation->home_coordinate[2] = ROOF_Z + 1.0f;
 }
 
 static void init_judge(Population *population)
@@ -101,7 +101,7 @@ static void init_judge(Population *population)
     
     judge.position[0] = WORLD_CENTER_F32;
     judge.position[1] = WORLD_CENTER_F32 - 12.0f;
-    judge.position[2] = TOWER_ROOF_Z + 4.0f;
+    judge.position[2] = ROOF_Z + 4.0f;
 
     judge.rotation[0] = 0.0f;
     judge.rotation[1] = 0.0f;

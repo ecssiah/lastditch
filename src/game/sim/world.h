@@ -12,7 +12,7 @@
 #define SECTOR_SIZE_IN_CELLS_LOG2 5
 #define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
 
-#define SECTOR_HEIGHT_IN_CELLS_LOG2 7
+#define SECTOR_HEIGHT_IN_CELLS_LOG2 8
 #define SECTOR_HEIGHT_IN_CELLS (1 << (1u * SECTOR_HEIGHT_IN_CELLS_LOG2))
 
 #define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
@@ -36,9 +36,13 @@
 #define WORLD_CENTER_I32 ((i32)(WORLD_SIZE_IN_CELLS / 2))
 #define WORLD_CENTER_F32 ((f32)WORLD_SIZE_IN_CELLS / 2.0f)
 
+#define FLOOR_SIZE_Z 16
+#define FLOOR_COUNT (SECTOR_HEIGHT_IN_CELLS / FLOOR_SIZE_Z)
+
 #define TOWER_WIREFRAME false
 
 #define TOWER_BORDER 16
+#define TOWER_FLOOR_COUNT 6
 #define TOWER_SIZE (WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER)
 
 #define TOWER_CENTER_HALL_SIZE 24
@@ -46,11 +50,8 @@
 
 #define TOWER_QUADRANT_SIZE (TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2)
 
-#define FLOOR_COUNT 6
-#define FLOOR_SIZE_Z 12
-
-#define TOWER_ROOF_Z (FLOOR_COUNT * FLOOR_SIZE_Z)
-
+#define ROOF_Z (TOWER_FLOOR_COUNT * FLOOR_SIZE_Z)
+#define ROOF_FLOOR_COUNT (FLOOR_COUNT - TOWER_FLOOR_COUNT)
 #define ROOF_CENTER_PATH_SIZE 18
 
 #define PLATFORM_SIZE_X 24
@@ -58,18 +59,15 @@
 
 #define TEMPLE_SIZE_X 30
 #define TEMPLE_SIZE_Y 20
-#define TEMPLE_SIZE_Z 12
 
 #define TEMPLE_BORDER_OFFSET 24
-#define TEMPLE_COLUMN_HEIGHT 12
 
-#define ELEVATOR_SIZE 12
+#define ELEVATOR_SIZE 16
 
 #define AREA_EXPANSION_ITERATION_COUNT 5
 #define AREA_EXPANSION_SIZE_MIN 8
 
 #define GRAVITY_DEFAULT -90.0f
-
 
 #define FOR_LIST_DIRECTION(DO)                  \
     DO(DIRECTION_EAST)                          \
@@ -172,7 +170,7 @@ extern const BlockType AREA_CONTENT_ARRAY_LEVEL_0[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_1[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_2[];
 
-extern const BlockTypeList AREA_CONTENT_MASTER_LIST[FLOOR_COUNT];
+extern const BlockTypeList AREA_CONTENT_MASTER_LIST[TOWER_FLOOR_COUNT];
 
 typedef struct Cell Cell;
 struct Cell
@@ -207,8 +205,10 @@ struct ConnectList
 typedef struct Area Area;
 struct Area
 {
-    ivec3 position;
-    ivec3 size;
+    i32 area_index;
+    i32 floor_number;
+
+    IntRect rect;
 };
 
 typedef struct AreaList AreaList;
@@ -245,8 +245,7 @@ struct World
 
     Cell *cell_array;
 
-    AreaList area_list;
-    ConnectList connect_list;
+    AreaList area_list_array[FLOOR_COUNT];
 };
 
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
@@ -269,8 +268,8 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
 
 i32 world_get_floor(i32 z);
 
-void world_get_elevator_origin(i32 floor_number, ivec3 out_origin);
-void world_get_quadrant_origin(i32 floor_number, Quadrant quadrant, ivec3 out_origin);
+void world_get_elevator_origin(ivec2 out_origin);
+void world_get_quadrant_origin(Quadrant quadrant, ivec2 out_origin);
 
 b32 world_is_solid(World *world, i32 x, i32 y, i32 z);
 b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask);
