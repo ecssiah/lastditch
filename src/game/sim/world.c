@@ -3,11 +3,324 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "core/core.h"
+#include "jsk.h"
 #include "jsk_log.h"
 
 const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_LIST_STRING)
+};
+
+const char *SECTION_TYPE_STRING[SECTION_COUNT] =
+{
+    FOR_LIST_SECTION(DEFINE_LIST_STRING)
+};
+
+const ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT] =
+{
+    // SECTION_CT                              
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+    },
+
+    // SECTION_C1
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE +  TOWER_QUADRANT_SIZE,
+    },
+
+    // SECTION_C2
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+
+    // SECTION_C3
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_C4
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_Q1
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_Q2
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_Q3
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_Q4
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+    },
+
+    // SECTION_E1
+    {
+         TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+         TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_E2
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_E3
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_NE
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+
+    // SECTION_N1
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_N2
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_N3
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_NW
+    {
+        TOWER_BORDER + 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_W1
+    {
+        TOWER_BORDER + 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_W2
+    {
+        TOWER_BORDER + 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_W3
+    {
+        TOWER_BORDER + 1,
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_SW
+    {
+        TOWER_BORDER + 1,
+        TOWER_BORDER + 1,
+    },
+  
+    // SECTION_S1
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE,
+        TOWER_BORDER + 1,
+    },
+    
+    // SECTION_S2
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        TOWER_BORDER + 1,
+    },
+    
+    // SECTION_S3
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1,
+    },
+    
+    // SECTION_SE
+    {
+        TOWER_BORDER + 1 + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_BORDER + 1,
+    },
+};
+
+const ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT] =
+{
+    // SECTION_CT                              
+    {
+        TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_CENTER_HALL_SIZE - 1,
+    },
+
+    // SECTION_C1
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_CENTER_HALL_SIZE - 1,
+    },
+
+    // SECTION_C2
+    {
+        TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_QUADRANT_SIZE,
+    },
+
+    // SECTION_C3
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_C4
+    {
+        TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_Q1
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_Q2
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_Q3
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_Q4
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_QUADRANT_SIZE,
+    },
+
+    // SECTION_E1
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_E2
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_E3
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_NE
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_OUTER_HALL_SIZE,
+    },
+
+    // SECTION_N1
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_N2
+    {
+        TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_N3
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_NW
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_W1
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_W2
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_CENTER_HALL_SIZE - 1,
+    },
+    
+    // SECTION_W3
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_QUADRANT_SIZE,
+    },
+    
+    // SECTION_SW
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_OUTER_HALL_SIZE,
+    },
+  
+    // SECTION_S1
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_S2
+    {
+        TOWER_CENTER_HALL_SIZE - 1,
+        TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_S3
+    {
+        TOWER_QUADRANT_SIZE,
+        TOWER_OUTER_HALL_SIZE,
+    },
+    
+    // SECTION_SE
+    {
+        TOWER_OUTER_HALL_SIZE,
+        TOWER_OUTER_HALL_SIZE,
+    },
 };
 
 const BlockType AREA_CONTENT_ARRAY_LEVEL_0[] =
@@ -185,47 +498,6 @@ i32 world_get_floor(i32 z)
     else
     {
         return -1;
-    }
-}
-
-void world_get_elevator_origin(ivec2 out_origin)
-{
-    out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + ELEVATOR_SIZE / 2;
-    out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + ELEVATOR_SIZE / 2;
-}
-
-void world_get_quadrant_origin(Quadrant quadrant, ivec2 out_origin)
-{
-    switch (quadrant)
-    {
-    case QUADRANT_1:
-    {
-        out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE;
-        out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE;
-
-        break;
-    }
-    case QUADRANT_2:
-    {
-        out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE;
-        out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE;
-
-        break;
-    }
-    case QUADRANT_3:
-    {
-        out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE;
-        out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE;
-        
-        break;
-    }
-    case QUADRANT_4:
-    {
-        out_origin[0] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE;
-        out_origin[1] = TOWER_BORDER + TOWER_OUTER_HALL_SIZE;
-        
-        break;
-    }
     }
 }
 
@@ -411,7 +683,7 @@ void world_set_block_type_wireframe(World *world, i32 x, i32 y, i32 z, i32 size_
     }
 }
 
-static void add_area(AreaList *area_list, Area *area)
+static void add_area_to_list(AreaList *area_list, const Area *area)
 {
     if (area_list->count >= area_list->capacity)
     {
@@ -430,6 +702,41 @@ static void add_area(AreaList *area_list, Area *area)
     }
 
     area_list->area_array[area_list->count++] = *area;
+}
+
+static void add_area(AreaList *area_list, Area *area)
+{
+    AreaList new_area_list = {0};
+    
+    for (i32 area_index = 0; area_index < area_list->count; ++area_index)
+    {
+        const Area *area_test = &area_list->area_array[area_index];
+        
+        if (int_rect_overlaps(&area_test->rect, &area->rect))
+        {
+            IntRect rect_array[4];
+            
+            const i32 rect_count = int_rect_subtract(&area_test->rect, &area->rect, rect_array);
+
+            for (i32 rect_index = 0; rect_index < rect_count; ++rect_index)
+            {
+                Area new_area = *area_test;
+                new_area.rect = rect_array[rect_index];
+                
+                add_area_to_list(&new_area_list, &new_area);
+            }
+        }
+        else
+        {
+            add_area_to_list(&new_area_list, area_test);
+        }
+    }
+
+    add_area_to_list(&new_area_list, area);
+
+    free(area_list->area_array);
+
+    *area_list = new_area_list;
 }
 
 static void init_direction_mask(World *world)
@@ -598,8 +905,10 @@ static void setup_tower(World *world)
 
 static void setup_elevator(World *world)
 {
-    ivec2 elevator_origin;
-    world_get_elevator_origin(elevator_origin);
+    const ivec2 elevator_origin = {
+        WORLD_CENTER_I32 - ELEVATOR_SIZE / 2,
+        WORLD_CENTER_I32 - ELEVATOR_SIZE / 2,
+    };
     
     world_set_block_type_cube(
         world,
@@ -672,16 +981,6 @@ static void setup_tower_rooms(World *world)
         .area_array = malloc(area_max * sizeof(Area))
     };
 
-    ivec2 quadrant1_origin;
-    ivec2 quadrant2_origin;
-    ivec2 quadrant3_origin;
-    ivec2 quadrant4_origin;
-    
-    world_get_quadrant_origin(QUADRANT_1, quadrant1_origin);                
-    world_get_quadrant_origin(QUADRANT_2, quadrant2_origin);
-    world_get_quadrant_origin(QUADRANT_3, quadrant3_origin);
-    world_get_quadrant_origin(QUADRANT_4, quadrant4_origin);
-        
     for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         area_list_a.count = 0;
@@ -690,32 +989,32 @@ static void setup_tower_rooms(World *world)
         Area area_quadrant_1 = {
             .floor_number = floor_number,
             .rect = {
-                { quadrant1_origin[0], quadrant1_origin[1] },
-                { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE }
+                { SECTION_ORIGIN_ARRAY[SECTION_Q1][0], SECTION_ORIGIN_ARRAY[SECTION_Q1][1] },
+                { SECTION_SIZE_ARRAY[SECTION_Q1][0], SECTION_SIZE_ARRAY[SECTION_Q1][1] }
             }
         };
         
         Area area_quadrant_2 = {
             .floor_number = floor_number,
             .rect = {
-                { quadrant2_origin[0], quadrant2_origin[1] },
-                { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE }
+                { SECTION_ORIGIN_ARRAY[SECTION_Q2][0], SECTION_ORIGIN_ARRAY[SECTION_Q2][1] },
+                { SECTION_SIZE_ARRAY[SECTION_Q2][0], SECTION_SIZE_ARRAY[SECTION_Q2][1] }
             }
         };
 
         Area area_quadrant_3 = {
             .floor_number = floor_number,
             .rect = {
-                { quadrant3_origin[0], quadrant3_origin[1] },
-                { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE }
+                { SECTION_ORIGIN_ARRAY[SECTION_Q3][0], SECTION_ORIGIN_ARRAY[SECTION_Q3][1] },
+                { SECTION_SIZE_ARRAY[SECTION_Q3][0], SECTION_SIZE_ARRAY[SECTION_Q3][1] }
             }
         };
 
         Area area_quadrant_4 = {
             .floor_number = floor_number,
             .rect = {
-                { quadrant4_origin[0], quadrant4_origin[1] },
-                { TOWER_QUADRANT_SIZE, TOWER_QUADRANT_SIZE }
+                { SECTION_ORIGIN_ARRAY[SECTION_Q4][0], SECTION_ORIGIN_ARRAY[SECTION_Q4][1] },
+                { SECTION_SIZE_ARRAY[SECTION_Q4][0], SECTION_SIZE_ARRAY[SECTION_Q4][1] }
             }
         };
 
@@ -747,8 +1046,8 @@ static void setup_tower_rooms(World *world)
 
                     area_a->rect.size[axis_split] = split_size;
 
-                    area_b->rect.position[axis_split] = area->rect.position[axis_split] + split_size - 1;
-                    area_b->rect.size[axis_split] = area->rect.size[axis_split] - (split_size - 1);
+                    area_b->rect.position[axis_split] = area->rect.position[axis_split] + split_size;
+                    area_b->rect.size[axis_split] = area->rect.size[axis_split] - split_size;
                 }
                 else
                 {
@@ -768,11 +1067,34 @@ static void setup_tower_rooms(World *world)
         area_list->capacity = area_list_current->count;
         area_list->area_array = malloc(area_list->capacity * sizeof(Area));
 
-        LOG_INFO("%i", area_list->capacity);
-
         for (i32 area_index = 0; area_index < area_list_current->count; ++area_index)
         {
             area_list->area_array[area_index] = area_list_current->area_array[area_index];
+        }
+
+        for (i32 section_index = 0; section_index < SECTION_COUNT; ++section_index)
+        {
+            b32 quadrant_section = (
+                section_index == SECTION_Q1 ||
+                section_index == SECTION_Q2 ||
+                section_index == SECTION_Q3 ||
+                section_index == SECTION_Q4
+            );
+            
+            if (quadrant_section)
+            {
+                continue;
+            }
+            
+            Area section_area = {
+                .floor_number = floor_number,
+                .rect = {
+                    { SECTION_ORIGIN_ARRAY[section_index][0], SECTION_ORIGIN_ARRAY[section_index][1] },
+                    { SECTION_SIZE_ARRAY[section_index][0], SECTION_SIZE_ARRAY[section_index][1] },
+                },
+            };
+
+            add_area(area_list, &section_area);
         }
     }
 
@@ -786,27 +1108,27 @@ static void setup_tower_rooms(World *world)
         {
             const Area *area = &area_list->area_array[area_index];
 
-            world_set_block_type_box(
+            world_set_block_type_wireframe(
                 world,
                 area->rect.position[0], area->rect.position[1], floor_z,
-                area->rect.size[0], area->rect.size[1], FLOOR_SIZE_Z,
-                BLOCK_TYPE_METAL_5
+                area->rect.size[0] - 1, area->rect.size[1] - 1, 1,
+                rand() % 2 == 0 ? BLOCK_TYPE_CAUTION_1 : BLOCK_TYPE_CAUTION_4
             );
+        }
+    }
 
-            world_set_block_type_cube(
-                world,
-                area->rect.position[0], area->rect.position[1], floor_z,
-                area->rect.size[0], area->rect.size[1], 1,
-                BLOCK_TYPE_PANEL_4
-            );
+    #if 0
 
-            world_set_block_type_cube(
-                world,
-                area->rect.position[0], area->rect.position[1], floor_z + FLOOR_SIZE_Z - 1,
-                area->rect.size[0], area->rect.size[1], 1,
-                BLOCK_TYPE_METAL_4
-            );
-        
+    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    {
+        const AreaList *area_list = &world->area_list_array[floor_number];
+
+        const i32 floor_z = floor_number * FLOOR_SIZE_Z;
+
+        for (i32 area_index = 0; area_index < area_list->count; ++area_index)
+        {
+            const Area *area = &area_list->area_array[area_index];
+
             const i32 content_level = world_get_content_level(floor_z);
             const BlockTypeList *content_block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
 
@@ -819,7 +1141,7 @@ static void setup_tower_rooms(World *world)
                     area->rect.position[1] + 1 + rand() % (area->rect.size[1] - 2)
                 };
 
-                const i32 stack_size_z = rand() % (FLOOR_SIZE_Z - 4);
+                const i32 stack_size_z = rand() % (FLOOR_SIZE_Z - 6);
 
                 const BlockType content_block_type = content_block_type_list->block_type_array[rand() % content_block_type_list->count];
 
@@ -832,6 +1154,8 @@ static void setup_tower_rooms(World *world)
             }
         }
     }
+
+    #endif
 
     free(area_list_a.area_array);
     free(area_list_b.area_array);
@@ -1222,7 +1546,69 @@ static void setup_horse_territory(World *world)
 
 static void init_graph(World *world)
 {
+    AreaList *area_list = &world->area_list_array[ROOF_FLOOR_NUMBER];
     
+    Area test_area_1 = {
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 105, 105 },
+            { 10, 10 },
+        }
+    };
+
+    add_area(area_list, &test_area_1);
+
+    Area test_area_2 = {
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 95, 105 },
+            { 10, 10 },
+        }
+    };
+
+    add_area(area_list, &test_area_2);
+
+    Area test_area_3 = {
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 95, 95 },
+            { 10, 10 },
+        }
+    };
+
+    add_area(area_list, &test_area_3);
+
+    Area test_area_4 = {
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 105, 95 },
+            { 10, 10 },
+        }
+    };
+
+    add_area(area_list, &test_area_4);
+
+    Area test_area_5 = {
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 100, 100 },
+            { 10, 10 },
+        }
+    };
+
+    add_area(area_list, &test_area_5);
+
+    for (i32 area_index = 0; area_index < area_list->count; ++area_index)
+    {
+        const Area *area = &area_list->area_array[area_index];
+
+        world_set_block_type_wireframe(
+            world,
+            area->rect.position[0], area->rect.position[1], ROOF_FLOOR_NUMBER * FLOOR_SIZE_Z,
+            area->rect.size[0], area->rect.size[1], 1,
+            BLOCK_TYPE_CAUTION_3
+        );
+    }
 }
 
 void world_init(World *world)
@@ -1259,8 +1645,6 @@ void world_init(World *world)
 
     init_direction_mask(world);
     init_graph(world);
-
-    LOG_INFO("World init");
 }
 
 void world_close(World *world)

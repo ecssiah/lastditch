@@ -201,11 +201,6 @@ static void control_actor(World *world, Actor *actor)
             actor->velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;
             actor->velocity[1] = direction[1] * AGENT_DEFAULT_GROUND_SPEED;
 
-            if (rand() % 100 < 70)
-            {
-                actor->velocity[2] = 24.0f;
-            }
-
             actor->rotation_target[2] = direction_angle;
 
             actor->actor_control.decision_clock = 0;

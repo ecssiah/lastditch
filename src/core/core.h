@@ -29,7 +29,11 @@ void int_rect_max(const IntRect *rect, ivec2 out_max);
 void int_rect_min(const IntRect *rect, ivec2 out_min);
 
 b32 int_rect_overlaps(const IntRect *rect_a, const IntRect *rect_b);
+IntRect int_rect_intersection(const IntRect *a, const IntRect *b);
+
 i32 int_rect_subtract(const IntRect *rect_a, const IntRect *rect_b, IntRect *out_array);
+
+void int_rect_print(const IntRect *rect);
 
 typedef struct FloatRect FloatRect;
 struct FloatRect

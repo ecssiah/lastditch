@@ -59,6 +59,7 @@ target_sources(
     external/jsk/jsk_gl.c
     external/jsk/jsk_log.c      
     external/stb/src/stb_image.c
+    src/core/core.c
     src/core/math/math.c
     src/game/sim/action.c
     src/game/sim/navigation.c

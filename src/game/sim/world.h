@@ -52,6 +52,8 @@
 
 #define ROOF_Z (TOWER_FLOOR_COUNT * FLOOR_SIZE_Z)
 #define ROOF_FLOOR_COUNT (FLOOR_COUNT - TOWER_FLOOR_COUNT)
+#define ROOF_FLOOR_NUMBER TOWER_FLOOR_COUNT
+
 #define ROOF_CENTER_PATH_SIZE 18
 
 #define PLATFORM_SIZE_X 24
@@ -81,6 +83,7 @@ typedef enum Direction Direction;
 enum Direction
 {
     FOR_LIST_DIRECTION(DEFINE_LIST_ENUMERATION)
+    
     DIRECTION_COUNT
 };
 
@@ -153,6 +156,7 @@ typedef enum BlockType BlockType;
 enum BlockType
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_LIST_ENUMERATION)
+    
     BLOCK_TYPE_COUNT
 };
 
@@ -165,6 +169,46 @@ struct BlockTypeList
 
     i32 count;
 };
+
+#define FOR_LIST_SECTION(DO)                    \
+    DO(SECTION_CT)                              \
+    DO(SECTION_C1)                              \
+    DO(SECTION_C2)                              \
+    DO(SECTION_C3)                              \
+    DO(SECTION_C4)                              \
+    DO(SECTION_Q1)                              \
+    DO(SECTION_Q2)                              \
+    DO(SECTION_Q3)                              \
+    DO(SECTION_Q4)                              \
+    DO(SECTION_E1)                              \
+    DO(SECTION_E2)                              \
+    DO(SECTION_E3)                              \
+    DO(SECTION_NE)                              \
+    DO(SECTION_N1)                              \
+    DO(SECTION_N2)                              \
+    DO(SECTION_N3)                              \
+    DO(SECTION_NW)                              \
+    DO(SECTION_W1)                              \
+    DO(SECTION_W2)                              \
+    DO(SECTION_W3)                              \
+    DO(SECTION_SW)                              \
+    DO(SECTION_S1)                              \
+    DO(SECTION_S2)                              \
+    DO(SECTION_S3)                              \
+    DO(SECTION_SE)                              \
+
+typedef enum Section Section;
+enum Section
+{
+    FOR_LIST_SECTION(DEFINE_LIST_ENUMERATION)
+    
+    SECTION_COUNT
+};
+
+extern const char *SECTION_TYPE_STRING[SECTION_COUNT];
+
+extern const ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT];
+extern const ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT];
 
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_0[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_1[];
@@ -207,6 +251,8 @@ struct Area
 {
     i32 floor_number;
     IntRect rect;
+
+    BlockType wall_array[DIRECTION_COUNT];
 };
 
 typedef struct AreaList AreaList;
@@ -217,16 +263,6 @@ struct AreaList
 
     Area *area_array;
 };
-
-typedef enum Quadrant Quadrant;
-enum Quadrant
-{
-    QUADRANT_1,
-    QUADRANT_2,
-    QUADRANT_3,
-    QUADRANT_4
-};
-
 
 typedef struct World World;
 struct World
@@ -265,9 +301,6 @@ void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position);
 void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
 
 i32 world_get_floor(i32 z);
-
-void world_get_elevator_origin(ivec2 out_origin);
-void world_get_quadrant_origin(Quadrant quadrant, ivec2 out_origin);
 
 b32 world_is_solid(World *world, i32 x, i32 y, i32 z);
 b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask);
