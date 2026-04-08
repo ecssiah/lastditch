@@ -34,7 +34,7 @@
 #define WORLD_STRIDE_Z (WORLD_AREA_IN_CELLS)
 
 #define WORLD_CENTER_I32 ((i32)(WORLD_SIZE_IN_CELLS / 2))
-#define WORLD_CENTER_F32 ((f32)WORLD_SIZE_IN_CELLS / 2.0f)
+#define WORLD_CENTER_F32 ((f32)(WORLD_SIZE_IN_CELLS / 2.0f))
 
 #define FLOOR_SIZE_Z 16
 #define FLOOR_COUNT (SECTOR_HEIGHT_IN_CELLS / FLOOR_SIZE_Z)
@@ -65,6 +65,8 @@
 #define TEMPLE_BORDER_OFFSET 24
 
 #define ELEVATOR_SIZE 16
+
+#define AREA_POOL_MAX 1 << 12
 
 #define AREA_EXPANSION_ITERATION_COUNT 5
 #define AREA_EXPANSION_SIZE_MIN 8
@@ -246,22 +248,51 @@ struct ConnectList
     Connect *connect_array;
 };
 
+typedef enum AreaType AreaType;
+enum AreaType
+{
+    AREA_TYPE_OPEN,
+    AREA_TYPE_ROOM,
+};
+
 typedef struct Area Area;
 struct Area
 {
     i32 floor_number;
     IntRect rect;
 
+    AreaType area_type;
     BlockType wall_array[DIRECTION_COUNT];
 };
 
-typedef struct AreaList AreaList;
-struct AreaList
+typedef struct AreaHandle AreaHandle;
+struct AreaHandle
 {
-    i32 count;
-    i32 capacity;
+    u32 index;
+    u32 generation;
+    u32 floor_number;
+};
 
-    Area *area_array;
+typedef struct AreaPool AreaPool;
+struct AreaPool
+{
+    Area area_array[AREA_POOL_MAX];
+
+    u32 generation_array[AREA_POOL_MAX];
+    
+    u32 free_array[AREA_POOL_MAX];
+    u32 free_count;
+
+    u32 active_array[AREA_POOL_MAX];
+    u32 active_lookup[AREA_POOL_MAX];
+    u32 active_count;
+};
+
+typedef struct AreaOverlap AreaOverlap;
+struct AreaOverlap
+{
+    IntRect rect;
+    Direction direction;
 };
 
 typedef struct World World;
@@ -279,7 +310,7 @@ struct World
 
     Cell *cell_array;
 
-    AreaList area_list_array[FLOOR_COUNT];
+    AreaPool area_pool_array[FLOOR_COUNT];
 };
 
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
@@ -319,6 +350,11 @@ void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i3
 
 i32 world_get_content_level(i32 floor_number);
 
+AreaHandle world_add_area(AreaPool *area_pool, Area *area);
+Area *world_get_area(AreaPool *area_pool, AreaHandle area_handle);
+void world_remove_area(AreaPool *area_pool, AreaHandle area_handle);
+void world_remove_area_by_index(AreaPool *area_pool, u32 area_index);
+    
 void world_construct_area(World *world, const Area *area);
 
 void world_init(World *world);
