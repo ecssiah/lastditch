@@ -683,6 +683,75 @@ void world_set_block_type_wireframe(World *world, i32 x, i32 y, i32 z, i32 size_
     }
 }
 
+void world_construct_area(World *world, const Area *area)
+{
+    const i32 area_z = area->floor_number * FLOOR_SIZE_Z;
+    
+    ivec2 min, max;
+    int_rect_min(&area->rect, min);
+    int_rect_max(&area->rect, max);
+    
+    if (area->wall_array[DIRECTION_EAST] != BLOCK_TYPE_NONE)
+    {
+        world_set_block_type_cube(
+            world,
+            max[0] - 1, min[1], area_z,
+            1, area->rect.size[1], FLOOR_SIZE_Z,
+            area->wall_array[DIRECTION_EAST]
+        );
+    }
+
+    if (area->wall_array[DIRECTION_WEST] != BLOCK_TYPE_NONE)
+    {
+        world_set_block_type_cube(
+            world,
+            min[0], min[1], area_z,
+            1, area->rect.size[1], FLOOR_SIZE_Z,
+            area->wall_array[DIRECTION_WEST]
+        );
+    }
+
+    if (area->wall_array[DIRECTION_NORTH] != BLOCK_TYPE_NONE)
+    {
+        world_set_block_type_cube(
+            world,
+            min[0], max[1] - 1, area_z,
+            area->rect.size[0], 1, FLOOR_SIZE_Z,
+            area->wall_array[DIRECTION_NORTH]
+        );
+    }
+
+    if (area->wall_array[DIRECTION_SOUTH] != BLOCK_TYPE_NONE)
+    {
+        world_set_block_type_cube(
+            world,
+            min[0], min[1], area_z,
+            area->rect.size[0], 1, FLOOR_SIZE_Z,
+            area->wall_array[DIRECTION_SOUTH]
+        );
+    }
+
+    if (area->wall_array[DIRECTION_UP] != BLOCK_TYPE_NONE)
+    {
+        world_set_block_type_cube(
+            world,
+            min[0], min[1], area_z + FLOOR_SIZE_Z - 1,
+            area->rect.size[0], area->rect.size[1], 1,
+            area->wall_array[DIRECTION_UP]
+        );
+    }
+
+    if (area->wall_array[DIRECTION_DOWN] != BLOCK_TYPE_NONE)
+    {
+        world_set_block_type_cube(
+            world,
+            min[0], min[1], area_z,
+            area->rect.size[0], area->rect.size[1], 1,
+            area->wall_array[DIRECTION_DOWN]
+        );
+    }
+}
+
 static void add_area_to_list(AreaList *area_list, const Area *area)
 {
     if (area_list->count >= area_list->capacity)
@@ -991,7 +1060,15 @@ static void setup_tower_rooms(World *world)
             .rect = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q1][0], SECTION_ORIGIN_ARRAY[SECTION_Q1][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q1][0], SECTION_SIZE_ARRAY[SECTION_Q1][1] }
-            }
+            },
+            .wall_array = {
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_NONE,
+                BLOCK_TYPE_NONE,
+            },
         };
         
         Area area_quadrant_2 = {
@@ -999,7 +1076,15 @@ static void setup_tower_rooms(World *world)
             .rect = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q2][0], SECTION_ORIGIN_ARRAY[SECTION_Q2][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q2][0], SECTION_SIZE_ARRAY[SECTION_Q2][1] }
-            }
+            },
+            .wall_array = {
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_NONE,
+                BLOCK_TYPE_NONE,
+            },
         };
 
         Area area_quadrant_3 = {
@@ -1007,7 +1092,15 @@ static void setup_tower_rooms(World *world)
             .rect = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q3][0], SECTION_ORIGIN_ARRAY[SECTION_Q3][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q3][0], SECTION_SIZE_ARRAY[SECTION_Q3][1] }
-            }
+            },
+            .wall_array = {
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_NONE,
+                BLOCK_TYPE_NONE,
+            },
         };
 
         Area area_quadrant_4 = {
@@ -1015,7 +1108,15 @@ static void setup_tower_rooms(World *world)
             .rect = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q4][0], SECTION_ORIGIN_ARRAY[SECTION_Q4][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q4][0], SECTION_SIZE_ARRAY[SECTION_Q4][1] }
-            }
+            },
+            .wall_array = {
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_METAL_3,
+                BLOCK_TYPE_WOLF_STONE,
+                BLOCK_TYPE_LION_STONE,
+            },
         };
 
         add_area(&area_list_a, &area_quadrant_1);
@@ -1092,6 +1193,14 @@ static void setup_tower_rooms(World *world)
                     { SECTION_ORIGIN_ARRAY[section_index][0], SECTION_ORIGIN_ARRAY[section_index][1] },
                     { SECTION_SIZE_ARRAY[section_index][0], SECTION_SIZE_ARRAY[section_index][1] },
                 },
+                .wall_array = {
+                    BLOCK_TYPE_NONE,
+                    BLOCK_TYPE_NONE,
+                    BLOCK_TYPE_NONE,
+                    BLOCK_TYPE_NONE,
+                    BLOCK_TYPE_NONE,
+                    BLOCK_TYPE_NONE,
+                },
             };
 
             add_area(area_list, &section_area);
@@ -1114,6 +1223,8 @@ static void setup_tower_rooms(World *world)
                 area->rect.size[0], area->rect.size[1], 1,
                 rand() % 2 == 0 ? BLOCK_TYPE_CAUTION_1 : BLOCK_TYPE_CAUTION_4
             );
+
+            world_construct_area(world, area);
         }
     }
 

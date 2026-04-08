@@ -319,6 +319,8 @@ void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i3
 
 i32 world_get_content_level(i32 floor_number);
 
+void world_construct_area(World *world, const Area *area);
+
 void world_init(World *world);
 void world_close(World *world);
 
