@@ -677,14 +677,10 @@ Area *world_get_area(AreaPool *area_pool, AreaHandle area_handle)
 AreaHandle world_make_area_handle(const AreaPool *area_pool, u32 area_index)
 {
     AreaHandle area_handle = {
-        UINT32_MAX,
-        UINT32_MAX,
-        UINT32_MAX,
+        area_index,
+        area_pool->generation_array[area_index],
+        area_pool->floor_number
     };
-
-    area_handle.index = area_index;
-    area_handle.generation = area_pool->generation_array[area_index];
-    area_handle.floor_number = area_pool->floor_number;
 
     return area_handle;
 }
@@ -816,6 +812,7 @@ static void place_area(World *world, i32 floor_number, Area *area)
             for (u32 rect_index = 0; rect_index < rect_count; ++rect_index)
             {
                 Area new_area;
+                new_area.area_type = area_test->area_type;
                 new_area.floor_number = area_test->floor_number;
                 new_area.rect = rect_array[rect_index];
                 new_area.edge_count = 0;
@@ -1183,8 +1180,65 @@ static void setup_tower_rooms(World *world)
             world_add_area(area_pool, &section_area);
         }
     }
+
+    // TEST AREA
+    Area test_area1 = {
+        .area_type = AREA_TYPE_OPEN,
+        .edge_count = 0,
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 95, 95 },
+            { 10, 10 },
+        },
+    };
     
-    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    Area test_area2 = {
+        .area_type = AREA_TYPE_OPEN,
+        .edge_count = 0,
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 95, 105 },
+            { 10, 10 },
+        },
+    };
+    
+    Area test_area3 = {
+        .area_type = AREA_TYPE_OPEN,
+        .edge_count = 0,
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 105, 95 },
+            { 10, 10 },
+        },
+    };
+    
+    Area test_area4 = {
+        .area_type = AREA_TYPE_OPEN,
+        .edge_count = 0,
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 105, 105 },
+            { 10, 10 },
+        },
+    };
+    
+    Area test_area5 = {
+        .area_type = AREA_TYPE_ROOM,
+        .edge_count = 0,
+        .floor_number = ROOF_FLOOR_NUMBER,
+        .rect = {
+            { 100, 100 },
+            { 10, 10 },
+        },
+    };
+
+    place_area(world, ROOF_FLOOR_NUMBER, &test_area1);
+    place_area(world, ROOF_FLOOR_NUMBER, &test_area2);
+    place_area(world, ROOF_FLOOR_NUMBER, &test_area3);
+    place_area(world, ROOF_FLOOR_NUMBER, &test_area4);
+    place_area(world, ROOF_FLOOR_NUMBER, &test_area5);
+    
+    for (u32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         const AreaPool *area_pool = &world->area_pool_array[floor_number];
                 
@@ -1196,7 +1250,7 @@ static void setup_tower_rooms(World *world)
             world_set_block_type_wireframe(
                 world,
                 area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
-                area->rect.size[0], area->rect.size[1], 1,
+                area->rect.size[0], area->rect.size[1], 2,
                 BLOCK_TYPE_CAUTION_2
             );
 
@@ -1794,7 +1848,7 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
 }
 
 static void init_graph(World *world)
-{
+{   
     EdgePool *edge_pool = &world->edge_pool;
     
     for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
