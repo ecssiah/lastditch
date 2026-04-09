@@ -100,6 +100,40 @@ struct TextVertex
     f32 uv[2];
 };
 
+typedef struct DebugVertex DebugVertex;
+struct DebugVertex
+{
+    f32 a_position[3];
+    f32 a_color[3];
+};
+
+typedef struct DebugGpuData DebugGpuData;
+struct DebugGpuData
+{
+    GLuint vao_id;
+    GLuint vbo_id;
+
+    u32 debug_vertex_count;
+    u32 debug_vertex_capacity;
+    
+    DebugVertex *debug_vertex_array;
+};
+
+typedef struct DebugRender DebugRender;
+struct DebugRender
+{
+    GLuint program_id;
+
+    GLint u_projection_location;
+    GLint u_view_location;
+    GLint u_model_location;
+
+    u32 debug_gpu_data_count;
+    u32 debug_gpu_data_capacity;
+    
+    DebugGpuData *debug_gpu_data_array;
+};
+
 typedef struct VoxelRender VoxelRender;
 struct VoxelRender
 {
@@ -156,6 +190,7 @@ struct ModelRender
 typedef struct Render Render;
 struct Render
 {
+    DebugRender debug_render;
     VoxelRender voxel_render;
     ModelRender model_render;
 

@@ -1552,19 +1552,7 @@ static void init_graph(World *world)
 
                 if (area_overlap.rect.size[0] > 0 && area_overlap.rect.size[1] > 0)
                 {
-//                     const BlockType grabbag[] = {
-//                         BLOCK_TYPE_CARDINAL_EAST,
-//                         BLOCK_TYPE_CARDINAL_WEST,
-//                         BLOCK_TYPE_CARDINAL_NORTH,
-//                         BLOCK_TYPE_CARDINAL_SOUTH,
-//                     };
                     
-//                     world_set_block_type_cube(
-//                         world,
-//                         area_overlap.rect.position[0], area_overlap.rect.position[1], floor_number * FLOOR_SIZE_Z,
-//                         area_overlap.rect.size[0], area_overlap.rect.size[1], 3,
-//                         grabbag[(i32)area_overlap.direction]
-//                     );
                 }
             }
         }

@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "game/shell/shell.h"
+#include "game/sim/debug.h"
 #include "stb_image.h"
 
 #include "jsk.h"
@@ -91,6 +93,53 @@ static void get_projection_matrix(mat4 out_projection_matrix)
         1000.0f,
         out_projection_matrix
     );
+}
+
+static void upload_debug_gpu_data(DebugGpuData *debug_gpu_data)
+{
+    if (debug_gpu_data->vao_id == 0)
+    {
+        glGenVertexArrays(1, &debug_gpu_data->vao_id);
+        glGenBuffers(1, &debug_gpu_data->vbo_id);
+
+        glBindVertexArray(debug_gpu_data->vao_id);
+        glBindBuffer(GL_ARRAY_BUFFER, debug_gpu_data->vbo_id);
+
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GLFW_FALSE,
+            sizeof(DebugVertex),
+            (void *)offsetof(DebugVertex, a_position)
+        );
+    
+        glVertexAttribPointer(
+            1,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(DebugVertex),
+            (void *)offsetof(DebugVertex, a_color)
+        );
+
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+    }
+    else
+    {
+        glBindVertexArray(debug_gpu_data->vao_id);
+        glBindBuffer(GL_ARRAY_BUFFER, debug_gpu_data->vbo_id);
+    }
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        debug_gpu_data->debug_vertex_count * sizeof(DebugVertex),
+        debug_gpu_data->debug_vertex_array,
+        GL_DYNAMIC_DRAW
+    );
+
+    glBindVertexArray(0);
 }
 
 static void load_texture_array_layer(const char *texture_path, const GLint layer_index)
@@ -550,8 +599,6 @@ static void upload_voxel_gpu_data(VoxelGpuData *voxel_gpu_data)
             sizeof(VoxelVertex),
             (void *)offsetof(VoxelVertex, a_vertex)
         );
-    
-        glEnableVertexAttribArray(0);
 
         glVertexAttribIPointer(
             1,
@@ -560,7 +607,8 @@ static void upload_voxel_gpu_data(VoxelGpuData *voxel_gpu_data)
             sizeof(VoxelVertex),
             (void *)offsetof(VoxelVertex, a_face)
         );
-    
+
+        glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
     }
     else
@@ -668,6 +716,36 @@ static void init_viewpoint(Render *render)
     get_projection_matrix(render->viewpoint.projection_matrix);
 }
 
+static void init_debug_render(Shell *shell, Sim *sim)
+{
+    DebugRender *debug_render = &shell->render.debug_render;
+
+    debug_render->debug_gpu_data_count = 0;
+    debug_render->debug_gpu_data_capacity = 0;
+    debug_render->debug_gpu_data_array = NULL;
+
+    GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
+    GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
+
+    debug_render->program_id = glCreateProgram();
+
+    glAttachShader(debug_render->program_id, vert_shader);
+    glAttachShader(debug_render->program_id, frag_shader);
+    
+    glLinkProgram(debug_render->program_id);
+
+    glUseProgram(debug_render->program_id);
+    
+    debug_render->u_projection_location = glGetUniformLocation(debug_render->program_id, "u_projection_matrix");
+    debug_render->u_view_location = glGetUniformLocation(debug_render->program_id, "u_view_matrix");
+    debug_render->u_model_location = glGetUniformLocation(debug_render->program_id, "u_model_matrix");
+
+    glUniformMatrix4fv(debug_render->u_projection_location, 1, GL_FALSE, (f32 *)shell->render.viewpoint.projection_matrix);
+
+    glDeleteShader(vert_shader);
+    glDeleteShader(frag_shader);
+}
+
 static void init_voxel_render(Shell *shell, Sim *sim)
 {
     VoxelRender *voxel_render = &shell->render.voxel_render;
@@ -723,8 +801,6 @@ static void init_voxel_render(Shell *shell, Sim *sim)
     
     load_block_texture_directory(shell);
     
-    glUseProgram(voxel_render->program_id);
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render->texture_array_id);
 
@@ -834,6 +910,53 @@ static void update_viewpoint(Render *render, Sim *sim)
     glm_vec3_copy((f32 *)judge->rotation, render->viewpoint.rotation);
 }
 
+static void update_debug_render(Render *render, Sim *sim)
+{
+    glUseProgram(render->debug_render.program_id);
+
+    viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
+
+    glUniformMatrix4fv(render->debug_render.u_view_location, 1, GL_FALSE, (f32 *)render->viewpoint.view_matrix);
+
+    glDisable(GL_DEPTH_TEST);
+
+    DebugGpuData debug_gpu_data;
+    debug_gpu_data.debug_vertex_count = 0;
+    debug_gpu_data.debug_vertex_capacity = 2 * sim->debug.count;
+    debug_gpu_data.debug_vertex_array = malloc(debug_gpu_data.debug_vertex_capacity * sizeof(DebugVertex));
+    
+    for (u32 debug_line_index = 0; debug_line_index < sim->debug.count; ++debug_line_index)
+    {
+        const DebugLine *debug_line = &sim->debug.line_array[debug_line_index];
+
+        const DebugVertex debug_vertex_a = {
+            { debug_line->position_a[0], debug_line->position_a[1], debug_line->position_a[2] },
+            { debug_line->color[0], debug_line->color[1], debug_line->color[2] },
+        };
+
+        const DebugVertex debug_vertex_b = {
+            { debug_line->position_b[0], debug_line->position_b[1], debug_line->position_b[2] },
+            { debug_line->color[0], debug_line->color[1], debug_line->color[2] },
+        };
+        
+        debug_gpu_data.debug_vertex_array[debug_gpu_data.debug_vertex_count++] = debug_vertex_a;
+        debug_gpu_data.debug_vertex_array[debug_gpu_data.debug_vertex_count++] = debug_vertex_b;
+    }
+
+    upload_debug_gpu_data(&debug_gpu_data);
+    
+    mat4 model_matrix;
+    glm_mat4_identity(model_matrix);
+	
+    glUniformMatrix4fv(render->debug_render.u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
+
+    glBindVertexArray(debug_gpu_data.vao_id);
+
+    glDrawArrays(GL_LINES, 0, debug_gpu_data.debug_vertex_count);
+
+    glBindVertexArray(0);
+}
+
 static void update_voxel_render(Render *render)
 {
     glUseProgram(render->voxel_render.program_id);
@@ -917,7 +1040,8 @@ void render_init(Shell *shell, Platform *platform, Sim *sim)
     init_glad(platform);
 
     init_viewpoint(&shell->render);
-    
+
+    init_debug_render(shell, sim);
     init_voxel_render(shell, sim);
     init_model_render(shell, sim);
 }
@@ -928,7 +1052,8 @@ void render_update(Shell* shell, Sim* sim)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     update_viewpoint(&shell->render, sim);
-    
+
+    update_debug_render(&shell->render, sim);
     update_voxel_render(&shell->render);
     update_model_render(&shell->render, sim);
 }

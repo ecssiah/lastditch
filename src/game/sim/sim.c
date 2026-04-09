@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "game/sim/debug.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
 
@@ -156,8 +157,15 @@ void sim_init(Sim *sim)
     
     srand(sim->seed);
 
+    debug_init(&sim->debug);
     population_init(&sim->population);
     world_init(&sim->world);
+
+    vec3 position_a = { 1.0f, 1.0f, 1.0f };
+    vec3 position_b = { 6.0f, 1.0f, 1.0f };
+    vec3 color = { 1.0f, 0.0f, 0.0f };
+    
+    debug_draw_line(&sim->debug, position_a, position_b, color);
 }
 
 void sim_update(Sim *sim)
@@ -169,6 +177,7 @@ void sim_update(Sim *sim)
 
 void sim_close(Sim *sim)
 {
+    debug_close(&sim->debug);
     population_close();
     world_close(&sim->world);
 }

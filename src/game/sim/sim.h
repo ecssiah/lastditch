@@ -4,6 +4,7 @@
 #include "jsk.h"
 
 #include "game/sim/action.h"
+#include "game/sim/debug.h"
 #include "game/sim/navigation.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
@@ -21,6 +22,8 @@ struct Sim
     b32 evolving;
     
     u32 seed;
+
+    Debug debug;
 
     ActionQueue action_queue;
     Navigation navigation;

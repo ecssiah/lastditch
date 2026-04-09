@@ -1,5 +1,6 @@
 #include "game/shell/shell.h"
 
+#include "game/sim/debug.h"
 #include "jsk_log.h"
 
 #include "game/shell/render.h"
