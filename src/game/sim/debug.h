@@ -7,6 +7,8 @@
 
 #define DEBUG_LINE_MAX 1 << 13
 
+#define DEBUG_AREAS true
+
 typedef struct DebugLine DebugLine;
 struct DebugLine
 {
@@ -18,14 +20,14 @@ struct DebugLine
 typedef struct Debug Debug;
 struct Debug
 {
-    u32 count;
-    u32 capacity;
+    u32 line_count;
+    u32 line_capacity;
     
     DebugLine *line_array;    
 };
 
-void debug_draw_line(Debug *debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 color_r, f32 color_g, f32 color_b);
-void debug_draw_box(Debug *debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f32 max_y, f32 max_z, f32 color_r, f32 color_g, f32 color_b);
+void debug_draw_line(Debug *debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 r, f32 g, f32 b);
+void debug_draw_box(Debug *debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f32 max_y, f32 max_z, f32 r, f32 g, f32 b);
 
 void debug_reset(Debug *debug);
 

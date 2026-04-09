@@ -1,13 +1,13 @@
 #include "debug.h"
 
-void debug_draw_line(Debug *debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 color_r, f32 color_g, f32 color_b)
+void debug_draw_line(Debug *debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 r, f32 g, f32 b)
 {
-    if (debug->count >= debug->capacity)
+    if (debug->line_count >= debug->line_capacity)
     {
         return;
     }
 
-    DebugLine *debug_line = &debug->line_array[debug->count++];
+    DebugLine *debug_line = &debug->line_array[debug->line_count++];
 
     debug_line->position_a[0] = ax;
     debug_line->position_a[1] = ay;
@@ -17,9 +17,9 @@ void debug_draw_line(Debug *debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 b
     debug_line->position_b[1] = by;
     debug_line->position_b[2] = bz;
     
-    debug_line->color[0] = color_r;
-    debug_line->color[1] = color_g;
-    debug_line->color[2] = color_b;
+    debug_line->color[0] = r;
+    debug_line->color[1] = g;
+    debug_line->color[2] = b;
 }
 
 void debug_draw_box(Debug *debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f32 max_y, f32 max_z, f32 r, f32 g, f32 b)
@@ -42,14 +42,14 @@ void debug_draw_box(Debug *debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f3
 
 void debug_reset(Debug *debug)
 {
-    debug->count = 0;
+    debug->line_count = 0;
 }
 
 void debug_init(Debug *debug)
 {
-    debug->count = 0;
-    debug->capacity = DEBUG_LINE_MAX;
-    debug->line_array = malloc(debug->capacity * sizeof(DebugLine));
+    debug->line_count = 0;
+    debug->line_capacity = DEBUG_LINE_MAX;
+    debug->line_array = malloc(debug->line_capacity * sizeof(DebugLine));
 }
 
 void debug_update(Debug *debug)

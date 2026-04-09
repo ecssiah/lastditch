@@ -55,19 +55,20 @@
 #define ROOF_FLOOR_COUNT (FLOOR_COUNT - TOWER_FLOOR_COUNT)
 #define ROOF_FLOOR_NUMBER TOWER_FLOOR_COUNT
 
-#define ROOF_CENTER_PATH_SIZE 18
+#define ROOF_CENTER_PATH_SIZE 18u
 
-#define PLATFORM_SIZE_X 24
-#define PLATFORM_SIZE_Y 16
+#define PLATFORM_SIZE_X 24u
+#define PLATFORM_SIZE_Y 16u
 
-#define TEMPLE_SIZE_X 30
-#define TEMPLE_SIZE_Y 20
+#define TEMPLE_SIZE_X 30u
+#define TEMPLE_SIZE_Y 20u
 
-#define TEMPLE_BORDER_OFFSET 24
+#define TEMPLE_BORDER_OFFSET 24u
 
 #define ELEVATOR_SIZE 16u
 
 #define AREA_POOL_MAX 1u << 12
+#define EDGE_POOL_MAX 1u << 12
 
 #define AREA_EXPANSION_ITERATION_COUNT 5u
 #define AREA_EXPANSION_SIZE_MIN 8u
@@ -228,11 +229,21 @@ struct Cell
     u8 direction_mask;
 };
 
+typedef struct EdgeHandle EdgeHandle;
+struct EdgeHandle
+{
+    u32 index;
+    u32 generation;
+};
+
 typedef struct Area Area;
 struct Area
 {
     u32 floor_number;
     IntRect rect;
+
+    u32 edge_count;
+    EdgeHandle edge_handle_array[16];
 };
 
 typedef struct AreaHandle AreaHandle;
@@ -250,11 +261,20 @@ struct AreaOverlap
     Direction direction;
 };
 
+typedef struct AreaEdge AreaEdge;
+struct AreaEdge
+{
+    AreaHandle area_handle_a;
+    AreaHandle area_handle_b;
+
+    AreaOverlap area_overlap;
+};
+
 typedef struct AreaPool AreaPool;
 struct AreaPool
 {
-    Area area_array[AREA_POOL_MAX];
-
+    u32 floor_number;
+    
     u32 generation_array[AREA_POOL_MAX];
 
     u32 free_count;
@@ -263,6 +283,23 @@ struct AreaPool
     u32 active_count;
     u32 active_array[AREA_POOL_MAX];
     u32 active_lookup[AREA_POOL_MAX];
+
+    Area area_array[AREA_POOL_MAX];
+};
+
+typedef struct EdgePool EdgePool;
+struct EdgePool
+{
+    u32 generation_array[EDGE_POOL_MAX];
+
+    u32 free_count;
+    u32 free_array[EDGE_POOL_MAX];
+
+    u32 active_count;
+    u32 active_array[EDGE_POOL_MAX];
+    u32 active_lookup[EDGE_POOL_MAX];
+    
+    AreaEdge edge_array[EDGE_POOL_MAX];
 };
 
 typedef struct Structure Structure;
@@ -287,6 +324,7 @@ struct World
     Cell *cell_array;
 
     AreaPool area_pool_array[FLOOR_COUNT];
+    EdgePool edge_pool;
 };
 
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
@@ -330,6 +368,10 @@ AreaHandle world_add_area(AreaPool *area_pool, Area *area);
 void world_remove_area(AreaPool *area_pool, u32 area_index);
 
 Area *world_get_area(AreaPool *area_pool, AreaHandle area_handle);
+AreaHandle world_make_area_handle(const AreaPool *area_pool, u32 area_index);
+
+EdgeHandle world_add_edge(EdgePool *edge_pool, AreaEdge *area_edge);
+void world_remove_edge(EdgePool *edge_pool, u32 edge_index);
 
 void world_construct_area(World *world, const Area *area);
 

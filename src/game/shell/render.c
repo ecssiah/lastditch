@@ -922,10 +922,10 @@ static void update_debug_render(Render *render, Sim *sim)
 
     DebugGpuData debug_gpu_data;
     debug_gpu_data.debug_vertex_count = 0;
-    debug_gpu_data.debug_vertex_capacity = 2 * sim->debug.count;
+    debug_gpu_data.debug_vertex_capacity = 2 * sim->debug.line_count;
     debug_gpu_data.debug_vertex_array = malloc(debug_gpu_data.debug_vertex_capacity * sizeof(DebugVertex));
     
-    for (u32 debug_line_index = 0; debug_line_index < sim->debug.count; ++debug_line_index)
+    for (u32 debug_line_index = 0; debug_line_index < sim->debug.line_count; ++debug_line_index)
     {
         const DebugLine *debug_line = &sim->debug.line_array[debug_line_index];
 
