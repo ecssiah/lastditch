@@ -227,21 +227,11 @@ struct Cell
     u8 direction_mask;
 };
 
-typedef enum AreaType AreaType;
-enum AreaType
-{
-    AREA_TYPE_OPEN,
-    AREA_TYPE_ROOM,
-};
-
 typedef struct Area Area;
 struct Area
 {
     u32 floor_number;
     IntRect rect;
-
-    AreaType area_type;
-    BlockType wall_array[DIRECTION_COUNT];
 };
 
 typedef struct AreaHandle AreaHandle;
@@ -252,26 +242,32 @@ struct AreaHandle
     u32 floor_number;
 };
 
+typedef struct AreaOverlap AreaOverlap;
+struct AreaOverlap
+{
+    IntRect rect;
+    Direction direction;
+};
+
 typedef struct AreaPool AreaPool;
 struct AreaPool
 {
     Area area_array[AREA_POOL_MAX];
 
     u32 generation_array[AREA_POOL_MAX];
-    
-    u32 free_array[AREA_POOL_MAX];
-    u32 free_count;
 
+    u32 free_count;
+    u32 free_array[AREA_POOL_MAX];
+
+    u32 active_count;
     u32 active_array[AREA_POOL_MAX];
     u32 active_lookup[AREA_POOL_MAX];
-    u32 active_count;
 };
 
-typedef struct AreaOverlap AreaOverlap;
-struct AreaOverlap
+typedef struct Structure Structure;
+struct Structure
 {
-    IntRect rect;
-    Direction direction;
+
 };
 
 typedef struct World World;
@@ -330,10 +326,10 @@ void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i3
 u32 world_get_content_level(i32 z);
 
 AreaHandle world_add_area(AreaPool *area_pool, Area *area);
+void world_remove_area(AreaPool *area_pool, u32 area_index);
+
 Area *world_get_area(AreaPool *area_pool, AreaHandle area_handle);
-void world_remove_area(AreaPool *area_pool, AreaHandle area_handle);
-void world_remove_area_by_index(AreaPool *area_pool, u32 area_index);
-    
+
 void world_construct_area(World *world, const Area *area);
 
 void world_init(World *world);
