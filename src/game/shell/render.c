@@ -149,7 +149,7 @@ static void load_block_texture_directory(Shell *shell)
 
     assert(voxel_render->block_config->entry_count <= BLOCK_TYPE_COUNT);
 
-    for (i32 layer_index = 0; layer_index < voxel_render->block_config->entry_count; ++layer_index)
+    for (u32 layer_index = 0; layer_index < voxel_render->block_config->entry_count; ++layer_index)
     {
         const JSK_ConfigEntry *config_entry = &voxel_render->block_config->config_entry_array[layer_index];
 
@@ -157,7 +157,7 @@ static void load_block_texture_directory(Shell *shell)
 	
         snprintf(texture_path, sizeof(texture_path), "%s/%s", block_texture_directory, config_entry->value);
 
-        const i32 block_type_index = world_block_type_index_from_string(config_entry->key);
+        const u32 block_type_index = world_block_type_index_from_string(config_entry->key);
 
         assert(block_type_index >= 0);
         assert(block_type_index < BLOCK_TYPE_COUNT);
@@ -192,7 +192,7 @@ static void load_actor_texture_directory(Shell *shell)
 
     assert(model_render->actor_config->entry_count <= NATION_TYPE_COUNT);
 
-    for (i32 layer_index = 0; layer_index < model_render->actor_config->entry_count; ++layer_index)
+    for (u32 layer_index = 0; layer_index < model_render->actor_config->entry_count; ++layer_index)
     {
         const JSK_ConfigEntry *config_entry = &model_render->actor_config->config_entry_array[layer_index];
 
@@ -200,7 +200,7 @@ static void load_actor_texture_directory(Shell *shell)
 
         snprintf(texture_path, sizeof(texture_path), "%s/%s", actor_texture_directory, config_entry->value);
 
-        const i32 nation_type_index = population_nation_type_index_from_string(config_entry->key);
+        const u32 nation_type_index = population_nation_type_index_from_string(config_entry->key);
 
         assert(nation_type_index >= 0);
         assert(nation_type_index < NATION_TYPE_COUNT);
@@ -217,10 +217,10 @@ static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)
 
     char line[256];
 
-    i32 vertex_count = 0;
-    i32 normal_count = 0;
-    i32 uv_count = 0;
-    i32 face_count = 0;
+    u32 vertex_count = 0;
+    u32 normal_count = 0;
+    u32 uv_count = 0;
+    u32 face_count = 0;
 
     while (fgets(line, sizeof(line), file))
     {
@@ -253,9 +253,9 @@ static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)
     f32 *normal_array = malloc(normal_count * 3 * sizeof(f32));
     f32 *uv_array = malloc(uv_count * 2 * sizeof(f32));
 
-    i32 vertex_index = 0;
-    i32 normal_index = 0;
-    i32 uv_index = 0;
+    u32 vertex_index = 0;
+    u32 normal_index = 0;
+    u32 uv_index = 0;
 
     while (fgets(line, sizeof(line), file))
     {
@@ -323,7 +323,7 @@ static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)
 
             assert(scan_result == 9);
 
-            for (i32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
+            for (u32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
             {
                 ModelVertex model_vertex;
 
@@ -427,7 +427,7 @@ static void add_voxel_gpu_data(VoxelRender *voxel_render, VoxelGpuData *voxel_gp
     voxel_gpu_data->voxel_vertex_array = NULL;
 }
 
-static void generate_sector_mesh(VoxelRender *voxel_render, Sim *sim, i32 sector_index)
+static void generate_sector_mesh(VoxelRender *voxel_render, Sim *sim, u32 sector_index)
 {
     SectorMesh sector_mesh;
     sector_mesh.sector_index = sector_index;
@@ -443,13 +443,13 @@ static void generate_sector_mesh(VoxelRender *voxel_render, Sim *sim, i32 sector
     sector_cell_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
     sector_cell_coordinate[2] = 0;
 
-    for (i32 cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
+    for (i32 cell_z = 0; cell_z < (i32)SECTOR_HEIGHT_IN_CELLS; ++cell_z)
     {
-        for (i32 cell_y = sector_cell_coordinate[1]; cell_y < sector_cell_coordinate[1] + SECTOR_SIZE_IN_CELLS; ++cell_y)
+        for (i32 cell_y = sector_cell_coordinate[1]; cell_y < sector_cell_coordinate[1] + (i32)SECTOR_SIZE_IN_CELLS; ++cell_y)
         {
-            for (i32 cell_x = sector_cell_coordinate[0]; cell_x < sector_cell_coordinate[0] + SECTOR_SIZE_IN_CELLS; ++cell_x)
+            for (i32 cell_x = sector_cell_coordinate[0]; cell_x < sector_cell_coordinate[0] + (i32)SECTOR_SIZE_IN_CELLS; ++cell_x)
             {
-                const i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
+                const u32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
 		
                 const Cell *cell = &sim->world.cell_array[cell_index];
 
@@ -486,18 +486,20 @@ static void generate_sector_mesh(VoxelRender *voxel_render, Sim *sim, i32 sector
 
 static void emit_sector_face(SectorQuad *sector_quad, VoxelGpuData *voxel_gpu_data)
 {
-    for (i32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
+    for (u32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-        const u32 x = (u32)sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0];
-        const u32 y = (u32)sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1];
-        const u32 z = (u32)sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2];
-
+        const ivec3 vertex_position = {
+            sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0],
+            sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1],
+            sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2],
+        };
+        
         VoxelVertex voxel_vertex;
 
         voxel_vertex.a_vertex =
-            ((x & 63u)  <<  0u) |
-            ((y & 63u)  <<  6u) |
-            ((z & 255u) << 12u);
+            ((vertex_position[0] & 63u)  <<  0u) |
+            ((vertex_position[1] & 63u)  <<  6u) |
+            ((vertex_position[2] & 255u) << 12u);
 	
         voxel_vertex.a_face =
             ((sector_quad->block_type & 255u) <<  0u) |
@@ -523,7 +525,7 @@ static void convert_sector_mesh_to_voxel_gpu_data(SectorMesh *sector_mesh, Voxel
     out_voxel_gpu_data->position[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
     out_voxel_gpu_data->position[2] = 0.0f;
 
-    for (i32 quad_index = 0; quad_index < sector_mesh->sector_quad_count; ++quad_index)
+    for (u32 quad_index = 0; quad_index < sector_mesh->sector_quad_count; ++quad_index)
     {
         SectorQuad *sector_quad = &sector_mesh->sector_quad_array[quad_index];
 
@@ -726,12 +728,12 @@ static void init_voxel_render(Shell *shell, Sim *sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render->texture_array_id);
 
-    for (i32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    for (u32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
         generate_sector_mesh(&shell->render.voxel_render, sim, sector_index);
     }
 
-    for (i32 sector_mesh_index = 0; sector_mesh_index < voxel_render->sector_mesh_count; ++sector_mesh_index)
+    for (u32 sector_mesh_index = 0; sector_mesh_index < voxel_render->sector_mesh_count; ++sector_mesh_index)
     {
         SectorMesh *sector_mesh = &voxel_render->sector_mesh_array[sector_mesh_index];
 
@@ -749,7 +751,7 @@ static void init_voxel_render(Shell *shell, Sim *sim)
         add_voxel_gpu_data(voxel_render, &voxel_gpu_data);
     }
 
-    for (i32 voxel_gpu_data_index = 0; voxel_gpu_data_index < voxel_render->voxel_gpu_data_count; ++voxel_gpu_data_index)
+    for (u32 voxel_gpu_data_index = 0; voxel_gpu_data_index < voxel_render->voxel_gpu_data_count; ++voxel_gpu_data_index)
     {
         VoxelGpuData *voxel_gpu_data = &voxel_render->voxel_gpu_data_array[voxel_gpu_data_index];
 	
@@ -798,7 +800,7 @@ static void init_model_render(Shell *shell, Sim *sim)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
     
-    for (i32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
     {
         if (sim->population.actor_pool.generation_array[actor_index] == 0)
         {
@@ -849,7 +851,7 @@ static void update_voxel_render(Render *render)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->voxel_render.texture_array_id);
 
-    for (i32 voxel_gpu_data_index = 0; voxel_gpu_data_index < render->voxel_render.voxel_gpu_data_count; ++voxel_gpu_data_index)
+    for (u32 voxel_gpu_data_index = 0; voxel_gpu_data_index < render->voxel_render.voxel_gpu_data_count; ++voxel_gpu_data_index)
     {
         const VoxelGpuData *voxel_gpu_data = &render->voxel_render.voxel_gpu_data_array[voxel_gpu_data_index];
 
@@ -883,7 +885,7 @@ static void update_model_render(Render* render, Sim *sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->model_render.texture_array_id);
 
-    for (i32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
     {
         if (sim->population.actor_pool.generation_array[actor_index] == 0)
         {

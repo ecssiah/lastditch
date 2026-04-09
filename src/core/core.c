@@ -33,40 +33,37 @@ b32 int_rect_overlaps(const IntRect *rect_left, const IntRect *rect_right)
     );
 }
 
-IntRect int_rect_intersection(const IntRect *a, const IntRect *b)
+IntRect int_rect_intersection(const IntRect *rect_left, const IntRect *rect_right)
 {
-    ivec2 a_min, a_max;
-    int_rect_min(a, a_min);
-    int_rect_max(a, a_max);
+    ivec2 left_min, left_max;
+    int_rect_min(rect_left, left_min);
+    int_rect_max(rect_left, left_max);
 
-    ivec2 b_min, b_max;
-    int_rect_min(b, b_min);
-    int_rect_max(b, b_max);
+    ivec2 right_min, right_max;
+    int_rect_min(rect_right, right_min);
+    int_rect_max(rect_right, right_max);
 
     const ivec2 o_min = {
-        max_i32(a_min[0], b_min[0]),
-        max_i32(a_min[1], b_min[1])
+        max_i32(left_min[0], right_min[0]),
+        max_i32(left_min[1], right_min[1])
     };
 
     const ivec2 o_max = {
-        min_i32(a_max[0], b_max[0]),
-        min_i32(a_max[1], b_max[1])
+        min_i32(left_max[0], right_max[0]),
+        min_i32(left_max[1], right_max[1])
     };
 
-    IntRect result;
+    IntRect rect_result = {
+        { o_min[0], o_min[1] },
+        { o_max[0] - o_min[0], o_max[1] - o_min[1] },
+    };
 
-    result.position[0] = o_min[0];
-    result.position[1] = o_min[1];
-
-    result.size[0] = o_max[0] - o_min[0];
-    result.size[1] = o_max[1] - o_min[1];
-
-    return result;
+    return rect_result;
 }
 
-i32 int_rect_subtract(const IntRect *rect_left, const IntRect *rect_right, IntRect *out)
+u32 int_rect_subtract(const IntRect *rect_left, const IntRect *rect_right, IntRect *out)
 {
-    i32 count = 0;
+    u32 count = 0;
     
     ivec2 left_min, left_max;
     int_rect_min(rect_left, left_min);
@@ -125,7 +122,7 @@ i32 int_rect_subtract(const IntRect *rect_left, const IntRect *rect_right, IntRe
 void int_rect_print(const IntRect *rect)
 {
     LOG_INFO(
-        "P: (%i %i) S: (%i %i)",
+        "IntRect{ (%i %i), (%i %i) }",
         rect->position[0],
         rect->position[1],
         rect->size[0],

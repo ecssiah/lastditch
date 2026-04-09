@@ -28,10 +28,10 @@ struct IntRect
 void int_rect_max(const IntRect *rect, ivec2 out_max);
 void int_rect_min(const IntRect *rect, ivec2 out_min);
 
-b32 int_rect_overlaps(const IntRect *rect_a, const IntRect *rect_b);
-IntRect int_rect_intersection(const IntRect *a, const IntRect *b);
+b32 int_rect_overlaps(const IntRect *rect_left, const IntRect *rect_right);
+IntRect int_rect_intersection(const IntRect *rect_left, const IntRect *rect_right);
 
-i32 int_rect_subtract(const IntRect *rect_a, const IntRect *rect_b, IntRect *out_array);
+u32 int_rect_subtract(const IntRect *rect_left, const IntRect *rect_right, IntRect *out_array);
 
 void int_rect_print(const IntRect *rect);
 

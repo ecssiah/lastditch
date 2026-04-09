@@ -126,10 +126,10 @@ static void apply_action(Sim *sim, Action *action)
 
     switch (action->type)
     {
-    case ACTION_MOVE: apply_move_action(actor, action); break;
-    case ACTION_ROTATE: apply_rotate_action(actor, action); break;
-    case ACTION_JUMP: apply_jump_action(actor); break;
-    case ACTION_DEBUG_MODE: apply_debug_mode_action(actor); break;
+    case ACTION_MOVE:         apply_move_action(actor, action); break;
+    case ACTION_ROTATE:       apply_rotate_action(actor, action); break;
+    case ACTION_JUMP:         apply_jump_action(actor); break;
+    case ACTION_DEBUG_MODE:   apply_debug_mode_action(actor); break;
     default: break;
     }
 }

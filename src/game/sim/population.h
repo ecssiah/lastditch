@@ -7,9 +7,9 @@
 
 #include "game/sim/world.h"
 
-#define ACTOR_MAX 256
+#define ACTOR_MAX 256u
 
-#define AGENT_INITIAL_POPULATION 12
+#define AGENT_INITIAL_POPULATION 12u
 
 #define AGENT_DEFAULT_GROUND_SPEED 1.0f
 #define AGENT_DEFAULT_JUMP_SPEED 28.0f
@@ -60,8 +60,8 @@ enum MovementType
 typedef struct ActorHandle ActorHandle;
 struct ActorHandle
 {
-    i32 index;
-    i32 generation;
+    u32 index;
+    u32 generation;
 };
 
 typedef enum ControlType ControlType;
@@ -77,8 +77,8 @@ struct ActorControl
 {
     ControlType control_type;
     
-    i32 decision_clock;
-    i32 decision_period;
+    u32 decision_clock;
+    u32 decision_period;
 };
 
 #define FOR_LIST_NATION_TYPE(DO)                \
@@ -131,13 +131,13 @@ struct ActorPool
 {
     Actor actor_array[ACTOR_MAX];
 
-    i32 generation_array[ACTOR_MAX];
+    u32 generation_array[ACTOR_MAX];
 
-    i32 active_array[ACTOR_MAX];
-    i32 active_count;
+    u32 active_array[ACTOR_MAX];
+    u32 active_count;
     
-    i32 free_array[ACTOR_MAX];
-    i32 free_count;
+    u32 free_array[ACTOR_MAX];
+    u32 free_count;
 };
 
 typedef struct Population Population;
@@ -154,8 +154,8 @@ void population_get_actor_forward(Actor *actor, vec3 out_forward);
 void population_get_actor_right(Actor *actor, vec3 out_right);
 void population_get_actor_up(Actor *actor, vec3 out_up);
 
-i32 population_actor_type_index_from_string(const char *actor_type_string);
-i32 population_nation_type_index_from_string(const char *nation_type_string);
+u32 population_actor_type_index_from_string(const char *actor_type_string);
+u32 population_nation_type_index_from_string(const char *nation_type_string);
     
 void population_init(Population *population);
 void population_update(World *world, Population *population);

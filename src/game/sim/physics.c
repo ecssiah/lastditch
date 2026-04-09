@@ -17,7 +17,7 @@ static void get_int_bounds(BoxCollider *box_collider, vec3 position, IntBounds *
     out_int_bounds->max[1] = (i32)(position[1] + box_collider->radius[1]);
     out_int_bounds->max[2] = (i32)(position[2] + box_collider->radius[2]);
 
-    for (i32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    for (u32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
         if (out_int_bounds->min[axis_index] < 0)
         {
@@ -44,7 +44,7 @@ static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBoun
 
     const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
 
-    for (i32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    for (u32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
         if (out_float_bounds->min[axis_index] < 0.0f)
         {
@@ -93,9 +93,9 @@ static void get_overlap_from_float_bounds(FloatBounds *float_bounds, IntBounds *
     if (out_int_bounds->min[1] < 0) out_int_bounds->min[1] = 0;
     if (out_int_bounds->min[2] < 0) out_int_bounds->min[2] = 0;
 
-    if (out_int_bounds->max[0] >= WORLD_SIZE_IN_CELLS) out_int_bounds->max[0] = WORLD_SIZE_IN_CELLS - 1;
-    if (out_int_bounds->max[1] >= WORLD_SIZE_IN_CELLS) out_int_bounds->max[1] = WORLD_SIZE_IN_CELLS - 1;
-    if (out_int_bounds->max[2] >= WORLD_SIZE_IN_CELLS) out_int_bounds->max[2] = WORLD_SIZE_IN_CELLS - 1;
+    if (out_int_bounds->max[0] >= (i32)WORLD_SIZE_IN_CELLS) out_int_bounds->max[0] = WORLD_SIZE_IN_CELLS - 1;
+    if (out_int_bounds->max[1] >= (i32)WORLD_SIZE_IN_CELLS) out_int_bounds->max[1] = WORLD_SIZE_IN_CELLS - 1;
+    if (out_int_bounds->max[2] >= (i32)WORLD_SIZE_IN_CELLS) out_int_bounds->max[2] = WORLD_SIZE_IN_CELLS - 1;
 }
 
 static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 delta_time)
@@ -110,8 +110,7 @@ static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 d
 
     FloatBounds swept_bounds;
 
-    i32 axis_index;
-    for (axis_index = 0; axis_index < 3; ++axis_index)
+    for (u32 axis_index = 0; axis_index < 3; ++axis_index)
     {
         swept_bounds.min[axis_index] = fminf(
             actor_bounds.min[axis_index],
@@ -251,7 +250,7 @@ void physics_integrate(World *world, Actor *actor)
 
         const f32 max_move = fmaxf(move_x, fmaxf(move_y, move_z));
 
-        i32 step_count = (i32)ceilf(max_move);
+        u32 step_count = (u32)ceilf(max_move);
         if (step_count < 1)
         {
             step_count = 1;
@@ -259,7 +258,7 @@ void physics_integrate(World *world, Actor *actor)
 
         const f32 step_delta_time = world->delta_time / (f32)step_count;
 
-        for (i32 step_index = 0; step_index < step_count; ++step_index)
+        for (u32 step_index = 0; step_index < step_count; ++step_index)
         {
             resolve_axis_collisions(world, actor, AXIS_X, step_delta_time);
             resolve_axis_collisions(world, actor, AXIS_Y, step_delta_time);

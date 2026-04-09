@@ -384,23 +384,23 @@ const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3] =
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
 {   
     return (
-        x >= 0 && x < WORLD_SIZE_IN_CELLS &&
-        y >= 0 && y < WORLD_SIZE_IN_CELLS &&
-        z >= 0 && z < SECTOR_HEIGHT_IN_CELLS
+        x >= 0 && x < (i32)WORLD_SIZE_IN_CELLS &&
+        y >= 0 && y < (i32)WORLD_SIZE_IN_CELLS &&
+        z >= 0 && z < (i32)SECTOR_HEIGHT_IN_CELLS
     );
 }
 
 b32 world_sector_coordinate_is_valid(i32 x, i32 y)
 {
     return (
-        x >= 0 && x < WORLD_SIZE_IN_SECTORS &&
-        y >= 0 && y < WORLD_SIZE_IN_SECTORS
+        x >= 0 && x < (i32)WORLD_SIZE_IN_SECTORS &&
+        y >= 0 && y < (i32)WORLD_SIZE_IN_SECTORS
     );
 }
 
-i32 world_sector_coordinate_to_index(ivec2 sector_coordinate)
+u32 world_sector_coordinate_to_index(ivec2 sector_coordinate)
 {
-    const i32 sector_index = (
+    const u32 sector_index = (
         sector_coordinate[0] +
         sector_coordinate[1] * WORLD_SIZE_IN_SECTORS
     );
@@ -408,7 +408,7 @@ i32 world_sector_coordinate_to_index(ivec2 sector_coordinate)
     return sector_index;
 }
 
-void world_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordinate)
+void world_sector_index_to_coordinate(u32 sector_index, ivec2 out_sector_coordinate)
 {
     const i32 mask = WORLD_SIZE_IN_SECTORS - 1; 
     
@@ -416,23 +416,23 @@ void world_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordin
     out_sector_coordinate[1] = (sector_index >> (1 * WORLD_SIZE_IN_SECTORS_LOG2));
 }
 
-i32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z)
+u32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z)
 {
-    const i32 cell_index = (
+    const u32 cell_index = (
         (x << (0 * WORLD_SIZE_IN_CELLS_LOG2)) +
         (y << (1 * WORLD_SIZE_IN_CELLS_LOG2)) +
         (z << (2 * WORLD_SIZE_IN_CELLS_LOG2))
     );
 
     assert(cell_index >= 0);
-    assert(cell_index < WORLD_VOLUME_IN_CELLS);
+    assert(cell_index < (i32)WORLD_VOLUME_IN_CELLS);
 	    
     return cell_index;
 }
 
-void world_cell_index_to_coordinate(i32 cell_index, ivec3 out_cell_coordinate)
+void world_cell_index_to_coordinate(u32 cell_index, ivec3 out_cell_coordinate)
 {
-    const i32 world_mask = WORLD_SIZE_IN_CELLS - 1;
+    const u32 world_mask = WORLD_SIZE_IN_CELLS - 1;
     
     out_cell_coordinate[0] = (cell_index >> (0 * WORLD_SIZE_IN_CELLS_LOG2)) & world_mask;
     out_cell_coordinate[1] = (cell_index >> (1 * WORLD_SIZE_IN_CELLS_LOG2)) & world_mask;
@@ -445,12 +445,12 @@ void world_cell_coordinate_to_sector_coordinate(i32 x, i32 y, ivec2 out_sector_c
     out_sector_coordinate[1] = y >> SECTOR_SIZE_IN_CELLS_LOG2;
 }
 
-i32 world_cell_coordinate_to_sector_index(i32 x, i32 y)
+u32 world_cell_coordinate_to_sector_index(i32 x, i32 y)
 {
     ivec2 sector_coordinate;
     world_cell_coordinate_to_sector_coordinate(x, y, sector_coordinate);
 
-    const i32 sector_index = world_sector_coordinate_to_index(sector_coordinate);
+    const u32 sector_index = world_sector_coordinate_to_index(sector_coordinate);
 
     return sector_index;
 }
@@ -462,12 +462,12 @@ void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_lo
     out_local_coordinate[2] = z;
 }
 
-i32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)
+u32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)
 {
     ivec3 local_coordinate;
     world_cell_coordinate_to_local_coordinate(x, y, z, local_coordinate);
 
-    const i32 local_index = (
+    const u32 local_index = (
         (local_coordinate[0] << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
         (local_coordinate[1] << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
         (local_coordinate[2] << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
@@ -490,7 +490,7 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
     out_cell_coordinate[2] = (i32)floorf(z);
 }
 
-i32 world_get_floor(i32 z)
+u32 world_get_floor(i32 z)
 {
     if (z >= 0)
     {
@@ -502,9 +502,9 @@ i32 world_get_floor(i32 z)
     }
 }
 
-i32 world_block_type_index_from_string(const char *block_type_string)
+u32 world_block_type_index_from_string(const char *block_type_string)
 {
-    for (i32 block_type_index = 0; block_type_index < BLOCK_TYPE_COUNT; ++block_type_index)
+    for (u32 block_type_index = 0; block_type_index < BLOCK_TYPE_COUNT; ++block_type_index)
     {
         if (strcmp(block_type_string, BLOCK_TYPE_STRING[block_type_index]) == 0)
         {
@@ -522,7 +522,7 @@ b32 world_is_solid(World *world, i32 x, i32 y, i32 z)
         return false;
     }
     
-    const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
+    const u32 cell_index = world_cell_coordinate_to_index(x, y, z);
     
     const Cell *cell = &world->cell_array[cell_index];
 
@@ -531,15 +531,17 @@ b32 world_is_solid(World *world, i32 x, i32 y, i32 z)
 
 b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask)
 {
-    for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    for (u32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
         if (direction_mask & (1 << direction_index))
         {
-            const i32 neighbor_x = x + (i32)DIRECTION_NORMAL_ARRAY[direction_index][0];
-            const i32 neighbor_y = y + (i32)DIRECTION_NORMAL_ARRAY[direction_index][1];
-            const i32 neighbor_z = z + (i32)DIRECTION_NORMAL_ARRAY[direction_index][2];
+            const ivec3 neighbor_position = {
+                x + (i32)DIRECTION_NORMAL_ARRAY[direction_index][0],
+                y + (i32)DIRECTION_NORMAL_ARRAY[direction_index][1],
+                z + (i32)DIRECTION_NORMAL_ARRAY[direction_index][2],
+            };
 
-            if (world_is_solid(world, neighbor_x, neighbor_y, neighbor_z))
+            if (world_is_solid(world, neighbor_position[0], neighbor_position[1], neighbor_position[2]))
             {
                 return false;
             }
@@ -553,15 +555,17 @@ u8 world_get_direction_mask(World *world, i32 x, i32 y, i32 z)
 {
     u8 direction_mask = 0;
 
-    const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
+    const u32 cell_index = world_cell_coordinate_to_index(x, y, z);
 
-    for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    for (u32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
-        const i32 neighbor_x = x + (i32)DIRECTION_NORMAL_ARRAY[direction_index][0];
-        const i32 neighbor_y = y + (i32)DIRECTION_NORMAL_ARRAY[direction_index][1];
-        const i32 neighbor_z = z + (i32)DIRECTION_NORMAL_ARRAY[direction_index][2];
+        const ivec3 neighbor_position = {
+            x + (i32)DIRECTION_NORMAL_ARRAY[direction_index][0],
+            y + (i32)DIRECTION_NORMAL_ARRAY[direction_index][1],
+            z + (i32)DIRECTION_NORMAL_ARRAY[direction_index][2],
+        };
 
-        const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_x, neighbor_y, neighbor_z);
+        const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_position[0], neighbor_position[1], neighbor_position[2]);
         
         if (!valid_neighbor)
         {
@@ -569,7 +573,7 @@ u8 world_get_direction_mask(World *world, i32 x, i32 y, i32 z)
         }
         else
         {
-            const i32 neighbor_cell_index = cell_index + DIRECTION_STRIDE[direction_index];
+            const u32 neighbor_cell_index = cell_index + DIRECTION_STRIDE[direction_index];
 
             if (world->cell_array[neighbor_cell_index].block_type == BLOCK_TYPE_NONE)
             {
@@ -588,7 +592,7 @@ Cell *world_get_cell(World *world, i32 x, i32 y, i32 z)
         return NULL;
     }
 
-    const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
+    const u32 cell_index = world_cell_coordinate_to_index(x, y, z);
     
     return &world->cell_array[cell_index];
 }
@@ -623,16 +627,16 @@ void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i3
     }
 }
 
-i32 world_get_content_level(i32 z)
+u32 world_get_content_level(i32 z)
 {
-    if (z >= ROOF_Z)
+    if (z >= (i32)ROOF_Z)
     {
         return -1;
     }
     else
     {
-        const i32 floor_number = z / FLOOR_SIZE_Z;
-        const i32 content_level = (TOWER_FLOOR_COUNT - 1 - floor_number) / 2;
+        const u32 floor_number = z / FLOOR_SIZE_Z;
+        const u32 content_level = (TOWER_FLOOR_COUNT - 1 - floor_number) / 2;
     
         return content_level;
     }
@@ -853,9 +857,9 @@ static void place_area(World *world, i32 floor_number, Area *area)
         {
             IntRect rect_array[4];
             
-            const i32 rect_count = int_rect_subtract(&area_test->rect, &area->rect, rect_array);
+            const u32 rect_count = int_rect_subtract(&area_test->rect, &area->rect, rect_array);
 
-            for (i32 rect_index = 0; rect_index < rect_count; ++rect_index)
+            for (u32 rect_index = 0; rect_index < rect_count; ++rect_index)
             {
                 Area new_area;
                 new_area.floor_number = area_test->floor_number;
@@ -880,7 +884,7 @@ static void place_area(World *world, i32 floor_number, Area *area)
 
 static void init_direction_mask(World *world)
 {
-    for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    for (u32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
         Cell *cell = &world->cell_array[cell_index];
 
@@ -900,11 +904,11 @@ static void setup_tower_walls(World *world, const ivec3 floor_origin)
 {
     const i32 cell_z = floor_origin[2];
 	
-    for (i32 cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + TOWER_SIZE - 1; ++cell_x)
+    for (i32 cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + (i32)TOWER_SIZE - 1; ++cell_x)
     {
         i32 north_position_z, north_size_z;
 	    
-        const i32 north_offset = rand() % (FLOOR_SIZE_Z - 2);
+        const u32 north_offset = rand() % (FLOOR_SIZE_Z - 2);
 
         if (rand() % 2)
         {
@@ -926,7 +930,7 @@ static void setup_tower_walls(World *world, const ivec3 floor_origin)
 
         i32 south_position_z, south_size_z;
 
-        const i32 south_offset = rand() % (FLOOR_SIZE_Z - 2);
+        const u32 south_offset = rand() % (FLOOR_SIZE_Z - 2);
 
         if (rand() % 2)
         {
@@ -947,11 +951,11 @@ static void setup_tower_walls(World *world, const ivec3 floor_origin)
         );
     }
 	
-    for (i32 cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + TOWER_SIZE - 1; ++cell_y)
+    for (i32 cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + (i32)TOWER_SIZE - 1; ++cell_y)
     {
         i32 east_position_z, east_size_z;
 
-        const i32 east_offset = rand() % (FLOOR_SIZE_Z - 2);
+        const u32 east_offset = rand() % (FLOOR_SIZE_Z - 2);
 
         if (rand() % 2)
         {
@@ -973,7 +977,7 @@ static void setup_tower_walls(World *world, const ivec3 floor_origin)
 
         i32 west_position_z, west_size_z;
 
-        const i32 west_offset = rand() % (FLOOR_SIZE_Z - 2);
+        const u32 west_offset = rand() % (FLOOR_SIZE_Z - 2);
 
         if (rand() % 2)
         {
@@ -997,7 +1001,7 @@ static void setup_tower_walls(World *world, const ivec3 floor_origin)
 
 static void setup_tower(World *world)
 {
-    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
 	
@@ -1056,9 +1060,9 @@ static void setup_elevator(World *world)
         BLOCK_TYPE_NONE
     );
 
-    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT + 1; ++floor_number)
+    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT + 1; ++floor_number)
     {
-        i32 floor_z = floor_number * FLOOR_SIZE_Z;
+        const i32 floor_z = floor_number * FLOOR_SIZE_Z;
         
         if (TOWER_WIREFRAME)
         {
@@ -1071,7 +1075,7 @@ static void setup_elevator(World *world)
         }
         else
         {
-            const i32 elevator_door_offset = 3;
+            const u32 elevator_door_offset = 3;
             
             world_set_block_type_box(
                 world,
@@ -1106,7 +1110,7 @@ static void setup_elevator(World *world)
 
 static void setup_tower_rooms(World *world)
 {
-    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         AreaPool *area_pool = &world->area_pool_array[floor_number];
         
@@ -1184,34 +1188,32 @@ static void setup_tower_rooms(World *world)
         world_add_area(area_pool, &area_quadrant_4);
 
         u32 area_index_removal_count = 0;
-        u32 area_indices_to_remove[1024];
+        u32 area_indices_to_remove[4 << AREA_EXPANSION_ITERATION_COUNT];
 
-        for (i32 iteration = 0; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
+        for (u32 iteration = 0; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
         {
             u32 pool_index = 0;
-
             u32 initial_count = area_pool->active_count;
 
             while (pool_index < initial_count)
             {
-                u32 area_index = area_pool->active_array[pool_index];
+                const u32 area_index = area_pool->active_array[pool_index];
 
-                Area area_copy = area_pool->area_array[area_index];
-                Area *area = &area_copy;
+                const Area area_copy = area_pool->area_array[area_index];
 
-                const Axis axis_split = area->rect.size[AXIS_X] > area->rect.size[AXIS_Y] ? AXIS_X : AXIS_Y;
+                const Axis axis_split = area_copy.rect.size[AXIS_X] > area_copy.rect.size[AXIS_Y] ? AXIS_X : AXIS_Y;
 
-                if (area->rect.size[axis_split] >= AREA_EXPANSION_SIZE_MIN)
+                if (area_copy.rect.size[axis_split] >= (i32)AREA_EXPANSION_SIZE_MIN)
                 {
-                    Area area_a = *area;
-                    Area area_b = *area;
+                    const u32 split_size = area_copy.rect.size[axis_split] / 2 + (-2 + (rand() % 5));
 
-                    const i32 split_size = area->rect.size[axis_split] / 2 + (-2 + (rand() % 5));
-
+                    Area area_a = area_copy;
+                    Area area_b = area_copy;
+                    
                     area_a.rect.size[axis_split] = split_size;
 
-                    area_b.rect.position[axis_split] = area->rect.position[axis_split] + split_size;
-                    area_b.rect.size[axis_split] = area->rect.size[axis_split] - split_size;
+                    area_b.rect.position[axis_split] = area_copy.rect.position[axis_split] + split_size;
+                    area_b.rect.size[axis_split] = area_copy.rect.size[axis_split] - split_size;
 
                     world_add_area(area_pool, &area_a);
                     world_add_area(area_pool, &area_b);
@@ -1222,7 +1224,7 @@ static void setup_tower_rooms(World *world)
                 pool_index++;
             }
 
-            for (i32 index = 0; index < area_index_removal_count; ++index)
+            for (u32 index = 0; index < area_index_removal_count; ++index)
             {
                 world_remove_area_by_index(area_pool, area_indices_to_remove[index]);
             }
@@ -1230,9 +1232,7 @@ static void setup_tower_rooms(World *world)
             area_index_removal_count = 0;
         }
 
-
-
-        for (i32 section_index = 0; section_index < SECTION_COUNT; ++section_index)
+        for (u32 section_index = 0; section_index < SECTION_COUNT; ++section_index)
         {
             b32 quadrant_section = (
                 section_index == SECTION_Q1 ||
@@ -1267,7 +1267,7 @@ static void setup_tower_rooms(World *world)
         }
     }
     
-    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         const AreaPool *area_pool = &world->area_pool_array[floor_number];
                 
@@ -1674,18 +1674,18 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
 
 static void init_graph(World *world)
 {
-    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         const AreaPool *area_pool = &world->area_pool_array[floor_number];
 
         for (u32 pool_index_left = 0; pool_index_left < area_pool->active_count; ++pool_index_left)
         {
-            u32 area_index_left = area_pool->active_array[pool_index_left];
+            const u32 area_index_left = area_pool->active_array[pool_index_left];
             const Area *area_left = &area_pool->area_array[area_index_left];
             
             for (u32 pool_index_right = pool_index_left + 1; pool_index_right < area_pool->active_count; ++pool_index_right)
             {
-                u32 area_index_right = area_pool->active_array[pool_index_right];
+                const u32 area_index_right = area_pool->active_array[pool_index_right];
                 const Area *area_right = &area_pool->area_array[area_index_right];
 
                 const AreaOverlap area_overlap = get_area_overlap(area_left, area_right);
@@ -1729,12 +1729,12 @@ void world_init(World *world)
 
     world->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
 
-    for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    for (u32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
         world->cell_array[cell_index].cell_index = cell_index;
     }
 
-    for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    for (u32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         AreaPool *area_pool = &world->area_pool_array[floor_number];
 

@@ -115,7 +115,7 @@ JSK_Config *jsk_load_config(const char* config_path)
 
 void jsk_destroy_config(JSK_Config *config)
 {
-    for (i32 index = 0; index < config->entry_count; ++index)
+    for (u32 index = 0; index < config->entry_count; ++index)
     {
         free((void*)config->config_entry_array[index].key);
         free((void*)config->config_entry_array[index].value);

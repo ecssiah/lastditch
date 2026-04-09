@@ -15,8 +15,8 @@ struct JSK_ConfigEntry
 typedef struct JSK_Config JSK_Config;
 struct JSK_Config
 {
-    i32 entry_count;
-    i32 entry_capacity;
+    u32 entry_count;
+    u32 entry_capacity;
     
     JSK_ConfigEntry *config_entry_array;
 };

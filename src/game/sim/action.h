@@ -5,7 +5,7 @@
 
 #include "jsk.h"
 
-#define ACTION_QUEUE_CAPACITY 1024
+#define ACTION_QUEUE_CAPACITY 1024u
 
 typedef enum ActionType ActionType;
 enum ActionType
@@ -31,8 +31,8 @@ struct ActionQueue
 {
     Action action_array[ACTION_QUEUE_CAPACITY];
 
-    i32 head_index;
-    i32 tail_index;
+    u32 head_index;
+    u32 tail_index;
 };
 
 void action_add(ActionQueue *action_queue, Action action);

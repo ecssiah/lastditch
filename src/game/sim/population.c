@@ -41,7 +41,7 @@ static void init_actor_pool(Population *population)
     population->actor_pool.free_count = ACTOR_MAX;
     population->actor_pool.active_count = 0;
 
-    for (i32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
     {
         population->actor_pool.active_array[actor_index] = 0;
         population->actor_pool.generation_array[actor_index] = 0;
@@ -128,9 +128,9 @@ static void init_judge(Population *population)
 
 static void init_agents(Population* population)
 {
-    for (i32 nation_index = 0; nation_index < NATION_TYPE_COUNT; ++nation_index)
+    for (u32 nation_index = 0; nation_index < NATION_TYPE_COUNT; ++nation_index)
     {
-        for (i32 agent_index = 0; agent_index < AGENT_INITIAL_POPULATION; ++agent_index)
+        for (u32 agent_index = 0; agent_index < AGENT_INITIAL_POPULATION; ++agent_index)
         {
             Actor agent;
             agent.actor_type = ACTOR_TYPE_AGENT;
@@ -240,7 +240,7 @@ static void update_actor(World *world, Actor *actor)
 
 static void update_actors(World *world, Population *population)
 {   
-    for (i32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
     {
         if (population->actor_pool.generation_array[actor_index] == 0)
         {
@@ -289,9 +289,9 @@ void population_get_actor_up(Actor *actor, vec3 out_up)
     glm_vec3_normalize(out_up);
 }
 
-i32 population_nation_type_index_from_string(const char *nation_type_string)
+u32 population_nation_type_index_from_string(const char *nation_type_string)
 {
-    for (i32 nation_type_index = 0; nation_type_index < NATION_TYPE_COUNT; ++nation_type_index)
+    for (u32 nation_type_index = 0; nation_type_index < NATION_TYPE_COUNT; ++nation_type_index)
     {
         if (strcmp(nation_type_string, NATION_TYPE_STRING[nation_type_index]) == 0)
         {
@@ -302,9 +302,9 @@ i32 population_nation_type_index_from_string(const char *nation_type_string)
     return -1;
 }
 
-i32 population_actor_type_index_from_string(const char *actor_type_string)
+u32 population_actor_type_index_from_string(const char *actor_type_string)
 {
-    for (i32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
+    for (u32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
     {
         if (strcmp(actor_type_string, ACTOR_TYPE_STRING[actor_type_index]) == 0)
         {

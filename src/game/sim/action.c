@@ -4,7 +4,7 @@
 
 void action_add(ActionQueue *action_queue, Action action)
 {
-    i32 tail_index_next = (action_queue->tail_index + 1) % ACTION_QUEUE_CAPACITY;
+    u32 tail_index_next = (action_queue->tail_index + 1) % ACTION_QUEUE_CAPACITY;
 
     if (tail_index_next == action_queue->head_index)
     {

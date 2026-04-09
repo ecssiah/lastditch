@@ -32,8 +32,8 @@ struct VoxelGpuData
     GLuint vao_id;
     GLuint vbo_id;
 
-    i32 voxel_vertex_count;
-    i32 voxel_vertex_capacity;
+    u32 voxel_vertex_count;
+    u32 voxel_vertex_capacity;
     
     VoxelVertex *voxel_vertex_array;
 };
@@ -57,8 +57,8 @@ struct ModelGpuData
     GLuint vao_id;
     GLuint vbo_id;
 
-    i32 model_vertex_count;
-    i32 model_vertex_capacity;
+    u32 model_vertex_count;
+    u32 model_vertex_capacity;
     
     ModelVertex *model_vertex_array;
 };
@@ -75,10 +75,10 @@ struct SectorQuad
 typedef struct SectorMesh SectorMesh;
 struct SectorMesh
 {
-    i32 sector_index;
+    u32 sector_index;
     
-    i32 sector_quad_count;
-    i32 sector_quad_capacity;
+    u32 sector_quad_count;
+    u32 sector_quad_capacity;
 
     SectorQuad *sector_quad_array;
 };
@@ -120,13 +120,13 @@ struct VoxelRender
     
     u8 block_type_layer_array[BLOCK_TYPE_COUNT];
 
-    i32 sector_mesh_count;
-    i32 sector_mesh_capacity;
+    u32 sector_mesh_count;
+    u32 sector_mesh_capacity;
 
     SectorMesh *sector_mesh_array;
 
-    i32 voxel_gpu_data_count;
-    i32 voxel_gpu_data_capacity;
+    u32 voxel_gpu_data_count;
+    u32 voxel_gpu_data_capacity;
     
     VoxelGpuData *voxel_gpu_data_array;
 };

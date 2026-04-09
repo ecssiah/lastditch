@@ -9,44 +9,44 @@
 
 #define CELL_SIZE 1.0f
 
-#define SECTOR_SIZE_IN_CELLS_LOG2 5
-#define SECTOR_SIZE_IN_CELLS (1 << (1u * SECTOR_SIZE_IN_CELLS_LOG2))
+#define SECTOR_SIZE_IN_CELLS_LOG2 5u
+#define SECTOR_SIZE_IN_CELLS (1u << (1 * SECTOR_SIZE_IN_CELLS_LOG2))
 
-#define SECTOR_HEIGHT_IN_CELLS_LOG2 8
-#define SECTOR_HEIGHT_IN_CELLS (1 << (1u * SECTOR_HEIGHT_IN_CELLS_LOG2))
+#define SECTOR_HEIGHT_IN_CELLS_LOG2 8u
+#define SECTOR_HEIGHT_IN_CELLS (1u << (1 * SECTOR_HEIGHT_IN_CELLS_LOG2))
 
-#define SECTOR_AREA_IN_CELLS (1 << (2u * SECTOR_SIZE_IN_CELLS_LOG2))
+#define SECTOR_AREA_IN_CELLS (1u << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
 
 #define SECTOR_VOLUME_IN_CELLS (SECTOR_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS)
 
-#define WORLD_SIZE_IN_SECTORS_LOG2 3
-#define WORLD_SIZE_IN_SECTORS (1 << (1u * WORLD_SIZE_IN_SECTORS_LOG2))
-#define WORLD_AREA_IN_SECTORS (1 << (2u * WORLD_SIZE_IN_SECTORS_LOG2))
+#define WORLD_SIZE_IN_SECTORS_LOG2 3u
+#define WORLD_SIZE_IN_SECTORS (1u << (1 * WORLD_SIZE_IN_SECTORS_LOG2))
+#define WORLD_AREA_IN_SECTORS (1u << (2 * WORLD_SIZE_IN_SECTORS_LOG2))
 
 #define WORLD_SIZE_IN_CELLS_LOG2 (SECTOR_SIZE_IN_CELLS_LOG2 + WORLD_SIZE_IN_SECTORS_LOG2)
-#define WORLD_SIZE_IN_CELLS (1 << (1u * WORLD_SIZE_IN_CELLS_LOG2))
-#define WORLD_AREA_IN_CELLS (1 << (2u * WORLD_SIZE_IN_CELLS_LOG2))
+#define WORLD_SIZE_IN_CELLS (1u << (1 * WORLD_SIZE_IN_CELLS_LOG2))
+#define WORLD_AREA_IN_CELLS (1u << (2 * WORLD_SIZE_IN_CELLS_LOG2))
 
 #define WORLD_VOLUME_IN_CELLS (WORLD_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS)
 
-#define WORLD_STRIDE_X 1
+#define WORLD_STRIDE_X 1u
 #define WORLD_STRIDE_Y (WORLD_SIZE_IN_CELLS)
 #define WORLD_STRIDE_Z (WORLD_AREA_IN_CELLS)
 
 #define WORLD_CENTER_I32 ((i32)(WORLD_SIZE_IN_CELLS / 2))
 #define WORLD_CENTER_F32 ((f32)(WORLD_SIZE_IN_CELLS / 2.0f))
 
-#define FLOOR_SIZE_Z 16
+#define FLOOR_SIZE_Z 16u
 #define FLOOR_COUNT (SECTOR_HEIGHT_IN_CELLS / FLOOR_SIZE_Z)
 
 #define TOWER_WIREFRAME false
 
-#define TOWER_BORDER 16
-#define TOWER_FLOOR_COUNT 6
+#define TOWER_BORDER 16u
+#define TOWER_FLOOR_COUNT 6u
 #define TOWER_SIZE (WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER)
 
-#define TOWER_CENTER_HALL_SIZE 24
-#define TOWER_OUTER_HALL_SIZE 6
+#define TOWER_CENTER_HALL_SIZE 24u
+#define TOWER_OUTER_HALL_SIZE 6u
 
 #define TOWER_QUADRANT_SIZE (TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2)
 
@@ -64,12 +64,12 @@
 
 #define TEMPLE_BORDER_OFFSET 24
 
-#define ELEVATOR_SIZE 16
+#define ELEVATOR_SIZE 16u
 
-#define AREA_POOL_MAX 1 << 12
+#define AREA_POOL_MAX 1u << 12
 
-#define AREA_EXPANSION_ITERATION_COUNT 5
-#define AREA_EXPANSION_SIZE_MIN 8
+#define AREA_EXPANSION_ITERATION_COUNT 5u
+#define AREA_EXPANSION_SIZE_MIN 8u
 
 #define GRAVITY_DEFAULT -90.0f
 
@@ -221,31 +221,10 @@ extern const BlockTypeList AREA_CONTENT_MASTER_LIST[TOWER_FLOOR_COUNT];
 typedef struct Cell Cell;
 struct Cell
 {
-    i32 cell_index;
+    u32 cell_index;
     
     BlockType block_type;
     u8 direction_mask;
-};
-
-typedef struct Connect Connect;
-struct Connect
-{
-    i32 connect_index;
-
-    ivec3 cell_coordinate;
-    Direction direction;
-
-    i32 area_a_index;
-    i32 area_b_index;
-};
-
-typedef struct ConnectList ConnectList;
-struct ConnectList
-{
-    i32 count;
-    i32 capacity;
-
-    Connect *connect_array;
 };
 
 typedef enum AreaType AreaType;
@@ -258,7 +237,7 @@ enum AreaType
 typedef struct Area Area;
 struct Area
 {
-    i32 floor_number;
+    u32 floor_number;
     IntRect rect;
 
     AreaType area_type;
@@ -316,27 +295,27 @@ struct World
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
 b32 world_sector_coordinate_is_valid(i32 x, i32 y);
 
-i32 world_sector_coordinate_to_index(ivec2 sector_coordinate);
-void world_sector_index_to_coordinate(i32 sector_index, ivec2 out_sector_coordinate);
+u32 world_sector_coordinate_to_index(ivec2 sector_coordinate);
+void world_sector_index_to_coordinate(u32 sector_index, ivec2 out_sector_coordinate);
 
-i32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z);
-void world_cell_index_to_coordinate(i32 cell_index, ivec3 out_cell_coordinate);
+u32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z);
+void world_cell_index_to_coordinate(u32 cell_index, ivec3 out_cell_coordinate);
 
-i32 world_cell_coordinate_to_sector_index(i32 x, i32 y);
+u32 world_cell_coordinate_to_sector_index(i32 x, i32 y);
 void world_cell_coordinate_to_sector_coordinate(i32 x, i32 y, ivec2 out_sector_coordinate);
 
-i32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z);
+u32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z);
 void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_local_coordinate);
 
 void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position);
 void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
 
-i32 world_get_floor(i32 z);
+u32 world_get_floor(i32 z);
 
 b32 world_is_solid(World *world, i32 x, i32 y, i32 z);
 b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask);
 
-i32 world_block_type_index_from_string(const char *block_type_string);
+u32 world_block_type_index_from_string(const char *block_type_string);
 
 u8 world_get_direction_mask(World *world, i32 x, i32 y, i32 z);
 
@@ -348,7 +327,7 @@ void world_set_block_type(World *world, i32 x, i32 y, i32 z, BlockType block_typ
 void world_set_block_type_box(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
 void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
 
-i32 world_get_content_level(i32 floor_number);
+u32 world_get_content_level(i32 z);
 
 AreaHandle world_add_area(AreaPool *area_pool, Area *area);
 Area *world_get_area(AreaPool *area_pool, AreaHandle area_handle);
