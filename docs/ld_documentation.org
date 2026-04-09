@@ -20,13 +20,13 @@ There are four [[Nation]]s.
    
 2. <<Eagle>>
    The Western nation.
-   
-3. <<Lion>>
-   The Northern nation.
-   
-4. <<Horse>>
-   The Southern nation.
 
+3. <<Bear>>
+   The Northern nation.
+
+4. <<Lion>>
+   The Southern nation.
+   
 * Notes
 
 * Keywords

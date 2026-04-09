@@ -105,15 +105,15 @@ extern const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3];
     DO(BLOCK_TYPE_WOLF_FLAG)                    \
     DO(BLOCK_TYPE_EAGLE_FLAG)                   \
     DO(BLOCK_TYPE_LION_FLAG)                    \
-    DO(BLOCK_TYPE_HORSE_FLAG)                   \
+    DO(BLOCK_TYPE_BEAR_FLAG)                   \
     DO(BLOCK_TYPE_WOLF_STONE)                   \
     DO(BLOCK_TYPE_EAGLE_STONE)                  \
     DO(BLOCK_TYPE_LION_STONE)                   \
-    DO(BLOCK_TYPE_HORSE_STONE)                  \
+    DO(BLOCK_TYPE_BEAR_STONE)                  \
     DO(BLOCK_TYPE_WOLF_SYMBOL)                  \
     DO(BLOCK_TYPE_EAGLE_SYMBOL)                 \
     DO(BLOCK_TYPE_LION_SYMBOL)                  \
-    DO(BLOCK_TYPE_HORSE_SYMBOL)                 \
+    DO(BLOCK_TYPE_BEAR_SYMBOL)                 \
     DO(BLOCK_TYPE_CARVED_1)                     \
     DO(BLOCK_TYPE_CARVED_2)                     \
     DO(BLOCK_TYPE_CARVED_3)                     \

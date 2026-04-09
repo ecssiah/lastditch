@@ -69,21 +69,21 @@ static void init_nations(Population* population)
     eagle_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
     eagle_nation->home_coordinate[2] = ROOF_Z + 3.0f;
 
+    Nation *bear_nation = &population->nation_array[NATION_TYPE_BEAR];
+    
+    bear_nation->nation_type = NATION_TYPE_BEAR;
+
+    bear_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
+    bear_nation->home_coordinate[1] = WORLD_CENTER_F32 + nation_offset;
+    bear_nation->home_coordinate[2] = ROOF_Z + 1.0f;
+    
     Nation *lion_nation = &population->nation_array[NATION_TYPE_LION];
 
     lion_nation->nation_type = NATION_TYPE_LION;
 
     lion_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
-    lion_nation->home_coordinate[1] = WORLD_CENTER_F32 + nation_offset;
+    lion_nation->home_coordinate[1] = WORLD_CENTER_F32 - nation_offset;
     lion_nation->home_coordinate[2] = ROOF_Z + 3.0f;
-
-    Nation *horse_nation = &population->nation_array[NATION_TYPE_HORSE];
-    
-    horse_nation->nation_type = NATION_TYPE_HORSE;
-
-    horse_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
-    horse_nation->home_coordinate[1] = WORLD_CENTER_F32 - nation_offset;
-    horse_nation->home_coordinate[2] = ROOF_Z + 1.0f;
 }
 
 static void init_judge(Population *population)

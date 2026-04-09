@@ -44,4 +44,8 @@
 ** Next
 - Some UI interaction elements like block select outline
 
-  
+* <2026-04-09 Thu>
+** Done
+- Debug render introduced
+
+** Next

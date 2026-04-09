@@ -1292,7 +1292,7 @@ static void setup_wolf_territory(World *world)
     const ivec3 platform_origin = {
         TOWER_BORDER + TOWER_SIZE,
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
-        ROOF_Z
+        ROOF_Z,
     };
     
     world_set_block_type_cube(
@@ -1326,40 +1326,201 @@ static void setup_wolf_territory(World *world)
 
 static void setup_eagle_territory(World *world)
 {
-    const ivec2 temple_origin = {
+    const ivec3 temple_origin = {
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
-        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2
+        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
+        ROOF_Z,
     };
 
-    const ivec2 platform_origin = {
+    world_set_block_type_cube(
+        world,
+        temple_origin[0], temple_origin[1], temple_origin[2],
+        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
+        BLOCK_TYPE_EAGLE_STONE
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2],
+        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0], temple_origin[1], temple_origin[2] + FLOOR_SIZE_Z - 1,
+        TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
+        BLOCK_TYPE_EAGLE_STONE
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + FLOOR_SIZE_Z - 1,
+        TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    const u32 pillar_offset = 2;
+    
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + pillar_offset, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_EAGLE_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_EAGLE_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + pillar_offset, temple_origin[1] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_EAGLE_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[1] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_EAGLE_SYMBOL
+    );
+
+    const ivec3 platform_origin = {
         TOWER_BORDER - PLATFORM_SIZE_Y,
-        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
+        ROOF_Z,
     };
     
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], ROOF_Z,
+        platform_origin[0], platform_origin[1], platform_origin[2],
         PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_SMOOTH_2
     );
     
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], ROOF_Z + 1,        
+        platform_origin[0], platform_origin[1], platform_origin[2] + 1,        
         PLATFORM_SIZE_Y + 1, PLATFORM_SIZE_X, 1,
         BLOCK_TYPE_NONE
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + PLATFORM_SIZE_Y - 4, platform_origin[1] + PLATFORM_SIZE_X - 4, ROOF_Z + 1,
+        platform_origin[0] + PLATFORM_SIZE_Y - 4, platform_origin[1] + PLATFORM_SIZE_X - 4, platform_origin[2] + 1,
         2, 2, 2,
         BLOCK_TYPE_SERVER_1
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + PLATFORM_SIZE_Y - 8, platform_origin[1] + PLATFORM_SIZE_X - 4, ROOF_Z + 1,
+        platform_origin[0] + PLATFORM_SIZE_Y - 8, platform_origin[1] + PLATFORM_SIZE_X - 4, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_2
+    );
+}
+
+static void setup_bear_territory(World *world)
+{
+    const ivec3 temple_origin = {
+        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
+        TOWER_BORDER + TEMPLE_BORDER_OFFSET,
+        ROOF_Z,
+    };
+
+      world_set_block_type_cube(
+        world,
+        temple_origin[0], temple_origin[1], temple_origin[2],
+        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
+        BLOCK_TYPE_BEAR_STONE
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2],
+        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0], temple_origin[1], temple_origin[2] + FLOOR_SIZE_Z - 1,
+        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
+        BLOCK_TYPE_BEAR_STONE
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + FLOOR_SIZE_Z - 1,
+        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    const i32 pillar_offset = 2;
+    
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + pillar_offset, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_BEAR_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + pillar_offset, temple_origin[1] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_BEAR_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_BEAR_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[1] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_BEAR_SYMBOL
+    );
+
+    const ivec3 platform_origin = {
+        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
+        TOWER_BORDER + TOWER_SIZE,
+        ROOF_Z,
+    };
+
+    world_set_block_type_cube(
+        world,
+        platform_origin[0], platform_origin[1], platform_origin[2],
+        PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
+        BLOCK_TYPE_SMOOTH_2
+    );
+
+    world_set_block_type_cube(
+        world,
+        platform_origin[0], platform_origin[1], platform_origin[2] + 1,
+        PLATFORM_SIZE_X, PLATFORM_SIZE_Y + 1, 1,
+        BLOCK_TYPE_NONE
+    );
+
+    world_set_block_type_cube(
+        world,
+        platform_origin[0] + 2, platform_origin[1] + PLATFORM_SIZE_Y - 4, platform_origin[2] + 1,
+        2, 2, 2,
+        BLOCK_TYPE_SERVER_1
+    );
+
+    world_set_block_type_cube(
+        world,
+        platform_origin[0] + 2, platform_origin[1] + PLATFORM_SIZE_Y - 8, platform_origin[2] + 1,
         2, 2, 2,
         BLOCK_TYPE_SERVER_2
     );
@@ -1367,81 +1528,100 @@ static void setup_eagle_territory(World *world)
 
 static void setup_lion_territory(World *world)
 {
-    const ivec2 temple_origin = {
+    const ivec3 temple_origin = {
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
-        TOWER_SIZE - TEMPLE_BORDER_OFFSET
+        TOWER_SIZE - TEMPLE_BORDER_OFFSET,
+        ROOF_Z,
     };
 
-    const ivec2 platform_origin = {
+    world_set_block_type_cube(
+        world,
+        temple_origin[0], temple_origin[1], temple_origin[2],
+        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
+        BLOCK_TYPE_LION_STONE
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2],
+        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0], temple_origin[1], temple_origin[2] + FLOOR_SIZE_Z - 1,
+        TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
+        BLOCK_TYPE_LION_STONE
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + FLOOR_SIZE_Z - 1,
+        TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
+        BLOCK_TYPE_SMOOTH_4
+    );
+
+    const i32 pillar_offset = 2;
+    
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + pillar_offset, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_LION_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + pillar_offset, temple_origin[1] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_LION_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_LION_SYMBOL
+    );
+
+    world_set_block_type_cube(
+        world,
+        temple_origin[0] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[1] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[2] + 1,
+        1, 1, FLOOR_SIZE_Z - 1,
+        BLOCK_TYPE_LION_SYMBOL
+    );
+
+    const ivec3 platform_origin = {
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
-        TOWER_BORDER + TOWER_SIZE
+        TOWER_BORDER - PLATFORM_SIZE_Y,
+        ROOF_Z,
     };
     
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], ROOF_Z,
+        platform_origin[0], platform_origin[1], platform_origin[2],
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BLOCK_TYPE_SMOOTH_2
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1] - 1, ROOF_Z + 1,
+        platform_origin[0], platform_origin[1] - 1, platform_origin[2] + 1,
         PLATFORM_SIZE_X, 1, 1,
         BLOCK_TYPE_NONE
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + PLATFORM_SIZE_X - 4, platform_origin[1] + 2, ROOF_Z + 1,
+        platform_origin[0] + PLATFORM_SIZE_X - 4, platform_origin[1] + 2, platform_origin[2] + 1,
         2, 2, 2,
         BLOCK_TYPE_SERVER_1
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + PLATFORM_SIZE_X - 4, platform_origin[1] + 6, ROOF_Z + 1,
-        2, 2, 2,
-        BLOCK_TYPE_SERVER_2
-    );
-}
-
-static void setup_horse_territory(World *world)
-{
-    const ivec2 temple_origin = {
-        WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
-        TOWER_BORDER + TEMPLE_BORDER_OFFSET
-    };
-
-    const ivec2 platform_origin = {
-        WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
-        TOWER_BORDER - PLATFORM_SIZE_Y
-    };
-
-    world_set_block_type_cube(
-        world,
-        platform_origin[0], platform_origin[1], ROOF_Z,
-        PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
-        BLOCK_TYPE_SMOOTH_2
-    );
-
-    world_set_block_type_cube(
-        world,
-        platform_origin[0], platform_origin[1], ROOF_Z + 1,
-        PLATFORM_SIZE_X, PLATFORM_SIZE_Y + 1, 1,
-        BLOCK_TYPE_NONE
-    );
-
-    world_set_block_type_cube(
-        world,
-        platform_origin[0] + 2, platform_origin[1] + PLATFORM_SIZE_Y - 4, ROOF_Z + 1,
-        2, 2, 2,
-        BLOCK_TYPE_SERVER_1
-    );
-
-    world_set_block_type_cube(
-        world,
-        platform_origin[0] + 2, platform_origin[1] + PLATFORM_SIZE_Y - 8, ROOF_Z + 1,
+        platform_origin[0] + PLATFORM_SIZE_X - 4, platform_origin[1] + 6, platform_origin[2] + 1,
         2, 2, 2,
         BLOCK_TYPE_SERVER_2
     );
@@ -1630,8 +1810,8 @@ void world_init(World *world, Debug *debug)
     
     setup_eagle_territory(world);
     setup_wolf_territory(world);
+    setup_bear_territory(world);
     setup_lion_territory(world);
-    setup_horse_territory(world);
 
     init_graph(world);
 

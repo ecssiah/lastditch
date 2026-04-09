@@ -85,7 +85,7 @@ struct ActorControl
     DO(NATION_TYPE_WOLF)                        \
     DO(NATION_TYPE_EAGLE)                       \
     DO(NATION_TYPE_LION)                        \
-    DO(NATION_TYPE_HORSE)                       \
+    DO(NATION_TYPE_BEAR)                       \
 
 typedef enum NationType NationType;
 enum NationType
