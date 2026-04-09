@@ -918,7 +918,7 @@ static void update_debug_render(Render *render, Sim *sim)
 
     glUniformMatrix4fv(render->debug_render.u_view_location, 1, GL_FALSE, (f32 *)render->viewpoint.view_matrix);
 
-    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     DebugGpuData debug_gpu_data;
     debug_gpu_data.debug_vertex_count = 0;

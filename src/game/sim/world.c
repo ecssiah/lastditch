@@ -4,9 +4,11 @@
 #include <stdlib.h>
 
 #include "core/core.h"
-#include "core/math/math.h"
+#include "game/sim/debug.h"
 #include "jsk.h"
 #include "jsk_log.h"
+
+#include "core/math/math.h"
 
 const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
 {
@@ -1559,7 +1561,29 @@ static void init_graph(World *world)
     }
 }
 
-void world_init(World *world)
+static void draw_debug_info(World *world, Debug *debug)
+{
+    const AreaPool *area_pool = &world->area_pool_array[TOWER_FLOOR_COUNT - 1];
+        
+    for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
+    {
+        const u32 area_index = area_pool->active_array[pool_index];
+        const Area *area = &area_pool->area_array[area_index];
+
+        ivec2 area_min, area_max;
+        int_rect_min(&area->rect, area_min);
+        int_rect_max(&area->rect, area_max);
+            
+        debug_draw_box(
+            debug,
+            area_min[0], area_min[1], area->floor_number * FLOOR_SIZE_Z,
+            area_max[0], area_max[1], area->floor_number * FLOOR_SIZE_Z + 2.0f,
+            1.0f, 0.0f, 0.0f
+        );
+    }
+}
+
+void world_init(World *world, Debug *debug)
 {
     assert(TOWER_CENTER_HALL_SIZE % 2 == 0);
     assert(TOWER_CENTER_HALL_SIZE + 2 * TOWER_OUTER_HALL_SIZE < TOWER_SIZE);
@@ -1612,6 +1636,8 @@ void world_init(World *world)
     init_graph(world);
 
     init_direction_mask(world);
+
+    draw_debug_info(world, debug);
 }
 
 void world_close(World *world)

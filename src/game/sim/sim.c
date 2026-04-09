@@ -159,13 +159,7 @@ void sim_init(Sim *sim)
 
     debug_init(&sim->debug);
     population_init(&sim->population);
-    world_init(&sim->world);
-
-    vec3 position_a = { 1.0f, 1.0f, 1.0f };
-    vec3 position_b = { 6.0f, 1.0f, 1.0f };
-    vec3 color = { 1.0f, 0.0f, 0.0f };
-    
-    debug_draw_line(&sim->debug, position_a, position_b, color);
+    world_init(&sim->world, &sim->debug);
 }
 
 void sim_update(Sim *sim)

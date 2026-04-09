@@ -6,6 +6,7 @@
 #include "jsk.h"
 
 #include "core/core.h"
+#include "game/sim/debug.h"
 
 #define CELL_SIZE 1.0f
 
@@ -332,7 +333,7 @@ Area *world_get_area(AreaPool *area_pool, AreaHandle area_handle);
 
 void world_construct_area(World *world, const Area *area);
 
-void world_init(World *world);
+void world_init(World *world, Debug *debug);
 void world_close(World *world);
 
 #endif
