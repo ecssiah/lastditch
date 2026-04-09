@@ -73,6 +73,8 @@
 #define AREA_EXPANSION_ITERATION_COUNT 5u
 #define AREA_EXPANSION_SIZE_MIN 8u
 
+#define PLACE_ROOM_CONTENT false
+
 #define GRAVITY_DEFAULT -90.0f
 
 #define FOR_LIST_DIRECTION(DO)                  \
@@ -236,9 +238,23 @@ struct EdgeHandle
     u32 generation;
 };
 
+#define FOR_LIST_AREA_TYPE(DO)                  \
+    DO(AREA_TYPE_OPEN)                          \
+    DO(AREA_TYPE_ROOM)                          \
+
+typedef enum AreaType AreaType;
+enum AreaType
+{
+    FOR_LIST_AREA_TYPE(DEFINE_LIST_ENUMERATION)
+
+    AREA_TYPE_COUNT
+};
+
 typedef struct Area Area;
 struct Area
 {
+    AreaType area_type;
+    
     u32 floor_number;
     IntRect rect;
 

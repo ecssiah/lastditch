@@ -1067,6 +1067,7 @@ static void setup_tower_rooms(World *world)
         AreaPool *area_pool = &world->area_pool_array[floor_number];
         
         Area area_quadrant_1 = {
+            .area_type = AREA_TYPE_ROOM,
             .floor_number = floor_number,
             .rect = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q1][0], SECTION_ORIGIN_ARRAY[SECTION_Q1][1] },
@@ -1076,6 +1077,7 @@ static void setup_tower_rooms(World *world)
         };
         
         Area area_quadrant_2 = {
+            .area_type = AREA_TYPE_ROOM,
             .floor_number = floor_number,
             .rect = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q2][0], SECTION_ORIGIN_ARRAY[SECTION_Q2][1] },
@@ -1085,6 +1087,7 @@ static void setup_tower_rooms(World *world)
         };
 
         Area area_quadrant_3 = {
+            .area_type = AREA_TYPE_ROOM,
             .floor_number = floor_number,
             .rect = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q3][0], SECTION_ORIGIN_ARRAY[SECTION_Q3][1] },
@@ -1094,6 +1097,7 @@ static void setup_tower_rooms(World *world)
         };
 
         Area area_quadrant_4 = {
+            .area_type = AREA_TYPE_ROOM,
             .floor_number = floor_number,
             .rect = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q4][0], SECTION_ORIGIN_ARRAY[SECTION_Q4][1] },
@@ -1167,6 +1171,7 @@ static void setup_tower_rooms(World *world)
             }
             
             Area section_area = {
+                .area_type = AREA_TYPE_OPEN,
                 .floor_number = floor_number,
                 .rect = {
                     { SECTION_ORIGIN_ARRAY[section_index][0], SECTION_ORIGIN_ARRAY[section_index][1] },
@@ -1194,13 +1199,32 @@ static void setup_tower_rooms(World *world)
                 area->rect.size[0], area->rect.size[1], 1,
                 BLOCK_TYPE_CAUTION_2
             );
+
+            if (area->area_type == AREA_TYPE_ROOM)
+            {
+                world_set_block_type_box(
+                    world,
+                    area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
+                    area->rect.size[0], area->rect.size[1], FLOOR_SIZE_Z,
+                    BLOCK_TYPE_SMOOTH_4
+                );
+
+                world_set_block_type_box(
+                    world,
+                    area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
+                    area->rect.size[0], area->rect.size[1], 1,
+                    BLOCK_TYPE_SMOOTH_3
+                );
+            }
         }
     }
 
-#if 0
+#if PLACE_ROOM_CONTENT
     for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         const AreaPool *area_pool = &world->area_pool_array[floor_number];
+
+        const i32 floor_z = floor_number * FLOOR_SIZE_Z;
 
         for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
         {
@@ -1813,7 +1837,7 @@ static void init_graph(World *world)
         const u32 edge_index = world->edge_pool.active_array[pool_index];
         const AreaEdge *area_edge = &world->edge_pool.edge_array[edge_index];
 
-        if (area_edge->area_overlap.direction == DIRECTION_EAST || area_edge->area_overlap.direction == DIRECTION_WEST)
+        if (area_edge->area_overlap.direction == DIRECTION_EAST)
         {
             if (area_edge->area_overlap.rect.size[1] >= 3)
             {
@@ -1823,14 +1847,47 @@ static void init_graph(World *world)
                     area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
                 };
 
-                world_set_block_type(
+                world_set_block_type_cube(
                     world,
-                    door_position[0], door_position[1], door_position[2] + 1,
+                    door_position[0] - 1, door_position[1], door_position[2] + 3,
+                    2, 1, 1,
                     BLOCK_TYPE_PANEL_3
+                );
+
+                world_set_block_type_cube(
+                    world,
+                    door_position[0] - 1, door_position[1], door_position[2] + 1,
+                    2, 1, 2,
+                    BLOCK_TYPE_NONE
                 );
             }
         }
-        else if (area_edge->area_overlap.direction == DIRECTION_NORTH || area_edge->area_overlap.direction == DIRECTION_SOUTH)
+        else if (area_edge->area_overlap.direction == DIRECTION_WEST)
+        {
+            if (area_edge->area_overlap.rect.size[1] >= 3)
+            {
+                ivec3 door_position = {
+                    area_edge->area_overlap.rect.position[0],
+                    area_edge->area_overlap.rect.position[1] + area_edge->area_overlap.rect.size[1] / 2,
+                    area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
+                };
+
+                world_set_block_type_cube(
+                    world,
+                    door_position[0] - 1, door_position[1], door_position[2] + 3,
+                    2, 1, 1,
+                    BLOCK_TYPE_PANEL_3
+                );
+
+                world_set_block_type_cube(
+                    world,
+                    door_position[0] - 1, door_position[1], door_position[2] + 1,
+                    2, 1, 2,
+                    BLOCK_TYPE_NONE
+                );
+            }
+        }
+        else if (area_edge->area_overlap.direction == DIRECTION_NORTH)
         {
             if (area_edge->area_overlap.rect.size[0] >= 3)
             {
@@ -1840,10 +1897,43 @@ static void init_graph(World *world)
                     area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
                 };
 
-                world_set_block_type(
+                world_set_block_type_cube(
                     world,
-                    door_position[0], door_position[1], door_position[2] + 1,
+                    door_position[0], door_position[1] - 1, door_position[2] + 3,
+                    1, 2, 1,
                     BLOCK_TYPE_PANEL_3
+                );
+
+                world_set_block_type_cube(
+                    world,
+                    door_position[0], door_position[1] - 1, door_position[2] + 1,
+                    1, 2, 2,
+                    BLOCK_TYPE_NONE
+                );
+            }
+        }
+        else if (area_edge->area_overlap.direction == DIRECTION_SOUTH)
+        {
+            if (area_edge->area_overlap.rect.size[0] >= 3)
+            {
+                ivec3 door_position = {
+                    area_edge->area_overlap.rect.position[0] + area_edge->area_overlap.rect.size[0] / 2,
+                    area_edge->area_overlap.rect.position[1],
+                    area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
+                };
+
+                world_set_block_type_cube(
+                    world,
+                    door_position[0], door_position[1] - 1, door_position[2] + 3,
+                    1, 2, 1,
+                    BLOCK_TYPE_PANEL_3
+                );
+
+                world_set_block_type_cube(
+                    world,
+                    door_position[0], door_position[1] - 1, door_position[2] + 1,
+                    1, 2, 2,
+                    BLOCK_TYPE_NONE
                 );
             }
         }
