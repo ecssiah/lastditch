@@ -7,95 +7,95 @@
 #include "game/sim/world.h"
 
 #if 0
-static void get_int_bounds(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
+static void get_ibounds(BoxCollider *box_collider, vec3 position, IBounds *out_ibounds)
 {
-    out_int_bounds->min[0] = (i32)(position[0] - box_collider->radius[0]);
-    out_int_bounds->min[1] = (i32)(position[1] - box_collider->radius[1]);
-    out_int_bounds->min[2] = (i32)(position[2] - box_collider->radius[2]);
+    out_ibounds->min[0] = (i32)(position[0] - box_collider->radius[0]);
+    out_ibounds->min[1] = (i32)(position[1] - box_collider->radius[1]);
+    out_ibounds->min[2] = (i32)(position[2] - box_collider->radius[2]);
 
-    out_int_bounds->max[0] = (i32)(position[0] + box_collider->radius[0]);
-    out_int_bounds->max[1] = (i32)(position[1] + box_collider->radius[1]);
-    out_int_bounds->max[2] = (i32)(position[2] + box_collider->radius[2]);
+    out_ibounds->max[0] = (i32)(position[0] + box_collider->radius[0]);
+    out_ibounds->max[1] = (i32)(position[1] + box_collider->radius[1]);
+    out_ibounds->max[2] = (i32)(position[2] + box_collider->radius[2]);
 
     for (u32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
-        if (out_int_bounds->min[axis_index] < 0)
+        if (out_ibounds->min[axis_index] < 0)
         {
-            out_int_bounds->min[axis_index] = 0;
+            out_ibounds->min[axis_index] = 0;
         }
         
-        if (out_int_bounds->max[axis_index] >= WORLD_SIZE_IN_CELLS)
+        if (out_ibounds->max[axis_index] >= WORLD_SIZE_IN_CELLS)
         {
-            out_int_bounds->max[axis_index] = WORLD_SIZE_IN_CELLS - 1;
+            out_ibounds->max[axis_index] = WORLD_SIZE_IN_CELLS - 1;
         }
     }
 }
 #endif
 
-static void get_float_bounds(BoxCollider *box_collider, vec3 position, FloatBounds *out_float_bounds)
+static void get_fbounds(BoxCollider *box_collider, vec3 position, FBounds *out_fbounds)
 {
-    out_float_bounds->min[0] = position[0] - box_collider->radius[0];
-    out_float_bounds->min[1] = position[1] - box_collider->radius[1];
-    out_float_bounds->min[2] = position[2] - box_collider->radius[2];
+    out_fbounds->min[0] = position[0] - box_collider->radius[0];
+    out_fbounds->min[1] = position[1] - box_collider->radius[1];
+    out_fbounds->min[2] = position[2] - box_collider->radius[2];
 
-    out_float_bounds->max[0] = position[0] + box_collider->radius[0];
-    out_float_bounds->max[1] = position[1] + box_collider->radius[1];
-    out_float_bounds->max[2] = position[2] + box_collider->radius[2];
+    out_fbounds->max[0] = position[0] + box_collider->radius[0];
+    out_fbounds->max[1] = position[1] + box_collider->radius[1];
+    out_fbounds->max[2] = position[2] + box_collider->radius[2];
 
     const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
 
     for (u32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
-        if (out_float_bounds->min[axis_index] < 0.0f)
+        if (out_fbounds->min[axis_index] < 0.0f)
         {
-            out_float_bounds->min[axis_index] = 0.0f;
+            out_fbounds->min[axis_index] = 0.0f;
         }
         
-        if (out_float_bounds->max[axis_index] > world_size)
+        if (out_fbounds->max[axis_index] > world_size)
         {
-            out_float_bounds->max[axis_index] = world_size;
+            out_fbounds->max[axis_index] = world_size;
         }
     }
 }
 
 #if 0
-static void get_overlap(BoxCollider *box_collider, vec3 position, IntBounds *out_int_bounds)
+static void get_overlap(BoxCollider *box_collider, vec3 position, IBounds *out_ibounds)
 {
-    out_int_bounds->min[0] = (i32)floorf(position[0] - box_collider->radius[0]);
-    out_int_bounds->min[1] = (i32)floorf(position[1] - box_collider->radius[1]);
-    out_int_bounds->min[2] = (i32)floorf(position[2] - box_collider->radius[2]);
+    out_ibounds->min[0] = (i32)floorf(position[0] - box_collider->radius[0]);
+    out_ibounds->min[1] = (i32)floorf(position[1] - box_collider->radius[1]);
+    out_ibounds->min[2] = (i32)floorf(position[2] - box_collider->radius[2]);
 
-    out_int_bounds->max[0] = (i32)ceilf(position[0] + box_collider->radius[0]) - 1;
-    out_int_bounds->max[1] = (i32)ceilf(position[1] + box_collider->radius[1]) - 1;
-    out_int_bounds->max[2] = (i32)ceilf(position[2] + box_collider->radius[2]) - 1;
+    out_ibounds->max[0] = (i32)ceilf(position[0] + box_collider->radius[0]) - 1;
+    out_ibounds->max[1] = (i32)ceilf(position[1] + box_collider->radius[1]) - 1;
+    out_ibounds->max[2] = (i32)ceilf(position[2] + box_collider->radius[2]) - 1;
 
-    out_int_bounds->min[0] = out_int_bounds->min[0] < 0 ? 0 : out_int_bounds->min[0];
-    out_int_bounds->min[1] = out_int_bounds->min[1] < 0 ? 0 : out_int_bounds->min[1];
-    out_int_bounds->min[2] = out_int_bounds->min[2] < 0 ? 0 : out_int_bounds->min[2];
+    out_ibounds->min[0] = out_ibounds->min[0] < 0 ? 0 : out_ibounds->min[0];
+    out_ibounds->min[1] = out_ibounds->min[1] < 0 ? 0 : out_ibounds->min[1];
+    out_ibounds->min[2] = out_ibounds->min[2] < 0 ? 0 : out_ibounds->min[2];
 
-    out_int_bounds->max[0] = out_int_bounds->max[0] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[0];
-    out_int_bounds->max[1] = out_int_bounds->max[1] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[1];
-    out_int_bounds->max[2] = out_int_bounds->max[2] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_int_bounds->max[2];
+    out_ibounds->max[0] = out_ibounds->max[0] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_ibounds->max[0];
+    out_ibounds->max[1] = out_ibounds->max[1] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_ibounds->max[1];
+    out_ibounds->max[2] = out_ibounds->max[2] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_ibounds->max[2];
 }
 #endif
 
-static void get_overlap_from_float_bounds(FloatBounds *float_bounds, IntBounds *out_int_bounds)
+static void get_overlap_from_fbounds(FBounds *fbounds, IBounds *out_ibounds)
 {
-    out_int_bounds->min[0] = (i32)floorf(float_bounds->min[0]);
-    out_int_bounds->min[1] = (i32)floorf(float_bounds->min[1]);
-    out_int_bounds->min[2] = (i32)floorf(float_bounds->min[2]);
+    out_ibounds->min[0] = (i32)floorf(fbounds->min[0]);
+    out_ibounds->min[1] = (i32)floorf(fbounds->min[1]);
+    out_ibounds->min[2] = (i32)floorf(fbounds->min[2]);
 
-    out_int_bounds->max[0] = (i32)ceilf(float_bounds->max[0]) - 1;
-    out_int_bounds->max[1] = (i32)ceilf(float_bounds->max[1]) - 1;
-    out_int_bounds->max[2] = (i32)ceilf(float_bounds->max[2]) - 1;
+    out_ibounds->max[0] = (i32)ceilf(fbounds->max[0]) - 1;
+    out_ibounds->max[1] = (i32)ceilf(fbounds->max[1]) - 1;
+    out_ibounds->max[2] = (i32)ceilf(fbounds->max[2]) - 1;
 
-    if (out_int_bounds->min[0] < 0) out_int_bounds->min[0] = 0;
-    if (out_int_bounds->min[1] < 0) out_int_bounds->min[1] = 0;
-    if (out_int_bounds->min[2] < 0) out_int_bounds->min[2] = 0;
+    if (out_ibounds->min[0] < 0) out_ibounds->min[0] = 0;
+    if (out_ibounds->min[1] < 0) out_ibounds->min[1] = 0;
+    if (out_ibounds->min[2] < 0) out_ibounds->min[2] = 0;
 
-    if (out_int_bounds->max[0] >= (i32)WORLD_SIZE_IN_CELLS) out_int_bounds->max[0] = WORLD_SIZE_IN_CELLS - 1;
-    if (out_int_bounds->max[1] >= (i32)WORLD_SIZE_IN_CELLS) out_int_bounds->max[1] = WORLD_SIZE_IN_CELLS - 1;
-    if (out_int_bounds->max[2] >= (i32)WORLD_SIZE_IN_CELLS) out_int_bounds->max[2] = WORLD_SIZE_IN_CELLS - 1;
+    if (out_ibounds->max[0] >= (i32)WORLD_SIZE_IN_CELLS) out_ibounds->max[0] = WORLD_SIZE_IN_CELLS - 1;
+    if (out_ibounds->max[1] >= (i32)WORLD_SIZE_IN_CELLS) out_ibounds->max[1] = WORLD_SIZE_IN_CELLS - 1;
+    if (out_ibounds->max[2] >= (i32)WORLD_SIZE_IN_CELLS) out_ibounds->max[2] = WORLD_SIZE_IN_CELLS - 1;
 }
 
 static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 delta_time)
@@ -105,10 +105,10 @@ static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 d
         return;
     }
 
-    FloatBounds actor_bounds;
-    get_float_bounds(&actor->box_collider, actor->position, &actor_bounds);
+    FBounds actor_bounds;
+    get_fbounds(&actor->box_collider, actor->position, &actor_bounds);
 
-    FloatBounds swept_bounds;
+    FBounds swept_bounds;
 
     for (u32 axis_index = 0; axis_index < 3; ++axis_index)
     {
@@ -123,8 +123,8 @@ static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 d
         );
     }
     
-    IntBounds overlap_bounds;
-    get_overlap_from_float_bounds(&swept_bounds, &overlap_bounds);
+    IBounds overlap_bounds;
+    get_overlap_from_fbounds(&swept_bounds, &overlap_bounds);
 
     const f32 actor_min_prev = actor_bounds.min[axis];
     const f32 actor_max_prev = actor_bounds.max[axis];

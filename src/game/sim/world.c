@@ -803,11 +803,11 @@ static void place_area(World *world, i32 floor_number, Area *area)
         const u32 area_index = area_pool->active_array[pool_index];
         Area *area_test = &area_pool->area_array[area_index];
                 
-        if (int_rect_overlaps(&area_test->rect, &area->rect))
+        if (irect_overlaps(&area_test->rect, &area->rect))
         {
-            IntRect rect_array[4];
+            IRect rect_array[4];
             
-            const u32 rect_count = int_rect_subtract(&area_test->rect, &area->rect, rect_array);
+            const u32 rect_count = irect_subtract(&area_test->rect, &area->rect, rect_array);
 
             for (u32 rect_index = 0; rect_index < rect_count; ++rect_index)
             {
@@ -983,7 +983,7 @@ static void setup_tower(World *world)
             TOWER_SIZE - 2, TOWER_CENTER_HALL_SIZE - 8, 1,
             BLOCK_TYPE_SMOOTH_1
         );
-
+        
         world_set_block_type_cube(
             world,
             floor_origin[0] + TOWER_SIZE / 2 - TOWER_CENTER_HALL_SIZE / 2 + 4, floor_origin[1] + 1, floor_origin[2],
@@ -1773,11 +1773,11 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
     ivec2 left_min, left_max;
     ivec2 right_min, right_max;
 
-    int_rect_min(&area_left->rect, left_min);
-    int_rect_min(&area_right->rect, right_min);
+    irect_min(&area_left->rect, left_min);
+    irect_min(&area_right->rect, right_min);
 
-    int_rect_max(&area_left->rect, left_max);
-    int_rect_max(&area_right->rect, right_max);
+    irect_max(&area_left->rect, left_max);
+    irect_max(&area_right->rect, right_max);
     
     if (left_max[0] == right_min[0])
     {
@@ -2005,8 +2005,8 @@ static void draw_debug_info(World *world, Debug *debug)
         const Area *area = &area_pool->area_array[area_index];
 
         ivec2 area_min, area_max;
-        int_rect_min(&area->rect, area_min);
-        int_rect_max(&area->rect, area_max);
+        irect_min(&area->rect, area_min);
+        irect_max(&area->rect, area_max);
             
         debug_draw_box(
             debug,

@@ -2,9 +2,9 @@
 
 #include "jsk_log.h"
 
-void action_add(ActionQueue *action_queue, Action action)
+void action_add(ActionQueue *action_queue, Action *action)
 {
-    u32 tail_index_next = (action_queue->tail_index + 1) % ACTION_QUEUE_CAPACITY;
+    const u32 tail_index_next = (action_queue->tail_index + 1) % ACTION_QUEUE_CAPACITY;
 
     if (tail_index_next == action_queue->head_index)
     {
@@ -13,7 +13,7 @@ void action_add(ActionQueue *action_queue, Action action)
         return;
     }
     
-    action_queue->action_array[action_queue->tail_index] = action;
+    action_queue->action_array[action_queue->tail_index] = *action;
 
     action_queue->tail_index = tail_index_next;
 }

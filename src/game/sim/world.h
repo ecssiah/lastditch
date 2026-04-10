@@ -256,7 +256,7 @@ struct Area
     AreaType area_type;
     
     u32 floor_number;
-    IntRect rect;
+    IRect rect;
 
     u32 edge_count;
     EdgeHandle edge_handle_array[16];
@@ -273,7 +273,7 @@ struct AreaHandle
 typedef struct AreaOverlap AreaOverlap;
 struct AreaOverlap
 {
-    IntRect rect;
+    IRect rect;
     Direction direction;
 };
 
