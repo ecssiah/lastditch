@@ -496,7 +496,7 @@ u32 world_get_floor(i32 z)
     return z / FLOOR_SIZE_Z;
 }
 
-u32 world_block_type_index_from_string(const char *block_type_string)
+i32 world_block_type_index_from_string(const char *block_type_string)
 {
     for (u32 block_type_index = 0; block_type_index < BLOCK_TYPE_COUNT; ++block_type_index)
     {
@@ -2010,6 +2010,50 @@ static void draw_debug_info(World *world, Debug *debug)
 #endif
 }
 
+static void init_cell_array(World *world)
+{
+    world->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
+
+    for (u32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    {
+        world->cell_array[cell_index].cell_index = cell_index;
+    }
+}
+
+static void init_area_pool_array(World *world)
+{
+    for (u32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    {
+        AreaPool *area_pool = &world->area_pool_array[floor_number];
+
+        area_pool->floor_number = floor_number;
+        area_pool->active_count = 0;
+        area_pool->free_count = AREA_POOL_MAX;
+        
+        for (u32 pool_index = 0; pool_index < AREA_POOL_MAX; ++pool_index)
+        {
+            area_pool->free_array[pool_index] = pool_index;
+            area_pool->generation_array[pool_index] = 0;
+            area_pool->active_lookup[pool_index] = UINT32_MAX;
+        }
+    }
+}
+
+static void init_edge_pool(World *world)
+{
+    EdgePool *edge_pool = &world->edge_pool;
+
+    edge_pool->active_count = 0;
+    edge_pool->free_count = EDGE_POOL_MAX;
+
+    for (u32 pool_index = 0; pool_index < EDGE_POOL_MAX; ++pool_index)
+    {
+        edge_pool->free_array[pool_index] = pool_index;
+        edge_pool->generation_array[pool_index] = 0;
+        edge_pool->active_lookup[pool_index] = UINT32_MAX;
+    }
+}
+
 void world_init(World *world, Debug *debug)
 {
     assert(TOWER_CENTER_HALL_SIZE % 2 == 0);
@@ -2026,40 +2070,10 @@ void world_init(World *world, Debug *debug)
     world->gravity[1] = 0.0f;
     world->gravity[2] = GRAVITY_DEFAULT;
 
-    world->cell_array = calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell));
-
-    for (u32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
-    {
-        world->cell_array[cell_index].cell_index = cell_index;
-    }
-
-    for (u32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
-    {
-        AreaPool *area_pool = &world->area_pool_array[floor_number];
-
-        area_pool->floor_number = floor_number;
-        area_pool->active_count = 0;
-        area_pool->free_count = AREA_POOL_MAX;
-        
-        for (u32 pool_index = 0; pool_index < AREA_POOL_MAX; ++pool_index)
-        {
-            area_pool->free_array[pool_index] = pool_index;
-            area_pool->generation_array[pool_index] = 0;
-            area_pool->active_lookup[pool_index] = UINT32_MAX;
-        }
-    }
-
-    EdgePool *edge_pool = &world->edge_pool;
-
-    edge_pool->active_count = 0;
-    edge_pool->free_count = EDGE_POOL_MAX;
-
-    for (u32 pool_index = 0; pool_index < EDGE_POOL_MAX; ++pool_index)
-    {
-        edge_pool->free_array[pool_index] = pool_index;
-        edge_pool->generation_array[pool_index] = 0;
-        edge_pool->active_lookup[pool_index] = UINT32_MAX;
-    }
+    init_cell_array(world);
+    
+    init_area_pool_array(world);
+    init_edge_pool(world);
     
     setup_tower(world);
     setup_tower_rooms(world);

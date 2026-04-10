@@ -154,8 +154,8 @@ void population_get_actor_forward(Actor *actor, vec3 out_forward);
 void population_get_actor_right(Actor *actor, vec3 out_right);
 void population_get_actor_up(Actor *actor, vec3 out_up);
 
-u32 population_actor_type_index_from_string(const char *actor_type_string);
-u32 population_nation_type_index_from_string(const char *nation_type_string);
+i32 population_actor_type_index_from_string(const char *actor_type_string);
+i32 population_nation_type_index_from_string(const char *nation_type_string);
     
 void population_init(Population *population);
 void population_update(World *world, Population *population);

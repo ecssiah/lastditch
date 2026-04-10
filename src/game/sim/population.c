@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "game/sim/world.h"
 #include "jsk.h"
 #include "jsk_log.h"
 
@@ -88,38 +89,30 @@ static void init_nations(Population* population)
 
 static void init_judge(Population *population)
 {
-    Actor judge;
-    judge.actor_type = ACTOR_TYPE_JUDGE;
-    judge.movement_type = MOVEMENT_TYPE_GROUND;
-    judge.nation_type = NATION_TYPE_LION;
-
-    judge.box_collider.collision_enabled = true;
-    
-    judge.box_collider.radius[0] = 0.40f;
-    judge.box_collider.radius[1] = 0.40f;
-    judge.box_collider.radius[2] = 0.9f;
-    
-    judge.position[0] = WORLD_CENTER_F32;
-    judge.position[1] = WORLD_CENTER_F32 - 12.0f;
-    judge.position[2] = ROOF_Z + 4.0f;
-
-    judge.rotation[0] = 0.0f;
-    judge.rotation[1] = 0.0f;
-    judge.rotation[2] = 90.0f;
-
-    glm_vec3_copy(judge.rotation, judge.rotation_target);
-
-    judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
-
-    judge.velocity[0] = 0.0f;
-    judge.velocity[1] = 0.0f;
-    judge.velocity[2] = 0.0f;
-
-    judge.is_grounded = false;
-
-    judge.actor_control.control_type = CONTROL_TYPE_NONE;
-    judge.actor_control.decision_clock = 0;
-    judge.actor_control.decision_period = 0;
+    Actor judge = {
+        .actor_type = ACTOR_TYPE_JUDGE,
+        .movement_type = MOVEMENT_TYPE_GROUND,
+        .nation_type = NATION_TYPE_LION,
+        .position = {
+            WORLD_CENTER_F32,
+            WORLD_CENTER_F32 - 12.0f,
+            ROOF_Z + 4.0f,
+        },
+        .rotation = { 0.0f, 0.0f, 90.0f },
+        .rotation_target = { 0.0f, 0.0f, 90.0f },
+        .velocity = { 0.0f, 0.0f, 0.0f },
+        .speed = JUDGE_DEFAULT_GROUND_SPEED,
+        .is_grounded = false,
+        .box_collider = {
+            .collision_enabled = true,
+            .radius = { 0.30f, 0.30f, 0.90f },
+        },
+        .actor_control = {
+            .control_type = CONTROL_TYPE_NONE,
+            .decision_clock = 0,
+            .decision_period = 0,
+        },
+    };
 
     population->judge_handle = add_actor(population, &judge);
 
@@ -132,41 +125,36 @@ static void init_agents(Population* population)
     {
         for (u32 agent_index = 0; agent_index < AGENT_INITIAL_POPULATION; ++agent_index)
         {
-            Actor agent;
-            agent.actor_type = ACTOR_TYPE_AGENT;
-            agent.movement_type = MOVEMENT_TYPE_GROUND;
-            agent.nation_type = (NationType)(rand() % NATION_TYPE_COUNT);
+            const NationType nation_type = (NationType)(rand() % NATION_TYPE_COUNT);
+            const Nation *nation = &population->nation_array[nation_type];
 
-            agent.box_collider.collision_enabled = true;
-    
-            agent.box_collider.radius[0] = 0.40f;
-            agent.box_collider.radius[1] = 0.40f;
-            agent.box_collider.radius[2] = 0.90f;
-
-            const Nation *nation = &population->nation_array[agent.nation_type];
+            const vec3 rotation = { 0.0f, 0.0f, rand() % 360 };
             
-            agent.position[0] = nation->home_coordinate[0] - 6 + rand() % 12;
-            agent.position[1] = nation->home_coordinate[1] - 6 + rand() % 12;
-            agent.position[2] = nation->home_coordinate[2] + 4;
-
-            agent.rotation[0] = 0.0f;
-            agent.rotation[1] = 0.0f;
-            agent.rotation[2] = rand() % 360;
-
-            glm_vec3_copy(agent.rotation, agent.rotation_target);
+            Actor agent = {
+                .actor_type = ACTOR_TYPE_AGENT,
+                .movement_type = MOVEMENT_TYPE_GROUND,
+                .nation_type = nation_type,
+                .position = {
+                    nation->home_coordinate[0] - 6 + rand() % 12,
+                    nation->home_coordinate[1] - 6 + rand() % 12,
+                    nation->home_coordinate[2] + 4,
+                },
+                .rotation = { rotation[0], rotation[1], rotation[2] },
+                .rotation_target = { rotation[0], rotation[1], rotation[2] },
+                .velocity = { 0.0f, 0.0f, 0.0f },
+                .speed = AGENT_DEFAULT_GROUND_SPEED,
+                .is_grounded = false,
+                .box_collider = {
+                    .collision_enabled = true,
+                    .radius = { 0.40f, 0.40f, 0.90f },
+                },
+                .actor_control = {
+                    .control_type = CONTROL_TYPE_WANDER,
+                    .decision_clock = rand() % 500,
+                    .decision_period = 500,
+                },
+            };
             
-            agent.speed = AGENT_DEFAULT_GROUND_SPEED;
-
-            agent.velocity[0] = 0.0f;
-            agent.velocity[1] = 0.0f;
-            agent.velocity[2] = 0.0f;
-
-            agent.is_grounded = false;
-
-            agent.actor_control.control_type = CONTROL_TYPE_WANDER;
-            agent.actor_control.decision_clock = rand() % 500;
-            agent.actor_control.decision_period = 500;
-
             const ActorHandle agent_handle = add_actor(population, &agent);
 
             LOG_INFO(
@@ -289,7 +277,7 @@ void population_get_actor_up(Actor *actor, vec3 out_up)
     glm_vec3_normalize(out_up);
 }
 
-u32 population_nation_type_index_from_string(const char *nation_type_string)
+i32 population_nation_type_index_from_string(const char *nation_type_string)
 {
     for (u32 nation_type_index = 0; nation_type_index < NATION_TYPE_COUNT; ++nation_type_index)
     {
@@ -302,7 +290,7 @@ u32 population_nation_type_index_from_string(const char *nation_type_string)
     return -1;
 }
 
-u32 population_actor_type_index_from_string(const char *actor_type_string)
+i32 population_actor_type_index_from_string(const char *actor_type_string)
 {
     for (u32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
     {
@@ -314,7 +302,6 @@ u32 population_actor_type_index_from_string(const char *actor_type_string)
 
     return -1;
 }
-
 
 void population_init(Population *population)
 {

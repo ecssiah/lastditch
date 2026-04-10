@@ -366,7 +366,7 @@ u32 world_get_floor(i32 z);
 b32 world_is_solid(World *world, i32 x, i32 y, i32 z);
 b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask);
 
-u32 world_block_type_index_from_string(const char *block_type_string);
+i32 world_block_type_index_from_string(const char *block_type_string);
 
 u8 world_get_direction_mask(World *world, i32 x, i32 y, i32 z);
 
