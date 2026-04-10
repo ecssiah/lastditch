@@ -50,3 +50,12 @@
 - Horse Nation becomes Bear Nation
 
 ** Next
+
+* <2026-04-10 Fri>
+** Done
+- Area edges calculated
+- Full door placement per room
+
+** Next
+- Pathfinding!
+  
