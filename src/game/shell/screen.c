@@ -284,29 +284,36 @@ static void draw_debug_info(Shell *shell, Sim *sim)
         strcpy(sector_coordinate_text, "SEC - -");
     }
 
-    const u32 floor_result = world_get_floor(cell_coordinate[2]);
+    const u32 floor_number = world_get_floor(cell_coordinate[2]);
 
-    if (floor_result < 0)
+    if (cell_coordinate[2] < 0)
     {
         strcpy(floor_text, "FLR -");
     }
-    else if (floor_result >= TOWER_FLOOR_COUNT)
-    {
-        snprintf(
-            floor_text,
-            sizeof(floor_text),
-            "FLR R-%i",
-            floor_result
-        );
-    }
     else
     {
-        snprintf(
-            floor_text,
-            sizeof(floor_text),
-            "FLR T-%i",
-            floor_result
-        );
+        if (floor_number >= FLOOR_COUNT)
+        {
+            strcpy(floor_text, "FLR -");
+        }
+        else if (floor_number >= TOWER_FLOOR_COUNT)
+        {
+            snprintf(
+                floor_text,
+                sizeof(floor_text),
+                "FLR R-%i",
+                floor_number
+            );
+        }
+        else
+        {
+            snprintf(
+                floor_text,
+                sizeof(floor_text),
+                "FLR T-%i",
+                floor_number
+            );
+        }
     }
 
     switch (judge->movement_type)

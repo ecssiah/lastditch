@@ -426,7 +426,6 @@ u32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z)
         (z << (2 * WORLD_SIZE_IN_CELLS_LOG2))
     );
 
-    assert(cell_index >= 0);
     assert(cell_index < (i32)WORLD_VOLUME_IN_CELLS);
 	    
     return cell_index;
@@ -494,14 +493,7 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
 
 u32 world_get_floor(i32 z)
 {
-    if (z >= 0)
-    {
-        return z / FLOOR_SIZE_Z;
-    }
-    else
-    {
-        return -1;
-    }
+    return z / FLOOR_SIZE_Z;
 }
 
 u32 world_block_type_index_from_string(const char *block_type_string)
