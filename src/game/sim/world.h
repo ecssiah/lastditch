@@ -77,6 +77,8 @@
 
 #define GRAVITY_DEFAULT -90.0f
 
+typedef struct Population Population;
+
 #define FOR_LIST_DIRECTION(DO)                  \
     DO(DIRECTION_EAST)                          \
     DO(DIRECTION_WEST)                          \
@@ -392,6 +394,7 @@ void world_remove_edge(EdgePool *edge_pool, u32 edge_index);
 void world_construct_area(World *world, const Area *area);
 
 void world_init(World *world, Debug *debug);
+void world_update(World *world, Population *population);
 void world_close(World *world);
 
 #endif

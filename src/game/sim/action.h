@@ -7,6 +7,8 @@
 
 #define ACTION_QUEUE_CAPACITY (1u << 6)
 
+typedef struct Actor Actor;
+
 typedef enum ActionType ActionType;
 enum ActionType
 {
@@ -36,6 +38,7 @@ struct ActionQueue
 };
 
 void action_add(ActionQueue *action_queue, Action *action);
-b32 action_pop(ActionQueue *action_queue, Action *out_action);
+
+void action_apply_queue(ActionQueue *action_queue, Actor *judge);
 
 #endif

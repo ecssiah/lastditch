@@ -1,14 +1,15 @@
 #include "game/sim/world.h"
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "core/core.h"
-#include "game/sim/debug.h"
 #include "jsk.h"
 #include "jsk_log.h"
 
+#include "core/core.h"
 #include "core/math/math.h"
+#include "game/sim/debug.h"
+#include "game/sim/population.h"
 
 const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
 {
@@ -2092,6 +2093,21 @@ void world_init(World *world, Debug *debug)
     init_direction_mask(world);
 
     draw_debug_info(world, debug);
+}
+
+void world_update(World *world, Population *population)
+{
+    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    {
+        if (population->actor_pool.generation_array[actor_index] == 0)
+        {
+            continue;
+        }
+        
+        Actor *actor = &population->actor_pool.actor_array[actor_index];
+
+        physics_update_actor(actor, world);
+    }
 }
 
 void world_close(World *world)

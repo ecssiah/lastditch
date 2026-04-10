@@ -4,33 +4,8 @@
 
 #include "jsk.h"
 
+#include "game/sim/actor.h"
 #include "game/sim/world.h"
-
-#if 0
-static void get_ibounds(BoxCollider *box_collider, vec3 position, IBounds *out_ibounds)
-{
-    out_ibounds->min[0] = (i32)(position[0] - box_collider->radius[0]);
-    out_ibounds->min[1] = (i32)(position[1] - box_collider->radius[1]);
-    out_ibounds->min[2] = (i32)(position[2] - box_collider->radius[2]);
-
-    out_ibounds->max[0] = (i32)(position[0] + box_collider->radius[0]);
-    out_ibounds->max[1] = (i32)(position[1] + box_collider->radius[1]);
-    out_ibounds->max[2] = (i32)(position[2] + box_collider->radius[2]);
-
-    for (u32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
-    {
-        if (out_ibounds->min[axis_index] < 0)
-        {
-            out_ibounds->min[axis_index] = 0;
-        }
-        
-        if (out_ibounds->max[axis_index] >= WORLD_SIZE_IN_CELLS)
-        {
-            out_ibounds->max[axis_index] = WORLD_SIZE_IN_CELLS - 1;
-        }
-    }
-}
-#endif
 
 static void get_fbounds(BoxCollider *box_collider, vec3 position, FBounds *out_fbounds)
 {
@@ -58,27 +33,6 @@ static void get_fbounds(BoxCollider *box_collider, vec3 position, FBounds *out_f
     }
 }
 
-#if 0
-static void get_overlap(BoxCollider *box_collider, vec3 position, IBounds *out_ibounds)
-{
-    out_ibounds->min[0] = (i32)floorf(position[0] - box_collider->radius[0]);
-    out_ibounds->min[1] = (i32)floorf(position[1] - box_collider->radius[1]);
-    out_ibounds->min[2] = (i32)floorf(position[2] - box_collider->radius[2]);
-
-    out_ibounds->max[0] = (i32)ceilf(position[0] + box_collider->radius[0]) - 1;
-    out_ibounds->max[1] = (i32)ceilf(position[1] + box_collider->radius[1]) - 1;
-    out_ibounds->max[2] = (i32)ceilf(position[2] + box_collider->radius[2]) - 1;
-
-    out_ibounds->min[0] = out_ibounds->min[0] < 0 ? 0 : out_ibounds->min[0];
-    out_ibounds->min[1] = out_ibounds->min[1] < 0 ? 0 : out_ibounds->min[1];
-    out_ibounds->min[2] = out_ibounds->min[2] < 0 ? 0 : out_ibounds->min[2];
-
-    out_ibounds->max[0] = out_ibounds->max[0] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_ibounds->max[0];
-    out_ibounds->max[1] = out_ibounds->max[1] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_ibounds->max[1];
-    out_ibounds->max[2] = out_ibounds->max[2] >= WORLD_SIZE_IN_CELLS ? WORLD_SIZE_IN_CELLS - 1: out_ibounds->max[2];
-}
-#endif
-
 static void get_overlap_from_fbounds(FBounds *fbounds, IBounds *out_ibounds)
 {
     out_ibounds->min[0] = (i32)floorf(fbounds->min[0]);
@@ -98,7 +52,7 @@ static void get_overlap_from_fbounds(FBounds *fbounds, IBounds *out_ibounds)
     if (out_ibounds->max[2] >= (i32)WORLD_SIZE_IN_CELLS) out_ibounds->max[2] = WORLD_SIZE_IN_CELLS - 1;
 }
 
-static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 delta_time)
+static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time, World *world)
 {
     if (actor->velocity[axis] == 0.0f)
     {
@@ -114,12 +68,12 @@ static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 d
     {
         swept_bounds.min[axis_index] = fminf(
             actor_bounds.min[axis_index],
-            actor_bounds.min[axis_index] + delta_time * actor->velocity[axis_index]
+            actor_bounds.min[axis_index] + step_delta_time * actor->velocity[axis_index]
         );
         
         swept_bounds.max[axis_index] = fmaxf(
             actor_bounds.max[axis_index],
-            actor_bounds.max[axis_index] + delta_time * actor->velocity[axis_index]
+            actor_bounds.max[axis_index] + step_delta_time * actor->velocity[axis_index]
         );
     }
     
@@ -129,8 +83,8 @@ static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 d
     const f32 actor_min_prev = actor_bounds.min[axis];
     const f32 actor_max_prev = actor_bounds.max[axis];
 
-    const f32 actor_min_next = actor_min_prev + delta_time * actor->velocity[axis];
-    const f32 actor_max_next = actor_max_prev + delta_time * actor->velocity[axis];
+    const f32 actor_min_next = actor_min_prev + step_delta_time * actor->velocity[axis];
+    const f32 actor_max_next = actor_max_prev + step_delta_time * actor->velocity[axis];
 
     const i32 axis_s = (axis + 1) % AXIS_COUNT;
     const i32 axis_t = (axis + 2) % AXIS_COUNT;
@@ -222,17 +176,17 @@ static void resolve_axis_collisions(World *world, Actor *actor, Axis axis, f32 d
     }
     else
     {
-        actor->position[axis] += delta_time * actor->velocity[axis];
+        actor->position[axis] += step_delta_time * actor->velocity[axis];
     }
 }
 
-void physics_integrate(World *world, Actor *actor)
+static void integrate(Actor *actor, World *world)
 {
     actor->is_grounded = false;
     
     if (actor->movement_type == MOVEMENT_TYPE_GROUND)
     {
-        if (actor->velocity[AXIS_Z] < 0.0f)
+        if (actor->velocity[AXIS_Z] <= 0.0f)
         {
             actor->velocity[AXIS_Z] += world->delta_time * FALLING_GRAVITY_MODIFIER * world->gravity[AXIS_Z];
         }
@@ -244,11 +198,13 @@ void physics_integrate(World *world, Actor *actor)
 
     if (actor->box_collider.collision_enabled)
     {
-        const f32 move_x = fabsf(world->delta_time * actor->velocity[0]);
-        const f32 move_y = fabsf(world->delta_time * actor->velocity[1]);
-        const f32 move_z = fabsf(world->delta_time * actor->velocity[2]);
+        const vec3 move = {
+            fabsf(world->delta_time * actor->velocity[0]),
+            fabsf(world->delta_time * actor->velocity[1]),
+            fabsf(world->delta_time * actor->velocity[2]),
+        };
 
-        const f32 max_move = fmaxf(move_x, fmaxf(move_y, move_z));
+        const f32 max_move = fmaxf(move[0], fmaxf(move[1], move[2]));
 
         u32 step_count = (u32)ceilf(max_move);
         if (step_count < 1)
@@ -260,9 +216,9 @@ void physics_integrate(World *world, Actor *actor)
 
         for (u32 step_index = 0; step_index < step_count; ++step_index)
         {
-            resolve_axis_collisions(world, actor, AXIS_X, step_delta_time);
-            resolve_axis_collisions(world, actor, AXIS_Y, step_delta_time);
-            resolve_axis_collisions(world, actor, AXIS_Z, step_delta_time);
+            resolve_axis_collisions(actor, AXIS_X, step_delta_time, world);
+            resolve_axis_collisions(actor, AXIS_Y, step_delta_time, world);
+            resolve_axis_collisions(actor, AXIS_Z, step_delta_time, world);
         }
     }
     else
@@ -273,3 +229,14 @@ void physics_integrate(World *world, Actor *actor)
         glm_vec3_add(actor->position, displacement, actor->position);
     }
 }
+
+void physics_update_actor(Actor *actor, World *world)
+{
+    switch (actor->movement_type)
+    {
+    case MOVEMENT_TYPE_GROUND: integrate(actor, world); break;
+    case MOVEMENT_TYPE_DEBUG: integrate(actor, world); break;
+    default: break;
+    }
+}
+        

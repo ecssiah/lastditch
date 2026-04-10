@@ -249,7 +249,7 @@ static void load_actor_texture_directory(Shell *shell)
 
         snprintf(texture_path, sizeof(texture_path), "%s/%s", actor_texture_directory, config_entry->value);
 
-        const u32 nation_type_index = population_nation_type_index_from_string(config_entry->key);
+        const u32 nation_type_index = nation_type_index_from_string(config_entry->key);
 
         assert(nation_type_index >= 0);
         assert(nation_type_index < NATION_TYPE_COUNT);
