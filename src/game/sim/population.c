@@ -102,13 +102,11 @@ void population_init(Population *population)
 
 void population_update(Population *population, World *world)
 {
-    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    ActorPool *actor_pool = &population->actor_pool;
+    
+    for (u32 pool_index = 0; pool_index < actor_pool->active_count; ++pool_index)
     {
-        if (population->actor_pool.generation_array[actor_index] == 0)
-        {
-            continue;
-        }
-        
+        const u32 actor_index = actor_pool->active_array[pool_index];
         Actor *actor = &population->actor_pool.actor_array[actor_index];
 
         actor_control(world, actor);
