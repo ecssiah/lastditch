@@ -6,6 +6,7 @@
 #include "jsk.h"
 
 #include "core/core.h"
+#include "game/sim/direction.h"
 #include "game/sim/debug.h"
 
 #define CELL_SIZE 1.0f
@@ -70,36 +71,16 @@
 #define AREA_POOL_MAX 1u << 12
 #define EDGE_POOL_MAX 1u << 12
 
+#define AREA_EDGE_MAX 1u << 5
+
 #define AREA_EXPANSION_ITERATION_COUNT 5u
 #define AREA_EXPANSION_SIZE_MIN 8u
 
-#define PLACE_ROOM_CONTENT false
+#define PLACE_ROOM_CONTENT true
 
 #define GRAVITY_DEFAULT -90.0f
 
 typedef struct Population Population;
-
-#define FOR_LIST_DIRECTION(DO)                  \
-    DO(DIRECTION_EAST)                          \
-    DO(DIRECTION_WEST)                          \
-    DO(DIRECTION_NORTH)                         \
-    DO(DIRECTION_SOUTH)                         \
-    DO(DIRECTION_UP)                            \
-    DO(DIRECTION_DOWN)                          \
-
-typedef enum Direction Direction;
-enum Direction
-{
-    FOR_LIST_DIRECTION(DEFINE_LIST_ENUMERATION)
-    
-    DIRECTION_COUNT
-};
-
-#define DIRECTION_FROM_MASK(mask) (__builtin_ctz(mask))
-
-extern const char *DIRECTION_STRING[DIRECTION_COUNT];
-extern const i32 DIRECTION_STRIDE[DIRECTION_COUNT];
-extern const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3];
 
 #define FOR_LIST_BLOCK_TYPE(DO)                 \
     DO(BLOCK_TYPE_NONE)                         \
@@ -261,7 +242,7 @@ struct Area
     IRect rect;
 
     u32 edge_count;
-    EdgeHandle edge_handle_array[16];
+    EdgeHandle edge_handle_array[AREA_EDGE_MAX];
 };
 
 typedef struct AreaHandle AreaHandle;
@@ -284,6 +265,9 @@ struct AreaEdge
 {
     AreaHandle area_handle_a;
     AreaHandle area_handle_b;
+
+    Direction area_a_direction;
+    Direction area_b_direction;
 
     AreaOverlap area_overlap;
 };
@@ -362,6 +346,8 @@ void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_lo
 
 void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position);
 void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
+
+u32 world_get_stride(Direction direction);
 
 u32 world_get_floor(i32 z);
 

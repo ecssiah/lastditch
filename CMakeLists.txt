@@ -64,6 +64,7 @@ target_sources(
     src/game/sim/actor.c
     src/game/sim/action.c
     src/game/sim/debug.c
+    src/game/sim/direction.c
     src/game/sim/nation.c
     src/game/sim/navigation.c
     src/game/sim/physics.c
