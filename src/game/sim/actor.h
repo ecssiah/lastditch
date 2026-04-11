@@ -14,7 +14,7 @@
 #define AGENT_DEFAULT_JUMP_SPEED 28.0f
 
 #define JUDGE_DEFAULT_GROUND_SPEED 12.0f
-#define JUDGE_DEFAULT_JUMP_SPEED 46.0f
+#define JUDGE_DEFAULT_JUMP_SPEED 28.0f
 #define JUDGE_DEFAULT_DEBUG_SPEED 32.0f
 
 #define CAMERA_SENSITIVITY_X 0.1f
@@ -94,8 +94,6 @@ struct ActorHandle
 typedef struct ActorPool ActorPool;
 struct ActorPool
 {
-    Actor actor_array[ACTOR_MAX];
-
     u32 generation_array[ACTOR_MAX];
 
     u32 active_array[ACTOR_MAX];
@@ -103,6 +101,8 @@ struct ActorPool
     
     u32 free_array[ACTOR_MAX];
     u32 free_count;
+    
+    Actor actor_array[ACTOR_MAX];
 };
 
 i32 actor_type_index_from_string(const char *actor_type_string);
@@ -111,9 +111,9 @@ void actor_get_forward(Actor *actor, vec3 out_forward);
 void actor_get_right(Actor *actor, vec3 out_right);
 void actor_get_up(Actor *actor, vec3 out_up);
 
+void actor_init_pool(ActorPool *actor_pool);
+
 ActorHandle actor_add(ActorPool *actor_pool, Actor *actor);
 void actor_control(World *world, Actor *actor);
-
-void actor_init_pool(ActorPool *actor_pool);
 
 #endif

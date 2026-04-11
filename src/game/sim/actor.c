@@ -58,6 +58,19 @@ void actor_get_up(Actor *actor, vec3 out_up)
     glm_vec3_normalize(out_up);
 }
 
+void actor_init_pool(ActorPool *actor_pool)
+{
+    actor_pool->free_count = ACTOR_MAX;
+    actor_pool->active_count = 0;
+
+    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    {
+        actor_pool->active_array[actor_index] = 0;
+        actor_pool->generation_array[actor_index] = 0;
+        actor_pool->free_array[actor_index] = actor_index;
+    }
+}
+
 ActorHandle actor_add(ActorPool *actor_pool, Actor *actor)
 {
     const u32 actor_index = actor_pool->free_array[--actor_pool->free_count];
@@ -118,17 +131,5 @@ void actor_control(World *world, Actor *actor)
     }
 }
 
-void actor_init_pool(ActorPool *actor_pool)
-{
-    actor_pool->free_count = ACTOR_MAX;
-    actor_pool->active_count = 0;
-
-    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
-    {
-        actor_pool->active_array[actor_index] = 0;
-        actor_pool->generation_array[actor_index] = 0;
-        actor_pool->free_array[actor_index] = actor_index;
-    }
-}
 
 

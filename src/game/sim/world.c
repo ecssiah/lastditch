@@ -471,14 +471,17 @@ u32 world_get_stride(Direction direction)
 {
     switch (direction)
     {
-    case DIRECTION_EAST:  return WORLD_STRIDE_X;
+    case DIRECTION_EAST:  return +WORLD_STRIDE_X;
     case DIRECTION_WEST:  return -WORLD_STRIDE_X;
-    case DIRECTION_NORTH: return WORLD_STRIDE_Y;
+    case DIRECTION_NORTH: return +WORLD_STRIDE_Y;
     case DIRECTION_SOUTH: return -WORLD_STRIDE_Y;
-    case DIRECTION_UP:    return WORLD_STRIDE_Z;
+    case DIRECTION_UP:    return +WORLD_STRIDE_Z;
     case DIRECTION_DOWN:  return -WORLD_STRIDE_Z;
-    default: assert(false);
+    case DIRECTION_COUNT: break;
     }
+
+    assert(false);
+    __builtin_unreachable();
 }
 
 u32 world_get_floor(i32 z)
@@ -1592,7 +1595,7 @@ static void setup_bear_territory(World *world)
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], platform_origin[2] + 1,
+        platform_origin[0], platform_origin[1] - 1, platform_origin[2] + 1,
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y + 1, 1,
         BLOCK_TYPE_NONE
     );
@@ -1693,8 +1696,8 @@ static void setup_lion_territory(World *world)
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1] - 1, platform_origin[2] + 1,
-        PLATFORM_SIZE_X, 1, 1,
+        platform_origin[0], platform_origin[1] + 1, platform_origin[2] + 1,
+        PLATFORM_SIZE_X, PLATFORM_SIZE_Y + 1, 1,
         BLOCK_TYPE_NONE
     );
 
@@ -1847,7 +1850,7 @@ static void calculate_area_edges(World *world)
 
 static void setup_tower_doors(World *world)
 {
-    const u32 minimum_edge_size = 5;
+    const i32 minimum_edge_size = 5;
     
     for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
