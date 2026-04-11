@@ -58,4 +58,13 @@
 
 ** Next
 - Pathfinding!
-  
+
+* <2026-04-11 Sat>
+** Done
+- World Generation generalized
+- Content levels include level 0
+
+** Next
+- Graph generation
+- Pathfinding
+- Interactable Blocks
