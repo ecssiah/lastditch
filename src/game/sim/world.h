@@ -202,6 +202,7 @@ extern const ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_0[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_1[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_2[];
+extern const BlockType AREA_CONTENT_ARRAY_LEVEL_3[];
 
 extern const BlockTypeList AREA_CONTENT_MASTER_LIST[TOWER_FLOOR_COUNT];
 

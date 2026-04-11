@@ -329,12 +329,17 @@ const ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT] =
 
 const BlockType AREA_CONTENT_ARRAY_LEVEL_0[] =
 {
+
+};
+
+const BlockType AREA_CONTENT_ARRAY_LEVEL_1[] =
+{
     BLOCK_TYPE_SERVER_1,
     BLOCK_TYPE_SERVER_2,
     BLOCK_TYPE_SERVER_3,
 };
 
-const BlockType AREA_CONTENT_ARRAY_LEVEL_1[] =
+const BlockType AREA_CONTENT_ARRAY_LEVEL_2[] =
 {
     BLOCK_TYPE_SERVER_1,
     BLOCK_TYPE_SERVER_2,
@@ -343,7 +348,7 @@ const BlockType AREA_CONTENT_ARRAY_LEVEL_1[] =
     BLOCK_TYPE_SERVER_5
 };
 
-const BlockType AREA_CONTENT_ARRAY_LEVEL_2[] =
+const BlockType AREA_CONTENT_ARRAY_LEVEL_3[] =
 {
     BLOCK_TYPE_SERVER_3,
     BLOCK_TYPE_SERVER_4,
@@ -352,11 +357,12 @@ const BlockType AREA_CONTENT_ARRAY_LEVEL_2[] =
     BLOCK_TYPE_SERVER_7,
 };
 
-const BlockTypeList AREA_CONTENT_MASTER_LIST[TOWER_FLOOR_COUNT] =
+const BlockTypeList AREA_CONTENT_MASTER_LIST[] =
 {
-    { AREA_CONTENT_ARRAY_LEVEL_0, 3 },
-    { AREA_CONTENT_ARRAY_LEVEL_1, 5 },
+    { AREA_CONTENT_ARRAY_LEVEL_0, 0 },
+    { AREA_CONTENT_ARRAY_LEVEL_1, 3 },
     { AREA_CONTENT_ARRAY_LEVEL_2, 5 },
+    { AREA_CONTENT_ARRAY_LEVEL_3, 5 },
 };
 
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z)
@@ -618,12 +624,12 @@ u32 world_get_content_level(i32 z)
 {
     if (z >= (i32)ROOF_Z)
     {
-        return -1;
+        return 0;
     }
     else
     {
         const u32 floor_number = z / FLOOR_SIZE_Z;
-        const u32 content_level = (TOWER_FLOOR_COUNT - 1 - floor_number) / 2;
+        const u32 content_level = (TOWER_FLOOR_COUNT - 1 - floor_number) / 2 + 1;
     
         return content_level;
     }
@@ -816,114 +822,12 @@ static void place_area(World *world, i32 floor_number, Area *area)
     world_add_area(area_pool, area);
 }
 
-
-static void setup_tower_walls(World *world, const ivec3 floor_origin)
-{
-    const i32 cell_z = floor_origin[2];
-	
-    for (i32 cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + (i32)TOWER_SIZE - 1; ++cell_x)
-    {
-        i32 north_position_z, north_size_z;
-	    
-        const u32 north_offset = rand() % (FLOOR_SIZE_Z - 2);
-
-        if (rand() % 2)
-        {
-            north_position_z = cell_z + 1;
-            north_size_z = north_offset;
-        }
-        else
-        {
-            north_position_z = cell_z + 1 + north_offset;
-            north_size_z = (FLOOR_SIZE_Z - 2) - north_offset;
-        }
-	    
-        world_set_block_type_cube(
-            world,
-            cell_x, floor_origin[0] + TOWER_SIZE - 1, north_position_z,
-            1, 1, north_size_z,
-            BLOCK_TYPE_PANEL_2
-        );
-
-        i32 south_position_z, south_size_z;
-
-        const u32 south_offset = rand() % (FLOOR_SIZE_Z - 2);
-
-        if (rand() % 2)
-        {
-            south_position_z = cell_z + 1;
-            south_size_z = south_offset;
-        }
-        else
-        {
-            south_position_z = cell_z + 1 + south_offset;
-            south_size_z = (FLOOR_SIZE_Z - 2) - south_offset;
-        }
-
-        world_set_block_type_cube(
-            world,
-            cell_x, floor_origin[0], south_position_z,
-            1, 1, south_size_z,
-            BLOCK_TYPE_PANEL_2
-        );
-    }
-	
-    for (i32 cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + (i32)TOWER_SIZE - 1; ++cell_y)
-    {
-        i32 east_position_z, east_size_z;
-
-        const u32 east_offset = rand() % (FLOOR_SIZE_Z - 2);
-
-        if (rand() % 2)
-        {
-            east_position_z = cell_z + 1;
-            east_size_z = east_offset;
-        }
-        else
-        {
-            east_position_z = cell_z + 1 + east_offset;
-            east_size_z = (FLOOR_SIZE_Z - 2) - east_offset;
-        }
-	    
-        world_set_block_type_cube(
-            world,
-            floor_origin[1] + TOWER_SIZE - 1, cell_y, east_position_z,
-            1, 1, east_size_z,
-            BLOCK_TYPE_PANEL_2
-        );
-
-        i32 west_position_z, west_size_z;
-
-        const u32 west_offset = rand() % (FLOOR_SIZE_Z - 2);
-
-        if (rand() % 2)
-        {
-            west_position_z = cell_z + 1;
-            west_size_z = west_offset;
-        }
-        else
-        {
-            west_position_z = cell_z + 1 + west_offset;
-            west_size_z = (FLOOR_SIZE_Z - 2) - west_offset;
-        }
-
-        world_set_block_type_cube(
-            world,
-            floor_origin[1], cell_y, west_position_z,
-            1, 1, west_size_z,
-            BLOCK_TYPE_PANEL_2
-        );
-    }
-}
-
-static void setup_tower(World *world)
+static void construct_tower(World *world)
 {
     for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         const ivec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
 	
-        LOG_INFO("Floor %i at %i", floor_number, floor_origin[2]);
-
         world_set_block_type_cube(
             world,
             floor_origin[0], floor_origin[1], floor_origin[2],
@@ -959,8 +863,130 @@ static void setup_tower(World *world)
             BLOCK_TYPE_SMOOTH_1
         );
 
-        setup_tower_walls(world, floor_origin);
+        const i32 cell_z = floor_origin[2];
+	
+        for (i32 cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + (i32)TOWER_SIZE - 1; ++cell_x)
+        {
+            i32 north_position_z, north_size_z;
+	    
+            const u32 north_offset = rand() % (FLOOR_SIZE_Z - 2);
+
+            if (rand() % 2)
+            {
+                north_position_z = cell_z + 1;
+                north_size_z = north_offset;
+            }
+            else
+            {
+                north_position_z = cell_z + 1 + north_offset;
+                north_size_z = (FLOOR_SIZE_Z - 2) - north_offset;
+            }
+	    
+            world_set_block_type_cube(
+                world,
+                cell_x, floor_origin[0] + TOWER_SIZE - 1, north_position_z,
+                1, 1, north_size_z,
+                BLOCK_TYPE_PANEL_2
+            );
+
+            i32 south_position_z, south_size_z;
+
+            const u32 south_offset = rand() % (FLOOR_SIZE_Z - 2);
+
+            if (rand() % 2)
+            {
+                south_position_z = cell_z + 1;
+                south_size_z = south_offset;
+            }
+            else
+            {
+                south_position_z = cell_z + 1 + south_offset;
+                south_size_z = (FLOOR_SIZE_Z - 2) - south_offset;
+            }
+
+            world_set_block_type_cube(
+                world,
+                cell_x, floor_origin[0], south_position_z,
+                1, 1, south_size_z,
+                BLOCK_TYPE_PANEL_2
+            );
+        }
+	
+        for (i32 cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + (i32)TOWER_SIZE - 1; ++cell_y)
+        {
+            i32 east_position_z, east_size_z;
+
+            const u32 east_offset = rand() % (FLOOR_SIZE_Z - 2);
+
+            if (rand() % 2)
+            {
+                east_position_z = cell_z + 1;
+                east_size_z = east_offset;
+            }
+            else
+            {
+                east_position_z = cell_z + 1 + east_offset;
+                east_size_z = (FLOOR_SIZE_Z - 2) - east_offset;
+            }
+	    
+            world_set_block_type_cube(
+                world,
+                floor_origin[1] + TOWER_SIZE - 1, cell_y, east_position_z,
+                1, 1, east_size_z,
+                BLOCK_TYPE_PANEL_2
+            );
+
+            i32 west_position_z, west_size_z;
+
+            const u32 west_offset = rand() % (FLOOR_SIZE_Z - 2);
+
+            if (rand() % 2)
+            {
+                west_position_z = cell_z + 1;
+                west_size_z = west_offset;
+            }
+            else
+            {
+                west_position_z = cell_z + 1 + west_offset;
+                west_size_z = (FLOOR_SIZE_Z - 2) - west_offset;
+            }
+
+            world_set_block_type_cube(
+                world,
+                floor_origin[1], cell_y, west_position_z,
+                1, 1, west_size_z,
+                BLOCK_TYPE_PANEL_2
+            );
+        }
     }
+
+    world_set_block_type_wireframe(
+        world,
+        TOWER_BORDER, TOWER_BORDER, ROOF_Z,
+        WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 2,
+        BLOCK_TYPE_SMOOTH_4
+    );
+    
+    world_set_block_type_cube(
+        world,
+        TOWER_BORDER, TOWER_BORDER, ROOF_Z,
+        WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
+        BLOCK_TYPE_CARVED_3
+    );
+
+    world_set_block_type_cube(
+        world,
+        WORLD_CENTER_I32 - ROOF_CENTER_PATH_SIZE / 2, TOWER_BORDER + 1, ROOF_Z,
+        ROOF_CENTER_PATH_SIZE, TOWER_SIZE - 2, 1,
+        BLOCK_TYPE_SMOOTH_1
+    );
+
+    world_set_block_type_cube(
+        world,
+        TOWER_BORDER + 1, WORLD_CENTER_I32 - ROOF_CENTER_PATH_SIZE / 2, ROOF_Z,
+        TOWER_SIZE - 2, ROOF_CENTER_PATH_SIZE, 1,
+        BLOCK_TYPE_SMOOTH_1
+    );
 }
 
 static void setup_elevator(World *world)
@@ -981,40 +1007,28 @@ static void setup_elevator(World *world)
     {
         const i32 floor_z = floor_number * FLOOR_SIZE_Z;
         
-        if (TOWER_WIREFRAME)
-        {
-            world_set_block_type_wireframe(
-                world,
-                elevator_origin[0], elevator_origin[1], floor_z,
-                ELEVATOR_SIZE, ELEVATOR_SIZE, FLOOR_SIZE_Z,
-                BLOCK_TYPE_CAUTION_3
-            );
-        }
-        else
-        {
-            const u32 elevator_door_offset = 3;
+        const u32 elevator_door_offset = 3;
             
-            world_set_block_type_box(
-                world,
-                elevator_origin[0], elevator_origin[1], floor_z,
-                ELEVATOR_SIZE, ELEVATOR_SIZE, FLOOR_SIZE_Z,
-                BLOCK_TYPE_PANEL_2
-            );
+        world_set_block_type_box(
+            world,
+            elevator_origin[0], elevator_origin[1], floor_z,
+            ELEVATOR_SIZE, ELEVATOR_SIZE, FLOOR_SIZE_Z,
+            BLOCK_TYPE_PANEL_2
+        );
 
-            world_set_block_type_cube(
-                world,
-                elevator_origin[0] + elevator_door_offset, elevator_origin[1], floor_z + 1,
-                ELEVATOR_SIZE - 2 * elevator_door_offset, ELEVATOR_SIZE, FLOOR_SIZE_Z - 5,
-                BLOCK_TYPE_NONE
-            );
+        world_set_block_type_cube(
+            world,
+            elevator_origin[0] + elevator_door_offset, elevator_origin[1], floor_z + 1,
+            ELEVATOR_SIZE - 2 * elevator_door_offset, ELEVATOR_SIZE, FLOOR_SIZE_Z - 5,
+            BLOCK_TYPE_NONE
+        );
             
-            world_set_block_type_cube(
-                world,
-                elevator_origin[0], elevator_origin[1] + elevator_door_offset, floor_z + 1,
-                ELEVATOR_SIZE, ELEVATOR_SIZE - 2 * elevator_door_offset, FLOOR_SIZE_Z - 5,
-                BLOCK_TYPE_NONE
-            );
-        }
+        world_set_block_type_cube(
+            world,
+            elevator_origin[0], elevator_origin[1] + elevator_door_offset, floor_z + 1,
+            ELEVATOR_SIZE, ELEVATOR_SIZE - 2 * elevator_door_offset, FLOOR_SIZE_Z - 5,
+            BLOCK_TYPE_NONE
+        );
     }
 
     world_set_block_type_cube(
@@ -1025,7 +1039,13 @@ static void setup_elevator(World *world)
     );
 }
 
-static void setup_tower_rooms(World *world)
+static void layout_roof_areas(World *world)
+{
+    const i32 roof_area_size = TOWER_SIZE / 16;
+
+}
+
+static void layout_tower_areas(World *world)
 {
     for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
@@ -1148,168 +1168,6 @@ static void setup_tower_rooms(World *world)
             world_add_area(area_pool, &section_area);
         }
     }
-
-    // TEST AREA
-    Area test_area1 = {
-        .area_type = AREA_TYPE_OPEN,
-        .edge_count = 0,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .rect = {
-            { 95, 95 },
-            { 10, 10 },
-        },
-    };
-    
-    Area test_area2 = {
-        .area_type = AREA_TYPE_OPEN,
-        .edge_count = 0,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .rect = {
-            { 95, 105 },
-            { 10, 10 },
-        },
-    };
-    
-    Area test_area3 = {
-        .area_type = AREA_TYPE_OPEN,
-        .edge_count = 0,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .rect = {
-            { 105, 95 },
-            { 10, 10 },
-        },
-    };
-    
-    Area test_area4 = {
-        .area_type = AREA_TYPE_OPEN,
-        .edge_count = 0,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .rect = {
-            { 105, 105 },
-            { 10, 10 },
-        },
-    };
-    
-    Area test_area5 = {
-        .area_type = AREA_TYPE_ROOM,
-        .edge_count = 0,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .rect = {
-            { 100, 100 },
-            { 10, 10 },
-        },
-    };
-
-    place_area(world, ROOF_FLOOR_NUMBER, &test_area1);
-    place_area(world, ROOF_FLOOR_NUMBER, &test_area2);
-    place_area(world, ROOF_FLOOR_NUMBER, &test_area3);
-    place_area(world, ROOF_FLOOR_NUMBER, &test_area4);
-    place_area(world, ROOF_FLOOR_NUMBER, &test_area5);
-    
-    for (u32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
-    {
-        const AreaPool *area_pool = &world->area_pool_array[floor_number];
-                
-        for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
-        {
-            u32 area_index = area_pool->active_array[pool_index];
-            const Area *area = &area_pool->area_array[area_index];
-
-            if (area->area_type == AREA_TYPE_ROOM)
-            {
-                world_set_block_type_box(
-                    world,
-                    area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
-                    area->rect.size[0], area->rect.size[1], FLOOR_SIZE_Z,
-                    BLOCK_TYPE_SMOOTH_4
-                );
-
-                world_set_block_type_box(
-                    world,
-                    area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
-                    area->rect.size[0], area->rect.size[1], 1,
-                    BLOCK_TYPE_SMOOTH_3
-                );
-            }
-        }
-    }
-
-#if PLACE_ROOM_CONTENT
-    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
-    {
-        const AreaPool *area_pool = &world->area_pool_array[floor_number];
-
-        const i32 floor_z = floor_number * FLOOR_SIZE_Z;
-
-        for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
-        {
-            u32 area_index = area_pool->active_array[pool_index];
-            const Area *area = &area_pool->area_array[area_index];
-
-            if (area->area_type != AREA_TYPE_ROOM)
-            {
-                continue;
-            }                
-            
-            const u32 content_level = world_get_content_level(floor_z);
-            const BlockTypeList *content_block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
-
-            const u32 stack_count = (area->rect.size[0] * area->rect.size[1] / 12);
-
-            for (u32 stack_index = 0; stack_index < stack_count; ++stack_index)
-            {
-                const ivec2 stack_position = {
-                    area->rect.position[0] + 1 + rand() % (area->rect.size[0] - 2),
-                    area->rect.position[1] + 1 + rand() % (area->rect.size[1] - 2)
-                };
-
-                const u32 stack_size_z = rand() % (FLOOR_SIZE_Z - 6);
-
-                const BlockType content_block_type = content_block_type_list->block_type_array[rand() % content_block_type_list->count];
-
-                world_set_block_type_cube(
-                    world,
-                    stack_position[0], stack_position[1], floor_z + 1,
-                    1, 1, stack_size_z,
-                    content_block_type
-                );
-            }
-        }
-    }
-#endif
-}
-
-static void setup_roof(World *world)
-{
-    LOG_INFO("Floor R at %i", ROOF_Z);
-
-    world_set_block_type_wireframe(
-        world,
-        TOWER_BORDER, TOWER_BORDER, ROOF_Z,
-        WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 2,
-        BLOCK_TYPE_SMOOTH_4
-    );
-    
-    world_set_block_type_cube(
-        world,
-        TOWER_BORDER, TOWER_BORDER, ROOF_Z,
-        WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER, 1,
-        BLOCK_TYPE_CARVED_3
-    );
-
-    world_set_block_type_cube(
-        world,
-        WORLD_CENTER_I32 - ROOF_CENTER_PATH_SIZE / 2, TOWER_BORDER + 1, ROOF_Z,
-        ROOF_CENTER_PATH_SIZE, TOWER_SIZE - 2, 1,
-        BLOCK_TYPE_SMOOTH_1
-    );
-
-    world_set_block_type_cube(
-        world,
-        TOWER_BORDER + 1, WORLD_CENTER_I32 - ROOF_CENTER_PATH_SIZE / 2, ROOF_Z,
-        TOWER_SIZE - 2, ROOF_CENTER_PATH_SIZE, 1,
-        BLOCK_TYPE_SMOOTH_1
-    );
 }
 
 static void setup_wolf_territory(World *world)
@@ -1522,7 +1380,7 @@ static void setup_bear_territory(World *world)
         ROOF_Z,
     };
 
-      world_set_block_type_cube(
+    world_set_block_type_cube(
         world,
         temple_origin[0], temple_origin[1], temple_origin[2],
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
@@ -1716,6 +1574,27 @@ static void setup_lion_territory(World *world)
     );
 }
 
+static void layout_test_area(World *world)
+{
+    const ivec3 test_area_position = {
+        WORLD_CENTER_I32 - 20,
+        WORLD_CENTER_I32 + 20,
+        TOWER_FLOOR_COUNT * FLOOR_SIZE_Z,
+    };
+    
+    Area test_room1 = {
+        .area_type = AREA_TYPE_ROOM,
+        .edge_count = 0,
+        .floor_number = TOWER_FLOOR_COUNT,
+        .rect = {
+            { test_area_position[0], test_area_position[1] },
+            { 40, 40 },
+        },
+    };
+    
+    place_area(world, TOWER_FLOOR_COUNT, &test_room1);
+}
+
 static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_right)
 {
     AreaOverlap area_overlap = {
@@ -1803,180 +1682,42 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
     return area_overlap;
 }
 
-static void calculate_area_edges(World *world)
+static void calculate_area_edges(World *world, u32 floor_number)
 {
     EdgePool *edge_pool = &world->edge_pool;
-    
-    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    AreaPool *area_pool = &world->area_pool_array[floor_number];
+
+    for (u32 pool_index_left = 0; pool_index_left < area_pool->active_count; ++pool_index_left)
     {
-        AreaPool *area_pool = &world->area_pool_array[floor_number];
+        const u32 area_index_left = area_pool->active_array[pool_index_left];
 
-        for (u32 pool_index_left = 0; pool_index_left < area_pool->active_count; ++pool_index_left)
-        {
-            const u32 area_index_left = area_pool->active_array[pool_index_left];
-
-            Area *area_left = &area_pool->area_array[area_index_left];
+        Area *area_left = &area_pool->area_array[area_index_left];
             
-            for (u32 pool_index_right = pool_index_left + 1; pool_index_right < area_pool->active_count; ++pool_index_right)
-            {
-                const u32 area_index_right = area_pool->active_array[pool_index_right];
-
-                Area *area_right = &area_pool->area_array[area_index_right];
-
-                const AreaOverlap area_overlap = get_area_overlap(area_left, area_right);
-
-                if (area_overlap.rect.size[0] > 0 && area_overlap.rect.size[1] > 0)
-                {
-                    AreaEdge area_edge = {
-                        .area_handle_a = world_make_area_handle(area_pool, area_index_left),
-                        .area_handle_b =  world_make_area_handle(area_pool, area_index_right),
-                        .area_a_direction = area_overlap.direction,
-                        .area_b_direction = direction_opposite(&area_overlap.direction),
-                        .area_overlap = area_overlap,
-                    };
-                        
-                    const EdgeHandle edge_handle = world_add_edge(edge_pool, &area_edge);
-
-                    area_left->edge_handle_array[area_left->edge_count++] = edge_handle;
-                    area_right->edge_handle_array[area_right->edge_count++] = edge_handle;
-
-                    assert(area_left->edge_count < AREA_EDGE_MAX);
-                    assert(area_right->edge_count < AREA_EDGE_MAX);
-                }
-            }
-        }
-    }
-}
-
-static void setup_tower_doors(World *world)
-{
-    const i32 minimum_edge_size = 5;
-    
-    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
-    {
-        const AreaPool *area_pool = &world->area_pool_array[floor_number];
-        
-        for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
+        for (u32 pool_index_right = pool_index_left + 1; pool_index_right < area_pool->active_count; ++pool_index_right)
         {
-            const u32 area_index = area_pool->active_array[pool_index];
-            const Area *area = &area_pool->area_array[area_index];
+            const u32 area_index_right = area_pool->active_array[pool_index_right];
 
-            if (area->area_type != AREA_TYPE_ROOM)
+            Area *area_right = &area_pool->area_array[area_index_right];
+
+            const AreaOverlap area_overlap = get_area_overlap(area_left, area_right);
+
+            if (area_overlap.rect.size[0] > 0 && area_overlap.rect.size[1] > 0)
             {
-                continue;
-            }
-
-            for (u32 edge_index = 0; edge_index < area->edge_count; ++edge_index)
-            {
-                const EdgeHandle edge_handle = area->edge_handle_array[edge_index];
-                const AreaEdge *area_edge = &world->edge_pool.edge_array[edge_handle.index];
-
-                const Direction edge_direction = (
-                    area_edge->area_handle_a.index == area_index ?
-                    area_edge->area_a_direction :
-                    area_edge->area_b_direction
-                );
-
-                if (edge_direction == DIRECTION_EAST)
-                {
-                    if (area_edge->area_overlap.rect.size[1] >= minimum_edge_size)
-                    {
-                        const ivec3 door_position = {
-                            area_edge->area_overlap.rect.position[0],
-                            area_edge->area_overlap.rect.position[1] + area_edge->area_overlap.rect.size[1] / 2,
-                            area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
-                        };
-
-                        world_set_block_type_cube(
-                            world,
-                            door_position[0] - 1, door_position[1] - 1, door_position[2] + 1,
-                            1, 3, 3,
-                            BLOCK_TYPE_PANEL_3
-                        );
-
-                        world_set_block_type_cube(
-                            world,
-                            door_position[0] - 1, door_position[1], door_position[2] + 1,
-                            1, 1, 2,
-                            BLOCK_TYPE_NONE
-                        );
-                    }
-                }
-                else if (edge_direction == DIRECTION_WEST)
-                {
-                    if (area_edge->area_overlap.rect.size[1] >= minimum_edge_size)
-                    {
-                        const ivec3 door_position = {
-                            area_edge->area_overlap.rect.position[0],
-                            area_edge->area_overlap.rect.position[1] + area_edge->area_overlap.rect.size[1] / 2,
-                            area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
-                        };
-
-                        world_set_block_type_cube(
-                            world,
-                            door_position[0], door_position[1] - 1, door_position[2] + 1,
-                            1, 3, 3,
-                            BLOCK_TYPE_PANEL_3
-                        );
-
-                        world_set_block_type_cube(
-                            world,
-                            door_position[0], door_position[1], door_position[2] + 1,
-                            1, 1, 2,
-                            BLOCK_TYPE_NONE
-                        );
-                    }
-                }
-                else if (edge_direction == DIRECTION_NORTH)
-                {
-                    if (area_edge->area_overlap.rect.size[0] >= minimum_edge_size)
-                    {
-                        const ivec3 door_position = {
-                            area_edge->area_overlap.rect.position[0] + area_edge->area_overlap.rect.size[0] / 2,
-                            area_edge->area_overlap.rect.position[1],
-                            area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
-                        };
-
-                        world_set_block_type_cube(
-                            world,
-                            door_position[0] - 1, door_position[1] - 1, door_position[2] + 1,
-                            3, 1, 3,
-                            BLOCK_TYPE_PANEL_3
-                        );
+                AreaEdge area_edge = {
+                    .area_handle_a = world_make_area_handle(area_pool, area_index_left),
+                    .area_handle_b =  world_make_area_handle(area_pool, area_index_right),
+                    .area_a_direction = area_overlap.direction,
+                    .area_b_direction = direction_opposite(&area_overlap.direction),
+                    .area_overlap = area_overlap,
+                };
                         
-                        world_set_block_type_cube(
-                            world,
-                            door_position[0], door_position[1] - 1, door_position[2] + 1,
-                            1, 1, 2,
-                            BLOCK_TYPE_NONE
-                        );
-                    }
-                }
-                else if (edge_direction == DIRECTION_SOUTH)
-                {
-                    if (area_edge->area_overlap.rect.size[0] >= minimum_edge_size)
-                    {
-                        const ivec3 door_position = {
-                            area_edge->area_overlap.rect.position[0] + area_edge->area_overlap.rect.size[0] / 2,
-                            area_edge->area_overlap.rect.position[1],
-                            area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
-                        };
+                const EdgeHandle edge_handle = world_add_edge(edge_pool, &area_edge);
 
-                        world_set_block_type_cube(
-                            world,
-                            door_position[0] - 1, door_position[1], door_position[2] + 1,
-                            3, 1, 3,
-                            BLOCK_TYPE_PANEL_3
-                        );
+                area_left->edge_handle_array[area_left->edge_count++] = edge_handle;
+                area_right->edge_handle_array[area_right->edge_count++] = edge_handle;
 
-                        world_set_block_type_cube(
-                            world,
-                            door_position[0], door_position[1], door_position[2] + 1,
-                            1, 1, 2,
-                            BLOCK_TYPE_NONE
-                        );
-                    }
-                }
+                assert(area_left->edge_count < AREA_EDGE_MAX);
+                assert(area_right->edge_count < AREA_EDGE_MAX);
             }
         }
     }
@@ -2044,10 +1785,202 @@ static void calculate_world_direction_mask(World *world)
     }
 }
 
+static void construct_areas(World *world, u32 floor_number)
+{
+    const i32 door_minimum_edge_size = 5;
+
+    const AreaPool *area_pool = &world->area_pool_array[floor_number];
+                
+    for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
+    {
+        u32 area_index = area_pool->active_array[pool_index];
+        const Area *area = &area_pool->area_array[area_index];
+
+        if (area->area_type != AREA_TYPE_ROOM)
+        {
+            continue;
+        }
+        
+        world_set_block_type_box(
+            world,
+            area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
+            area->rect.size[0], area->rect.size[1], FLOOR_SIZE_Z,
+            BLOCK_TYPE_SMOOTH_4
+        );
+
+        world_set_block_type_box(
+            world,
+            area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
+            area->rect.size[0], area->rect.size[1], 1,
+            BLOCK_TYPE_SMOOTH_3
+        );
+
+        for (u32 edge_index = 0; edge_index < area->edge_count; ++edge_index)
+        {
+            const EdgeHandle edge_handle = area->edge_handle_array[edge_index];
+            const AreaEdge *area_edge = &world->edge_pool.edge_array[edge_handle.index];
+
+            const Direction edge_direction = (
+                area_edge->area_handle_a.index == area_index ?
+                area_edge->area_a_direction :
+                area_edge->area_b_direction
+            );
+
+            if (edge_direction == DIRECTION_EAST)
+            {
+                if (area_edge->area_overlap.rect.size[1] >= door_minimum_edge_size)
+                {
+                    const ivec3 door_position = {
+                        area_edge->area_overlap.rect.position[0],
+                        area_edge->area_overlap.rect.position[1] + area_edge->area_overlap.rect.size[1] / 2,
+                        area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
+                    };
+
+                    world_set_block_type_cube(
+                        world,
+                        door_position[0] - 1, door_position[1] - 1, door_position[2] + 1,
+                        1, 3, 3,
+                        BLOCK_TYPE_PANEL_3
+                    );
+
+                    world_set_block_type_cube(
+                        world,
+                        door_position[0] - 1, door_position[1], door_position[2] + 1,
+                        1, 1, 2,
+                        BLOCK_TYPE_NONE
+                    );
+                }
+            }
+            else if (edge_direction == DIRECTION_WEST)
+            {
+                if (area_edge->area_overlap.rect.size[1] >= door_minimum_edge_size)
+                {
+                    const ivec3 door_position = {
+                        area_edge->area_overlap.rect.position[0],
+                        area_edge->area_overlap.rect.position[1] + area_edge->area_overlap.rect.size[1] / 2,
+                        area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
+                    };
+
+                    world_set_block_type_cube(
+                        world,
+                        door_position[0], door_position[1] - 1, door_position[2] + 1,
+                        1, 3, 3,
+                        BLOCK_TYPE_PANEL_3
+                    );
+
+                    world_set_block_type_cube(
+                        world,
+                        door_position[0], door_position[1], door_position[2] + 1,
+                        1, 1, 2,
+                        BLOCK_TYPE_NONE
+                    );
+                }
+            }
+            else if (edge_direction == DIRECTION_NORTH)
+            {
+                if (area_edge->area_overlap.rect.size[0] >= door_minimum_edge_size)
+                {
+                    const ivec3 door_position = {
+                        area_edge->area_overlap.rect.position[0] + area_edge->area_overlap.rect.size[0] / 2,
+                        area_edge->area_overlap.rect.position[1],
+                        area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
+                    };
+
+                    world_set_block_type_cube(
+                        world,
+                        door_position[0] - 1, door_position[1] - 1, door_position[2] + 1,
+                        3, 1, 3,
+                        BLOCK_TYPE_PANEL_3
+                    );
+                        
+                    world_set_block_type_cube(
+                        world,
+                        door_position[0], door_position[1] - 1, door_position[2] + 1,
+                        1, 1, 2,
+                        BLOCK_TYPE_NONE
+                    );
+                }
+            }
+            else if (edge_direction == DIRECTION_SOUTH)
+            {
+                if (area_edge->area_overlap.rect.size[0] >= door_minimum_edge_size)
+                {
+                    const ivec3 door_position = {
+                        area_edge->area_overlap.rect.position[0] + area_edge->area_overlap.rect.size[0] / 2,
+                        area_edge->area_overlap.rect.position[1],
+                        area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
+                    };
+
+                    world_set_block_type_cube(
+                        world,
+                        door_position[0] - 1, door_position[1], door_position[2] + 1,
+                        3, 1, 3,
+                        BLOCK_TYPE_PANEL_3
+                    );
+
+                    world_set_block_type_cube(
+                        world,
+                        door_position[0], door_position[1], door_position[2] + 1,
+                        1, 1, 2,
+                        BLOCK_TYPE_NONE
+                    );
+                }
+            }
+        }
+    }
+}
+
+static void place_content(World *world, u32 floor_number)
+{
+    const AreaPool *area_pool = &world->area_pool_array[floor_number];
+
+    for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
+    {
+        const u32 area_index = area_pool->active_array[pool_index];
+        const Area *area = &area_pool->area_array[area_index];
+
+        if (area->area_type != AREA_TYPE_ROOM)
+        {
+            continue;
+        }                
+            
+        const u32 content_level = world_get_content_level(floor_number * FLOOR_SIZE_Z);
+
+        if (content_level == 0)
+        {
+            continue;
+        }
+        
+        const BlockTypeList *content_block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
+
+        const u32 stack_count = (area->rect.size[0] * area->rect.size[1] / 14);
+
+        for (u32 stack_index = 0; stack_index < stack_count; ++stack_index)
+        {
+            const ivec2 stack_position = {
+                area->rect.position[0] + 1 + rand() % (area->rect.size[0] - 2),
+                area->rect.position[1] + 1 + rand() % (area->rect.size[1] - 2)
+            };
+
+            const u32 stack_size_z = rand() % (FLOOR_SIZE_Z - 6);
+
+            const BlockType content_block_type = content_block_type_list->block_type_array[rand() % content_block_type_list->count];
+
+            world_set_block_type_cube(
+                world,
+                stack_position[0], stack_position[1], floor_number * FLOOR_SIZE_Z + 1,
+                1, 1, stack_size_z,
+                content_block_type
+            );
+        }
+    }
+}
+
 static void draw_debug_info(Debug *debug, World *world)
 {
-#if DEBUG_AREAS
-    const AreaPool *area_pool = &world->area_pool_array[TOWER_FLOOR_COUNT - 1];
+    const u32 debug_floor_number = TOWER_FLOOR_COUNT;
+    
+    const AreaPool *area_pool = &world->area_pool_array[debug_floor_number];
         
     for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
     {
@@ -2065,7 +1998,6 @@ static void draw_debug_info(Debug *debug, World *world)
             1.0f, 0.0f, 0.0f
         );
     }
-#endif
 }
 
 void world_init(World *world, Debug *debug)
@@ -2088,17 +2020,20 @@ void world_init(World *world, Debug *debug)
     
     init_area_pool_array(world);
     init_edge_pool(world);
-    
-    setup_tower(world);
-    setup_tower_rooms(world);
 
-    calculate_area_edges(world);
+    construct_tower(world);
     
-    setup_tower_doors(world);
+    layout_tower_areas(world);
+    layout_roof_areas(world);
+    layout_test_area(world);
 
-    setup_roof(world);
-    setup_elevator(world);
-    
+    for (u32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    {
+        calculate_area_edges(world, floor_number);
+        construct_areas(world, floor_number);
+        place_content(world, floor_number);
+    }
+
     setup_eagle_territory(world);
     setup_wolf_territory(world);
     setup_bear_territory(world);
@@ -2106,7 +2041,9 @@ void world_init(World *world, Debug *debug)
 
     calculate_world_direction_mask(world);
 
+#if DEBUG_AREAS
     draw_debug_info(debug, world);
+#endif
 }
 
 void world_update(World *world, Population *population)
