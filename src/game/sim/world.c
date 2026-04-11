@@ -802,11 +802,11 @@ static void place_area(World *world, i32 floor_number, Area *area)
 
             for (u32 rect_index = 0; rect_index < rect_count; ++rect_index)
             {
-                Area new_area;
-                new_area.area_type = area_test->area_type;
-                new_area.floor_number = area_test->floor_number;
-                new_area.rect = rect_array[rect_index];
-                new_area.edge_count = 0;
+                Area new_area = {
+                    .area_type = area_test->area_type,
+                    .floor_number = area_test->floor_number,
+                    .rect = rect_array[rect_index],
+                };
                 
                 world_add_area(area_pool, &new_area);
             }
@@ -1041,8 +1041,26 @@ static void setup_elevator(World *world)
 
 static void layout_roof_areas(World *world)
 {
-    const i32 roof_area_size = TOWER_SIZE / 16;
+    const u32 roof_area_size = TOWER_SIZE / 8;
 
+    AreaPool *area_pool = &world->area_pool_array[TOWER_FLOOR_COUNT];
+
+    for (i32 area_y = TOWER_BORDER; area_y < (i32)(TOWER_SIZE + TOWER_BORDER); area_y += roof_area_size)
+    {
+        for (i32 area_x = TOWER_BORDER; area_x < (i32)(TOWER_SIZE + TOWER_BORDER); area_x += roof_area_size)
+        {
+            Area roof_area = {
+                .area_type = AREA_TYPE_OPEN,
+                .floor_number = TOWER_FLOOR_COUNT,
+                .rect = {
+                    { area_x, area_y },
+                    { roof_area_size, roof_area_size },
+                },
+            };
+
+            world_add_area(area_pool, &roof_area);
+        }
+    }
 }
 
 static void layout_tower_areas(World *world)
@@ -1058,7 +1076,6 @@ static void layout_tower_areas(World *world)
                 { SECTION_ORIGIN_ARRAY[SECTION_Q1][0], SECTION_ORIGIN_ARRAY[SECTION_Q1][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q1][0], SECTION_SIZE_ARRAY[SECTION_Q1][1] }
             },
-            .edge_count = 0,
         };
         
         Area area_quadrant_2 = {
@@ -1068,7 +1085,6 @@ static void layout_tower_areas(World *world)
                 { SECTION_ORIGIN_ARRAY[SECTION_Q2][0], SECTION_ORIGIN_ARRAY[SECTION_Q2][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q2][0], SECTION_SIZE_ARRAY[SECTION_Q2][1] }
             },
-            .edge_count = 0,
         };
 
         Area area_quadrant_3 = {
@@ -1078,7 +1094,6 @@ static void layout_tower_areas(World *world)
                 { SECTION_ORIGIN_ARRAY[SECTION_Q3][0], SECTION_ORIGIN_ARRAY[SECTION_Q3][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q3][0], SECTION_SIZE_ARRAY[SECTION_Q3][1] }
             },
-            .edge_count = 0,
         };
 
         Area area_quadrant_4 = {
@@ -1088,7 +1103,6 @@ static void layout_tower_areas(World *world)
                 { SECTION_ORIGIN_ARRAY[SECTION_Q4][0], SECTION_ORIGIN_ARRAY[SECTION_Q4][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q4][0], SECTION_SIZE_ARRAY[SECTION_Q4][1] }
             },
-            .edge_count = 0,
         };
 
         world_add_area(area_pool, &area_quadrant_1);
@@ -1162,7 +1176,6 @@ static void layout_tower_areas(World *world)
                     { SECTION_ORIGIN_ARRAY[section_index][0], SECTION_ORIGIN_ARRAY[section_index][1] },
                     { SECTION_SIZE_ARRAY[section_index][0], SECTION_SIZE_ARRAY[section_index][1] },
                 },
-                .edge_count = 0,
             };
 
             world_add_area(area_pool, &section_area);
@@ -1584,7 +1597,6 @@ static void layout_test_area(World *world)
     
     Area test_room1 = {
         .area_type = AREA_TYPE_ROOM,
-        .edge_count = 0,
         .floor_number = TOWER_FLOOR_COUNT,
         .rect = {
             { test_area_position[0], test_area_position[1] },
