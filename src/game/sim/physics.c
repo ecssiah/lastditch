@@ -1,13 +1,12 @@
 #include "game/sim/physics.h"
 
-#include <math.h>
-
 #include "justsky.h"
 
+#include "core/math_ext.h"
 #include "game/sim/actor.h"
 #include "game/sim/world.h"
 
-static void get_fbounds(BoxCollider *box_collider, vec3 position, FBounds *out_fbounds)
+static void get_fbounds(BoxCollider *box_collider, vec3 position, Bounds3f *out_fbounds)
 {
     out_fbounds->min[0] = position[0] - box_collider->radius[0];
     out_fbounds->min[1] = position[1] - box_collider->radius[1];
@@ -33,7 +32,7 @@ static void get_fbounds(BoxCollider *box_collider, vec3 position, FBounds *out_f
     }
 }
 
-static void get_overlap_from_fbounds(FBounds *fbounds, IBounds *out_ibounds)
+static void get_overlap_from_fbounds(Bounds3f *fbounds, Bounds3i *out_ibounds)
 {
     out_ibounds->min[0] = (i32)floorf(fbounds->min[0]);
     out_ibounds->min[1] = (i32)floorf(fbounds->min[1]);
@@ -59,10 +58,10 @@ static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time
         return;
     }
 
-    FBounds actor_bounds;
+    Bounds3f actor_bounds;
     get_fbounds(&actor->box_collider, actor->position, &actor_bounds);
 
-    FBounds swept_bounds;
+    Bounds3f swept_bounds;
 
     for (u32 axis_index = 0; axis_index < 3; ++axis_index)
     {
@@ -77,7 +76,7 @@ static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time
         );
     }
     
-    IBounds overlap_bounds;
+    Bounds3i overlap_bounds;
     get_overlap_from_fbounds(&swept_bounds, &overlap_bounds);
 
     const f32 actor_min_prev = actor_bounds.min[axis];

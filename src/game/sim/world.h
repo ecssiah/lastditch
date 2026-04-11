@@ -5,7 +5,7 @@
 
 #include "justsky.h"
 
-#include "core/core.h"
+#include "game/sim/area.h"
 #include "game/sim/direction.h"
 #include "game/sim/debug.h"
 
@@ -67,14 +67,6 @@
 #define TEMPLE_BORDER_OFFSET 24u
 
 #define ELEVATOR_SIZE 16u
-
-#define AREA_POOL_MAX 1u << 12
-#define EDGE_POOL_MAX 1u << 12
-
-#define AREA_EDGE_MAX 1u << 5
-
-#define AREA_EXPANSION_ITERATION_COUNT 5u
-#define AREA_EXPANSION_SIZE_MIN 8u
 
 #define PLACE_ROOM_CONTENT true
 
@@ -215,96 +207,6 @@ struct Cell
     u8 direction_mask;
 };
 
-typedef struct EdgeHandle EdgeHandle;
-struct EdgeHandle
-{
-    u32 index;
-    u32 generation;
-};
-
-#define FOR_LIST_AREA_TYPE(DO)                  \
-    DO(AREA_TYPE_OPEN)                          \
-    DO(AREA_TYPE_ROOM)                          \
-
-typedef enum AreaType AreaType;
-enum AreaType
-{
-    FOR_LIST_AREA_TYPE(DEFINE_LIST_ENUMERATION)
-
-    AREA_TYPE_COUNT
-};
-
-typedef struct Area Area;
-struct Area
-{
-    AreaType area_type;
-    
-    u32 floor_number;
-    IRect rect;
-
-    u32 edge_count;
-    EdgeHandle edge_handle_array[AREA_EDGE_MAX];
-};
-
-typedef struct AreaHandle AreaHandle;
-struct AreaHandle
-{
-    u32 index;
-    u32 generation;
-    u32 floor_number;
-};
-
-typedef struct AreaOverlap AreaOverlap;
-struct AreaOverlap
-{
-    IRect rect;
-    Direction direction;
-};
-
-typedef struct AreaEdge AreaEdge;
-struct AreaEdge
-{
-    AreaHandle area_handle_a;
-    AreaHandle area_handle_b;
-
-    Direction area_a_direction;
-    Direction area_b_direction;
-
-    AreaOverlap area_overlap;
-};
-
-typedef struct AreaPool AreaPool;
-struct AreaPool
-{
-    u32 floor_number;
-    
-    u32 generation_array[AREA_POOL_MAX];
-
-    u32 free_count;
-    u32 free_array[AREA_POOL_MAX];
-
-    u32 active_count;
-    u32 active_array[AREA_POOL_MAX];
-    u32 active_lookup[AREA_POOL_MAX];
-
-    Area area_array[AREA_POOL_MAX];
-};
-
-typedef struct EdgePool EdgePool;
-struct EdgePool
-{
-    u32 generation_array[EDGE_POOL_MAX];
-
-    u32 free_count;
-    u32 free_array[EDGE_POOL_MAX];
-
-    u32 active_count;
-    u32 active_array[EDGE_POOL_MAX];
-    u32 active_lookup[EDGE_POOL_MAX];
-    
-    AreaEdge edge_array[EDGE_POOL_MAX];
-};
-
 typedef struct Structure Structure;
 struct Structure
 {
@@ -368,15 +270,6 @@ void world_set_block_type_box(World *world, i32 x, i32 y, i32 z, i32 size_x, i32
 void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
 
 u32 world_get_content_level(i32 z);
-
-AreaHandle world_add_area(AreaPool *area_pool, Area *area);
-void world_remove_area(AreaPool *area_pool, u32 area_index);
-
-Area *world_get_area(AreaPool *area_pool, AreaHandle area_handle);
-AreaHandle world_make_area_handle(const AreaPool *area_pool, u32 area_index);
-
-EdgeHandle world_add_edge(EdgePool *edge_pool, AreaEdge *area_edge);
-void world_remove_edge(EdgePool *edge_pool, u32 edge_index);
 
 void world_construct_area(World *world, const Area *area);
 

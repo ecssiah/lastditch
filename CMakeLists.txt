@@ -55,14 +55,13 @@ target_sources(
     lastditch
     PRIVATE
     external/glad/src/glad.c
-    external/justsky/justsky_config.c
-    external/justsky/justsky_gl.c
-    external/justsky/justsky_log.c      
     external/stb/src/stb_image.c
-    src/core/core.c
-    src/core/math/math.c
+    external/justsky/justsky_log.c      
+    external/justsky/justsky_config.c
+    src/core/math_ext.c
     src/game/sim/actor.c
     src/game/sim/action.c
+    src/game/sim/area.c
     src/game/sim/debug.c
     src/game/sim/direction.c
     src/game/sim/nation.c
@@ -71,6 +70,7 @@ target_sources(
     src/game/sim/population.c
     src/game/sim/sim.c
     src/game/sim/world.c
+    src/game/shell/gl_ext.c
     src/game/shell/render.c
     src/game/shell/screen.c
     src/game/shell/shell.c

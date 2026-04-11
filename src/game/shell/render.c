@@ -5,17 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "game/shell/shell.h"
-#include "game/sim/debug.h"
 #include "stb_image.h"
 
 #include "justsky.h"
 #include "justsky_config.h"
-#include "justsky_gl.h"
 #include "justsky_log.h"
 
+#include "game/sim/debug.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
+#include "game/shell/gl_ext.h"
+#include "game/shell/shell.h"
 #include "game/shell/viewpoint.h"
 
 const i32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =
@@ -83,6 +83,7 @@ const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     { +1, +0, +0 },
     { +0, -1, +0 },
 };
+
 
 static void get_projection_matrix(mat4 out_projection_matrix)
 {
@@ -716,7 +717,7 @@ static void init_viewpoint(Render *render)
     get_projection_matrix(render->viewpoint.projection_matrix);
 }
 
-static void init_debug_render(Shell *shell, Sim *sim)
+static void init_debug_render(Shell *shell)
 {
     DebugRender *debug_render = &shell->render.debug_render;
 
@@ -724,8 +725,8 @@ static void init_debug_render(Shell *shell, Sim *sim)
     debug_render->debug_gpu_data_capacity = 0;
     debug_render->debug_gpu_data_array = NULL;
 
-    GLuint vert_shader = justsky_gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
-    GLuint frag_shader = justsky_gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
+    GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
+    GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
 
     debug_render->program_id = glCreateProgram();
 
@@ -758,8 +759,8 @@ static void init_voxel_render(Shell *shell, Sim *sim)
     voxel_render->voxel_gpu_data_capacity = 0;
     voxel_render->voxel_gpu_data_array = NULL;
 
-    GLuint vert_shader = justsky_gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
-    GLuint frag_shader = justsky_gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
+    GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
+    GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
     voxel_render->program_id = glCreateProgram();
     
@@ -839,8 +840,8 @@ static void init_model_render(Shell *shell, Sim *sim)
 {
     ModelRender* model_render = &shell->render.model_render;
 
-    GLuint vert_shader = justsky_gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
-    GLuint frag_shader = justsky_gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
+    GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
+    GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
 
     model_render->program_id = glCreateProgram();
     
@@ -1041,7 +1042,7 @@ void render_init(Shell *shell, Platform *platform, Sim *sim)
 
     init_viewpoint(&shell->render);
 
-    init_debug_render(shell, sim);
+    init_debug_render(shell);
     init_voxel_render(shell, sim);
     init_model_render(shell, sim);
 }

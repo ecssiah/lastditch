@@ -6,8 +6,7 @@
 #include "justsky.h"
 #include "justsky_log.h"
 
-#include "core/core.h"
-#include "core/math/math.h"
+#include "core/math_ext.h"
 #include "game/sim/debug.h"
 #include "game/sim/population.h"
 
@@ -635,96 +634,6 @@ u32 world_get_content_level(i32 z)
     }
 }
 
-AreaHandle world_add_area(AreaPool *area_pool, Area *area)
-{
-    const u32 index = area_pool->free_array[--area_pool->free_count];
-    const u32 generation = ++area_pool->generation_array[index];
-    
-    area_pool->area_array[index] = *area;
-    
-    area_pool->active_array[area_pool->active_count] = index;
-    area_pool->active_lookup[index] = area_pool->active_count;
-    area_pool->active_count++;
-
-    AreaHandle area_handle = {
-        index,
-        generation,
-        area->floor_number,
-    };
-    
-    return area_handle;
-}
-
-Area *world_get_area(AreaPool *area_pool, AreaHandle area_handle)
-{
-    if (area_pool->generation_array[area_handle.index] != area_handle.generation)
-    {
-        return NULL;
-    }
-
-    return &area_pool->area_array[area_handle.index];
-}
-
-AreaHandle world_make_area_handle(const AreaPool *area_pool, u32 area_index)
-{
-    AreaHandle area_handle = {
-        area_index,
-        area_pool->generation_array[area_index],
-        area_pool->floor_number
-    };
-
-    return area_handle;
-}
-
-void world_remove_area(AreaPool *area_pool, u32 area_index)
-{
-    area_pool->generation_array[area_index]++;
-
-    const u32 active_index = area_pool->active_lookup[area_index];
-    const u32 last_index = area_pool->active_array[--area_pool->active_count];
-
-    area_pool->active_array[active_index] = last_index;
-    area_pool->active_lookup[last_index] = active_index;
-
-    area_pool->active_lookup[area_index] = UINT32_MAX;
-
-    area_pool->free_array[area_pool->free_count++] = area_index;
-}
-
-EdgeHandle world_add_edge(EdgePool *edge_pool, AreaEdge *area_edge)
-{
-    const u32 index = edge_pool->free_array[--edge_pool->free_count];
-    const u32 generation = ++edge_pool->generation_array[index];
-    
-    edge_pool->edge_array[index] = *area_edge;
-    
-    edge_pool->active_array[edge_pool->active_count] = index;
-    edge_pool->active_lookup[index] = edge_pool->active_count;
-    edge_pool->active_count++;
-
-    EdgeHandle edge_handle = {
-        index,
-        generation,
-    };
-    
-    return edge_handle;
-}
-
-void world_remove_edge(EdgePool *edge_pool, u32 edge_index)
-{
-    edge_pool->generation_array[edge_index]++;
-
-    const u32 active_index = edge_pool->active_lookup[edge_index];
-    const u32 last_index = edge_pool->active_array[--edge_pool->active_count];
-
-    edge_pool->active_array[active_index] = last_index;
-    edge_pool->active_lookup[last_index] = active_index;
-
-    edge_pool->active_lookup[edge_index] = UINT32_MAX;
-
-    edge_pool->free_array[edge_pool->free_count++] = edge_index;
-}
-
 void world_set_block_type_box(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
     const ivec3 max = {
@@ -794,24 +703,24 @@ static void place_area(World *world, i32 floor_number, Area *area)
         const u32 area_index = area_pool->active_array[pool_index];
         Area *area_test = &area_pool->area_array[area_index];
                 
-        if (irect_overlaps(&area_test->rect, &area->rect))
+        if (bounds2i_overlaps(&area_test->bounds, &area->bounds))
         {
-            IRect rect_array[4];
+            Bounds2i bounds_array[4];
             
-            const u32 rect_count = irect_subtract(&area_test->rect, &area->rect, rect_array);
+            const u32 bounds_count = bounds2i_subtract(&area_test->bounds, &area->bounds, bounds_array);
 
-            for (u32 rect_index = 0; rect_index < rect_count; ++rect_index)
+            for (u32 bounds_index = 0; bounds_index < bounds_count; ++bounds_index)
             {
                 Area new_area = {
                     .area_type = area_test->area_type,
                     .floor_number = area_test->floor_number,
-                    .rect = rect_array[rect_index],
+                    .bounds = bounds_array[bounds_index],
                 };
                 
-                world_add_area(area_pool, &new_area);
+                area_add(area_pool, &new_area);
             }
 
-            world_remove_area(area_pool, area_index);
+            area_remove(area_pool, area_index);
         }
         else
         {
@@ -819,7 +728,7 @@ static void place_area(World *world, i32 floor_number, Area *area)
         }
     }
 
-    world_add_area(area_pool, area);
+    area_add(area_pool, area);
 }
 
 static void construct_tower(World *world)
@@ -1052,13 +961,13 @@ static void layout_roof_areas(World *world)
             Area roof_area = {
                 .area_type = AREA_TYPE_OPEN,
                 .floor_number = TOWER_FLOOR_COUNT,
-                .rect = {
+                .bounds = {
                     { area_x, area_y },
                     { roof_area_size, roof_area_size },
                 },
             };
 
-            world_add_area(area_pool, &roof_area);
+            area_add(area_pool, &roof_area);
         }
     }
 }
@@ -1072,7 +981,7 @@ static void layout_tower_areas(World *world)
         Area area_quadrant_1 = {
             .area_type = AREA_TYPE_ROOM,
             .floor_number = floor_number,
-            .rect = {
+            .bounds = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q1][0], SECTION_ORIGIN_ARRAY[SECTION_Q1][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q1][0], SECTION_SIZE_ARRAY[SECTION_Q1][1] }
             },
@@ -1081,7 +990,7 @@ static void layout_tower_areas(World *world)
         Area area_quadrant_2 = {
             .area_type = AREA_TYPE_ROOM,
             .floor_number = floor_number,
-            .rect = {
+            .bounds = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q2][0], SECTION_ORIGIN_ARRAY[SECTION_Q2][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q2][0], SECTION_SIZE_ARRAY[SECTION_Q2][1] }
             },
@@ -1090,7 +999,7 @@ static void layout_tower_areas(World *world)
         Area area_quadrant_3 = {
             .area_type = AREA_TYPE_ROOM,
             .floor_number = floor_number,
-            .rect = {
+            .bounds = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q3][0], SECTION_ORIGIN_ARRAY[SECTION_Q3][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q3][0], SECTION_SIZE_ARRAY[SECTION_Q3][1] }
             },
@@ -1099,16 +1008,16 @@ static void layout_tower_areas(World *world)
         Area area_quadrant_4 = {
             .area_type = AREA_TYPE_ROOM,
             .floor_number = floor_number,
-            .rect = {
+            .bounds = {
                 { SECTION_ORIGIN_ARRAY[SECTION_Q4][0], SECTION_ORIGIN_ARRAY[SECTION_Q4][1] },
                 { SECTION_SIZE_ARRAY[SECTION_Q4][0], SECTION_SIZE_ARRAY[SECTION_Q4][1] }
             },
         };
 
-        world_add_area(area_pool, &area_quadrant_1);
-        world_add_area(area_pool, &area_quadrant_2);
-        world_add_area(area_pool, &area_quadrant_3);
-        world_add_area(area_pool, &area_quadrant_4);
+        area_add(area_pool, &area_quadrant_1);
+        area_add(area_pool, &area_quadrant_2);
+        area_add(area_pool, &area_quadrant_3);
+        area_add(area_pool, &area_quadrant_4);
 
         u32 area_index_removal_count = 0;
         u32 area_indices_to_remove[4 << AREA_EXPANSION_ITERATION_COUNT];
@@ -1124,22 +1033,22 @@ static void layout_tower_areas(World *world)
 
                 const Area area_copy = area_pool->area_array[area_index];
 
-                const Axis axis_split = area_copy.rect.size[AXIS_X] > area_copy.rect.size[AXIS_Y] ? AXIS_X : AXIS_Y;
+                const Axis axis_split = area_copy.bounds.size[AXIS_X] > area_copy.bounds.size[AXIS_Y] ? AXIS_X : AXIS_Y;
 
-                if (area_copy.rect.size[axis_split] >= (i32)AREA_EXPANSION_SIZE_MIN)
+                if (area_copy.bounds.size[axis_split] >= (i32)AREA_EXPANSION_SIZE_MIN)
                 {
-                    const u32 split_size = area_copy.rect.size[axis_split] / 2 + (-2 + (rand() % 5));
+                    const u32 split_size = area_copy.bounds.size[axis_split] / 2 + (-2 + (rand() % 5));
 
                     Area area_a = area_copy;
                     Area area_b = area_copy;
 
-                    area_a.rect.size[axis_split] = split_size;
+                    area_a.bounds.size[axis_split] = split_size;
 
-                    area_b.rect.position[axis_split] = area_copy.rect.position[axis_split] + split_size;
-                    area_b.rect.size[axis_split] = area_copy.rect.size[axis_split] - split_size;
+                    area_b.bounds.position[axis_split] = area_copy.bounds.position[axis_split] + split_size;
+                    area_b.bounds.size[axis_split] = area_copy.bounds.size[axis_split] - split_size;
 
-                    world_add_area(area_pool, &area_a);
-                    world_add_area(area_pool, &area_b);
+                    area_add(area_pool, &area_a);
+                    area_add(area_pool, &area_b);
 
                     area_indices_to_remove[area_index_removal_count++] = area_index;
                 }
@@ -1149,7 +1058,7 @@ static void layout_tower_areas(World *world)
 
             for (u32 index = 0; index < area_index_removal_count; ++index)
             {
-                world_remove_area(area_pool, area_indices_to_remove[index]);
+                area_remove(area_pool, area_indices_to_remove[index]);
             }
 
             area_index_removal_count = 0;
@@ -1172,13 +1081,13 @@ static void layout_tower_areas(World *world)
             Area section_area = {
                 .area_type = AREA_TYPE_OPEN,
                 .floor_number = floor_number,
-                .rect = {
+                .bounds = {
                     { SECTION_ORIGIN_ARRAY[section_index][0], SECTION_ORIGIN_ARRAY[section_index][1] },
                     { SECTION_SIZE_ARRAY[section_index][0], SECTION_SIZE_ARRAY[section_index][1] },
                 },
             };
 
-            world_add_area(area_pool, &section_area);
+            area_add(area_pool, &section_area);
         }
     }
 }
@@ -1598,7 +1507,7 @@ static void layout_test_area(World *world)
     Area test_room1 = {
         .area_type = AREA_TYPE_ROOM,
         .floor_number = TOWER_FLOOR_COUNT,
-        .rect = {
+        .bounds = {
             { test_area_position[0], test_area_position[1] },
             { 40, 40 },
         },
@@ -1611,7 +1520,7 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
 {
     AreaOverlap area_overlap = {
         .direction = DIRECTION_EAST,
-        .rect = {
+        .bounds = {
             { 0, 0 },
             { 0, 0 },
         },
@@ -1620,11 +1529,11 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
     ivec2 left_min, left_max;
     ivec2 right_min, right_max;
 
-    irect_min(&area_left->rect, left_min);
-    irect_min(&area_right->rect, right_min);
+    bounds2i_min(&area_left->bounds, left_min);
+    bounds2i_min(&area_right->bounds, right_min);
 
-    irect_max(&area_left->rect, left_max);
-    irect_max(&area_right->rect, right_max);
+    bounds2i_max(&area_left->bounds, left_max);
+    bounds2i_max(&area_right->bounds, right_max);
     
     if (left_max[0] == right_min[0])
     {
@@ -1635,11 +1544,11 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
         {
             area_overlap.direction = DIRECTION_EAST;
             
-            area_overlap.rect.position[0] = left_max[0];
-            area_overlap.rect.position[1] = overlap_y_min;
+            area_overlap.bounds.position[0] = left_max[0];
+            area_overlap.bounds.position[1] = overlap_y_min;
 
-            area_overlap.rect.size[0] = 1;
-            area_overlap.rect.size[1] = overlap_y_max - overlap_y_min;
+            area_overlap.bounds.size[0] = 1;
+            area_overlap.bounds.size[1] = overlap_y_max - overlap_y_min;
         }
     }
     else if (left_min[0] == right_max[0])
@@ -1651,11 +1560,11 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
         {
             area_overlap.direction = DIRECTION_WEST;
             
-            area_overlap.rect.position[0] = left_min[0];
-            area_overlap.rect.position[1] = overlap_y_min;
+            area_overlap.bounds.position[0] = left_min[0];
+            area_overlap.bounds.position[1] = overlap_y_min;
 
-            area_overlap.rect.size[0] = 1;
-            area_overlap.rect.size[1] = overlap_y_max - overlap_y_min;
+            area_overlap.bounds.size[0] = 1;
+            area_overlap.bounds.size[1] = overlap_y_max - overlap_y_min;
         }
     }
     else if (left_max[1] == right_min[1])
@@ -1667,11 +1576,11 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
         {
             area_overlap.direction = DIRECTION_NORTH;
             
-            area_overlap.rect.position[0] = overlap_x_min;
-            area_overlap.rect.position[1] = left_max[1];
+            area_overlap.bounds.position[0] = overlap_x_min;
+            area_overlap.bounds.position[1] = left_max[1];
 
-            area_overlap.rect.size[0] = overlap_x_max - overlap_x_min;
-            area_overlap.rect.size[1] = 1;
+            area_overlap.bounds.size[0] = overlap_x_max - overlap_x_min;
+            area_overlap.bounds.size[1] = 1;
         }
     }
     else if (left_min[1] == right_max[1])
@@ -1683,11 +1592,11 @@ static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_righ
         {
             area_overlap.direction = DIRECTION_SOUTH;
             
-            area_overlap.rect.position[0] = overlap_x_min;
-            area_overlap.rect.position[1] = left_min[1];
+            area_overlap.bounds.position[0] = overlap_x_min;
+            area_overlap.bounds.position[1] = left_min[1];
 
-            area_overlap.rect.size[0] = overlap_x_max - overlap_x_min;
-            area_overlap.rect.size[1] = 1;
+            area_overlap.bounds.size[0] = overlap_x_max - overlap_x_min;
+            area_overlap.bounds.size[1] = 1;
         }
     }
 
@@ -1713,17 +1622,17 @@ static void calculate_area_edges(World *world, u32 floor_number)
 
             const AreaOverlap area_overlap = get_area_overlap(area_left, area_right);
 
-            if (area_overlap.rect.size[0] > 0 && area_overlap.rect.size[1] > 0)
+            if (area_overlap.bounds.size[0] > 0 && area_overlap.bounds.size[1] > 0)
             {
                 AreaEdge area_edge = {
-                    .area_handle_a = world_make_area_handle(area_pool, area_index_left),
-                    .area_handle_b =  world_make_area_handle(area_pool, area_index_right),
+                    .area_handle_a = area_make_handle(area_pool, area_index_left),
+                    .area_handle_b =  area_make_handle(area_pool, area_index_right),
                     .area_a_direction = area_overlap.direction,
                     .area_b_direction = direction_opposite(&area_overlap.direction),
                     .area_overlap = area_overlap,
                 };
                         
-                const EdgeHandle edge_handle = world_add_edge(edge_pool, &area_edge);
+                const EdgeHandle edge_handle = area_add_edge(edge_pool, &area_edge);
 
                 area_left->edge_handle_array[area_left->edge_count++] = edge_handle;
                 area_right->edge_handle_array[area_right->edge_count++] = edge_handle;
@@ -1815,15 +1724,15 @@ static void construct_areas(World *world, u32 floor_number)
         
         world_set_block_type_box(
             world,
-            area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
-            area->rect.size[0], area->rect.size[1], FLOOR_SIZE_Z,
+            area->bounds.position[0], area->bounds.position[1], area->floor_number * FLOOR_SIZE_Z,
+            area->bounds.size[0], area->bounds.size[1], FLOOR_SIZE_Z,
             BLOCK_TYPE_SMOOTH_4
         );
 
         world_set_block_type_box(
             world,
-            area->rect.position[0], area->rect.position[1], area->floor_number * FLOOR_SIZE_Z,
-            area->rect.size[0], area->rect.size[1], 1,
+            area->bounds.position[0], area->bounds.position[1], area->floor_number * FLOOR_SIZE_Z,
+            area->bounds.size[0], area->bounds.size[1], 1,
             BLOCK_TYPE_SMOOTH_3
         );
 
@@ -1840,11 +1749,11 @@ static void construct_areas(World *world, u32 floor_number)
 
             if (edge_direction == DIRECTION_EAST)
             {
-                if (area_edge->area_overlap.rect.size[1] >= door_minimum_edge_size)
+                if (area_edge->area_overlap.bounds.size[1] >= door_minimum_edge_size)
                 {
                     const ivec3 door_position = {
-                        area_edge->area_overlap.rect.position[0],
-                        area_edge->area_overlap.rect.position[1] + area_edge->area_overlap.rect.size[1] / 2,
+                        area_edge->area_overlap.bounds.position[0],
+                        area_edge->area_overlap.bounds.position[1] + area_edge->area_overlap.bounds.size[1] / 2,
                         area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
                     };
 
@@ -1865,11 +1774,11 @@ static void construct_areas(World *world, u32 floor_number)
             }
             else if (edge_direction == DIRECTION_WEST)
             {
-                if (area_edge->area_overlap.rect.size[1] >= door_minimum_edge_size)
+                if (area_edge->area_overlap.bounds.size[1] >= door_minimum_edge_size)
                 {
                     const ivec3 door_position = {
-                        area_edge->area_overlap.rect.position[0],
-                        area_edge->area_overlap.rect.position[1] + area_edge->area_overlap.rect.size[1] / 2,
+                        area_edge->area_overlap.bounds.position[0],
+                        area_edge->area_overlap.bounds.position[1] + area_edge->area_overlap.bounds.size[1] / 2,
                         area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
                     };
 
@@ -1890,11 +1799,11 @@ static void construct_areas(World *world, u32 floor_number)
             }
             else if (edge_direction == DIRECTION_NORTH)
             {
-                if (area_edge->area_overlap.rect.size[0] >= door_minimum_edge_size)
+                if (area_edge->area_overlap.bounds.size[0] >= door_minimum_edge_size)
                 {
                     const ivec3 door_position = {
-                        area_edge->area_overlap.rect.position[0] + area_edge->area_overlap.rect.size[0] / 2,
-                        area_edge->area_overlap.rect.position[1],
+                        area_edge->area_overlap.bounds.position[0] + area_edge->area_overlap.bounds.size[0] / 2,
+                        area_edge->area_overlap.bounds.position[1],
                         area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
                     };
 
@@ -1915,11 +1824,11 @@ static void construct_areas(World *world, u32 floor_number)
             }
             else if (edge_direction == DIRECTION_SOUTH)
             {
-                if (area_edge->area_overlap.rect.size[0] >= door_minimum_edge_size)
+                if (area_edge->area_overlap.bounds.size[0] >= door_minimum_edge_size)
                 {
                     const ivec3 door_position = {
-                        area_edge->area_overlap.rect.position[0] + area_edge->area_overlap.rect.size[0] / 2,
-                        area_edge->area_overlap.rect.position[1],
+                        area_edge->area_overlap.bounds.position[0] + area_edge->area_overlap.bounds.size[0] / 2,
+                        area_edge->area_overlap.bounds.position[1],
                         area_edge->area_handle_a.floor_number * FLOOR_SIZE_Z,
                     };
 
@@ -1965,13 +1874,13 @@ static void place_content(World *world, u32 floor_number)
         
         const BlockTypeList *content_block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
 
-        const u32 stack_count = (area->rect.size[0] * area->rect.size[1] / 14);
+        const u32 stack_count = (area->bounds.size[0] * area->bounds.size[1] / 14);
 
         for (u32 stack_index = 0; stack_index < stack_count; ++stack_index)
         {
             const ivec2 stack_position = {
-                area->rect.position[0] + 1 + rand() % (area->rect.size[0] - 2),
-                area->rect.position[1] + 1 + rand() % (area->rect.size[1] - 2)
+                area->bounds.position[0] + 1 + rand() % (area->bounds.size[0] - 2),
+                area->bounds.position[1] + 1 + rand() % (area->bounds.size[1] - 2)
             };
 
             const u32 stack_size_z = rand() % (FLOOR_SIZE_Z - 6);
@@ -2000,8 +1909,8 @@ static void draw_debug_info(Debug *debug, World *world)
         const Area *area = &area_pool->area_array[area_index];
 
         ivec2 area_min, area_max;
-        irect_min(&area->rect, area_min);
-        irect_max(&area->rect, area_max);
+        bounds2i_min(&area->bounds, area_min);
+        bounds2i_max(&area->bounds, area_max);
             
         debug_draw_box(
             debug,

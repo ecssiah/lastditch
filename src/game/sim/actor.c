@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "core/math/math.h"
+#include "core/math_ext.h"
 #include "game/sim/world.h"
 
 const char *ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =
@@ -113,7 +113,7 @@ void actor_control(World *world, Actor *actor)
             actor->actor_control.decision_clock = 0;
         }
 
-        actor->rotation[2] = math_lerp_to(
+        actor->rotation[2] = lerp_to(
             actor->rotation[2],
             actor->rotation_target[2],
             5.0f,

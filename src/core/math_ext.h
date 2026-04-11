@@ -1,0 +1,78 @@
+#ifndef MATH_H
+#define MATH_H
+
+#include <cglm/cglm.h>
+
+#include "justsky.h"
+
+#define EPSILON 1e-5f
+
+typedef enum Axis Axis;
+enum Axis
+{
+    AXIS_X,
+    AXIS_Y,
+    AXIS_Z,
+
+    AXIS_COUNT,
+};
+
+typedef struct Bounds1i Bounds1i;
+struct Bounds1i
+{
+    i32 min;
+    i32 max;
+};
+
+typedef struct Bounds2i Bounds2i;
+struct Bounds2i
+{
+    ivec2 position;
+    ivec2 size;
+};
+
+typedef struct Bounds3i Bounds3i;
+struct Bounds3i
+{
+    ivec3 min;
+    ivec3 max;
+};
+
+typedef struct Bounds1f Bounds1f;
+struct Bounds1f
+{
+    f32 min;
+    f32 max;
+};
+
+typedef struct Bounds2f Bounds2f;
+struct Bounds2f
+{
+    vec2 min;
+    vec2 max;
+};
+
+
+typedef struct Bounds3f Bounds3f;
+struct Bounds3f
+{
+    vec3 min;
+    vec3 max;
+};
+
+i32 min_i32(i32 a, i32 b);
+i32 max_i32(i32 a, i32 b);
+
+void bounds2i_max(const Bounds2i *bounds, ivec2 out_max);
+void bounds2i_min(const Bounds2i *bounds, ivec2 out_min);
+
+b32 bounds2i_overlaps(const Bounds2i *bounds_left, const Bounds2i *bounds_right);
+Bounds2i bounds2i_intersection(const Bounds2i *bounds_left, const Bounds2i *bounds_right);
+
+u32 bounds2i_subtract(const Bounds2i *bounds_left, const Bounds2i *bounds_right, Bounds2i *out_array);
+
+void bounds2i_print(const Bounds2i *bounds);
+
+f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time);
+
+#endif

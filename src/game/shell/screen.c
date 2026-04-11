@@ -5,9 +5,8 @@
 
 #include "stb_image.h"
 
-#include "justsky_gl.h"
-
 #include "game/sim/world.h"
+#include "game/shell/gl_ext.h"
 
 static void load_textures(Screen *screen, const char *textures_path)
 {
@@ -156,8 +155,8 @@ void screen_init(Shell *shell, Platform *platform)
 {
     Screen *screen = &shell->screen;
     
-    GLuint vert_shader = justsky_gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
-    GLuint frag_shader = justsky_gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
+    GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
+    GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
 
     screen->program_id = glCreateProgram();
     

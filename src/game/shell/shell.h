@@ -1,10 +1,11 @@
 #ifndef SHELL_H
 #define SHELL_H
 
+#include <glad/glad.h>
+
 #include "justsky.h"
 #include "justsky_config.h"
 
-#include "core/core.h"
 #include "game/sim/sim.h"
 #include "platform/platform.h"
 
