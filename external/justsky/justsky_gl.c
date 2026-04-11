@@ -1,5 +1,5 @@
-#include "jsk_gl.h"
-#include "jsk_log.h"
+#include "justsky_gl.h"
+#include "justsky_log.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,12 +8,12 @@ static const char* get_error_string(GLenum err)
 {
     switch (err)
     {
-        case GL_INVALID_ENUM: return "GL_INVALID_ENUM";
-        case GL_INVALID_VALUE: return "GL_INVALID_VALUE";
-        case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION";
-        case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
-        case GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION";
-        default: return "UNKNOWN_ERROR";
+        case GL_INVALID_ENUM:                    return "GL_INVALID_ENUM";
+        case GL_INVALID_VALUE:                   return "GL_INVALID_VALUE";
+        case GL_INVALID_OPERATION:               return "GL_INVALID_OPERATION";
+        case GL_OUT_OF_MEMORY:                   return "GL_OUT_OF_MEMORY";
+        case GL_INVALID_FRAMEBUFFER_OPERATION:   return "GL_INVALID_FRAMEBUFFER_OPERATION";
+        default:                                 return "UNKNOWN_ERROR";
     }
 }
 
@@ -23,7 +23,7 @@ static char* read_file(const char *path)
     
     if (!file)
     {
-        printf("Failed to open file: %s\n", path);
+        LOG_ERROR("Failed to open file: %s\n", path);
         return NULL;
     }
 
@@ -32,7 +32,7 @@ static char* read_file(const char *path)
 
     if (size < 0)
     {
-        LOG_WARN("File read file: %s\n", path);
+        LOG_ERROR("File read file: %s\n", path);
         return NULL;
     }
     
@@ -54,13 +54,13 @@ static char* read_file(const char *path)
     return buffer;
 }
 
-void jskgl_check_error(const char* label)
+void justsky_gl_check_error(const char* label)
 {
     GLenum err;
 
     while ((err = glGetError()) != GL_NO_ERROR)
     {
-        printf(
+        LOG_ERROR(
             "GL ERROR [%s]: %s (0x%x)\n",
             label,
             get_error_string(err),
@@ -69,7 +69,7 @@ void jskgl_check_error(const char* label)
     }
 }
 
-GLuint jskgl_compile_shader(GLenum type, const char* filepath)
+GLuint justsky_gl_compile_shader(GLenum type, const char* filepath)
 {
     char* src_string = read_file(filepath);
     
@@ -86,7 +86,7 @@ GLuint jskgl_compile_shader(GLenum type, const char* filepath)
         GLchar info[512];
         glGetShaderInfoLog(shader_id, 512, NULL, info);
 	
-        printf("Shader error:\n%s\n", info);
+        LOG_ERROR("Shader error:\n%s\n", info);
     }
 
     free(src_string);

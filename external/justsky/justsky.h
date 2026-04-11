@@ -1,5 +1,5 @@
-#ifndef JSK_H
-#define JSK_H
+#ifndef JUSTSKY_H
+#define JUSTSKY_H
 
 #include <assert.h>
 #include <stdint.h>

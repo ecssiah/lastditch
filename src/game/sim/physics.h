@@ -1,7 +1,7 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#include "jsk.h"
+#include "justsky.h"
 
 #include <cglm/cglm.h>
 

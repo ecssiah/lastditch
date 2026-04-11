@@ -1,8 +1,8 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include "jsk.h"
-#include "jsk_config.h"
+#include "justsky.h"
+#include "justsky_config.h"
 
 #include "core/core.h"
 #include "game/sim/sim.h"
@@ -150,7 +150,7 @@ struct VoxelRender
     GLint u_view_location;
     GLint u_model_location;
 
-    JSK_Config *block_config;
+    JUSTSKY_Config *block_config;
     
     u8 block_type_layer_array[BLOCK_TYPE_COUNT];
 
@@ -180,7 +180,7 @@ struct ModelRender
 
     GLint u_texture_layer_location;
 
-    JSK_Config *actor_config;
+    JUSTSKY_Config *actor_config;
 
     u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
 

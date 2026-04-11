@@ -4,8 +4,8 @@
 
 #include "game/sim/actor.h"
 #include "game/sim/nation.h"
-#include "jsk.h"
-#include "jsk_log.h"
+#include "justsky.h"
+#include "justsky_log.h"
 
 #include "game/sim/physics.h"
 #include "game/sim/world.h"

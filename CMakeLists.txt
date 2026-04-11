@@ -27,7 +27,7 @@ add_executable(
 target_include_directories(
     lastditch 
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/jsk
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/justsky
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/stb/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -55,9 +55,9 @@ target_sources(
     lastditch
     PRIVATE
     external/glad/src/glad.c
-    external/jsk/jsk_config.c
-    external/jsk/jsk_gl.c
-    external/jsk/jsk_log.c      
+    external/justsky/justsky_config.c
+    external/justsky/justsky_gl.c
+    external/justsky/justsky_log.c      
     external/stb/src/stb_image.c
     src/core/core.c
     src/core/math/math.c

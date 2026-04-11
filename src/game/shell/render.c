@@ -9,10 +9,10 @@
 #include "game/sim/debug.h"
 #include "stb_image.h"
 
-#include "jsk.h"
-#include "jsk_config.h"
-#include "jsk_gl.h"
-#include "jsk_log.h"
+#include "justsky.h"
+#include "justsky_config.h"
+#include "justsky_gl.h"
+#include "justsky_log.h"
 
 #include "game/sim/population.h"
 #include "game/sim/world.h"
@@ -200,7 +200,7 @@ static void load_block_texture_directory(Shell *shell)
 
     for (u32 layer_index = 0; layer_index < voxel_render->block_config->entry_count; ++layer_index)
     {
-        const JSK_ConfigEntry *config_entry = &voxel_render->block_config->config_entry_array[layer_index];
+        const JUSTSKY_ConfigEntry *config_entry = &voxel_render->block_config->config_entry_array[layer_index];
 
         char texture_path[256];
 	
@@ -243,7 +243,7 @@ static void load_actor_texture_directory(Shell *shell)
 
     for (u32 layer_index = 0; layer_index < model_render->actor_config->entry_count; ++layer_index)
     {
-        const JSK_ConfigEntry *config_entry = &model_render->actor_config->config_entry_array[layer_index];
+        const JUSTSKY_ConfigEntry *config_entry = &model_render->actor_config->config_entry_array[layer_index];
 
         char texture_path[256];
 
@@ -724,8 +724,8 @@ static void init_debug_render(Shell *shell, Sim *sim)
     debug_render->debug_gpu_data_capacity = 0;
     debug_render->debug_gpu_data_array = NULL;
 
-    GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
-    GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
+    GLuint vert_shader = justsky_gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
+    GLuint frag_shader = justsky_gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
 
     debug_render->program_id = glCreateProgram();
 
@@ -758,8 +758,8 @@ static void init_voxel_render(Shell *shell, Sim *sim)
     voxel_render->voxel_gpu_data_capacity = 0;
     voxel_render->voxel_gpu_data_array = NULL;
 
-    GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
-    GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
+    GLuint vert_shader = justsky_gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
+    GLuint frag_shader = justsky_gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
     voxel_render->program_id = glCreateProgram();
     
@@ -797,7 +797,7 @@ static void init_voxel_render(Shell *shell, Sim *sim)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    voxel_render->block_config = jsk_load_config("config/block.ini");
+    voxel_render->block_config = justsky_load_config("config/block.ini");
     
     load_block_texture_directory(shell);
     
@@ -839,8 +839,8 @@ static void init_model_render(Shell *shell, Sim *sim)
 {
     ModelRender* model_render = &shell->render.model_render;
 
-    GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
-    GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
+    GLuint vert_shader = justsky_gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
+    GLuint frag_shader = justsky_gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
 
     model_render->program_id = glCreateProgram();
     
@@ -855,7 +855,7 @@ static void init_model_render(Shell *shell, Sim *sim)
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    model_render->actor_config = jsk_load_config("config/actor.ini");
+    model_render->actor_config = justsky_load_config("config/actor.ini");
     
     load_actor_texture_directory(shell);
 

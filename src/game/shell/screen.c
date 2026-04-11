@@ -5,7 +5,7 @@
 
 #include "stb_image.h"
 
-#include "jsk_gl.h"
+#include "justsky_gl.h"
 
 #include "game/sim/world.h"
 
@@ -156,8 +156,8 @@ void screen_init(Shell *shell, Platform *platform)
 {
     Screen *screen = &shell->screen;
     
-    GLuint vert_shader = jskgl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
-    GLuint frag_shader = jskgl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
+    GLuint vert_shader = justsky_gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
+    GLuint frag_shader = justsky_gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
 
     screen->program_id = glCreateProgram();
     

@@ -1,7 +1,7 @@
 #ifndef NATION_H
 #define NATION_H
 
-#include "jsk.h"
+#include "justsky.h"
 
 #include <cglm/cglm.h>
 

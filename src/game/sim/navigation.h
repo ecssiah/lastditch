@@ -1,7 +1,7 @@
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
-#include "jsk.h"
+#include "justsky.h"
 
 typedef enum NodeType NodeType;
 enum NodeType

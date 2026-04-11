@@ -1,7 +1,7 @@
 #ifndef SIM_H
 #define SIM_H
 
-#include "jsk.h"
+#include "justsky.h"
 
 #include "game/sim/action.h"
 #include "game/sim/debug.h"

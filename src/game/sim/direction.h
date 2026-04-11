@@ -1,7 +1,7 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
-#include "jsk.h"
+#include "justsky.h"
 
 #define FOR_LIST_DIRECTION(DO)                  \
     DO(DIRECTION_EAST)                          \

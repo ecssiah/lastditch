@@ -3,7 +3,7 @@
 
 #include <cglm/cglm.h>
 
-#include "jsk.h"
+#include "justsky.h"
 
 #include "core/core.h"
 #include "game/sim/direction.h"

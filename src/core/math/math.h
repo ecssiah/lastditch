@@ -1,7 +1,7 @@
 #ifndef MATH_H
 #define MATH_H
 
-#include "jsk.h"
+#include "justsky.h"
 
 #define EPSILON 1e-5f
 

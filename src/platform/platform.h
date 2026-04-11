@@ -3,7 +3,7 @@
 
 #include "GLFW/glfw3.h"
 
-#include "jsk.h"
+#include "justsky.h"
 
 #define WINDOW_TITLE "Last Ditch"
 

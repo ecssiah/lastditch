@@ -1,5 +1,5 @@
-#ifndef JSK_LOG_H
-#define JSK_LOG_H
+#ifndef JUSTSKY_LOG_H
+#define JUSTSKY_LOG_H
 
 #define LOG_TRACE(fmt, ...) log_message(LOG_LEVEL_TRACE, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define LOG_INFO(fmt, ...)  log_message(LOG_LEVEL_INFO,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)

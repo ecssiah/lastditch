@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "jsk.h"
-#include "jsk_log.h"
+#include "justsky.h"
+#include "justsky_log.h"
 
 #include "core/core.h"
 #include "core/math/math.h"

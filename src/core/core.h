@@ -4,7 +4,7 @@
 #include <cglm/cglm.h>
 #include <glad/glad.h>
 
-#include "jsk.h"
+#include "justsky.h"
 
 #define EPSILON 1e-5f
 

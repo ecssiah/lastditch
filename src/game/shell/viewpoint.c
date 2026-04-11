@@ -1,6 +1,6 @@
 #include "viewpoint.h"
 
-#include "jsk.h"
+#include "justsky.h"
 
 void viewpoint_get_forward(Viewpoint *viewpoint, vec3 out_forward)
 {

@@ -1,6 +1,6 @@
 #include "core/core.h"
 #include "core/math/math.h"
-#include "jsk_log.h"
+#include "justsky_log.h"
 
 void irect_max(const IRect *rect, ivec2 out_max)
 {

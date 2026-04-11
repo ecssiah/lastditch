@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-#include "jsk.h"
+#include "justsky.h"
 
 #include "game/sim/actor.h"
 #include "game/sim/world.h"
