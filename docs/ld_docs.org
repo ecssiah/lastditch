@@ -7,13 +7,14 @@ Last Ditch: The Garden of Nations
 
 Last Ditch is a simulation of [[Nation]]s acting under the leadership of a [[Judge]].
 
-The player controls only the [[Judge]], but the [[Role]] can be passed on to other [[Citizen]]s. All [[Citizen]]s behave according to their own will, taking into account the [[Rule]]s.
+The player controls the [[Judge]], but the [[Role]] can be passed on to other [[Citizen]]s. All [[Agent]]s behave according to their own will, taking into account [[Enforcement]] of the [[Law]]s.
 
-The setting is at the top of a Carrier Hotel in a ruined technological world. Each [[Nation]] attempts to survive by reclaiming parts from the floors below in order to build on the [[Tower]] roof.
+The setting is at the top of a Carrier Hotel in a ruined technological world. Each [[Nation]] attempts to progress by reclaiming parts from the floors below in order to build on the [[Tower]] roof.
 
 
 * Judgment
-Each [[Nation]] has a [[Judge]] who leads using [[Rule]]s.
+
+Each [[Nation]] has a [[Judge]] who leads using [[Law]]s.
 
 ** Traits
 - Loyalty
@@ -28,23 +29,25 @@ A [[Judge]] can choose their [[Successor]], but leadership may pass to another [
 A [[Challenger]] can also arise.
 
 
-** Rules
-A set of [[Rule]]s is how the player interacts with the civilization as a [[Judge]].
+* Laws
 
-*** Civil
+A set of [[Law]]s is how the player interacts with the civilization as a [[Judge]].
 
-Civil Rules
+** Civil
 
-*** Military
+Civil Laws
 
-Military Rules
+** Military
 
-*** Economic
+Military Laws
 
-Economic Rules
+** Economic
+
+Economic Laws
 
 
 * Nations
+
 There are four [[Nation]]s.
 
 1. <<Wolf>>
@@ -70,19 +73,22 @@ The closest levels to the top are the safest with relatively harmless [[Scavenge
 
 Each [[Nation]] builds structures to support itself. These can be designed by the [[Judge]] using Architecting tools.
 
-Depending on the strictness of Civil [[Rule]]s, [[Citizen]]s will customize the architectural plans to varying degrees.
+Depending on the strictness of Civil [[Law]]s, [[Citizen]]s will customize the architectural plans to varying degrees.
 
 
 * Keywords
 
+<<Tower>>
+The Carrier Hotel
+
 <<Nation>>
 A population of [[Citizen]]s living under a [[Judge]].
 
-<<Role>>
-A [[Citizen]]'s specialization.
+<<Agent>>
+Any actor in the world.
 
 <<Judge>>
-The [[Citizen]] who issues a set of [[Rule]]s.
+The [[Citizen]] who issues a set of [[Law]]s.
 
 <<Successor>>
 The heir apparent of the [[Judge]].
@@ -96,13 +102,14 @@ A member of a [[Nation]].
 <<Scavenger>>
 An [[Agent]] without a [[Nation]].
 
-<<Rule>>
+<<Role>>
+A [[Citizen]]'s specialization.
+
+<<Law>>
 A constraint on the behavior of [[Citizen]]s.
+
+<<Enforcement>>
+The process by which the [[Law]]s are applied.
 
 <<Architecture>>
 The design of the structures that are built by each [[Nation]].
-
-<<Tower>>
-The Carrier Hotel
-
-
