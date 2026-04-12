@@ -8,7 +8,7 @@
 #include "game/sim/nation.h"
 #include "game/sim/physics.h"
 
-#define ACTOR_MAX 256u
+#define ACTOR_MAX 256
 
 #define AGENT_DEFAULT_GROUND_SPEED 1.0f
 #define AGENT_DEFAULT_JUMP_SPEED 28.0f
@@ -22,6 +22,8 @@
 
 #define CAMERA_PITCH_LIMIT 89.99f
 
+#define ACTOR_BEHAVIOR_MAX 128
+
 typedef enum MovementType MovementType;
 enum MovementType
 {
@@ -29,23 +31,6 @@ enum MovementType
     MOVEMENT_TYPE_DEBUG,
 
     MOVEMENT_TYPE_COUNT,
-};
-
-typedef enum ControlType ControlType;
-enum ControlType
-{
-    CONTROL_TYPE_NONE,
-    CONTROL_TYPE_WANDER,
-    CONTROL_TYPE_SEEK,
-};
-
-typedef struct ActorControl ActorControl;
-struct ActorControl
-{
-    ControlType control_type;
-    
-    u32 decision_clock;
-    u32 decision_period;
 };
 
 #define FOR_LIST_ACTOR_TYPE(DO)                 \
@@ -62,9 +47,13 @@ enum ActorType
 
 extern const char *ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT];
 
+typedef u32 ActorID;
+
 typedef struct Actor Actor;
 struct Actor
 {
+    ActorID actor_id;
+    
     ActorType actor_type;
     NationType nation_type;
     MovementType movement_type;
@@ -81,26 +70,18 @@ struct Actor
 
     BoxCollider box_collider;
 
-    ActorControl actor_control;
-};
-
-typedef struct ActorHandle ActorHandle;
-struct ActorHandle
-{
-    u32 index;
-    u32 generation;
+    u32 behavior_id_array[ACTOR_BEHAVIOR_MAX];
 };
 
 typedef struct ActorPool ActorPool;
 struct ActorPool
 {
-    u32 generation_array[ACTOR_MAX];
-
-    u32 active_array[ACTOR_MAX];
     u32 active_count;
+    u32 active_array[ACTOR_MAX];
+    u32 active_lookup[ACTOR_MAX];
     
-    u32 free_array[ACTOR_MAX];
     u32 free_count;
+    u32 free_array[ACTOR_MAX];
     
     Actor actor_array[ACTOR_MAX];
 };
@@ -113,7 +94,7 @@ void actor_get_up(Actor *actor, vec3 out_up);
 
 void actor_init_pool(ActorPool *actor_pool);
 
-ActorHandle actor_add(ActorPool *actor_pool, Actor *actor);
+void actor_add(ActorPool *actor_pool, Actor *actor);
 void actor_control(World *world, Actor *actor);
 
 #endif

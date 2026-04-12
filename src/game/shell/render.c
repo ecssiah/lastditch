@@ -877,14 +877,10 @@ static void init_model_render(Shell *shell, Sim *sim)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
     
-    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    for (u32 pool_index = 0; pool_index < sim->population.actor_pool.active_count; ++pool_index)
     {
-        if (sim->population.actor_pool.generation_array[actor_index] == 0)
-        {
-            continue;
-        }
-
-        const Actor *actor = &sim->population.actor_pool.actor_array[actor_index];
+        const ActorID actor_id = sim->population.actor_pool.active_array[pool_index];
+        const Actor *actor = &sim->population.actor_pool.actor_array[actor_id];
         
         ModelGpuData model_gpu_data;
     
@@ -892,15 +888,15 @@ static void init_model_render(Shell *shell, Sim *sim)
 
         model_gpu_data.texture_layer = model_render->actor_type_layer_array[(i32)actor->nation_type];
 
-        add_model_gpu_data(model_render, actor_index, &model_gpu_data);
+        add_model_gpu_data(model_render, actor_id, &model_gpu_data);
 
-        upload_model_gpu_data(&model_render->model_gpu_data_array[actor_index]);
+        upload_model_gpu_data(&model_render->model_gpu_data_array[actor_id]);
     }
 }
 
 static void update_viewpoint(Render *render, Sim *sim)
 {
-    const Actor *judge = &sim->population.actor_pool.actor_array[sim->population.judge_handle.index];
+    const Actor *judge = &sim->population.actor_pool.actor_array[sim->population.judge_id];
 
     const vec3 judge_eye_offset = { 0.0f, 0.0f, 0.7f };
     
@@ -1009,16 +1005,12 @@ static void update_model_render(Render* render, Sim *sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->model_render.texture_array_id);
 
-    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    for (u32 pool_index = 0; pool_index < sim->population.actor_pool.active_count; ++pool_index)
     {
-        if (sim->population.actor_pool.generation_array[actor_index] == 0)
-        {
-            continue;
-        }
+        const ActorID actor_id = sim->population.actor_pool.active_array[pool_index];
+        Actor *actor = &sim->population.actor_pool.actor_array[actor_id];
 
-        ModelGpuData *model_gpu_data = &render->model_render.model_gpu_data_array[actor_index];
-
-        Actor *actor = &sim->population.actor_pool.actor_array[actor_index];
+        ModelGpuData *model_gpu_data = &render->model_render.model_gpu_data_array[actor_id];
         
         mat4 model_matrix;
         glm_translate_make(model_matrix, (f32 *)actor->position);
@@ -1049,7 +1041,7 @@ void render_init(Shell *shell, Platform *platform, Sim *sim)
 
 void render_update(Shell* shell, Sim* sim)
 {
-    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     update_viewpoint(&shell->render, sim);

@@ -63,73 +63,69 @@ void actor_init_pool(ActorPool *actor_pool)
     actor_pool->free_count = ACTOR_MAX;
     actor_pool->active_count = 0;
 
-    for (u32 actor_index = 0; actor_index < ACTOR_MAX; ++actor_index)
+    for (u32 pool_index = 0; pool_index < ACTOR_MAX; ++pool_index)
     {
-        actor_pool->active_array[actor_index] = 0;
-        actor_pool->generation_array[actor_index] = 0;
-        actor_pool->free_array[actor_index] = actor_index;
+        actor_pool->active_array[pool_index] = 0;
+        actor_pool->free_array[pool_index] = pool_index;
     }
 }
 
-ActorHandle actor_add(ActorPool *actor_pool, Actor *actor)
+void actor_add(ActorPool *actor_pool, Actor *actor)
 {
-    const u32 actor_index = actor_pool->free_array[--actor_pool->free_count];
-    const u32 actor_generation = ++actor_pool->generation_array[actor_index];
-        
-    actor_pool->active_array[actor_pool->active_count++] = actor_index;
-    actor_pool->actor_array[actor_index] = *actor;
+    const ActorID actor_id = actor_pool->free_array[--actor_pool->free_count];
+
+    actor->actor_id = actor_id;
+    
+    actor_pool->active_array[actor_pool->active_count++] = actor_id;
+    actor_pool->actor_array[actor_id] = *actor;
     
     assert(actor_pool->free_count + actor_pool->active_count == ACTOR_MAX);
-
-    ActorHandle actor_handle = { actor_index, actor_generation };
-    
-    return actor_handle;
 }
 
-void actor_control(World *world, Actor *actor)
-{
-    switch (actor->actor_control.control_type)
-    {
-    case CONTROL_TYPE_WANDER:
-    {
-        if (actor->actor_control.decision_clock < actor->actor_control.decision_period)
-        {
-            actor->actor_control.decision_clock++;
-        }
-        else
-        {
-            const i32 direction_angle = rand() % 360;
+// void actor_control(World *world, Actor *actor)
+// {
+//     switch (actor->actor_control.control_type)
+//     {
+//     case CONTROL_TYPE_WANDER:
+//     {
+//         if (actor->actor_control.decision_clock < actor->actor_control.decision_period)
+//         {
+//             actor->actor_control.decision_clock++;
+//         }
+//         else
+//         {
+//             const i32 direction_angle = rand() % 360;
 
-            const vec2 direction = {
-                cosf(glm_rad(direction_angle)),
-                sinf(glm_rad(direction_angle))
-            };
+//             const vec2 direction = {
+//                 cosf(glm_rad(direction_angle)),
+//                 sinf(glm_rad(direction_angle))
+//             };
 
-            actor->velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;
-            actor->velocity[1] = direction[1] * AGENT_DEFAULT_GROUND_SPEED;
+//             actor->velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;
+//             actor->velocity[1] = direction[1] * AGENT_DEFAULT_GROUND_SPEED;
 
-            actor->rotation_target[2] = direction_angle;
+//             actor->rotation_target[2] = direction_angle;
 
-            actor->actor_control.decision_clock = 0;
-        }
+//             actor->actor_control.decision_clock = 0;
+//         }
 
-        actor->rotation[2] = lerp_to(
-            actor->rotation[2],
-            actor->rotation_target[2],
-            5.0f,
-            world->delta_time
-        );
+//         actor->rotation[2] = lerp_to(
+//             actor->rotation[2],
+//             actor->rotation_target[2],
+//             5.0f,
+//             world->delta_time
+//         );
 
-        break;
-    }
-    case CONTROL_TYPE_SEEK:
-    {
-        break;
-    }
-    case CONTROL_TYPE_NONE: break;
-    default: break;
-    }
-}
+//         break;
+//     }
+//     case CONTROL_TYPE_SEEK:
+//     {
+//         break;
+//     }
+//     case CONTROL_TYPE_NONE: break;
+//     default: break;
+//     }
+// }
 
 
 

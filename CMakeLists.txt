@@ -68,6 +68,7 @@ target_sources(
     src/game/sim/navigation.c
     src/game/sim/physics.c
     src/game/sim/population.c
+    src/game/sim/scheduler.c
     src/game/sim/sim.c
     src/game/sim/world.c
     src/game/shell/gl_ext.c

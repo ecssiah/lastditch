@@ -219,7 +219,7 @@ void screen_init(Shell *shell, Platform *platform)
 
 static void draw_debug_info(Shell *shell, Sim *sim)
 {
-    const Actor *judge = &sim->population.actor_pool.actor_array[sim->population.judge_handle.index];
+    const Actor *judge = &sim->population.actor_pool.actor_array[sim->population.judge_id];
 
     ivec3 cell_coordinate;
     world_position_to_cell_coordinate(judge->position[0], judge->position[1], judge->position[2], cell_coordinate);

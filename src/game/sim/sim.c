@@ -20,16 +20,20 @@ void sim_init(Sim *sim)
 
     debug_init(&sim->debug);
 
+    scheduler_init(&sim->scheduler);
+
     world_init(&sim->world, &sim->debug);
     population_init(&sim->population);
 }
 
 void sim_update(Sim *sim)
 {
-    const u32 judge_index = sim->population.judge_handle.index;
-    Actor *judge = &sim->population.actor_pool.actor_array[judge_index];
+    const ActorID judge_id = sim->population.judge_id;
+    Actor *judge = &sim->population.actor_pool.actor_array[judge_id];
     
     action_apply_queue(&sim->action_queue, judge);
+
+    scheduler_update(&sim->scheduler, sim->world.delta_time);
 
     population_update(&sim->population, &sim->world);
     world_update(&sim->world, &sim->population);

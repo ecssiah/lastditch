@@ -6,13 +6,15 @@
 #include "core/math_ext.h"
 #include "game/sim/direction.h"
 
-#define AREA_POOL_MAX 1u << 12
-#define EDGE_POOL_MAX 1u << 12
+#define AREA_POOL_MAX 1 << 12
+#define EDGE_POOL_MAX 1 << 12
 
-#define AREA_EDGE_MAX 1u << 5
+#define AREA_EDGE_MAX 1 << 5
 
-#define AREA_EXPANSION_ITERATION_COUNT 5u
-#define AREA_EXPANSION_SIZE_MIN 8u
+#define AREA_EXPANSION_ITERATION_COUNT 5
+#define AREA_EXPANSION_SIZE_MIN 8
+
+#define DOOR_MINIMUM_EDGE_SIZE 5
 
 typedef struct EdgeHandle EdgeHandle;
 struct EdgeHandle
@@ -26,6 +28,7 @@ struct EdgeHandle
     DO(AREA_TYPE_ROOM)                          \
     DO(AREA_TYPE_ELEVATOR)                      \
     DO(AREA_TYPE_TEMPLE)                        \
+    DO(AREA_TYPE_WIREFRAME)                     \
 
 typedef enum AreaType AreaType;
 enum AreaType
@@ -39,20 +42,14 @@ typedef struct Area Area;
 struct Area
 {
     AreaType area_type;
-    
+
+    u32 area_index;
     u32 floor_number;
+    
     Bounds2i bounds;
 
-    u32 edge_count;
-    EdgeHandle edge_handle_array[AREA_EDGE_MAX];
-};
-
-typedef struct AreaHandle AreaHandle;
-struct AreaHandle
-{
-    u32 index;
-    u32 generation;
-    u32 floor_number;
+    u32 edge_index_count;
+    u32 edge_index_array[AREA_EDGE_MAX];
 };
 
 typedef struct AreaOverlap AreaOverlap;
@@ -65,8 +62,10 @@ struct AreaOverlap
 typedef struct AreaEdge AreaEdge;
 struct AreaEdge
 {
-    AreaHandle area_handle_a;
-    AreaHandle area_handle_b;
+    u32 edge_index;
+    
+    u32 area_a_index;
+    u32 area_b_index;
 
     Direction area_a_direction;
     Direction area_b_direction;
@@ -79,8 +78,6 @@ struct AreaPool
 {
     u32 floor_number;
     
-    u32 generation_array[AREA_POOL_MAX];
-
     u32 free_count;
     u32 free_array[AREA_POOL_MAX];
 
@@ -94,8 +91,6 @@ struct AreaPool
 typedef struct EdgePool EdgePool;
 struct EdgePool
 {
-    u32 generation_array[EDGE_POOL_MAX];
-
     u32 free_count;
     u32 free_array[EDGE_POOL_MAX];
 
@@ -106,12 +101,10 @@ struct EdgePool
     AreaEdge edge_array[EDGE_POOL_MAX];
 };
 
-AreaHandle area_add(AreaPool *area_pool, Area *area);
-void area_remove(AreaPool *area_pool, u32 area_index);
+void area_add(AreaPool *area_pool, Area *area);
+void area_remove(AreaPool *area_pool, const u32 area_index);
 
-AreaHandle area_make_handle(const AreaPool *area_pool, u32 area_index);
-
-EdgeHandle area_add_edge(EdgePool *edge_pool, AreaEdge *area_edge);
-void area_remove_edge(EdgePool *edge_pool, u32 edge_index);
+void area_add_edge(EdgePool *edge_pool, AreaEdge *area_edge);
+void area_remove_edge(EdgePool *edge_pool, const u32 edge_index);
 
 #endif

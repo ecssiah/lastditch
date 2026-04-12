@@ -15,7 +15,7 @@ struct Population
 {
     Nation nation_array[NATION_TYPE_COUNT];
 
-    ActorHandle judge_handle;    
+    ActorID judge_id;
 
     ActorPool actor_pool;
 };

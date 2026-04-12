@@ -68,3 +68,10 @@
 - Graph generation
 - Pathfinding
 - Interactable Blocks
+
+* <2026-04-12 Sun>
+** Done
+- separate out door generation
+
+** Next
+- In-game logging

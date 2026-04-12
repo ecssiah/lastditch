@@ -7,7 +7,7 @@
 
 #define DEBUG_LINE_MAX 1 << 13
 
-#define DEBUG_AREAS true
+#define DEBUG_AREAS false
 
 typedef struct DebugLine DebugLine;
 struct DebugLine
