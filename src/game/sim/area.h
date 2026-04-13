@@ -5,6 +5,7 @@
 
 #include "core/math_ext.h"
 #include "game/sim/direction.h"
+#include "game/sim/ids.h"
 
 #define AREA_POOL_MAX 1 << 12
 #define EDGE_POOL_MAX 1 << 12
@@ -15,13 +16,6 @@
 #define AREA_EXPANSION_SIZE_MIN 8
 
 #define DOOR_MINIMUM_EDGE_SIZE 5
-
-typedef struct EdgeHandle EdgeHandle;
-struct EdgeHandle
-{
-    u32 index;
-    u32 generation;
-};
 
 #define FOR_LIST_AREA_TYPE(DO)                  \
     DO(AREA_TYPE_OPEN)                          \
@@ -43,13 +37,13 @@ struct Area
 {
     AreaType area_type;
 
-    u32 area_index;
+    AreaID area_id;
     u32 floor_number;
     
     Bounds2i bounds;
 
-    u32 edge_index_count;
-    u32 edge_index_array[AREA_EDGE_MAX];
+    u32 edge_id_count;
+    EdgeID edge_id_array[AREA_EDGE_MAX];
 };
 
 typedef struct AreaOverlap AreaOverlap;
@@ -62,10 +56,10 @@ struct AreaOverlap
 typedef struct AreaEdge AreaEdge;
 struct AreaEdge
 {
-    u32 edge_index;
+    EdgeID edge_id;
     
-    u32 area_a_index;
-    u32 area_b_index;
+    AreaID area_a_id;
+    AreaID area_b_id;
 
     Direction area_a_direction;
     Direction area_b_direction;
@@ -79,10 +73,11 @@ struct AreaPool
     u32 floor_number;
     
     u32 free_count;
-    u32 free_array[AREA_POOL_MAX];
+    AreaID free_array[AREA_POOL_MAX];
 
     u32 active_count;
-    u32 active_array[AREA_POOL_MAX];
+    AreaID active_array[AREA_POOL_MAX];
+    
     u32 active_lookup[AREA_POOL_MAX];
 
     Area area_array[AREA_POOL_MAX];
@@ -92,19 +87,20 @@ typedef struct EdgePool EdgePool;
 struct EdgePool
 {
     u32 free_count;
-    u32 free_array[EDGE_POOL_MAX];
+    EdgeID free_array[EDGE_POOL_MAX];
 
     u32 active_count;
-    u32 active_array[EDGE_POOL_MAX];
+    EdgeID active_array[EDGE_POOL_MAX];
+    
     u32 active_lookup[EDGE_POOL_MAX];
     
     AreaEdge edge_array[EDGE_POOL_MAX];
 };
 
 void area_add(AreaPool *area_pool, Area *area);
-void area_remove(AreaPool *area_pool, const u32 area_index);
+void area_remove(AreaPool *area_pool, const AreaID area_id);
 
 void area_add_edge(EdgePool *edge_pool, AreaEdge *area_edge);
-void area_remove_edge(EdgePool *edge_pool, const u32 edge_index);
+void area_remove_edge(EdgePool *edge_pool, const EdgeID edge_id);
 
 #endif

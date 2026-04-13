@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #include "justsky.h"
 #include "justsky_log.h"
 
@@ -703,8 +702,8 @@ static void place_area(World *world, Area *area)
 
     while (pool_index < area_pool->active_count)
     {
-        const u32 area_index = area_pool->active_array[pool_index];
-        Area *area_test = &area_pool->area_array[area_index];
+        const u32 area_id = area_pool->active_array[pool_index];
+        Area *area_test = &area_pool->area_array[area_id];
                 
         if (bounds2i_overlaps(&area_test->bounds, &area->bounds))
         {
@@ -723,7 +722,7 @@ static void place_area(World *world, Area *area)
                 area_add(area_pool, &new_area);
             }
 
-            area_remove(area_pool, area_index);
+            area_remove(area_pool, area_id);
         }
         else
         {
@@ -989,7 +988,7 @@ static void layout_tower_areas(World *world)
         area_add(area_pool, &area_quadrant_3);
         area_add(area_pool, &area_quadrant_4);
 
-        u32 area_index_removal_count = 0;
+        u32 area_id_removal_count = 0;
         u32 area_indices_to_remove[4 << AREA_EXPANSION_ITERATION_COUNT];
 
         for (u32 iteration = 0; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
@@ -999,9 +998,9 @@ static void layout_tower_areas(World *world)
 
             while (pool_index < initial_count)
             {
-                const u32 area_index = area_pool->active_array[pool_index];
+                const u32 area_id = area_pool->active_array[pool_index];
 
-                const Area area_copy = area_pool->area_array[area_index];
+                const Area area_copy = area_pool->area_array[area_id];
 
                 const Axis axis_split = area_copy.bounds.size[AXIS_X] > area_copy.bounds.size[AXIS_Y] ? AXIS_X : AXIS_Y;
 
@@ -1020,18 +1019,18 @@ static void layout_tower_areas(World *world)
                     area_add(area_pool, &area_a);
                     area_add(area_pool, &area_b);
 
-                    area_indices_to_remove[area_index_removal_count++] = area_index;
+                    area_indices_to_remove[area_id_removal_count++] = area_id;
                 }
 
                 pool_index++;
             }
 
-            for (u32 index = 0; index < area_index_removal_count; ++index)
+            for (u32 index = 0; index < area_id_removal_count; ++index)
             {
                 area_remove(area_pool, area_indices_to_remove[index]);
             }
 
-            area_index_removal_count = 0;
+            area_id_removal_count = 0;
         }
 
         for (u32 section_index = 0; section_index < SECTION_COUNT; ++section_index)
@@ -1588,26 +1587,26 @@ static void calculate_area_edges(World *world, u32 floor_number)
     EdgePool *edge_pool = &world->edge_pool;
     AreaPool *area_pool = &world->area_pool_array[floor_number];
 
-    for (u32 pool_index_left = 0; pool_index_left < area_pool->active_count; ++pool_index_left)
+    for (PoolID pool_id_left = 0; pool_id_left < area_pool->active_count; ++pool_id_left)
     {
-        const u32 area_index_left = area_pool->active_array[pool_index_left];
+        const AreaID area_id_left = area_pool->active_array[pool_id_left];
 
-        Area *area_left = &area_pool->area_array[area_index_left];
+        Area *area_left = &area_pool->area_array[area_id_left];
             
-        for (u32 pool_index_right = pool_index_left + 1; pool_index_right < area_pool->active_count; ++pool_index_right)
+        for (PoolID pool_id_right = pool_id_left + 1; pool_id_right < area_pool->active_count; ++pool_id_right)
         {
-            const u32 area_index_right = area_pool->active_array[pool_index_right];
+            const AreaID area_id_right = area_pool->active_array[pool_id_right];
 
-            Area *area_right = &area_pool->area_array[area_index_right];
+            Area *area_right = &area_pool->area_array[area_id_right];
 
             const AreaOverlap area_overlap = get_area_overlap(area_left, area_right);
 
             if (area_overlap.bounds.size[0] > 0 && area_overlap.bounds.size[1] > 0)
             {
                 AreaEdge area_edge = {
-                    .edge_index = INT32_MAX,
-                    .area_a_index = area_index_left,
-                    .area_b_index =  area_index_right,
+                    .edge_id = INT32_MAX,
+                    .area_a_id = area_id_left,
+                    .area_b_id =  area_id_right,
                     .area_a_direction = area_overlap.direction,
                     .area_b_direction = direction_opposite(&area_overlap.direction),
                     .area_overlap = area_overlap,
@@ -1615,11 +1614,11 @@ static void calculate_area_edges(World *world, u32 floor_number)
                         
                 area_add_edge(edge_pool, &area_edge);
 
-                area_left->edge_index_array[area_left->edge_index_count++] = area_edge.edge_index;
-                area_right->edge_index_array[area_right->edge_index_count++] = area_edge.edge_index;
+                area_left->edge_id_array[area_left->edge_id_count++] = area_edge.edge_id;
+                area_right->edge_id_array[area_right->edge_id_count++] = area_edge.edge_id;
 
-                assert(area_left->edge_index_count < AREA_EDGE_MAX);
-                assert(area_right->edge_index_count < AREA_EDGE_MAX);
+                assert(area_left->edge_id_count < AREA_EDGE_MAX);
+                assert(area_right->edge_id_count < AREA_EDGE_MAX);
             }
         }
     }
@@ -1645,10 +1644,10 @@ static void init_area_pool_array(World *world)
         area_pool->active_count = 0;
         area_pool->free_count = AREA_POOL_MAX;
         
-        for (u32 pool_index = 0; pool_index < AREA_POOL_MAX; ++pool_index)
+        for (PoolID pool_id = 0; pool_id < AREA_POOL_MAX; ++pool_id)
         {
-            area_pool->free_array[pool_index] = pool_index;
-            area_pool->active_lookup[pool_index] = UINT32_MAX;
+            area_pool->free_array[pool_id] = pool_id;
+            area_pool->active_lookup[pool_id] = UINT32_MAX;
         }
     }
 }
@@ -1660,10 +1659,10 @@ static void init_edge_pool(World *world)
     edge_pool->active_count = 0;
     edge_pool->free_count = EDGE_POOL_MAX;
 
-    for (u32 pool_index = 0; pool_index < EDGE_POOL_MAX; ++pool_index)
+    for (PoolID pool_id = 0; pool_id < EDGE_POOL_MAX; ++pool_id)
     {
-        edge_pool->free_array[pool_index] = pool_index;
-        edge_pool->active_lookup[pool_index] = UINT32_MAX;
+        edge_pool->free_array[pool_id] = pool_id;
+        edge_pool->active_lookup[pool_id] = UINT32_MAX;
     }
 }
 
@@ -1689,13 +1688,13 @@ static void construct_doors(World *world, const Area *area)
 {
     const ivec3 door_size = { 1, 1, 2 };
 
-    for (u32 index = 0; index < area->edge_index_count; ++index)
+    for (u32 index = 0; index < area->edge_id_count; ++index)
     {
-        const u32 edge_index = area->edge_index_array[index];
-        const AreaEdge *area_edge = &world->edge_pool.edge_array[edge_index];
+        const EdgeID edge_id = area->edge_id_array[index];
+        const AreaEdge *area_edge = &world->edge_pool.edge_array[edge_id];
 
         const Direction edge_direction = (
-            area->area_index == area_edge->area_a_index ?
+            area->area_id == area_edge->area_a_id ?
             area_edge->area_a_direction :
             area_edge->area_b_direction
         );
@@ -1852,11 +1851,11 @@ static void construct_wireframe(World *world, const Area *area)
 static void construct_areas(World *world, u32 floor_number)
 {
     const AreaPool *area_pool = &world->area_pool_array[floor_number];
-                
-    for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
+
+    for (PoolID pool_id = 0; pool_id < area_pool->active_count; ++pool_id)
     {
-        u32 area_index = area_pool->active_array[pool_index];
-        const Area *area = &area_pool->area_array[area_index];
+        AreaID area_id = area_pool->active_array[pool_id];
+        const Area *area = &area_pool->area_array[area_id];
 
         switch (area->area_type)
         {
@@ -1872,10 +1871,10 @@ static void place_content(World *world, u32 floor_number)
 {
     const AreaPool *area_pool = &world->area_pool_array[floor_number];
 
-    for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
+    for (PoolID pool_id = 0; pool_id < area_pool->active_count; ++pool_id)
     {
-        const u32 area_index = area_pool->active_array[pool_index];
-        const Area *area = &area_pool->area_array[area_index];
+        const AreaID area_id = area_pool->active_array[pool_id];
+        const Area *area = &area_pool->area_array[area_id];
 
         if (area->area_type != AREA_TYPE_ROOM)
         {
@@ -1921,10 +1920,10 @@ static void draw_debug_info(Debug *debug, World *world)
     const EdgePool *edge_pool = &world->edge_pool;
     const AreaPool *area_pool = &world->area_pool_array[debug_floor_number];
         
-    for (u32 pool_index = 0; pool_index < area_pool->active_count; ++pool_index)
+    for (PoolID pool_id = 0; pool_id < area_pool->active_count; ++pool_id)
     {
-        const u32 area_index = area_pool->active_array[pool_index];
-        const Area *area = &area_pool->area_array[area_index];
+        const PoolID area_id = area_pool->active_array[pool_id];
+        const Area *area = &area_pool->area_array[area_id];
 
         ivec2 area_min, area_max;
         bounds2i_min(&area->bounds, area_min);
@@ -1937,10 +1936,10 @@ static void draw_debug_info(Debug *debug, World *world)
             1.0f, 0.0f, 0.0f
         );
 
-        for (i32 index = 0; index < (i32)area->edge_index_count; ++index)
+        for (i32 index = 0; index < (i32)area->edge_id_count; ++index)
         {
-            const u32 edge_index = area->edge_index_array[index];
-            const AreaEdge *area_edge = &edge_pool->edge_array[edge_index];
+            const EdgeID edge_id = area->edge_id_array[index];
+            const AreaEdge *area_edge = &edge_pool->edge_array[edge_id];
 
             const ivec3 door_position = {
                 area_edge->area_overlap.bounds.position[0] + area_edge->area_overlap.bounds.size[0] / 2,
@@ -2011,10 +2010,10 @@ void world_update(World *world, Population *population)
 {
     ActorPool *actor_pool = &population->actor_pool;
     
-    for (u32 pool_index = 0; pool_index < actor_pool->active_count; ++pool_index)
+    for (PoolID pool_id = 0; pool_id < actor_pool->active_count; ++pool_id)
     {
-        const u32 actor_index = actor_pool->active_array[pool_index];
-        Actor *actor = &population->actor_pool.actor_array[actor_index];
+        const ActorID actor_id = actor_pool->active_array[pool_id];
+        Actor *actor = &population->actor_pool.actor_array[actor_id];
 
         physics_update_actor(actor, world);
     }

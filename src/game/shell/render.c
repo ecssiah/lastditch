@@ -877,9 +877,9 @@ static void init_model_render(Shell *shell, Sim *sim)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
     
-    for (u32 pool_index = 0; pool_index < sim->population.actor_pool.active_count; ++pool_index)
+    for (PoolID pool_id = 0; pool_id < sim->population.actor_pool.active_count; ++pool_id)
     {
-        const ActorID actor_id = sim->population.actor_pool.active_array[pool_index];
+        const ActorID actor_id = sim->population.actor_pool.active_array[pool_id];
         const Actor *actor = &sim->population.actor_pool.actor_array[actor_id];
         
         ModelGpuData model_gpu_data;
@@ -1005,9 +1005,9 @@ static void update_model_render(Render* render, Sim *sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->model_render.texture_array_id);
 
-    for (u32 pool_index = 0; pool_index < sim->population.actor_pool.active_count; ++pool_index)
+    for (PoolID pool_id = 0; pool_id < sim->population.actor_pool.active_count; ++pool_id)
     {
-        const ActorID actor_id = sim->population.actor_pool.active_array[pool_index];
+        const ActorID actor_id = sim->population.actor_pool.active_array[pool_id];
         Actor *actor = &sim->population.actor_pool.actor_array[actor_id];
 
         ModelGpuData *model_gpu_data = &render->model_render.model_gpu_data_array[actor_id];
@@ -1041,7 +1041,9 @@ void render_init(Shell *shell, Platform *platform, Sim *sim)
 
 void render_update(Shell* shell, Sim* sim)
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    const vec4 clear_color = CLEAR_COLOR;
+    
+    glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     update_viewpoint(&shell->render, sim);

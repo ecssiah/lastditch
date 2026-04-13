@@ -6,18 +6,19 @@
 #include "justsky.h"
 
 #include "game/sim/actor.h"
+#include "game/sim/ids.h"
 #include "game/sim/navigation.h"
 
 #define BEHAVIOR_MAX 1 << 12
 
+typedef struct Sim Sim;
+
 typedef struct WanderState WanderState;
 struct WanderState
 {
-    u32 clock;
-    u32 timer;
+    u32 tick;
+    u32 tick_limit;
 };
-
-void wander_run(Actor *actor, f32 delta_time);
 
 typedef struct SeekState SeekState;
 struct SeekState
@@ -26,17 +27,20 @@ struct SeekState
     ivec3 target_position;
 };
 
-void seek_run(Actor *actor, f32 delta_time);
+typedef void (*BehaviorFn)(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_time);
 
-typedef void (*BehaviorFn)(Actor *actor, f32 delta_time);
-
-typedef u32 BehaviorID;
+typedef union BehaviorState BehaviorState;
+union BehaviorState
+{
+    WanderState wander;
+    SeekState seek;
+};
 
 typedef struct Behavior Behavior;
 struct Behavior
 {
     BehaviorFn behavior_fn;
-    void *data;
+    BehaviorState behavior_state;
 
     ActorID actor_id;
 };
@@ -45,11 +49,12 @@ typedef struct BehaviorPool BehaviorPool;
 struct BehaviorPool
 {
     u32 active_count;
-    u32 active_array[BEHAVIOR_MAX];
-    u32 active_lookup[BEHAVIOR_MAX];
+    BehaviorID active_array[BEHAVIOR_MAX];
+    
+    PoolID active_lookup[BEHAVIOR_MAX];
 
     u32 free_count;    
-    u32 free_array[BEHAVIOR_MAX];
+    BehaviorID free_array[BEHAVIOR_MAX];
     
     Behavior behavior_array[BEHAVIOR_MAX];
 };
@@ -60,7 +65,12 @@ struct Scheduler
     BehaviorPool behavior_pool;
 };
 
+void wander_run(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_time);
+void seek_run(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_time);
+
+BehaviorID scheduler_add_behavior(Scheduler *scheduler, Actor *actor, BehaviorFn behavior_fn, BehaviorState behavior_state);
+
 void scheduler_init(Scheduler *scheduler);
-void scheduler_update(Scheduler *scheduler, f32 delta_time);
+void scheduler_update(Scheduler *scheduler, Sim *sim, f32 delta_time);
 
 #endif

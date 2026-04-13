@@ -23,7 +23,7 @@ void sim_init(Sim *sim)
     scheduler_init(&sim->scheduler);
 
     world_init(&sim->world, &sim->debug);
-    population_init(&sim->population);
+    population_init(&sim->population, &sim->scheduler);
 }
 
 void sim_update(Sim *sim)
@@ -33,7 +33,7 @@ void sim_update(Sim *sim)
     
     action_apply_queue(&sim->action_queue, judge);
 
-    scheduler_update(&sim->scheduler, sim->world.delta_time);
+    scheduler_update(&sim->scheduler, sim, sim->world.delta_time);
 
     population_update(&sim->population, &sim->world);
     world_update(&sim->world, &sim->population);

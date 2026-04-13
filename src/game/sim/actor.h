@@ -5,6 +5,7 @@
 
 #include "justsky.h"
 
+#include "game/sim/ids.h"
 #include "game/sim/nation.h"
 #include "game/sim/physics.h"
 
@@ -41,13 +42,11 @@ enum MovementType
 typedef enum ActorType ActorType;
 enum ActorType
 {
-    FOR_LIST_ACTOR_TYPE( DEFINE_LIST_ENUMERATION )
+    FOR_LIST_ACTOR_TYPE(DEFINE_LIST_ENUMERATION)
     ACTOR_TYPE_COUNT,
 };
 
 extern const char *ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT];
-
-typedef u32 ActorID;
 
 typedef struct Actor Actor;
 struct Actor
@@ -70,18 +69,19 @@ struct Actor
 
     BoxCollider box_collider;
 
-    u32 behavior_id_array[ACTOR_BEHAVIOR_MAX];
+    u32 behavior_id_count;
+    BehaviorID behavior_id_array[ACTOR_BEHAVIOR_MAX];
 };
 
 typedef struct ActorPool ActorPool;
 struct ActorPool
 {
     u32 active_count;
-    u32 active_array[ACTOR_MAX];
+    ActorID active_array[ACTOR_MAX];
     u32 active_lookup[ACTOR_MAX];
     
     u32 free_count;
-    u32 free_array[ACTOR_MAX];
+    ActorID free_array[ACTOR_MAX];
     
     Actor actor_array[ACTOR_MAX];
 };

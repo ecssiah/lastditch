@@ -4,9 +4,7 @@
 #include "justsky.h"
 
 #include "game/sim/action.h"
-#include "game/sim/control.h"
 #include "game/sim/debug.h"
-#include "game/sim/navigation.h"
 #include "game/sim/population.h"
 #include "game/sim/scheduler.h"
 #include "game/sim/world.h"

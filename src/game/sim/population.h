@@ -7,6 +7,7 @@
 #include "game/sim/nation.h"
 
 typedef struct World World;
+typedef struct Scheduler Scheduler;
 
 #define AGENT_INITIAL_COUNT 12u
 
@@ -20,7 +21,7 @@ struct Population
     ActorPool actor_pool;
 };
 
-void population_init(Population *population);
+void population_init(Population *population, Scheduler *scheduler);
 void population_update(Population *population, World *world);
 void population_close();
 

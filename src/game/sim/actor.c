@@ -63,10 +63,10 @@ void actor_init_pool(ActorPool *actor_pool)
     actor_pool->free_count = ACTOR_MAX;
     actor_pool->active_count = 0;
 
-    for (u32 pool_index = 0; pool_index < ACTOR_MAX; ++pool_index)
+    for (PoolID pool_id = 0; pool_id < ACTOR_MAX; ++pool_id)
     {
-        actor_pool->active_array[pool_index] = 0;
-        actor_pool->free_array[pool_index] = pool_index;
+        actor_pool->active_array[pool_id] = 0;
+        actor_pool->free_array[pool_id] = pool_id;
     }
 }
 

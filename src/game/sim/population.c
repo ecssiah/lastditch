@@ -8,6 +8,7 @@
 #include "game/sim/actor.h"
 #include "game/sim/nation.h"
 #include "game/sim/physics.h"
+#include "game/sim/scheduler.h"
 #include "game/sim/world.h"
 
 static void init_judge(Population *population)
@@ -35,7 +36,7 @@ static void init_judge(Population *population)
     LOG_INFO("Generated Judge, ID: %i", population->judge_id);
 }
 
-static void init_agents(Population* population)
+static void init_agents(Population* population, Scheduler *scheduler)
 {
     for (u32 nation_index = 0; nation_index < NATION_TYPE_COUNT; ++nation_index)
     {
@@ -70,6 +71,15 @@ static void init_agents(Population* population)
             
             actor_add(&population->actor_pool, &agent);
 
+            BehaviorState behavior_state = {
+                .wander = {
+                    .tick = rand() % 500,
+                    .tick_limit = 500,
+                }
+            };
+            
+            scheduler_add_behavior(scheduler, &agent, wander_run, behavior_state);
+
             LOG_INFO(
                 "Generated %s Agent, ID: %i at (%.1f %.1f %.1f)",
                 NATION_TYPE_STRING[agent.nation_type],
@@ -80,24 +90,24 @@ static void init_agents(Population* population)
     }
 }
 
-void population_init(Population *population)
+void population_init(Population *population, Scheduler *scheduler)
 {
     nation_init(population->nation_array);
     
     actor_init_pool(&population->actor_pool);
     
     init_judge(population);
-    init_agents(population);
+    init_agents(population, scheduler);
 }
 
 void population_update(Population *population, World *world)
 {
     ActorPool *actor_pool = &population->actor_pool;
     
-    for (u32 pool_index = 0; pool_index < actor_pool->active_count; ++pool_index)
+    for (PoolID pool_id = 0; pool_id < actor_pool->active_count; ++pool_id)
     {
-        const u32 actor_index = actor_pool->active_array[pool_index];
-        Actor *actor = &population->actor_pool.actor_array[actor_index];
+        const ActorID actor_id = actor_pool->active_array[pool_id];
+        Actor *actor = &population->actor_pool.actor_array[actor_id];
     }
 }
 
