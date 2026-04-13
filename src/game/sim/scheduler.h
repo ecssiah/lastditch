@@ -27,7 +27,17 @@ struct SeekState
     ivec3 target_position;
 };
 
-typedef void (*BehaviorFn)(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_time);
+#define FOR_LIST_BEHAVIOR_TYPE(DO)              \
+    DO(BEHAVIOR_TYPE_WANDER)                    \
+    DO(BEHAVIOR_TYPE_SEEK)                      \
+
+typedef enum BehaviorType BehaviorType;
+enum BehaviorType
+{
+    FOR_LIST_BEHAVIOR_TYPE(DEFINE_LIST_ENUMERATION)
+
+    BEHAVIOR_TYPE_COUNT
+};
 
 typedef union BehaviorState BehaviorState;
 union BehaviorState
@@ -39,10 +49,10 @@ union BehaviorState
 typedef struct Behavior Behavior;
 struct Behavior
 {
-    BehaviorFn behavior_fn;
-    BehaviorState behavior_state;
-
     ActorID actor_id;
+
+    BehaviorType behavior_type;
+    BehaviorState behavior_state;
 };
 
 typedef struct BehaviorPool BehaviorPool;
@@ -65,10 +75,10 @@ struct Scheduler
     BehaviorPool behavior_pool;
 };
 
-void wander_run(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_time);
-void seek_run(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_time);
+void wander_run(Sim *sim, Behavior *behavior, f32 delta_time);
+void seek_run(Sim *sim, Behavior *behavior, f32 delta_time);
 
-BehaviorID scheduler_add_behavior(Scheduler *scheduler, Actor *actor, BehaviorFn behavior_fn, BehaviorState behavior_state);
+BehaviorID scheduler_add_behavior(Scheduler *scheduler, Actor *actor, BehaviorType behavior_type, BehaviorState behavior_state);
 
 void scheduler_init(Scheduler *scheduler);
 void scheduler_update(Scheduler *scheduler, Sim *sim, f32 delta_time);

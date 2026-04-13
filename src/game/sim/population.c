@@ -78,7 +78,7 @@ static void init_agents(Population* population, Scheduler *scheduler)
                 }
             };
             
-            scheduler_add_behavior(scheduler, &agent, wander_run, behavior_state);
+            scheduler_add_behavior(scheduler, &agent, BEHAVIOR_TYPE_WANDER, behavior_state);
 
             LOG_INFO(
                 "Generated %s Agent, ID: %i at (%.1f %.1f %.1f)",
@@ -102,13 +102,7 @@ void population_init(Population *population, Scheduler *scheduler)
 
 void population_update(Population *population, World *world)
 {
-    ActorPool *actor_pool = &population->actor_pool;
-    
-    for (PoolID pool_id = 0; pool_id < actor_pool->active_count; ++pool_id)
-    {
-        const ActorID actor_id = actor_pool->active_array[pool_id];
-        Actor *actor = &population->actor_pool.actor_array[actor_id];
-    }
+
 }
 
 void population_close()

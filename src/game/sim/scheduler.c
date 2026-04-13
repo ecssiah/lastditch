@@ -4,11 +4,10 @@
 #include "game/sim/ids.h"
 #include "game/sim/sim.h"
 
-void wander_run(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_time)
+void wander_run(Sim *sim, Behavior *behavior, f32 delta_time)
 {
-    Actor *actor = &sim->population.actor_pool.actor_array[actor_id];
-    Behavior *behavior = &sim->scheduler.behavior_pool.behavior_array[behavior_id];
-
+    Actor *actor = &sim->population.actor_pool.actor_array[behavior->actor_id];
+    
     WanderState *wander_state = &behavior->behavior_state.wander;
     
     if (wander_state->tick < wander_state->tick_limit)
@@ -40,12 +39,12 @@ void wander_run(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_ti
     );
 }
 
-void seek_run(Sim *sim, ActorID actor_id, BehaviorID behavior_id, f32 delta_time)
+void seek_run(Sim *sim, Behavior *behavior, f32 delta_time)
 {
 
 }
 
-BehaviorID scheduler_add_behavior(Scheduler *scheduler, Actor *actor, BehaviorFn behavior_fn, BehaviorState behavior_state)
+BehaviorID scheduler_add_behavior(Scheduler *scheduler, Actor *actor, BehaviorType behavior_type, BehaviorState behavior_state)
 {
     BehaviorPool *behavior_pool = &scheduler->behavior_pool;
 
@@ -53,9 +52,9 @@ BehaviorID scheduler_add_behavior(Scheduler *scheduler, Actor *actor, BehaviorFn
 
     Behavior *behavior = &behavior_pool->behavior_array[behavior_id];
 
-    behavior->behavior_fn = behavior_fn;
-    behavior->behavior_state = behavior_state;
     behavior->actor_id = actor->actor_id;
+    behavior->behavior_type = behavior_type;
+    behavior->behavior_state = behavior_state;
 
     behavior_pool->active_array[behavior_pool->active_count] = behavior_id;
     behavior_pool->active_lookup[behavior_id] = behavior_pool->active_count;
@@ -93,6 +92,11 @@ void scheduler_update(Scheduler *scheduler, Sim *sim, f32 delta_time)
         const BehaviorID behavior_id = behavior_pool->active_array[pool_id];
         Behavior *behavior = &behavior_pool->behavior_array[behavior_id];
 
-        behavior->behavior_fn(sim, behavior->actor_id, behavior_id, delta_time);
+        switch (behavior->behavior_type)
+        {
+        case BEHAVIOR_TYPE_WANDER: wander_run(sim, behavior, delta_time); break;
+        case BEHAVIOR_TYPE_SEEK: seek_run(sim, behavior, delta_time); break;
+        default: break;
+        }
     }
 }
