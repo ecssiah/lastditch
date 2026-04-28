@@ -84,7 +84,6 @@ const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     { +0, -1, +0 },
 };
 
-
 static void get_projection_matrix(mat4 out_projection_matrix)
 {
     glm_perspective(
