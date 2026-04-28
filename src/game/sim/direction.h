@@ -11,7 +11,6 @@
     DO(DIRECTION_UP)                            \
     DO(DIRECTION_DOWN)                          \
 
-typedef enum Direction Direction;
 enum Direction
 {
     FOR_LIST_DIRECTION(DEFINE_LIST_ENUMERATION)

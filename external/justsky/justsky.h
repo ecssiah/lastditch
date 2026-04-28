@@ -20,9 +20,6 @@ typedef double      f64;
 typedef uint8_t     b8;
 typedef uint32_t    b32;
 
-#define true        1
-#define false       0
-
 _Static_assert(sizeof(u8)  == 1, "u8 is not 1 byte");
 _Static_assert(sizeof(u16) == 2, "u16 is not 2 bytes");
 _Static_assert(sizeof(u32) == 4, "u32 is not 4 bytes");

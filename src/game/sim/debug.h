@@ -32,7 +32,6 @@ void debug_draw_box(Debug *debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f3
 void debug_reset(Debug *debug);
 
 void debug_init(Debug *debug);
-void debug_update(Debug *debug);
 void debug_close(Debug *debug);
 
 #endif

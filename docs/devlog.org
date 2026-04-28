@@ -75,3 +75,10 @@
 
 ** Next
 - In-game logging
+
+* <2026-04-13 Mon>
+** Done
+- Scheduler is receiving behaviors
+
+** Next
+- Seek behavior

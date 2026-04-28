@@ -131,7 +131,6 @@ typedef struct Population Population;
     DO(BLOCK_TYPE_VENT_3)                       \
     DO(BLOCK_TYPE_VENT_4)                       \
 
-typedef enum BlockType BlockType;
 enum BlockType
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_LIST_ENUMERATION)
@@ -141,7 +140,6 @@ enum BlockType
 
 extern const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT];
 
-typedef struct BlockTypeList BlockTypeList;
 struct BlockTypeList
 {
     const BlockType *block_type_array;
@@ -176,7 +174,6 @@ struct BlockTypeList
     DO(SECTION_S3)                              \
     DO(SECTION_SE)                              \
 
-typedef enum Section Section;
 enum Section
 {
     FOR_LIST_SECTION(DEFINE_LIST_ENUMERATION)
@@ -196,7 +193,6 @@ extern const BlockType AREA_CONTENT_ARRAY_LEVEL_3[];
 
 extern const BlockTypeList AREA_CONTENT_MASTER_LIST[TOWER_FLOOR_COUNT];
 
-typedef struct Cell Cell;
 struct Cell
 {
     u32 cell_index;
@@ -205,19 +201,16 @@ struct Cell
     u8 direction_mask;
 };
 
-typedef struct Structure Structure;
 struct Structure
 {
 
 };
 
-typedef struct World World;
 struct World
 {
     f32 delta_time;
 
     u64 tick_count;
-
     u64 second_count;
 
     f32 time_rate;

@@ -5,8 +5,9 @@
 
 typedef u32 ActorID;
 typedef u32 AreaID;
-typedef u32 BehaviorID;
+typedef u32 ActID;
 typedef u32 EdgeID;
+typedef u32 NodeID;
 typedef u32 PoolID;
 
 #endif

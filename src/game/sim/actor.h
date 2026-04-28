@@ -23,9 +23,8 @@
 
 #define CAMERA_PITCH_LIMIT 89.99f
 
-#define ACTOR_BEHAVIOR_MAX 128
+#define ACTOR_ACT_MAX 128
 
-typedef enum MovementType MovementType;
 enum MovementType
 {
     MOVEMENT_TYPE_GROUND,
@@ -39,7 +38,6 @@ enum MovementType
     DO(ACTOR_TYPE_JUDGE)                        \
     DO(ACTOR_TYPE_AGENT)                        \
 
-typedef enum ActorType ActorType;
 enum ActorType
 {
     FOR_LIST_ACTOR_TYPE(DEFINE_LIST_ENUMERATION)
@@ -48,7 +46,6 @@ enum ActorType
 
 extern const char *ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT];
 
-typedef struct Actor Actor;
 struct Actor
 {
     ActorID actor_id;
@@ -69,11 +66,10 @@ struct Actor
 
     BoxCollider box_collider;
 
-    u32 behavior_id_count;
-    BehaviorID behavior_id_array[ACTOR_BEHAVIOR_MAX];
+    u32 act_id_count;
+    ActID act_id_array[ACTOR_ACT_MAX];
 };
 
-typedef struct ActorPool ActorPool;
 struct ActorPool
 {
     u32 active_count;
@@ -91,8 +87,6 @@ i32 actor_type_index_from_string(const char *actor_type_string);
 void actor_get_forward(Actor *actor, vec3 out_forward);
 void actor_get_right(Actor *actor, vec3 out_right);
 void actor_get_up(Actor *actor, vec3 out_up);
-
-void actor_init_pool(ActorPool *actor_pool);
 
 void actor_add(ActorPool *actor_pool, Actor *actor);
 void actor_control(World *world, Actor *actor);

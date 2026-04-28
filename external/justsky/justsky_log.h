@@ -7,7 +7,6 @@
 #define LOG_ERROR(fmt, ...) log_message(LOG_LEVEL_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define LOG_FATAL(fmt, ...) log_message(LOG_LEVEL_FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
-typedef enum ELogLevel ELogLevel;
 enum ELogLevel
 {
     LOG_LEVEL_TRACE,

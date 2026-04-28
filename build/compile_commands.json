@@ -1,0 +1,146 @@
+[
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/game.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/game.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/game.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/game.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/cc -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c17 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/external/glad/src/glad.c.o -c /Users/ecssiah/Development/justsky/lastditch/external/glad/src/glad.c",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/external/glad/src/glad.c",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/external/glad/src/glad.c.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/cc -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c17 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/external/stb/src/stb_image.c.o -c /Users/ecssiah/Development/justsky/lastditch/external/stb/src/stb_image.c",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/external/stb/src/stb_image.c",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/external/stb/src/stb_image.c.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/external/justsky/justsky_log.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/external/justsky/justsky_log.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/external/justsky/justsky_log.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/external/justsky/justsky_log.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/external/justsky/justsky_config.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/external/justsky/justsky_config.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/external/justsky/justsky_config.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/external/justsky/justsky_config.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/core/math_ext.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/core/math_ext.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/core/math_ext.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/core/math_ext.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/actor.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/actor.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/actor.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/actor.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/action.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/action.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/action.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/action.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/area.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/area.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/area.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/area.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/debug.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/debug.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/debug.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/debug.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/direction.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/direction.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/direction.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/direction.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/nation.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/nation.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/nation.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/nation.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/navigation.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/navigation.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/navigation.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/navigation.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/physics.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/physics.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/physics.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/physics.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/population.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/population.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/population.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/population.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/work.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/work.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/work.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/work.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/sim.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/sim.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/sim.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/sim.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/sim/world.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/sim/world.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/sim/world.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/sim/world.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/shell/gl_ext.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/shell/gl_ext.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/shell/gl_ext.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/shell/gl_ext.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/shell/render.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/shell/render.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/shell/render.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/shell/render.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/shell/screen.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/shell/screen.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/shell/screen.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/shell/screen.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/shell/shell.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/shell/shell.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/shell/shell.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/shell/shell.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/game/shell/viewpoint.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/game/shell/viewpoint.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/game/shell/viewpoint.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/game/shell/viewpoint.cpp.o"
+},
+{
+  "directory": "/Users/ecssiah/Development/justsky/lastditch/build",
+  "command": "/usr/bin/c++ -DGLFW_INCLUDE_NONE -DGL_SILENCE_DEPRECATION -I/Users/ecssiah/Development/justsky/lastditch/external/justsky -I/Users/ecssiah/Development/justsky/lastditch/external/glad/include -I/Users/ecssiah/Development/justsky/lastditch/external/stb/include -I/Users/ecssiah/Development/justsky/lastditch/src -F/Applications/Xcode16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -isystem /opt/homebrew/include -g -std=c++20 -arch arm64 -Wall -Wextra -Wshadow -Wconversion -o CMakeFiles/lastditch.dir/src/platform/platform.cpp.o -c /Users/ecssiah/Development/justsky/lastditch/src/platform/platform.cpp",
+  "file": "/Users/ecssiah/Development/justsky/lastditch/src/platform/platform.cpp",
+  "output": "/Users/ecssiah/Development/justsky/lastditch/build/CMakeFiles/lastditch.dir/src/platform/platform.cpp.o"
+}
+]

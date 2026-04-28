@@ -3,7 +3,10 @@
 
 #include "justsky.h"
 
-typedef enum NodeType NodeType;
+#include <cglm/cglm.h>
+
+#include "game/sim/ids.h"
+
 enum NodeType
 {
     NODE_TYPE_OPEN,
@@ -11,30 +14,60 @@ enum NodeType
     NODE_TYPE_UNVISITED,
 };
 
-typedef struct NodeRecord NodeRecord;
 struct NodeRecord
 {
-    i32 node;
-    i32 connection;
-    
-    i32 cost;
-    i32 estimated_total_cost;
+    NodeID node_id;
+    NodeID parent_id;
 
     NodeType node_type;
-
-    i32 node_record_next;
+    
+    u32 g_cost;
+    u32 f_cost;
 };
 
-typedef struct Graph Graph;
+struct Edge
+{
+    NodeID to_node_id;
+    u32 cost;
+};
+
+struct EdgeList
+{
+    u32 count;
+
+    Edge *edge_array;
+};
+
 struct Graph
+{
+    u32 node_count;
+    
+    NodeRecord *node_record_array;
+
+    EdgeList *edge_list_array;
+};
+
+struct Search
 {
     NodeRecord *node_record_array;
 };
 
-typedef struct Navigation Navigation;
+struct Path
+{
+    u32 count;
+    
+    NodeID *node_id_array;
+};
+
 struct Navigation
 {
     Graph graph;
 };
 
+u32 heuristic(vec3 position_a, vec3 position_b);
+
+void navigation_init(Navigation *navigation);
+void navigation_update(Navigation *navigation);
+
 #endif
+

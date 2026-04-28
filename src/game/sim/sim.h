@@ -5,8 +5,9 @@
 
 #include "game/sim/action.h"
 #include "game/sim/debug.h"
+#include "game/sim/navigation.h"
 #include "game/sim/population.h"
-#include "game/sim/scheduler.h"
+#include "game/sim/work.h"
 #include "game/sim/world.h"
 
 typedef struct Sim Sim;
@@ -20,7 +21,9 @@ struct Sim
     Debug debug;
 
     ActionQueue action_queue;
-    Scheduler scheduler;
+    Work work;
+
+    Navigation navigation;
 
     World world;
     Population population;

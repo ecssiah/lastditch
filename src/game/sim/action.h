@@ -7,9 +7,8 @@
 
 #define ACTION_QUEUE_CAPACITY (1u << 6)
 
-typedef struct Actor Actor;
+struct Actor;
 
-typedef enum ActionType ActionType;
 enum ActionType
 {
     ACTION_MOVE,

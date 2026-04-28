@@ -1,0 +1,838 @@
+[2026-04-03 14:42:41] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 14:42:41] [INFO] (sim.c:63) Generated Judge, Index: 255
+[2026-04-03 14:42:41] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 14:42:41] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 14:42:41] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 14:42:41] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 14:42:41] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 14:42:41] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 14:42:41] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 14:42:41] [INFO] (world.c:1473) World init
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalEast.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalWest.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalNorth.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalSouth.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfStone.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleStone.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionStone.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseStone.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfSymbol.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleSymbol.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionSymbol.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseSymbol.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved4.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution4.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved4.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal4.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal5.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate4.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel4.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server4.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server5.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server6.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server7.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth4.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent1.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent2.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent3.png
+[2026-04-03 14:42:41] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent4.png
+[2026-04-03 17:38:00] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 17:38:00] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 17:38:00] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 17:38:00] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 17:38:00] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 17:38:00] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 17:38:00] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 17:38:00] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 17:38:00] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 17:38:00] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 17:38:01] [INFO] (world.c:1473) World init
+[2026-04-03 17:46:26] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 17:46:26] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 17:46:26] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 17:46:26] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 17:46:26] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 17:46:26] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 17:46:26] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 17:46:26] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 17:46:26] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 17:46:26] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 17:46:26] [INFO] (world.c:1473) World init
+[2026-04-03 17:46:26] [INFO] (render.c:164) Loading /assets/textures/block/CardinalEast.png
+[2026-04-03 17:48:00] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 17:48:00] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 17:48:00] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 17:48:00] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 17:48:00] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 17:48:00] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 17:48:00] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 17:48:00] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 17:48:00] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 17:48:00] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 17:48:00] [INFO] (world.c:1473) World init
+[2026-04-03 17:48:00] [INFO] (render.c:164) Loading Block /assets/textures/block/CardinalEast.png
+[2026-04-03 17:49:06] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 17:49:06] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 17:49:06] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 17:49:06] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 17:49:06] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 17:49:06] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 17:49:06] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 17:49:06] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 17:49:06] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 17:49:06] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 17:49:06] [INFO] (world.c:1473) World init
+[2026-04-03 17:49:06] [INFO] (render.c:166) Loading Block /assets/textures/block/CardinalEast.png
+[2026-04-03 17:50:54] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 17:50:54] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 17:50:54] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 17:50:54] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 17:50:54] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 17:50:54] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 17:50:54] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 17:50:54] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 17:50:54] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 17:50:54] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 17:50:55] [INFO] (world.c:1473) World init
+[2026-04-03 17:50:55] [INFO] (render.c:166) Loading Block /assets/textures/block/CardinalEast.png
+[2026-04-03 17:59:04] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 17:59:04] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 17:59:04] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 17:59:04] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 17:59:04] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 17:59:04] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 17:59:04] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 17:59:04] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 17:59:04] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 17:59:04] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 17:59:04] [INFO] (world.c:1473) World init
+[2026-04-03 17:59:04] [INFO] (render.c:166) Loading Block /assets/textures/block/CardinalEast.png
+[2026-04-03 18:03:04] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 18:03:04] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 18:03:04] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 18:03:04] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 18:03:04] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 18:03:04] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 18:03:04] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 18:03:04] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 18:03:04] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 18:03:04] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 18:03:05] [INFO] (world.c:1473) World init
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/CardinalEast.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/CardinalEast.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/CardinalWest.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/CardinalWest.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/CardinalNorth.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/CardinalNorth.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/CardinalSouth.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/CardinalSouth.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/WolfStone.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/WolfStone.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/EagleStone.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/EagleStone.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/LionStone.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/LionStone.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/HorseStone.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/HorseStone.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/WolfSymbol.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/WolfSymbol.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/EagleSymbol.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/EagleSymbol.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/LionSymbol.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/LionSymbol.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/HorseSymbol.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/HorseSymbol.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Carved1.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Carved1.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Carved2.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Carved2.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Carved3.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Carved3.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Carved4.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Carved4.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Caution1.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Caution1.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Caution2.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Caution2.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Caution3.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Caution3.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Caution4.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Caution4.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Engraved1.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Engraved1.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Engraved2.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Engraved2.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Engraved3.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Engraved3.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Engraved4.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Engraved4.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Metal1.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Metal1.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Metal2.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Metal2.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Metal3.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Metal3.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Metal4.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Metal4.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Metal5.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Metal5.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Ornate1.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Ornate1.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Ornate2.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Ornate2.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Ornate3.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Ornate3.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Ornate4.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Ornate4.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Panel1.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Panel1.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Panel2.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Panel2.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Panel3.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Panel3.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Panel4.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Panel4.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Server1.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Server1.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Server2.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Server2.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Server3.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Server3.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Server4.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Server4.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Server5.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Server5.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Server6.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Server6.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Server7.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Server7.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Smooth1.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Smooth1.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Smooth2.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Smooth2.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Smooth3.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Smooth3.png
+[2026-04-03 18:03:05] [INFO] (render.c:169) Loading Block /assets/textures/block/Smooth4.png
+[2026-04-03 18:03:05] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:05] [ERROR] (render.c:111) path: /assets/textures/block/Smooth4.png
+[2026-04-03 18:03:06] [INFO] (render.c:169) Loading Block /assets/textures/block/Vent1.png
+[2026-04-03 18:03:06] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:06] [ERROR] (render.c:111) path: /assets/textures/block/Vent1.png
+[2026-04-03 18:03:06] [INFO] (render.c:169) Loading Block /assets/textures/block/Vent2.png
+[2026-04-03 18:03:06] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:06] [ERROR] (render.c:111) path: /assets/textures/block/Vent2.png
+[2026-04-03 18:03:06] [INFO] (render.c:169) Loading Block /assets/textures/block/Vent3.png
+[2026-04-03 18:03:06] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:06] [ERROR] (render.c:111) path: /assets/textures/block/Vent3.png
+[2026-04-03 18:03:06] [INFO] (render.c:169) Loading Block /assets/textures/block/Vent4.png
+[2026-04-03 18:03:06] [ERROR] (render.c:110) stbi_load failed: can't fopen
+[2026-04-03 18:03:06] [ERROR] (render.c:111) path: /assets/textures/block/Vent4.png
+[2026-04-03 18:03:57] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 18:03:57] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 18:03:57] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 18:03:57] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 18:03:57] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 18:03:57] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 18:03:57] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 18:03:57] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 18:03:57] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 18:03:57] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 18:03:57] [INFO] (world.c:1473) World init
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/CardinalEast.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/CardinalEast.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/CardinalWest.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/CardinalWest.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/CardinalNorth.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/CardinalNorth.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/CardinalSouth.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/CardinalSouth.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/WolfStone.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/WolfStone.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/EagleStone.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/EagleStone.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/LionStone.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/LionStone.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/HorseStone.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/HorseStone.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/WolfSymbol.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/WolfSymbol.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/EagleSymbol.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/EagleSymbol.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/LionSymbol.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/LionSymbol.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/HorseSymbol.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/HorseSymbol.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Carved1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Carved1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Carved2.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Carved2.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Carved3.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Carved3.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Carved4.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Carved4.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Caution1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Caution1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Caution2.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Caution2.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Caution3.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Caution3.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Caution4.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Caution4.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Engraved1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Engraved1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Engraved2.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Engraved2.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Engraved3.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Engraved3.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Engraved4.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Engraved4.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Metal1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Metal1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Metal2.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Metal2.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Metal3.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Metal3.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Metal4.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Metal4.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Metal5.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Metal5.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Ornate1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Ornate1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Ornate2.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Ornate2.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Ornate3.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Ornate3.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Ornate4.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Ornate4.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Panel1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Panel1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Panel2.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Panel2.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Panel3.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Panel3.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Panel4.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Panel4.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Server1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Server1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Server2.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Server2.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Server3.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Server3.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Server4.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Server4.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Server5.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Server5.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Server6.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Server6.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Server7.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Server7.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Smooth1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Smooth1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Smooth2.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Smooth2.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Smooth3.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Smooth3.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Smooth4.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Smooth4.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Vent1.png
+[2026-04-03 18:03:57] [INFO] (render.c:134) Loaded texture: assets/textures/block/Vent1.png
+[2026-04-03 18:03:57] [INFO] (render.c:169) Loading Block assets/textures/block/Vent2.png
+[2026-04-03 18:03:58] [INFO] (render.c:134) Loaded texture: assets/textures/block/Vent2.png
+[2026-04-03 18:03:58] [INFO] (render.c:169) Loading Block assets/textures/block/Vent3.png
+[2026-04-03 18:03:58] [INFO] (render.c:134) Loaded texture: assets/textures/block/Vent3.png
+[2026-04-03 18:03:58] [INFO] (render.c:169) Loading Block assets/textures/block/Vent4.png
+[2026-04-03 18:03:58] [INFO] (render.c:134) Loaded texture: assets/textures/block/Vent4.png
+[2026-04-03 18:04:55] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 18:04:55] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 18:04:55] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 18:04:55] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 18:04:55] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 18:04:55] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 18:04:55] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 18:04:55] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 18:04:55] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 18:04:55] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 18:04:55] [INFO] (world.c:1473) World init
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalEast.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalWest.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalNorth.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalSouth.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfStone.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleStone.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionStone.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseStone.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfSymbol.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleSymbol.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionSymbol.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseSymbol.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved1.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved2.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved3.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved4.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution1.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution2.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution3.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution4.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved1.png
+[2026-04-03 18:04:55] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved2.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved3.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved4.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal1.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal2.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal3.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal4.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal5.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate1.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate2.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate3.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate4.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel1.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel2.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel3.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel4.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server1.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server2.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server3.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server4.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server5.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server6.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server7.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth1.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth2.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth3.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth4.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent1.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent2.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent3.png
+[2026-04-03 18:04:56] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent4.png
+[2026-04-03 18:05:58] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 18:05:58] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 18:05:58] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 18:05:58] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 18:05:58] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 18:05:58] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 18:05:58] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 18:05:58] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 18:05:58] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 18:05:58] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 18:05:58] [INFO] (world.c:1473) World init
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalEast.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalWest.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalNorth.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalSouth.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfStone.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleStone.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionStone.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseStone.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfSymbol.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleSymbol.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionSymbol.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseSymbol.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved4.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution4.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved4.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal4.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal5.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate4.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel4.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server4.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server5.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server6.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server7.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth4.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent1.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent2.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent3.png
+[2026-04-03 18:05:58] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent4.png
+[2026-04-03 18:13:13] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 18:13:13] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 18:13:13] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 18:13:13] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 18:13:13] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 18:13:13] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 18:13:13] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 18:13:13] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 18:13:13] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 18:13:13] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 18:13:13] [INFO] (world.c:1473) World init
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalEast.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalWest.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalNorth.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalSouth.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfStone.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleStone.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionStone.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseStone.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfSymbol.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleSymbol.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionSymbol.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseSymbol.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved4.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution4.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved4.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal4.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal5.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate4.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel4.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server4.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server5.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server6.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server7.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth4.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent1.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent2.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent3.png
+[2026-04-03 18:13:13] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent4.png
+[2026-04-03 18:33:43] [INFO] (jsk_log.c:34) 
+
+LOG INIT
+
+[2026-04-03 18:33:43] [INFO] (population.c:88) Generated Judge, Index: 255
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 254
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 253
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 252
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 251
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 250
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 249
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 248
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 247
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 246
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 245
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 244
+[2026-04-03 18:33:43] [INFO] (population.c:123) Generated Agent, Index: 243
+[2026-04-03 18:33:43] [INFO] (world.c:437) Floor 0 at 0
+[2026-04-03 18:33:43] [INFO] (world.c:437) Floor 1 at 12
+[2026-04-03 18:33:43] [INFO] (world.c:437) Floor 2 at 24
+[2026-04-03 18:33:43] [INFO] (world.c:437) Floor 3 at 36
+[2026-04-03 18:33:43] [INFO] (world.c:437) Floor 4 at 48
+[2026-04-03 18:33:43] [INFO] (world.c:437) Floor 5 at 60
+[2026-04-03 18:33:43] [INFO] (world.c:987) Floor R at 72
+[2026-04-03 18:33:44] [INFO] (world.c:1473) World init
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalEast.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalWest.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalNorth.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/CardinalSouth.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfStone.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleStone.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionStone.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseStone.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/WolfSymbol.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/EagleSymbol.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/LionSymbol.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/HorseSymbol.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Carved4.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Caution4.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Engraved4.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal4.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Metal5.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Ornate4.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Panel4.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server4.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server5.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server6.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Server7.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Smooth4.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent1.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent2.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent3.png
+[2026-04-03 18:33:44] [INFO] (render.c:127) Loaded texture: assets/textures/block/Vent4.png

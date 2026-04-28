@@ -24,7 +24,6 @@
     DO(AREA_TYPE_TEMPLE)                        \
     DO(AREA_TYPE_WIREFRAME)                     \
 
-typedef enum AreaType AreaType;
 enum AreaType
 {
     FOR_LIST_AREA_TYPE(DEFINE_LIST_ENUMERATION)
@@ -32,7 +31,6 @@ enum AreaType
     AREA_TYPE_COUNT
 };
 
-typedef struct Area Area;
 struct Area
 {
     AreaType area_type;
@@ -46,14 +44,12 @@ struct Area
     EdgeID edge_id_array[AREA_EDGE_MAX];
 };
 
-typedef struct AreaOverlap AreaOverlap;
 struct AreaOverlap
 {
     Bounds2i bounds;
     Direction direction;
 };
 
-typedef struct AreaEdge AreaEdge;
 struct AreaEdge
 {
     EdgeID edge_id;
@@ -67,7 +63,6 @@ struct AreaEdge
     AreaOverlap area_overlap;
 };
 
-typedef struct AreaPool AreaPool;
 struct AreaPool
 {
     u32 floor_number;
@@ -83,7 +78,6 @@ struct AreaPool
     Area area_array[AREA_POOL_MAX];
 };
 
-typedef struct EdgePool EdgePool;
 struct EdgePool
 {
     u32 free_count;

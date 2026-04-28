@@ -7,7 +7,6 @@
 
 #define EPSILON 1e-5f
 
-typedef enum Axis Axis;
 enum Axis
 {
     AXIS_X,
@@ -17,43 +16,36 @@ enum Axis
     AXIS_COUNT,
 };
 
-typedef struct Bounds1i Bounds1i;
 struct Bounds1i
 {
     i32 min;
     i32 max;
 };
 
-typedef struct Bounds2i Bounds2i;
 struct Bounds2i
 {
     ivec2 position;
     ivec2 size;
 };
 
-typedef struct Bounds3i Bounds3i;
 struct Bounds3i
 {
     ivec3 min;
     ivec3 max;
 };
 
-typedef struct Bounds1f Bounds1f;
 struct Bounds1f
 {
     f32 min;
     f32 max;
 };
 
-typedef struct Bounds2f Bounds2f;
 struct Bounds2f
 {
     vec2 min;
     vec2 max;
 };
 
-
-typedef struct Bounds3f Bounds3f;
 struct Bounds3f
 {
     vec3 min;

@@ -3,12 +3,16 @@ cmake_minimum_required(VERSION 3.20)
 project(
     lastditch
     VERSION 0.1
-    LANGUAGES C
+    LANGUAGES C CXX
 )
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -21,7 +25,7 @@ find_package(glfw3 CONFIG REQUIRED)
 
 add_executable(
     lastditch
-    src/game/game.c
+    src/game/game.cpp
 )
 
 target_include_directories(
@@ -56,27 +60,27 @@ target_sources(
     PRIVATE
     external/glad/src/glad.c
     external/stb/src/stb_image.c
-    external/justsky/justsky_log.c      
-    external/justsky/justsky_config.c
-    src/core/math_ext.c
-    src/game/sim/actor.c
-    src/game/sim/action.c
-    src/game/sim/area.c
-    src/game/sim/debug.c
-    src/game/sim/direction.c
-    src/game/sim/nation.c
-    src/game/sim/navigation.c
-    src/game/sim/physics.c
-    src/game/sim/population.c
-    src/game/sim/scheduler.c
-    src/game/sim/sim.c
-    src/game/sim/world.c
-    src/game/shell/gl_ext.c
-    src/game/shell/render.c
-    src/game/shell/screen.c
-    src/game/shell/shell.c
-    src/game/shell/viewpoint.c
-    src/platform/platform.c
+    external/justsky/justsky_log.cpp
+    external/justsky/justsky_config.cpp
+    src/core/math_ext.cpp
+    src/game/sim/actor.cpp
+    src/game/sim/action.cpp
+    src/game/sim/area.cpp
+    src/game/sim/debug.cpp
+    src/game/sim/direction.cpp
+    src/game/sim/nation.cpp
+    src/game/sim/navigation.cpp
+    src/game/sim/physics.cpp
+    src/game/sim/population.cpp
+    src/game/sim/work.cpp
+    src/game/sim/sim.cpp
+    src/game/sim/world.cpp
+    src/game/shell/gl_ext.cpp
+    src/game/shell/render.cpp
+    src/game/shell/screen.cpp
+    src/game/shell/shell.cpp
+    src/game/shell/viewpoint.cpp
+    src/platform/platform.cpp
 )
 
 target_compile_definitions(
@@ -92,6 +96,7 @@ target_compile_options(
     -Wall
     -Wextra
     -Wshadow
+    -Wconversion
 )
 
 add_custom_command(

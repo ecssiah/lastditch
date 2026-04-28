@@ -27,21 +27,19 @@
     DO(BUTTON_W)                                \
     DO(BUTTON_Q)                                \
 
-typedef enum Button Button;
 enum Button
 {
     FOR_LIST_BUTTON(DEFINE_LIST_ENUMERATION)
     BUTTON_COUNT
 };
 
-typedef struct Input Input;
 struct Input
 {
     Button glfw_keymap[GLFW_KEY_LAST + 1];
     Button glfw_buttonmap[GLFW_MOUSE_BUTTON_LAST + 1];
     
-    Button button_array_current[BUTTON_COUNT];
-    Button button_array_previous[BUTTON_COUNT];
+    bool button_array_current[BUTTON_COUNT];
+    bool button_array_previous[BUTTON_COUNT];
 
     f64 pointer_current_x;
     f64 pointer_current_y;
@@ -55,7 +53,6 @@ struct Input
     b32 ignore_delta;
 };
 
-typedef struct Window Window;
 struct Window
 {
     i32 width;
@@ -66,7 +63,6 @@ struct Window
     GLFWwindow *glfw_window;
 };
 
-typedef struct Platform Platform;
 struct Platform
 {
     b32 active;

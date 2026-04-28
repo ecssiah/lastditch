@@ -11,7 +11,6 @@
     DO(NATION_TYPE_LION)                        \
     DO(NATION_TYPE_BEAR)                        \
 
-typedef enum NationType NationType;
 enum NationType
 {
     FOR_LIST_NATION_TYPE(DEFINE_LIST_ENUMERATION)
@@ -20,7 +19,6 @@ enum NationType
 
 extern const char *NATION_TYPE_STRING[NATION_TYPE_COUNT];
 
-typedef struct Nation Nation;
 struct Nation
 {
     NationType nation_type;
@@ -29,7 +27,5 @@ struct Nation
 };
 
 i32 nation_type_index_from_string(const char *nation_type_string);
-
-void nation_init(Nation nation_array[4]);
 
 #endif 
