@@ -5793,33 +5793,33 @@ struct PlatformPlatform66,1536
 src/game/shell/render.cpp,2778
 const i32 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE][3] =VOXEL_VERTEX_ARRAY21,399
 const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =VOXEL_UV_PROJECTION_ARRAY60,1042
-static void get_projection_matrix(mat4 out_projection_matrix)get_projection_matrix88,1416
-static void upload_debug_gpu_data(DebugGpuData *debug_gpu_data)upload_debug_gpu_data99,1625
-static void load_texture_array_layer(const char *texture_path, const GLint layer_index)load_texture_array_layer146,2798
-static void load_block_texture_directory(Shell *shell)load_block_texture_directory178,3539
-static void load_actor_texture_directory(Shell *shell)load_actor_texture_directory221,4864
-static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)load_model_obj264,6189
-static void add_sector_quad(SectorMesh *sector_mesh, SectorQuad sector_quad)add_sector_quad410,10185
-static void add_sector_mesh(VoxelRender *voxel_render, SectorMesh *sector_mesh)add_sector_mesh421,10717
-static void add_voxel_vertex(VoxelGpuData *voxel_gpu_data, VoxelVertex voxel_vertex)add_voxel_vertex445,11530
-static void add_voxel_gpu_data(VoxelRender *voxel_render, VoxelGpuData *voxel_gpu_data)add_voxel_gpu_data456,12113
-static void generate_sector_mesh(VoxelRender *voxel_render, Sim *sim, u32 sector_index)generate_sector_mesh480,12982
-static void emit_sector_face(SectorQuad *sector_quad, VoxelGpuData *voxel_gpu_data)emit_sector_face537,15128
-static void convert_sector_mesh_to_voxel_gpu_data(SectorMesh *sector_mesh, VoxelGpuData *out_voxconvert_sector_mesh_to_voxel_gpu_data562,16117
-static void upload_voxel_gpu_data(VoxelGpuData *voxel_gpu_data)upload_voxel_gpu_data586,16939
-static void add_model_gpu_data(ModelRender *model_render, i32 actor_index, ModelGpuData *model_gadd_model_gpu_data631,18075
-static void upload_model_gpu_data(ModelGpuData *model_gpu_data)upload_model_gpu_data640,18395
-static void init_glad(Platform *platform)init_glad697,19823
-static void init_viewpoint(Render *render)init_viewpoint709,20168
-static void init_debug_render(Shell *shell)init_debug_render720,20490
-static void init_voxel_render(Shell *shell, Sim *sim)init_voxel_render750,21703
-static void init_model_render(Shell *shell, Sim *sim)init_model_render839,25155
-static void update_viewpoint(Render *render, Sim *sim)update_viewpoint897,27424
-static void update_debug_render(Render *render, Sim *sim)update_debug_render910,27897
-static void update_voxel_render(Render *render)update_voxel_render957,29727
-static void update_model_render(Render* render, Sim *sim)update_model_render991,30873
-void render_init(Shell *shell, Platform *platform, Sim *sim)render_init1031,32316
-void render_update(Shell* shell, Sim* sim)render_update1042,32545
+static void get_projection_matrix(mat4 out_projection_matrix)get_projection_matrix87,1415
+static void upload_debug_gpu_data(DebugGpuData *debug_gpu_data)upload_debug_gpu_data98,1624
+static void load_texture_array_layer(const char *texture_path, const GLint layer_index)load_texture_array_layer145,2797
+static void load_block_texture_directory(Shell *shell)load_block_texture_directory177,3538
+static void load_actor_texture_directory(Shell *shell)load_actor_texture_directory220,4863
+static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)load_model_obj263,6188
+static void add_sector_quad(SectorMesh *sector_mesh, SectorQuad sector_quad)add_sector_quad409,10184
+static void add_sector_mesh(VoxelRender *voxel_render, SectorMesh *sector_mesh)add_sector_mesh420,10716
+static void add_voxel_vertex(VoxelGpuData *voxel_gpu_data, VoxelVertex voxel_vertex)add_voxel_vertex444,11529
+static void add_voxel_gpu_data(VoxelRender *voxel_render, VoxelGpuData *voxel_gpu_data)add_voxel_gpu_data455,12112
+static void generate_sector_mesh(VoxelRender *voxel_render, Sim *sim, u32 sector_index)generate_sector_mesh479,12981
+static void emit_sector_face(SectorQuad *sector_quad, VoxelGpuData *voxel_gpu_data)emit_sector_face536,15127
+static void convert_sector_mesh_to_voxel_gpu_data(SectorMesh *sector_mesh, VoxelGpuData *out_voxconvert_sector_mesh_to_voxel_gpu_data561,16116
+static void upload_voxel_gpu_data(VoxelGpuData *voxel_gpu_data)upload_voxel_gpu_data585,16938
+static void add_model_gpu_data(ModelRender *model_render, i32 actor_index, ModelGpuData *model_gadd_model_gpu_data630,18074
+static void upload_model_gpu_data(ModelGpuData *model_gpu_data)upload_model_gpu_data639,18394
+static void init_glad(Platform *platform)init_glad696,19822
+static void init_viewpoint(Render *render)init_viewpoint708,20167
+static void init_debug_render(Shell *shell)init_debug_render719,20489
+static void init_voxel_render(Shell *shell, Sim *sim)init_voxel_render749,21702
+static void init_model_render(Shell *shell, Sim *sim)init_model_render838,25154
+static void update_viewpoint(Render *render, Sim *sim)update_viewpoint896,27423
+static void update_debug_render(Render *render, Sim *sim)update_debug_render909,27896
+static void update_voxel_render(Render *render)update_voxel_render956,29726
+static void update_model_render(Render* render, Sim *sim)update_model_render990,30872
+void render_init(Shell *shell, Platform *platform, Sim *sim)render_init1030,32315
+void render_update(Shell* shell, Sim* sim)render_update1041,32544
 
 src/game/shell/shell.h,6148
 #define SHELL_HSHELL_H2,16
@@ -6366,46 +6366,46 @@ void world_cell_coordinate_to_sector_coordinate(i32 x, i32 y, ivec2 out_sector_c
 u32 world_cell_coordinate_to_sector_index(i32 x, i32 y)world_cell_coordinate_to_sector_index431,9773
 void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_local_coordinate)world_cell_coordinate_to_local_coordinate441,10045
 u32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)world_cell_coordinate_to_local_index448,10303
-void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position)world_cell_coordinate_to_position462,10734
-void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate)world_position_to_cell_coordinate469,10908
-u32 world_get_stride(Direction direction)world_get_stride476,11135
-u32 world_get_floor(i32 z)world_get_floor493,11599
-i32 world_block_type_index_from_string(const char *block_type_string)world_block_type_index_from_string498,11660
-b32 world_is_solid(World *world, i32 x, i32 y, i32 z)world_is_solid511,11993
-b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask)world_is_clear525,12321
-u8 world_get_direction_mask(World *world, i32 x, i32 y, i32 z)world_get_direction_mask547,13022
-Cell *world_get_cell(World *world, i32 x, i32 y, i32 z)world_get_cell581,14124
-void world_set_block_type(World *world, i32 x, i32 y, i32 z, BlockType block_type)world_set_block_type593,14385
-void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 siworld_set_block_type_cube603,14588
-u32 world_get_content_level(i32 z)world_get_content_level623,15122
-void world_set_block_type_box(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 sizworld_set_block_type_box638,15407
-void world_set_block_type_wireframe(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, iworld_set_block_type_wireframe667,16265
-static void place_area(World *world, Area *area)place_area696,17148
-static void construct_tower(World *world)construct_tower735,18285
-static void layout_roof_areas(World *world)layout_roof_areas902,23494
-static void layout_elevator_areas(World *world)layout_elevator_areas926,24239
-static void layout_tower_areas(World *world)layout_tower_areas943,24749
-static void setup_wolf_territory(World *world)setup_wolf_territory1063,29137
-static void setup_eagle_territory(World *world)setup_eagle_territory1164,32034
-static void setup_bear_territory(World *world)setup_bear_territory1265,35021
-static void setup_lion_territory(World *world)setup_lion_territory1366,37948
-static void layout_test_area(World *world)layout_test_area1467,40882
-static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_right)get_area_overlap1497,41639
-static void calculate_area_edges(World *world, u32 floor_number)calculate_area_edges1584,44432
-static void init_cell_array(World *world)init_cell_array1626,46143
-static void init_area_pool_array(World *world)init_area_pool_array1636,46422
-static void init_edge_pool(World *world)init_edge_pool1654,46975
-static void calculate_world_direction_mask(World *world)calculate_world_direction_mask1668,47327
-static void construct_doors(World *world, const Area *area)construct_doors1686,47818
-static void construct_room(World *world, const Area *area)construct_room1790,51717
-static void construct_elevator(World *world, const Area *area)construct_elevator1809,52288
-static void construct_wireframe(World *world, const Area *area)construct_wireframe1840,53362
-static void construct_areas(World *world, u32 floor_number)construct_areas1850,53679
-static void place_content(World *world, u32 floor_number)place_content1869,54313
-static void draw_debug_info(Debug *debug, World *world)draw_debug_info1915,55892
-void world_init(World *world, Debug *debug)world_init1959,57545
-void world_update(World *world, Population *population)world_update2008,58676
-void world_close(World *world)world_close2021,59066
+void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position)world_cell_coordinate_to_position462,10749
+void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate)world_position_to_cell_coordinate469,10923
+i32 world_get_stride(Direction direction)world_get_stride476,11150
+u32 world_get_floor(i32 z)world_get_floor493,11614
+i32 world_block_type_index_from_string(const char *block_type_string)world_block_type_index_from_string498,11675
+b32 world_is_solid(World *world, i32 x, i32 y, i32 z)world_is_solid511,12008
+b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask)world_is_clear525,12336
+u8 world_get_direction_mask(World *world, i32 x, i32 y, i32 z)world_get_direction_mask547,13037
+Cell *world_get_cell(World *world, i32 x, i32 y, i32 z)world_get_cell581,14139
+void world_set_block_type(World *world, i32 x, i32 y, i32 z, BlockType block_type)world_set_block_type593,14400
+void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 siworld_set_block_type_cube603,14603
+u32 world_get_content_level(i32 z)world_get_content_level623,15137
+void world_set_block_type_box(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 sizworld_set_block_type_box638,15422
+void world_set_block_type_wireframe(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, iworld_set_block_type_wireframe667,16280
+static void place_area(World *world, Area *area)place_area696,17163
+static void construct_tower(World *world)construct_tower735,18300
+static void layout_roof_areas(World *world)layout_roof_areas902,23509
+static void layout_elevator_areas(World *world)layout_elevator_areas926,24254
+static void layout_tower_areas(World *world)layout_tower_areas943,24764
+static void setup_wolf_territory(World *world)setup_wolf_territory1063,29152
+static void setup_eagle_territory(World *world)setup_eagle_territory1164,32049
+static void setup_bear_territory(World *world)setup_bear_territory1265,35036
+static void setup_lion_territory(World *world)setup_lion_territory1366,37963
+static void layout_test_area(World *world)layout_test_area1467,40897
+static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_right)get_area_overlap1497,41654
+static void calculate_area_edges(World *world, u32 floor_number)calculate_area_edges1584,44447
+static void init_cell_array(World *world)init_cell_array1626,46158
+static void init_area_pool_array(World *world)init_area_pool_array1636,46437
+static void init_edge_pool(World *world)init_edge_pool1654,46990
+static void calculate_world_direction_mask(World *world)calculate_world_direction_mask1668,47342
+static void construct_doors(World *world, const Area *area)construct_doors1686,47833
+static void construct_room(World *world, const Area *area)construct_room1790,51732
+static void construct_elevator(World *world, const Area *area)construct_elevator1809,52303
+static void construct_wireframe(World *world, const Area *area)construct_wireframe1840,53377
+static void construct_areas(World *world, u32 floor_number)construct_areas1850,53694
+static void place_content(World *world, u32 floor_number)place_content1869,54328
+static void draw_debug_info(Debug *debug, World *world)draw_debug_info1915,55907
+void world_init(World *world, Debug *debug)world_init1959,57560
+void world_update(World *world, Population *population)world_update2008,58691
+void world_close(World *world)world_close2021,59081
 
 src/game/sim/action.cpp,663
 static void apply_move_action(Actor *judge, Action *action)apply_move_action7,85

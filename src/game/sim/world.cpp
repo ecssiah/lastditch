@@ -451,9 +451,9 @@ u32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)
     world_cell_coordinate_to_local_coordinate(x, y, z, local_coordinate);
 
     const u32 local_index = (
-        (local_coordinate[0] << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
-        (local_coordinate[1] << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
-        (local_coordinate[2] << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
+        (u32)(local_coordinate[0] << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
+        (u32)(local_coordinate[1] << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
+        (u32)(local_coordinate[2] << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
     );
 
     return local_index;
@@ -473,7 +473,7 @@ void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coord
     out_cell_coordinate[2] = (i32)floorf(z);
 }
 
-u32 world_get_stride(Direction direction)
+i32 world_get_stride(Direction direction)
 {
     switch (direction)
     {

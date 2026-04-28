@@ -241,7 +241,7 @@ void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_lo
 void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position);
 void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
 
-u32 world_get_stride(Direction direction);
+i32 world_get_stride(Direction direction);
 
 u32 world_get_floor(i32 z);
 

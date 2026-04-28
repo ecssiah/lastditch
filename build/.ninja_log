@@ -46,3 +46,16 @@
 2	131	1777378762663997065	CMakeFiles/lastditch.dir/src/game/sim/population.cpp.o	85b354f1bea3c7e7
 2	804	1777378945812480329	CMakeFiles/lastditch.dir/src/game/shell/render.cpp.o	6960addff37044e2
 2	138	1777379034998941724	CMakeFiles/lastditch.dir/src/game/sim/world.cpp.o	acff77ecc8a3fe06
+3	203	1777379437937083398	CMakeFiles/lastditch.dir/src/game/sim/sim.cpp.o	2195d8278cd16a2
+2	216	1777379437936102270	CMakeFiles/lastditch.dir/src/game/sim/actor.cpp.o	128958e5d9143eee
+2	217	1777379437936463521	CMakeFiles/lastditch.dir/src/game/sim/physics.cpp.o	6164526d6d8c11bc
+3	220	1777379437936889939	CMakeFiles/lastditch.dir/src/game/sim/work.cpp.o	580fae96a92295e9
+2	257	1777379437935915352	CMakeFiles/lastditch.dir/src/game/game.cpp.o	efaa4db4cd72dfba
+5	257	1777379437938977322	CMakeFiles/lastditch.dir/src/game/shell/shell.cpp.o	75dd0540daac00a2
+5	257	1777379437939192614	CMakeFiles/lastditch.dir/src/game/shell/viewpoint.cpp.o	36e0203a07556fd
+2	258	1777379437936234937	CMakeFiles/lastditch.dir/src/game/sim/nation.cpp.o	5c2708fb225c4051
+2	258	1777379437936675772	CMakeFiles/lastditch.dir/src/game/sim/population.cpp.o	85b354f1bea3c7e7
+4	485	1777379437938550362	CMakeFiles/lastditch.dir/src/game/shell/screen.cpp.o	e029930dbda1ac19
+4	550	1777379437937997068	CMakeFiles/lastditch.dir/src/game/shell/render.cpp.o	6960addff37044e2
+3	866	1777379437937213815	CMakeFiles/lastditch.dir/src/game/sim/world.cpp.o	acff77ecc8a3fe06
+1329	1482	1777379439263106939	lastditch	8a1dfc38dc4c2349
