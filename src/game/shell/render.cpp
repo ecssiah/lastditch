@@ -1,4 +1,10 @@
 #include "game/shell/render.h"
+#include "platform/platform.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+using namespace glm;
 
 #include <glad/glad.h>
 #include <stdio.h>
@@ -7,7 +13,6 @@
 
 #include "stb_image.h"
 
-#include "justsky.h"
 #include "justsky_config.h"
 #include "justsky_log.h"
 
@@ -84,15 +89,11 @@ const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     { +0, -1, +0 },
 };
 
-static void get_projection_matrix(mat4 out_projection_matrix)
+static mat4 get_projection_matrix()
 {
-    glm_perspective(
-        glm_rad(60.0f),
-        WINDOW_ASPECT_RATIO,
-        0.1f,
-        1000.0f,
-        out_projection_matrix
-    );
+    mat4 projection_matrix = glm::perspective(glm::radians(60.0f), WINDOW_ASPECT_RATIO, 0.1f, 1000.0f);
+
+    return projection_matrix;
 }
 
 static void upload_debug_gpu_data(DebugGpuData *debug_gpu_data)
@@ -170,6 +171,11 @@ static void load_texture_array_layer(const char *texture_path, const GLint layer
         GL_UNSIGNED_BYTE,
         pixel_data_array
     );
+    
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    
+    stbi_image_free(pixel_data_array);
 
     LOG_INFO("Loaded texture: %s", texture_path);
 }
@@ -198,7 +204,7 @@ static void load_block_texture_directory(Shell *shell)
 
     assert(voxel_render->block_config->entry_count <= BLOCK_TYPE_COUNT);
 
-    for (u32 layer_index = 0; layer_index < voxel_render->block_config->entry_count; ++layer_index)
+    for (i32 layer_index = 0; layer_index < voxel_render->block_config->entry_count; ++layer_index)
     {
         const JUSTSKY_ConfigEntry *config_entry = &voxel_render->block_config->config_entry_array[layer_index];
 
@@ -206,15 +212,17 @@ static void load_block_texture_directory(Shell *shell)
 	
         snprintf(texture_path, sizeof(texture_path), "%s/%s", block_texture_directory, config_entry->value);
 
-        const u32 block_type_index = world_block_type_index_from_string(config_entry->key);
+        const i32 block_type_index = world_block_type_index_from_string(config_entry->key);
 
         assert(block_type_index >= 0);
         assert(block_type_index < BLOCK_TYPE_COUNT);
 
-        voxel_render->block_type_layer_array[block_type_index] = layer_index;
+        voxel_render->block_type_layer_array[block_type_index] = (u8)layer_index;
 	
         load_texture_array_layer(texture_path, layer_index);
     }
+    
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 }
 
 static void load_actor_texture_directory(Shell *shell)
@@ -241,7 +249,7 @@ static void load_actor_texture_directory(Shell *shell)
 
     assert(model_render->actor_config->entry_count <= NATION_TYPE_COUNT);
 
-    for (u32 layer_index = 0; layer_index < model_render->actor_config->entry_count; ++layer_index)
+    for (i32 layer_index = 0; layer_index < model_render->actor_config->entry_count; ++layer_index)
     {
         const JUSTSKY_ConfigEntry *config_entry = &model_render->actor_config->config_entry_array[layer_index];
 
@@ -249,15 +257,17 @@ static void load_actor_texture_directory(Shell *shell)
 
         snprintf(texture_path, sizeof(texture_path), "%s/%s", actor_texture_directory, config_entry->value);
 
-        const u32 nation_type_index = nation_type_index_from_string(config_entry->key);
+        const i32 nation_type_index = nation_type_index_from_string(config_entry->key);
 
         assert(nation_type_index >= 0);
         assert(nation_type_index < NATION_TYPE_COUNT);
 
-        model_render->actor_type_layer_array[nation_type_index] = layer_index;
+        model_render->actor_type_layer_array[nation_type_index] = (u8)layer_index;
 	
         load_texture_array_layer(texture_path, layer_index);
     }
+    
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 }
 
 static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)
@@ -372,7 +382,7 @@ static void load_model_obj(const char *path, ModelGpuData *out_model_gpu_data)
 
             assert(scan_result == 9);
 
-            for (u32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
+            for (i32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
             {
                 ModelVertex model_vertex;
 
@@ -535,7 +545,7 @@ static void generate_sector_mesh(VoxelRender *voxel_render, Sim *sim, u32 sector
 
 static void emit_sector_face(SectorQuad *sector_quad, VoxelGpuData *voxel_gpu_data)
 {
-    for (u32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
+    for (i32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
         const ivec3 vertex_position = {
             sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0],
@@ -546,9 +556,9 @@ static void emit_sector_face(SectorQuad *sector_quad, VoxelGpuData *voxel_gpu_da
         VoxelVertex voxel_vertex;
 
         voxel_vertex.a_vertex =
-            ((vertex_position[0] & 63u)  <<  0u) |
-            ((vertex_position[1] & 63u)  <<  6u) |
-            ((vertex_position[2] & 255u) << 12u);
+            (((u32)vertex_position[0] & 63u)  <<  0u) |
+            (((u32)vertex_position[1] & 63u)  <<  6u) |
+            (((u32)vertex_position[2] & 255u) << 12u);
 	
         voxel_vertex.a_face =
             ((sector_quad->block_type & 255u) <<  0u) |
@@ -574,7 +584,7 @@ static void convert_sector_mesh_to_voxel_gpu_data(SectorMesh *sector_mesh, Voxel
     out_voxel_gpu_data->position[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
     out_voxel_gpu_data->position[2] = 0.0f;
 
-    for (u32 quad_index = 0; quad_index < sector_mesh->sector_quad_count; ++quad_index)
+    for (i32 quad_index = 0; quad_index < sector_mesh->sector_quad_count; ++quad_index)
     {
         SectorQuad *sector_quad = &sector_mesh->sector_quad_array[quad_index];
 
@@ -707,13 +717,13 @@ static void init_glad(Platform *platform)
 
 static void init_viewpoint(Render *render)
 {
-    glm_vec3_zero(render->viewpoint.position);
-    glm_vec3_zero(render->viewpoint.rotation);
+    render->viewpoint.position = { 0, 0, 0 };
+    render->viewpoint.rotation = { 0, 0, 0 };
 
-    glm_mat4_identity(render->viewpoint.projection_matrix);
-    glm_mat4_identity(render->viewpoint.view_matrix);
+    render->viewpoint.projection_matrix = glm::mat4(1.0f);
+    render->viewpoint.view_matrix = glm::mat4(1.0f);
 
-    get_projection_matrix(render->viewpoint.projection_matrix);
+    render->viewpoint.projection_matrix = get_projection_matrix();
 }
 
 static void init_debug_render(Shell *shell)
@@ -740,7 +750,12 @@ static void init_debug_render(Shell *shell)
     debug_render->u_view_location = glGetUniformLocation(debug_render->program_id, "u_view_matrix");
     debug_render->u_model_location = glGetUniformLocation(debug_render->program_id, "u_model_matrix");
 
-    glUniformMatrix4fv(debug_render->u_projection_location, 1, GL_FALSE, (f32 *)shell->render.viewpoint.projection_matrix);
+    glUniformMatrix4fv(
+        debug_render->u_projection_location,
+        1,
+        GL_FALSE,
+        glm::value_ptr<f32>(shell->render.viewpoint.projection_matrix)
+    );
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -792,7 +807,12 @@ static void init_voxel_render(Shell *shell, Sim *sim)
     voxel_render->u_view_location = glGetUniformLocation(voxel_render->program_id, "u_view_matrix");
     voxel_render->u_model_location = glGetUniformLocation(voxel_render->program_id, "u_model_matrix");
 
-    glUniformMatrix4fv(voxel_render->u_projection_location, 1, GL_FALSE, (f32 *)shell->render.viewpoint.projection_matrix);
+    glUniformMatrix4fv(
+        voxel_render->u_projection_location,
+        1,
+        GL_FALSE,
+        glm::value_ptr<f32>(shell->render.viewpoint.projection_matrix)
+    );
     
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -804,17 +824,18 @@ static void init_voxel_render(Shell *shell, Sim *sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render->texture_array_id);
 
-    for (u32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    for (i32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
         generate_sector_mesh(&shell->render.voxel_render, sim, sector_index);
     }
 
-    for (u32 sector_mesh_index = 0; sector_mesh_index < voxel_render->sector_mesh_count; ++sector_mesh_index)
+    for (i32 sector_mesh_index = 0; sector_mesh_index < voxel_render->sector_mesh_count; ++sector_mesh_index)
     {
         SectorMesh *sector_mesh = &voxel_render->sector_mesh_array[sector_mesh_index];
 
-        VoxelGpuData voxel_gpu_data;
-        glm_vec3_zero(voxel_gpu_data.position);
+        VoxelGpuData voxel_gpu_data = {
+            .position = { 0, 0, 0 },
+        };
         
         convert_sector_mesh_to_voxel_gpu_data(sector_mesh, &voxel_gpu_data);
         
@@ -827,7 +848,7 @@ static void init_voxel_render(Shell *shell, Sim *sim)
         add_voxel_gpu_data(voxel_render, &voxel_gpu_data);
     }
 
-    for (u32 voxel_gpu_data_index = 0; voxel_gpu_data_index < voxel_render->voxel_gpu_data_count; ++voxel_gpu_data_index)
+    for (i32 voxel_gpu_data_index = 0; voxel_gpu_data_index < voxel_render->voxel_gpu_data_count; ++voxel_gpu_data_index)
     {
         VoxelGpuData *voxel_gpu_data = &voxel_render->voxel_gpu_data_array[voxel_gpu_data_index];
 	
@@ -871,7 +892,12 @@ static void init_model_render(Shell *shell, Sim *sim)
     model_render->u_view_location = glGetUniformLocation(model_render->program_id, "u_view_matrix");
     model_render->u_model_location = glGetUniformLocation(model_render->program_id, "u_model_matrix");
 
-    glUniformMatrix4fv(shell->render.model_render.u_projection_location, 1, GL_FALSE, (f32 *)shell->render.viewpoint.projection_matrix);
+    glUniformMatrix4fv(
+        shell->render.model_render.u_projection_location,
+        1,
+        GL_FALSE,
+        glm::value_ptr<f32>(shell->render.viewpoint.projection_matrix)
+    );
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -899,20 +925,24 @@ static void update_viewpoint(Render *render, Sim *sim)
 
     const vec3 judge_eye_offset = { 0.0f, 0.0f, 0.7f };
     
-    vec3 judge_eye_position;
-    glm_vec3_add((f32 *)judge->position, (f32 *)judge_eye_offset, judge_eye_position);
-    
-    glm_vec3_copy(judge_eye_position, render->viewpoint.position);
-    glm_vec3_copy((f32 *)judge->rotation, render->viewpoint.rotation);
+    vec3 judge_eye_position = judge->position + judge_eye_offset;
+
+    render->viewpoint.position = judge_eye_position;
+    render->viewpoint.rotation = judge->rotation;
 }
 
 static void update_debug_render(Render *render, Sim *sim)
 {
     glUseProgram(render->debug_render.program_id);
 
-    viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
+    render->viewpoint.view_matrix = viewpoint_get_view_matrix(&render->viewpoint);
 
-    glUniformMatrix4fv(render->debug_render.u_view_location, 1, GL_FALSE, (f32 *)render->viewpoint.view_matrix);
+    glUniformMatrix4fv(
+        render->debug_render.u_view_location,
+        1,
+        GL_FALSE,
+        glm::value_ptr<f32>(render->viewpoint.view_matrix)
+    );
 
     glEnable(GL_DEPTH_TEST);
 
@@ -921,7 +951,7 @@ static void update_debug_render(Render *render, Sim *sim)
     debug_gpu_data.debug_vertex_capacity = 2 * sim->debug.line_count;
     debug_gpu_data.debug_vertex_array = (DebugVertex *)malloc(debug_gpu_data.debug_vertex_capacity * sizeof(DebugVertex));
     
-    for (u32 debug_line_index = 0; debug_line_index < sim->debug.line_count; ++debug_line_index)
+    for (i32 debug_line_index = 0; debug_line_index < sim->debug.line_count; ++debug_line_index)
     {
         const DebugLine *debug_line = &sim->debug.line_array[debug_line_index];
 
@@ -941,10 +971,9 @@ static void update_debug_render(Render *render, Sim *sim)
 
     upload_debug_gpu_data(&debug_gpu_data);
     
-    mat4 model_matrix;
-    glm_mat4_identity(model_matrix);
+    mat4 model_matrix = glm::mat4(1.0f);
 	
-    glUniformMatrix4fv(render->debug_render.u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
+    glUniformMatrix4fv(render->debug_render.u_model_location, 1, GL_FALSE, glm::value_ptr<f32>(model_matrix));
 
     glBindVertexArray(debug_gpu_data.vao_id);
 
@@ -957,9 +986,9 @@ static void update_voxel_render(Render *render)
 {
     glUseProgram(render->voxel_render.program_id);
 
-    viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
+    render->viewpoint.view_matrix = viewpoint_get_view_matrix(&render->viewpoint);
 
-    glUniformMatrix4fv(render->voxel_render.u_view_location, 1, GL_FALSE, (f32 *)render->viewpoint.view_matrix);
+    glUniformMatrix4fv(render->voxel_render.u_view_location, 1, GL_FALSE, glm::value_ptr<f32>(render->viewpoint.view_matrix));
     
     glEnable(GL_DEPTH_TEST);
 
@@ -970,14 +999,13 @@ static void update_voxel_render(Render *render)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->voxel_render.texture_array_id);
 
-    for (u32 voxel_gpu_data_index = 0; voxel_gpu_data_index < render->voxel_render.voxel_gpu_data_count; ++voxel_gpu_data_index)
+    for (i32 voxel_gpu_data_index = 0; voxel_gpu_data_index < render->voxel_render.voxel_gpu_data_count; ++voxel_gpu_data_index)
     {
         const VoxelGpuData *voxel_gpu_data = &render->voxel_render.voxel_gpu_data_array[voxel_gpu_data_index];
 
-        mat4 model_matrix;
-        glm_translate_make(model_matrix, (f32 *)voxel_gpu_data->position);
-	
-        glUniformMatrix4fv(render->voxel_render.u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
+        mat4 model_matrix = glm::translate(glm::mat4(1.0f), voxel_gpu_data->position);
+        
+        glUniformMatrix4fv(render->voxel_render.u_model_location, 1, GL_FALSE, glm::value_ptr<f32>(model_matrix));
 
         glBindVertexArray(voxel_gpu_data->vao_id);
 
@@ -991,9 +1019,9 @@ static void update_model_render(Render* render, Sim *sim)
 {
     glUseProgram(render->model_render.program_id);
 
-    viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
+    render->viewpoint.view_matrix = viewpoint_get_view_matrix(&render->viewpoint);
 
-    glUniformMatrix4fv(render->voxel_render.u_view_location, 1, GL_FALSE, (f32 *)render->viewpoint.view_matrix);
+    glUniformMatrix4fv(render->voxel_render.u_view_location, 1, GL_FALSE, glm::value_ptr<f32>(render->viewpoint.view_matrix));
     
     glEnable(GL_DEPTH_TEST);
 
@@ -1011,11 +1039,10 @@ static void update_model_render(Render* render, Sim *sim)
 
         ModelGpuData *model_gpu_data = &render->model_render.model_gpu_data_array[actor_id];
         
-        mat4 model_matrix;
-        glm_translate_make(model_matrix, (f32 *)actor->position);
-        glm_rotate_z(model_matrix, glm_rad(actor->rotation[2]), model_matrix);
+        mat4 model_matrix = glm::translate(glm::mat4(1.0f), actor->position);
+        model_matrix = glm::rotate(model_matrix, glm::radians(actor->rotation[2]), { 0, 0, 1 });
 
-        glUniformMatrix4fv(render->model_render.u_model_location, 1, GL_FALSE, (f32 *)model_matrix);
+        glUniformMatrix4fv(render->model_render.u_model_location, 1, GL_FALSE, glm::value_ptr<f32>(model_matrix));
 
         glUniform1i(render->model_render.u_texture_layer_location, model_gpu_data->texture_layer);
 

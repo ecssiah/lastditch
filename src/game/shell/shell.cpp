@@ -33,9 +33,9 @@ static void queue_move_action(Platform *platform, Sim *sim)
     {
         move_action.action_value[1] -= 1.0f;
     }
-    
-    glm_vec3_normalize(move_action.action_value);
 
+    move_action.action_value = glm::normalize(move_action.action_value);
+    
     if (platform_button_is_down(platform, BUTTON_E))
     {
         move_action.action_value[2] += 1.0f;
@@ -77,7 +77,7 @@ static void queue_debug_mode_action(Sim *sim)
 {
     Action debug_action = {
         .type = ACTION_DEBUG_MODE,
-        .action_value = GLM_VEC3_ONE_INIT,
+        .action_value = vec3(1, 1, 1),
     };
 
     action_add(&sim->action_queue, &debug_action);

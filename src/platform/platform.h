@@ -1,6 +1,8 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include <glm/glm.hpp>
+using namespace glm;
 #include "GLFW/glfw3.h"
 
 #include "justsky.h"

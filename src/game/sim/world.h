@@ -1,8 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <cglm/cglm.h>
-
 #include "justsky.h"
 
 #include "game/sim/area.h"

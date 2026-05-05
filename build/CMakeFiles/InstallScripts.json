@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"/Users/ecssiah/Development/justsky/lastditch/build/cmake_install.cmake"
+		"/Users/ecssiah/Development/lastditch/build/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

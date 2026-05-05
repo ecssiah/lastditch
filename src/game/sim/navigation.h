@@ -1,9 +1,10 @@
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
-#include "justsky.h"
+#include <glm/glm.hpp>
+using namespace glm;
 
-#include <cglm/cglm.h>
+#include "justsky.h"
 
 #include "game/sim/ids.h"
 

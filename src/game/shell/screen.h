@@ -1,8 +1,6 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include <cglm/cglm.h>
-
 #include "game/sim/sim.h"
 #include "game/shell/shell.h"
 #include "platform/platform.h"

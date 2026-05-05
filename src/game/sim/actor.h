@@ -1,7 +1,7 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
-#include <cglm/cglm.h>
+#include <glm/vec3.hpp>
 
 #include "justsky.h"
 
@@ -84,9 +84,9 @@ struct ActorPool
 
 i32 actor_type_index_from_string(const char *actor_type_string);
 
-void actor_get_forward(Actor *actor, vec3 out_forward);
-void actor_get_right(Actor *actor, vec3 out_right);
-void actor_get_up(Actor *actor, vec3 out_up);
+vec3 actor_get_forward(Actor *actor);
+vec3 actor_get_right(Actor *actor);
+vec3 actor_get_up(Actor *actor);
 
 void actor_add(ActorPool *actor_pool, Actor *actor);
 void actor_control(World *world, Actor *actor);

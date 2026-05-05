@@ -1,8 +1,6 @@
 #ifndef POPULATION_H
 #define POPULATION_H
 
-#include <cglm/cglm.h>
-
 #include "game/sim/actor.h"
 #include "game/sim/nation.h"
 

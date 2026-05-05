@@ -1,7 +1,11 @@
 #include "screen.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <string.h>
 #include <glad/glad.h>
+#include <vector>
 
 #include "stb_image.h"
 
@@ -76,9 +80,9 @@ static void load_textures(Screen *screen, const char *textures_path)
     stbi_image_free(pixel_data_array);
 }
 
-static void get_orthographic_projection_matrix(f32 width, f32 height, mat4 out_projection_matrix)
+static mat4 get_orthographic_projection_matrix(f32 width, f32 height)
 {
-    glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, out_projection_matrix);
+    return glm::ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
 }
 
 static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
@@ -96,7 +100,7 @@ static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
     i32 vertex_count = 0;
     u64 vertex_max = len * 6;
     
-    TextVertex text_vertex_array[vertex_max];
+    std::vector<TextVertex> text_vertex_vector(vertex_max);
 
     f32 cursor_x = x;
 
@@ -134,19 +138,19 @@ static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
         TextVertex text_vertex4 = { { x1, y1 }, { u1, v1 } };
         TextVertex text_vertex5 = { { x0, y1 }, { u0, v1 } };
 	
-        text_vertex_array[vertex_count++] = text_vertex0;
-        text_vertex_array[vertex_count++] = text_vertex1;
-        text_vertex_array[vertex_count++] = text_vertex2;
+        text_vertex_vector[vertex_count++] = text_vertex0;
+        text_vertex_vector[vertex_count++] = text_vertex1;
+        text_vertex_vector[vertex_count++] = text_vertex2;
 
-        text_vertex_array[vertex_count++] = text_vertex3;
-        text_vertex_array[vertex_count++] = text_vertex4;
-        text_vertex_array[vertex_count++] = text_vertex5;
+        text_vertex_vector[vertex_count++] = text_vertex3;
+        text_vertex_vector[vertex_count++] = text_vertex4;
+        text_vertex_vector[vertex_count++] = text_vertex5;
 
         cursor_x += char_width;
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, shell->screen.vbo_id);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)((u64)vertex_count * sizeof(TextVertex)), text_vertex_array, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)((u64)vertex_count * sizeof(TextVertex)), text_vertex_vector.data(), GL_DYNAMIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
@@ -176,10 +180,9 @@ void screen_init(Shell *shell, Platform *platform)
     int fb_width, fb_height;
     glfwGetFramebufferSize(platform->window.glfw_window, &fb_width, &fb_height);
 
-    mat4 shell_projection_matrix;
-    get_orthographic_projection_matrix(fb_width, fb_height, shell_projection_matrix);
+    mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
     
-    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, (f32 *)shell_projection_matrix);
+    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, glm::value_ptr<f32>(shell_projection_matrix));
     
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);

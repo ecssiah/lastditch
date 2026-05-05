@@ -36,11 +36,11 @@ struct Area
     AreaType area_type;
 
     AreaID area_id;
-    u32 floor_number;
+    i32 floor_number;
     
     Bounds2i bounds;
 
-    u32 edge_id_count;
+    i32 edge_id_count;
     EdgeID edge_id_array[AREA_EDGE_MAX];
 };
 

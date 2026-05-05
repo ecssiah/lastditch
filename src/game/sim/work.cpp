@@ -16,11 +16,11 @@ void wander_run(Sim *sim, Act *act, f32 delta_time)
     }
     else
     {
-        const i32 direction_angle = rand() % 360;
+        const f32 direction_angle = (f32)(rand() % 360);
 
         const vec2 direction = {
-            cosf(glm_rad(direction_angle)),
-            sinf(glm_rad(direction_angle))
+            cosf(glm::radians(direction_angle)),
+            sinf(glm::radians(direction_angle)),
         };
 
         actor->velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;

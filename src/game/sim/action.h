@@ -1,7 +1,8 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
+using namespace glm;
 
 #include "justsky.h"
 
@@ -19,7 +20,6 @@ enum ActionType
     ACTION_COUNT,
 };
 
-typedef struct Action Action;
 struct Action
 {
     ActionType type;
@@ -27,7 +27,6 @@ struct Action
     vec3 action_value;
 };
 
-typedef struct ActionQueue ActionQueue;
 struct ActionQueue
 {
     Action action_array[ACTION_QUEUE_CAPACITY];

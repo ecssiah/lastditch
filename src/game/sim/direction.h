@@ -1,6 +1,9 @@
 #ifndef DIRECTION_H
 #define DIRECTION_H
 
+#include <glm/glm.hpp>
+using namespace glm;
+
 #include "justsky.h"
 
 #define FOR_LIST_DIRECTION(DO)                  \

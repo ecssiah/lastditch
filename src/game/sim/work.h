@@ -1,8 +1,6 @@
 #ifndef WORK_H
 #define WORK_H
 
-#include <cglm/cglm.h>
-
 #include "justsky.h"
 
 #include "game/sim/actor.h"
