@@ -68,7 +68,7 @@
 
 #define GRAVITY_DEFAULT -90.0f
 
-typedef struct Population Population;
+struct Population;
 
 #define FOR_LIST_BLOCK_TYPE(DO)                 \
     DO(BLOCK_TYPE_NONE)                         \
@@ -225,19 +225,19 @@ b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
 b32 world_sector_coordinate_is_valid(i32 x, i32 y);
 
 u32 world_sector_coordinate_to_index(ivec2 sector_coordinate);
-void world_sector_index_to_coordinate(u32 sector_index, ivec2 out_sector_coordinate);
+ivec2 world_sector_index_to_coordinate(u32 sector_index);
 
 u32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z);
-void world_cell_index_to_coordinate(u32 cell_index, ivec3 out_cell_coordinate);
+ivec3 world_cell_index_to_coordinate(u32 cell_index);
 
 u32 world_cell_coordinate_to_sector_index(i32 x, i32 y);
-void world_cell_coordinate_to_sector_coordinate(i32 x, i32 y, ivec2 out_sector_coordinate);
+ivec2 world_cell_coordinate_to_sector_coordinate(i32 x, i32 y);
 
 u32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z);
-void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_local_coordinate);
+ivec3 world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z);
 
-void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position);
-void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
+vec3 world_cell_coordinate_to_position(i32 x, i32 y, i32 z);
+ivec3 world_position_to_cell_coordinate(f32 x, f32 y, f32 z);
 
 i32 world_get_stride(Direction direction);
 

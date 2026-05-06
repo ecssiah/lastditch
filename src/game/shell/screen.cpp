@@ -182,7 +182,7 @@ void screen_init(Shell *shell, Platform *platform)
 
     mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
     
-    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, glm::value_ptr<f32>(shell_projection_matrix));
+    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, glm::value_ptr(shell_projection_matrix));
     
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -224,11 +224,8 @@ static void draw_debug_info(Shell *shell, Sim *sim)
 {
     const Actor *judge = &sim->population.actor_pool.actor_array[sim->population.judge_id];
 
-    ivec3 cell_coordinate;
-    world_position_to_cell_coordinate(judge->position[0], judge->position[1], judge->position[2], cell_coordinate);
-
-    ivec2 sector_coordinate;
-    world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], sector_coordinate);
+    const ivec3 cell_coordinate = world_position_to_cell_coordinate(judge->position[0], judge->position[1], judge->position[2]);
+    const ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1]);
     
     char position_text[64];
     char velocity_text[64];
