@@ -1,0 +1,102 @@
+# Build directories
+/build/
+/cmake-build-*/
+/out/
+/bin/
+/dist/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+Makefile
+
+# Ninja
+.ninja_deps
+.ninja_log
+
+# Visual Studio Code
+.vscode/
+
+# Xcode
+DerivedData/
+*.xcworkspace
+*.xcodeproj/project.xcworkspace/
+*.xcuserstate
+*.xcuserdata/
+
+# macOS
+.DS_Store
+
+# Object files
+*.o
+*.obj
+*.lo
+*.slo
+
+# Static libraries
+*.a
+*.lib
+
+# Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Debugging
+*.dSYM/
+*.lldb
+*.gdb_history
+
+# Logs
+/log
+*.log
+
+# Temporary/editor files
+*~
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+env/
+
+# Asset pipeline cache/temp
+/cache/
+/tmp/
+
+# Generated shaders/binaries
+*.spv
+
+# Clangd / LSP
+.cache/
+.clangd/
+
+# Coverage
+coverage/
+*.gcda
+*.gcno
+*.profraw
+*.profdata
+
+# Dependency folders
+/external/build/
+/external/install/
+
+# ImGui settings
+imgui.ini
+
+# GLFW temporary files
+glfw.log
+
+# User-specific config
+*.local
+*.user
