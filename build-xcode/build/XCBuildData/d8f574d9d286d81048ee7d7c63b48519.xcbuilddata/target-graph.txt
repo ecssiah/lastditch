@@ -1,4 +1,0 @@
-Target dependency graph (2 targets)
-Target 'lastditch' in project 'lastditch'
-➜ Explicit dependency on target 'ZERO_CHECK' in project 'lastditch'
-Target 'ZERO_CHECK' in project 'lastditch' (no dependencies)
