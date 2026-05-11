@@ -1,10 +1,9 @@
-#ifndef NATION_H
-#define NATION_H
+#pragma once
+
+#include <cglm/cglm.h>
 
 #include "core/macros.h"
 #include "core/types.h"
-
-#include <cglm/cglm.h>
 
 #define FOR_LIST_NATION_TYPE(DO)                \
     DO(NATION_TYPE_WOLF)                        \
@@ -28,5 +27,3 @@ struct Nation
 };
 
 i32 nation_type_index_from_string(const char *nation_type_string);
-
-#endif 

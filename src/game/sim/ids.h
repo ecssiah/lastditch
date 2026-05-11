@@ -1,5 +1,4 @@
-#ifndef IDS_H
-#define IDS_H
+#pragma once
 
 #include "core/types.h"
 
@@ -9,5 +8,3 @@ typedef u32 ActID;
 typedef u32 EdgeID;
 typedef u32 NodeID;
 typedef u32 PoolID;
-
-#endif

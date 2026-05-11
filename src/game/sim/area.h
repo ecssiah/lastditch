@@ -1,5 +1,4 @@
-#ifndef AREA_H
-#define AREA_H
+#pragma once
 
 #include "core/math_ext.h"
 #include "core/types.h"
@@ -95,5 +94,3 @@ void area_remove(AreaPool *area_pool, const AreaID area_id);
 
 void area_add_edge(EdgePool *edge_pool, AreaEdge *area_edge);
 void area_remove_edge(EdgePool *edge_pool, const EdgeID edge_id);
-
-#endif

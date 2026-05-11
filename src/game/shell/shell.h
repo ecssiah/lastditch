@@ -6,11 +6,11 @@
 #include "game/sim/sim.h"
 #include "platform/platform.h"
 
-#define BLOCK_TEXTURE_SIZE 64
-#define ACTOR_TEXTURE_SIZE 128
+constexpr i32 BLOCK_TEXTURE_SIZE = 64;
+constexpr i32 ACTOR_TEXTURE_SIZE = 128;
 
-#define FACE_COUNT_PER_VOXEL 6
-#define VERTEX_COUNT_PER_FACE 6
+constexpr i32 FACE_COUNT_PER_VOXEL = 6;
+constexpr i32 VERTEX_COUNT_PER_FACE = 6;
 
 extern const i32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3];
 extern const f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3];

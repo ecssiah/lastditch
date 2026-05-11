@@ -1,5 +1,4 @@
-#ifndef ACTION_H
-#define ACTION_H
+#pragma once
 
 #include <cglm/cglm.h>
 
@@ -9,17 +8,15 @@
 
 struct Actor;
 
-enum ActionType
+enum class ActionType
 {
-    ACTION_MOVE,
-    ACTION_ROTATE,
-    ACTION_JUMP,
-    ACTION_DEBUG_MODE,
-
-    ACTION_COUNT,
+    move,
+    rotate,
+    jump,
+    debug_mode,
+    __count,
 };
 
-typedef struct Action Action;
 struct Action
 {
     ActionType type;
@@ -27,7 +24,6 @@ struct Action
     vec3 action_value;
 };
 
-typedef struct ActionQueue ActionQueue;
 struct ActionQueue
 {
     Action action_array[ACTION_QUEUE_CAPACITY];
@@ -39,5 +35,3 @@ struct ActionQueue
 void action_add(ActionQueue *action_queue, Action *action);
 
 void action_apply_queue(ActionQueue *action_queue, Actor *judge);
-
-#endif

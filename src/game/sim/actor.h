@@ -1,5 +1,4 @@
-#ifndef ACTOR_H
-#define ACTOR_H
+#pragma once
 
 #include <cglm/cglm.h>
 
@@ -89,5 +88,3 @@ void actor_get_up(Actor *actor, vec3 out_up);
 
 void actor_add(ActorPool *actor_pool, Actor *actor);
 void actor_control(World *world, Actor *actor);
-
-#endif

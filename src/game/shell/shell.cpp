@@ -9,7 +9,7 @@
 static void queue_move_action(Platform *platform, Sim *sim)
 {
     Action move_action = {
-        .type = ACTION_MOVE,
+        .type = ActionType::move,
         .action_value = { 0.0f, 0.0f, 0.0f },
     };
     
@@ -51,7 +51,7 @@ static void queue_move_action(Platform *platform, Sim *sim)
 static void queue_rotate_action(Platform *platform, Sim *sim)
 {
     Action rotate_action = {
-        .type = ACTION_ROTATE,
+        .type = ActionType::rotate,
         .action_value = {
             (f32)platform->input.pointer_delta_x,
             (f32)platform->input.pointer_delta_y,
@@ -65,7 +65,7 @@ static void queue_rotate_action(Platform *platform, Sim *sim)
 static void queue_jump_action(Sim *sim)
 {
     Action jump_action = {
-        .type = ACTION_JUMP,
+        .type = ActionType::jump,
         .action_value = { 1.0f, 0.0f, 0.0f },
     };
 
@@ -75,7 +75,7 @@ static void queue_jump_action(Sim *sim)
 static void queue_debug_mode_action(Sim *sim)
 {
     Action debug_action = {
-        .type = ACTION_DEBUG_MODE,
+        .type = ActionType::debug_mode,
         .action_value = GLM_VEC3_ONE_INIT,
     };
 

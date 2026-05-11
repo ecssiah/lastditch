@@ -1,5 +1,4 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#pragma once
 
 #include <cglm/cglm.h>
 
@@ -9,5 +8,3 @@
 
 void screen_init(Shell *shell, Platform *platform);
 void screen_update(Shell *shell, Sim *sim);
-
-#endif

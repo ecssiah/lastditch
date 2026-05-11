@@ -1,17 +1,15 @@
-#ifndef NAVIGATION_H
-#define NAVIGATION_H
-
-#include "core/types.h"
+#pragma once
 
 #include <cglm/cglm.h>
 
+#include "core/types.h"
 #include "game/sim/ids.h"
 
-enum NodeType
+enum class NodeType
 {
-    NODE_TYPE_OPEN,
-    NODE_TYPE_CLOSED,
-    NODE_TYPE_UNVISITED,
+    open,
+    closed,
+    unvisited,
 };
 
 struct NodeRecord
@@ -68,6 +66,4 @@ u32 heuristic(vec3 position_a, vec3 position_b);
 
 void navigation_init(Navigation *navigation);
 void navigation_update(Navigation *navigation);
-
-#endif
 

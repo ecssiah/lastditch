@@ -1,15 +1,12 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#pragma once
 
 #include <cglm/cglm.h>
 
 #include "core/types.h"
 
-#define DEBUG_LINE_MAX 1 << 13
+constexpr i32 DEBUG_LINE_MAX = 1 << 13;
+constexpr b32 DEBUG_AREAS = false;
 
-#define DEBUG_AREAS false
-
-typedef struct DebugLine DebugLine;
 struct DebugLine
 {
     vec3 position_a;
@@ -17,7 +14,6 @@ struct DebugLine
     vec3 color;
 };
 
-typedef struct Debug Debug;
 struct Debug
 {
     u32 line_count;
@@ -33,5 +29,3 @@ void debug_reset(Debug *debug);
 
 void debug_init(Debug *debug);
 void debug_close(Debug *debug);
-
-#endif
