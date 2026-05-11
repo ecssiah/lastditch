@@ -2,9 +2,8 @@
 
 #include <string.h>
 
-#include "justsky.h"
-#include "justsky_log.h"
-
+#include "core/types.h"
+#include "core/log.h"
 #include "game/sim/actor.h"
 #include "game/sim/nation.h"
 #include "game/sim/physics.h"

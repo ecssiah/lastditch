@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "justsky.h"
-
+#include "core/types.h"
 #include "core/math_ext.h"
 #include "game/sim/area.h"
 #include "game/sim/debug.h"

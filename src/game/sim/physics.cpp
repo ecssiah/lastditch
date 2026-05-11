@@ -1,7 +1,6 @@
 #include "game/sim/physics.h"
 
-#include "justsky.h"
-
+#include "core/types.h"
 #include "core/math_ext.h"
 #include "game/sim/actor.h"
 #include "game/sim/world.h"

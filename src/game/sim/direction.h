@@ -1,7 +1,6 @@
-#ifndef DIRECTION_H
-#define DIRECTION_H
+#pragma once
 
-#include "justsky.h"
+#include "core/types.h"
 
 #define FOR_LIST_DIRECTION(DO)                  \
     DO(DIRECTION_EAST)                          \
@@ -24,5 +23,3 @@ extern const char *DIRECTION_STRING[DIRECTION_COUNT];
 extern const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3];
 
 Direction direction_opposite(const Direction *direction);
-
-#endif

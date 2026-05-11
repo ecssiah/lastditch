@@ -1,9 +1,8 @@
-#ifndef PHYSICS_H
-#define PHYSICS_H
-
-#include "justsky.h"
+#pragma once
 
 #include <cglm/cglm.h>
+
+#include "core/types.h"
 
 #define RISING_GRAVITY_MODIFIER 1.0f
 #define FALLING_GRAVITY_MODIFIER 1.7f
@@ -21,4 +20,3 @@ struct BoxCollider
 
 void physics_update_actor(Actor *actor, World *world);
 
-#endif

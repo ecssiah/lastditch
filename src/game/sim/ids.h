@@ -1,7 +1,7 @@
 #ifndef IDS_H
 #define IDS_H
 
-#include "justsky.h"
+#include "core/types.h"
 
 typedef u32 ActorID;
 typedef u32 AreaID;

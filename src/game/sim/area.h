@@ -1,9 +1,8 @@
 #ifndef AREA_H
 #define AREA_H
 
-#include "justsky.h"
-
 #include "core/math_ext.h"
+#include "core/types.h"
 #include "game/sim/direction.h"
 #include "game/sim/ids.h"
 

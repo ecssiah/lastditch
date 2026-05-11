@@ -1,7 +1,7 @@
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
-#include "justsky.h"
+#include "core/types.h"
 
 #include <cglm/cglm.h>
 

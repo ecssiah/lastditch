@@ -1,7 +1,5 @@
-#ifndef JUSTSKY_H
-#define JUSTSKY_H
+#pragma once
 
-#include <assert.h>
 #include <stdint.h>
 
 typedef uint8_t     u8;
@@ -20,12 +18,6 @@ typedef double      f64;
 typedef uint8_t     b8;
 typedef uint32_t    b32;
 
-_Static_assert(sizeof(u8)  == 1, "u8 is not 1 byte");
-_Static_assert(sizeof(u16) == 2, "u16 is not 2 bytes");
-_Static_assert(sizeof(u32) == 4, "u32 is not 4 bytes");
-_Static_assert(sizeof(u64) == 8, "u64 is not 8 bytes");
-
+// TODO: Move these
 #define DEFINE_LIST_ENUMERATION(name) name,
 #define DEFINE_LIST_STRING(name) #name,
-
-#endif

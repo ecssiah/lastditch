@@ -3,7 +3,7 @@
 
 #include <cglm/cglm.h>
 
-#include "justsky.h"
+#include "core/types.h"
 
 #define DEBUG_LINE_MAX 1 << 13
 

@@ -3,7 +3,7 @@
 
 #include <cglm/cglm.h>
 
-#include "justsky.h"
+#include "core/types.h"
 
 #define ACTION_QUEUE_CAPACITY (1u << 6)
 

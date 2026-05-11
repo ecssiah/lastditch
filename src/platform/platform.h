@@ -1,9 +1,8 @@
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#pragma once
 
 #include "GLFW/glfw3.h"
 
-#include "justsky.h"
+#include "core/types.h"
 
 #define WINDOW_TITLE "Last Ditch"
 
@@ -84,5 +83,3 @@ void platform_init(Platform *platform, const char *window_title);
 void platform_begin_frame(Platform *platform);
 void platform_end_frame(Platform *platform);
 void platform_close();
-
-#endif

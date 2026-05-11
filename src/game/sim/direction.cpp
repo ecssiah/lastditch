@@ -1,5 +1,7 @@
 #include "game/sim/direction.h"
 
+#include <cassert>
+
 const char *DIRECTION_STRING[DIRECTION_COUNT] =
 {
     FOR_LIST_DIRECTION(DEFINE_LIST_STRING)
@@ -25,6 +27,8 @@ Direction direction_opposite(const Direction *direction)
     case DIRECTION_SOUTH: return DIRECTION_NORTH;
     case DIRECTION_UP:    return DIRECTION_DOWN;
     case DIRECTION_DOWN:  return DIRECTION_UP;
-    default: assert(false);
     }
+    
+    assert(false && "Unknown direction");
+    return DIRECTION_EAST;
 }

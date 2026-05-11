@@ -1,4 +1,4 @@
-#include "justsky_log.h"
+#include "log.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,7 +10,7 @@ static FILE* JUSTSKY_LOG_FILE;
 static char JUSTSKY_LOG_BASE_PATH[256];
 static char JUSTSKY_CURRENT_DAY_STRING[11];
 
-static const char* LOG_LEVEL_TO_STRING[LOG_LEVEL_COUNT] =
+static const char* LOG_LEVEL_TO_STRING[static_cast<size_t>(ELogLevel::LOG_LEVEL_COUNT)] =
 {
     "TRACE",
     "INFO",
@@ -82,7 +82,7 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
         stderr, 
         "[%s] [%s] (%s:%d) ",
         timestamp,
-        LOG_LEVEL_TO_STRING[log_level],
+        LOG_LEVEL_TO_STRING[static_cast<size_t>(log_level)],
         filename,
         line
     );
@@ -93,7 +93,7 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
             JUSTSKY_LOG_FILE, 
             "[%s] [%s] (%s:%d) ",
             timestamp,
-            LOG_LEVEL_TO_STRING[log_level],
+            LOG_LEVEL_TO_STRING[static_cast<size_t>(log_level)],
             filename,
             line
         );
@@ -123,7 +123,7 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
         fflush(JUSTSKY_LOG_FILE);
     }
 
-    if (log_level == LOG_LEVEL_FATAL)
+    if (log_level == ELogLevel::LOG_LEVEL_FATAL)
     {
         fflush(stderr);
 

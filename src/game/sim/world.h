@@ -1,10 +1,8 @@
-#ifndef WORLD_H
-#define WORLD_H
+#pragma once
 
 #include <cglm/cglm.h>
 
-#include "justsky.h"
-
+#include "core/types.h"
 #include "game/sim/area.h"
 #include "game/sim/direction.h"
 #include "game/sim/debug.h"
@@ -268,4 +266,3 @@ void world_init(World *world, Debug *debug);
 void world_update(World *world, Population *population);
 void world_close(World *world);
 
-#endif

@@ -1,5 +1,7 @@
 #include "platform/platform.h"
 
+#include <cassert>
+
 static void init_glfw(Platform *platform, const char *window_title)
 {
     const int glfw_result = glfwInit();

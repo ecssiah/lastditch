@@ -1,26 +1,21 @@
-#ifndef WORK_H
-#define WORK_H
+#pragma once
 
 #include <cglm/cglm.h>
 
-#include "justsky.h"
-
+#include "core/types.h"
 #include "game/sim/actor.h"
 #include "game/sim/ids.h"
-#include "game/sim/navigation.h"
 
 #define ACT_MAX 1 << 12
 
-typedef struct Sim Sim;
+struct Sim;
 
-typedef struct WanderState WanderState;
 struct WanderState
 {
     u32 tick;
     u32 tick_limit;
 };
 
-typedef struct SeekState SeekState;
 struct SeekState
 {
     ivec3 target_position;
@@ -76,5 +71,3 @@ ActID work_add_act(Work *work, Actor *actor, ActType act_type, ActState act_stat
 
 void work_init(Work *work);
 void work_update(Work *work, Sim *sim, f32 delta_time);
-
-#endif

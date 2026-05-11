@@ -7,10 +7,9 @@
 
 #include "stb_image.h"
 
-#include "justsky.h"
-#include "justsky_config.h"
-#include "justsky_log.h"
-
+#include "core/types.h"
+#include "core/config.h"
+#include "core/log.h"
 #include "game/sim/debug.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"

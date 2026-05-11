@@ -1,11 +1,10 @@
-#include "justsky_config.h"
+#include "config.h"
 
 #include <_string.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "justsky.h"
-#include "justsky_log.h"
+#include "core/log.h"
 
 static void strip_newline(char *str)
 {

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "justsky_log.h"
+#include "core/log.h"
 
 static const char* get_gl_error_string(GLenum err)
 {

@@ -3,8 +3,7 @@
 
 #include <cglm/cglm.h>
 
-#include "justsky.h"
-
+#include "core/types.h"
 #include "game/sim/ids.h"
 #include "game/sim/nation.h"
 #include "game/sim/physics.h"

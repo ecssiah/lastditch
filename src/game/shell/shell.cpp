@@ -1,8 +1,7 @@
 #include "game/shell/shell.h"
 
+#include "core/log.h"
 #include "game/sim/action.h"
-#include "justsky_log.h"
-
 #include "game/shell/render.h"
 #include "game/shell/screen.h"
 #include "platform/platform.h"

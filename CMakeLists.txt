@@ -25,7 +25,7 @@ find_package(glfw3 CONFIG REQUIRED)
 
 add_executable(
     lastditch
-    src/game/game.cpp
+    src/game/lastditch.cpp
 )
 
 target_include_directories(
@@ -60,12 +60,17 @@ target_sources(
     PRIVATE
     external/glad/src/glad.c
     external/stb/src/stb_image.c
-    external/justsky/justsky_log.cpp
-    external/justsky/justsky_config.cpp
-
+		
+	src/core/types.h
+		
+	src/core/config.h
+	src/core/config.cpp
+		
+	src/core/log.h
+	src/core/log.cpp
+		
 	src/core/math_ext.cpp
 	src/core/math_ext.h
-
 
 	src/game/shell/gl_ext.cpp
 	src/game/shell/gl_ext.h
@@ -119,9 +124,7 @@ target_sources(
 
 	src/game/sim/world.cpp
 	src/game/sim/world.h
-
-
-
+		
 	src/platform/platform.cpp
 	src/platform/platform.h
 )

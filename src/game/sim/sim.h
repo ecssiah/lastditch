@@ -1,8 +1,7 @@
 #ifndef SIM_H
 #define SIM_H
 
-#include "justsky.h"
-
+#include "core/types.h"
 #include "game/sim/action.h"
 #include "game/sim/debug.h"
 #include "game/sim/navigation.h"

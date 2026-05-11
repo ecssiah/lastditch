@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-#include "justsky_log.h"
+#include "log.h"
 
 i32 min_i32(i32 a, i32 b)
 {
