@@ -103,8 +103,11 @@ add_custom_command(
     TARGET
     lastditch
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "Assets..."
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/assets
 	        $<TARGET_FILE_DIR:lastditch>/assets
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_SOURCE_DIR}/config
+			$<TARGET_FILE_DIR:lastditch>/config
+
 )
