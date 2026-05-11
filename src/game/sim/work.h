@@ -23,7 +23,7 @@ struct SeekState
 
 #define FOR_LIST_ACT_TYPE(DO)              \
     DO(ACT_TYPE_WANDER)                    \
-    DO(ACT_TYPE_SEEK)                      \
+    DO(ACT_TYPE_SEEK)
 
 enum ActType
 {
@@ -50,12 +50,12 @@ struct ActPool
 {
     u32 active_count;
     ActID active_array[ACT_MAX];
-    
+
     PoolID active_lookup[ACT_MAX];
 
-    u32 free_count;    
+    u32 free_count;
     ActID free_array[ACT_MAX];
-    
+
     Act act_array[ACT_MAX];
 };
 
@@ -64,10 +64,10 @@ struct Work
     ActPool act_pool;
 };
 
-void wander_run(Sim *sim, Act *act, f32 delta_time);
-void seek_run(Sim *sim, Act *act, f32 delta_time);
+void wander_run(Sim* sim, Act* act, f32 delta_time);
+void seek_run(Sim* sim, Act* act, f32 delta_time);
 
-ActID work_add_act(Work *work, Actor *actor, ActType act_type, ActState act_state);
+ActID work_add_act(Work* work, Actor* actor, ActType act_type, ActState act_state);
 
-void work_init(Work *work);
-void work_update(Work *work, Sim *sim, f32 delta_time);
+void work_init(Work* work);
+void work_update(Work* work, Sim* sim, f32 delta_time);

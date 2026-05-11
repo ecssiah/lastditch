@@ -2,9 +2,9 @@
 
 #include "core/types.h"
 
-typedef u32 ActorID;
-typedef u32 AreaID;
-typedef u32 ActID;
-typedef u32 EdgeID;
-typedef u32 NodeID;
-typedef u32 PoolID;
+using ActorID = u32;
+using AreaID = u32;
+using ActID = u32;
+using EdgeID = u32;
+using NodeID = u32;
+using PoolID = u32;

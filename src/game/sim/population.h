@@ -1,14 +1,12 @@
 #pragma once
 
-#include <cglm/cglm.h>
-
 #include "game/sim/actor.h"
 #include "game/sim/nation.h"
 
 struct World;
 struct Work;
 
-#define AGENT_INITIAL_COUNT 12u
+constexpr i32 AGENT_INITIAL_COUNT = 12;
 
 struct Population
 {
@@ -19,5 +17,5 @@ struct Population
     ActorPool actor_pool;
 };
 
-void population_init(Population *population, Work *work);
+void population_init(Population* population, Work* work);
 void population_close();

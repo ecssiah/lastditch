@@ -14,25 +14,25 @@ int main()
 {
     platform_init(&platform, "Last Ditch");
     shell_init(&shell);
-    
+
     sim_init(&sim);
-    
+
     render_init(&shell, &platform, &sim);
     screen_init(&shell, &platform);
-    
+
     while (platform.active)
     {
         platform_begin_frame(&platform);
         shell_update(&platform, &sim);
 
         sim_update(&sim);
-        
+
         shell_present(&shell, &sim);
         platform_end_frame(&platform);
     }
 
     sim_close(&sim);
-    
+
     shell_close();
     platform_close();
 }

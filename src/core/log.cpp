@@ -10,7 +10,7 @@ static FILE* JUSTSKY_LOG_FILE;
 static char JUSTSKY_LOG_BASE_PATH[256];
 static char JUSTSKY_CURRENT_DAY_STRING[11];
 
-static const char* LOG_LEVEL_TO_STRING[static_cast<size_t>(ELogLevel::LOG_LEVEL_COUNT)] =
+static const char* LOG_LEVEL_TO_STRING[5] =
 {
     "TRACE",
     "INFO",
@@ -22,7 +22,7 @@ static const char* LOG_LEVEL_TO_STRING[static_cast<size_t>(ELogLevel::LOG_LEVEL_
 
 void log_init()
 {
-    const char* directory_name = "log/";
+    auto directory_name = "log/";
 
     strncpy(JUSTSKY_LOG_BASE_PATH, directory_name, sizeof(JUSTSKY_LOG_BASE_PATH) - 1);
 
@@ -70,7 +70,7 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
     const char* filename = file;
     const char* last_slash = strrchr(file, '/');
 
-    if (last_slash) 
+    if (last_slash)
     {
         filename = last_slash + 1;
     }
@@ -79,7 +79,7 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &tm_info);
 
     fprintf(
-        stderr, 
+        stderr,
         "[%s] [%s] (%s:%d) ",
         timestamp,
         LOG_LEVEL_TO_STRING[static_cast<size_t>(log_level)],
@@ -87,10 +87,10 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
         line
     );
 
-    if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr) 
+    if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
     {
         fprintf(
-            JUSTSKY_LOG_FILE, 
+            JUSTSKY_LOG_FILE,
             "[%s] [%s] (%s:%d) ",
             timestamp,
             LOG_LEVEL_TO_STRING[static_cast<size_t>(log_level)],
@@ -117,17 +117,17 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
 
     fprintf(stderr, "\n");
 
-    if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr) 
+    if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
     {
         fprintf(JUSTSKY_LOG_FILE, "\n");
         fflush(JUSTSKY_LOG_FILE);
     }
 
-    if (log_level == ELogLevel::LOG_LEVEL_FATAL)
+    if (log_level == ELogLevel::fatal)
     {
         fflush(stderr);
 
-        if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr) 
+        if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
         {
             fflush(JUSTSKY_LOG_FILE);
         }

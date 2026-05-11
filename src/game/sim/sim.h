@@ -9,12 +9,13 @@
 #include "game/sim/work.h"
 #include "game/sim/world.h"
 
-typedef struct Sim Sim;
+using Sim = struct Sim;
+
 struct Sim
 {
     b32 active;
     b32 evolving;
-    
+
     u32 seed;
 
     Debug debug;
@@ -28,8 +29,8 @@ struct Sim
     Population population;
 };
 
-void sim_init(Sim *sim);
-void sim_update(Sim *sim);
-void sim_close(Sim *sim);
-  
+void sim_init(Sim* sim);
+void sim_update(Sim* sim);
+void sim_close(Sim* sim);
+
 #endif

@@ -127,20 +127,20 @@ struct Population;
     DO(BLOCK_TYPE_VENT_1)                       \
     DO(BLOCK_TYPE_VENT_2)                       \
     DO(BLOCK_TYPE_VENT_3)                       \
-    DO(BLOCK_TYPE_VENT_4)                       \
+    DO(BLOCK_TYPE_VENT_4)
 
 enum BlockType
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_LIST_ENUMERATION)
-    
+
     BLOCK_TYPE_COUNT
 };
 
-extern const char *BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT];
+extern const char* BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT];
 
 struct BlockTypeList
 {
-    const BlockType *block_type_array;
+    const BlockType* block_type_array;
 
     i32 count;
 };
@@ -170,16 +170,16 @@ struct BlockTypeList
     DO(SECTION_S1)                              \
     DO(SECTION_S2)                              \
     DO(SECTION_S3)                              \
-    DO(SECTION_SE)                              \
+    DO(SECTION_SE)
 
 enum Section
 {
     FOR_LIST_SECTION(DEFINE_LIST_ENUMERATION)
-    
+
     SECTION_COUNT
 };
 
-extern const char *SECTION_TYPE_STRING[SECTION_COUNT];
+extern const char* SECTION_TYPE_STRING[SECTION_COUNT];
 
 extern const ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT];
 extern const ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT];
@@ -194,14 +194,13 @@ extern const BlockTypeList AREA_CONTENT_MASTER_LIST[TOWER_FLOOR_COUNT];
 struct Cell
 {
     u32 cell_index;
-    
+
     BlockType block_type;
     u8 direction_mask;
 };
 
 struct Structure
 {
-
 };
 
 struct World
@@ -212,10 +211,10 @@ struct World
     u64 second_count;
 
     f32 time_rate;
-    
+
     vec3 gravity;
 
-    Cell *cell_array;
+    Cell* cell_array;
 
     AreaPool area_pool_array[FLOOR_COUNT];
     EdgePool edge_pool;
@@ -243,26 +242,27 @@ i32 world_get_stride(Direction direction);
 
 u32 world_get_floor(i32 z);
 
-b32 world_is_solid(World *world, i32 x, i32 y, i32 z);
-b32 world_is_clear(World *world, i32 x, i32 y, i32 z, u8 direction_mask);
+b32 world_is_solid(World* world, i32 x, i32 y, i32 z);
+b32 world_is_clear(World* world, i32 x, i32 y, i32 z, u8 direction_mask);
 
-i32 world_block_type_index_from_string(const char *block_type_string);
+i32 world_block_type_index_from_string(const char* block_type_string);
 
-u8 world_get_direction_mask(World *world, i32 x, i32 y, i32 z);
+u8 world_get_direction_mask(World* world, i32 x, i32 y, i32 z);
 
-Cell *world_get_cell(World *world, i32 x, i32 y, i32 z);
+Cell* world_get_cell(World* world, i32 x, i32 y, i32 z);
 
-Cell *world_get_free_cell(World *world, i32 x, i32 y, i32 z);
+Cell* world_get_free_cell(World* world, i32 x, i32 y, i32 z);
 
-void world_set_block_type(World *world, i32 x, i32 y, i32 z, BlockType block_type);
-void world_set_block_type_box(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
-void world_set_block_type_cube(World *world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
+void world_set_block_type(World* world, i32 x, i32 y, i32 z, BlockType block_type);
+void world_set_block_type_box(World* world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z,
+                              BlockType block_type);
+void world_set_block_type_cube(World* world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z,
+                               BlockType block_type);
 
 u32 world_get_content_level(i32 z);
 
-void world_construct_area(World *world, const Area *area);
+void world_construct_area(World* world, const Area* area);
 
-void world_init(World *world, Debug *debug);
-void world_update(World *world, Population *population);
-void world_close(World *world);
-
+void world_init(World* world, Debug* debug);
+void world_update(World* world, Population* population);
+void world_close(World* world);

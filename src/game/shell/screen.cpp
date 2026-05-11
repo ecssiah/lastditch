@@ -8,7 +8,7 @@
 #include "game/sim/world.h"
 #include "game/shell/gl_ext.h"
 
-static void load_textures(Screen *screen, const char *textures_path)
+static void load_textures(Screen* screen, const char* textures_path)
 {
     char path[512];
     snprintf(path, sizeof(path), "%s/null_terminator.png", textures_path);
@@ -17,7 +17,7 @@ static void load_textures(Screen *screen, const char *textures_path)
 
     stbi_set_flip_vertically_on_load(0);
 
-    u8 *pixel_data_array = stbi_load(path, &width, &height, &channels, 0);
+    u8* pixel_data_array = stbi_load(path, &width, &height, &channels, 0);
 
     if (!pixel_data_array)
     {
@@ -49,9 +49,9 @@ static void load_textures(Screen *screen, const char *textures_path)
     else
     {
         printf("Unsupported channel count: %d\n", channels);
-        
+
         stbi_image_free(pixel_data_array);
-	
+
         return;
     }
 
@@ -81,10 +81,10 @@ static void get_orthographic_projection_matrix(f32 width, f32 height, mat4 out_p
     glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, out_projection_matrix);
 }
 
-static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
+static void draw_text(Shell* shell, const char* text, f32 x, f32 y)
 {
     f32 scale = 2.0f;
-    
+
     f32 char_width = 8.0f * scale;
     f32 char_height = 8.0f * scale;
 
@@ -95,12 +95,12 @@ static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
 
     i32 vertex_count = 0;
     u64 vertex_max = len * 6;
-    
+
     TextVertex text_vertex_array[vertex_max];
 
     f32 cursor_x = x;
 
-    for (i32 text_index = 0; text_index < (i32)len; text_index++)
+    for (i32 text_index = 0; text_index < static_cast<i32>(len); text_index++)
     {
         const char text_char = text[text_index];
 
@@ -126,14 +126,14 @@ static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
         f32 x1 = cursor_x + char_width;
         f32 y1 = y + char_height;
 
-        TextVertex text_vertex0 = { { x0, y0 }, { u0, v0 } };
-        TextVertex text_vertex1 = { { x1, y0 }, { u1, v0 } };
-        TextVertex text_vertex2 = { { x1, y1 }, { u1, v1 } };
+        TextVertex text_vertex0 = {{x0, y0}, {u0, v0}};
+        TextVertex text_vertex1 = {{x1, y0}, {u1, v0}};
+        TextVertex text_vertex2 = {{x1, y1}, {u1, v1}};
 
-        TextVertex text_vertex3 = { { x0, y0 }, { u0, v0 } };
-        TextVertex text_vertex4 = { { x1, y1 }, { u1, v1 } };
-        TextVertex text_vertex5 = { { x0, y1 }, { u0, v1 } };
-	
+        TextVertex text_vertex3 = {{x0, y0}, {u0, v0}};
+        TextVertex text_vertex4 = {{x1, y1}, {u1, v1}};
+        TextVertex text_vertex5 = {{x0, y1}, {u0, v1}};
+
         text_vertex_array[vertex_count++] = text_vertex0;
         text_vertex_array[vertex_count++] = text_vertex1;
         text_vertex_array[vertex_count++] = text_vertex2;
@@ -146,23 +146,24 @@ static void draw_text(Shell *shell, const char *text, f32 x, f32 y)
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, shell->screen.vbo_id);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)((u64)vertex_count * sizeof(TextVertex)), text_vertex_array, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(static_cast<u64>(vertex_count) * sizeof(TextVertex)),
+                 text_vertex_array, GL_DYNAMIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
 
-void screen_init(Shell *shell, Platform *platform)
+void screen_init(Shell* shell, Platform* platform)
 {
-    Screen *screen = &shell->screen;
-    
+    Screen* screen = &shell->screen;
+
     GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
     GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
 
     screen->program_id = glCreateProgram();
-    
+
     glAttachShader(screen->program_id, vert_shader);
     glAttachShader(screen->program_id, frag_shader);
-    
+
     glLinkProgram(screen->program_id);
 
     glUseProgram(screen->program_id);
@@ -170,7 +171,7 @@ void screen_init(Shell *shell, Platform *platform)
     screen->u_font_texture_sampler_location = glGetUniformLocation(screen->program_id, "u_font_texture_sampler");
 
     glUniform1i(screen->u_font_texture_sampler_location, 0);
-    
+
     screen->u_projection_location = glGetUniformLocation(screen->program_id, "u_projection_matrix");
 
     int fb_width, fb_height;
@@ -178,9 +179,9 @@ void screen_init(Shell *shell, Platform *platform)
 
     mat4 shell_projection_matrix;
     get_orthographic_projection_matrix(fb_width, fb_height, shell_projection_matrix);
-    
-    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, (f32 *)shell_projection_matrix);
-    
+
+    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, (f32*)shell_projection_matrix);
+
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
@@ -196,9 +197,9 @@ void screen_init(Shell *shell, Platform *platform)
         GL_FLOAT,
         GL_FALSE,
         sizeof(TextVertex),
-        (void *)0
+        static_cast<void*>(nullptr)
     );
-    
+
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(
@@ -207,33 +208,33 @@ void screen_init(Shell *shell, Platform *platform)
         GL_FLOAT,
         GL_FALSE,
         sizeof(TextVertex),
-        (void *)offsetof(TextVertex, uv)
+        (void*)offsetof(TextVertex, uv)
     );
 
     glEnableVertexAttribArray(1);
-    
+
     glBindVertexArray(0);
 
     load_textures(screen, "assets/textures/font");
 }
 
-static void draw_debug_info(Shell *shell, Sim *sim)
+static void draw_debug_info(Shell* shell, Sim* sim)
 {
-    const Actor *judge = &sim->population.actor_pool.actor_array[sim->population.judge_id];
+    const Actor* judge = &sim->population.actor_pool.actor_array[sim->population.judge_id];
 
     ivec3 cell_coordinate;
     world_position_to_cell_coordinate(judge->position[0], judge->position[1], judge->position[2], cell_coordinate);
 
     ivec2 sector_coordinate;
     world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], sector_coordinate);
-    
+
     char position_text[64];
     char velocity_text[64];
     char cell_coordinate_text[64];
     char sector_coordinate_text[64];
     char floor_text[64];
     char movement_type_text[128];
-    
+
     snprintf(
         position_text,
         sizeof(position_text),
@@ -242,7 +243,7 @@ static void draw_debug_info(Shell *shell, Sim *sim)
         judge->position[1],
         judge->position[2]
     );
-    
+
     snprintf(
         velocity_text,
         sizeof(velocity_text),
@@ -317,8 +318,10 @@ static void draw_debug_info(Shell *shell, Sim *sim)
 
     switch (judge->movement_type)
     {
-    case MOVEMENT_TYPE_GROUND: strcpy(movement_type_text, "MOV Ground"); break;
-    case MOVEMENT_TYPE_DEBUG: strcpy(movement_type_text, "MOV Debug"); break;
+    case MOVEMENT_TYPE_GROUND: strcpy(movement_type_text, "MOV Ground");
+        break;
+    case MOVEMENT_TYPE_DEBUG: strcpy(movement_type_text, "MOV Debug");
+        break;
     default: break;
     }
 
@@ -330,14 +333,14 @@ static void draw_debug_info(Shell *shell, Sim *sim)
     draw_text(shell, movement_type_text, 20, 120);
 }
 
-void screen_update(Shell *shell, Sim *sim)
+void screen_update(Shell* shell, Sim* sim)
 {
-    Screen *screen = &shell->screen;
-    
+    Screen* screen = &shell->screen;
+
     glUseProgram(screen->program_id);
 
     glClear(GL_DEPTH_BUFFER_BIT);
-    
+
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 

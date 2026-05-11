@@ -6,24 +6,24 @@
 
 #include "core/log.h"
 
-static void strip_newline(char *str)
+static void strip_newline(char* str)
 {
-    char *p = str;
-    
+    char* p = str;
+
     while (*p)
     {
         if (*p == '\n' || *p == '\r')
         {
             *p = '\0';
-	    
+
             return;
         }
-	
+
         p++;
     }
 }
 
-static b32 parse_line(char *line, JUSTSKY_ConfigEntry *out_config_entry)
+static b32 parse_line(char* line, JUSTSKY_ConfigEntry* out_config_entry)
 {
     strip_newline(line);
 
@@ -32,7 +32,7 @@ static b32 parse_line(char *line, JUSTSKY_ConfigEntry *out_config_entry)
         return false;
     }
 
-    char *equal_sign_present = strchr(line, '=');
+    char* equal_sign_present = strchr(line, '=');
 
     if (!equal_sign_present)
     {
@@ -56,10 +56,10 @@ static void extend_capacity(JUSTSKY_Config* config)
 {
     size_t new_capacity = config->entry_capacity * 2;
 
-    JUSTSKY_ConfigEntry *new_config_entry_array = (JUSTSKY_ConfigEntry *)realloc(
+    auto new_config_entry_array = static_cast<JUSTSKY_ConfigEntry*>(realloc(
         config->config_entry_array,
         new_capacity * sizeof(JUSTSKY_ConfigEntry)
-    );
+    ));
 
     if (!new_config_entry_array)
     {
@@ -68,18 +68,19 @@ static void extend_capacity(JUSTSKY_Config* config)
     }
 
     config->config_entry_array = new_config_entry_array;
-    config->entry_capacity = (u32)new_capacity;
+    config->entry_capacity = static_cast<u32>(new_capacity);
 }
 
-JUSTSKY_Config *justsky_load_config(const char* config_path)
+JUSTSKY_Config* justsky_load_config(const char* config_path)
 {
-    JUSTSKY_Config *justsky_config = (JUSTSKY_Config *)malloc(sizeof(JUSTSKY_Config));
+    auto justsky_config = static_cast<JUSTSKY_Config*>(malloc(sizeof(JUSTSKY_Config)));
     justsky_config->entry_count = 0;
     justsky_config->entry_capacity = 16;
-    
-    justsky_config->config_entry_array = (JUSTSKY_ConfigEntry *) malloc(sizeof(JUSTSKY_ConfigEntry) * justsky_config->entry_capacity);
-    
-    FILE *file = fopen(config_path, "r");
+
+    justsky_config->config_entry_array = static_cast<JUSTSKY_ConfigEntry*>(malloc(
+        sizeof(JUSTSKY_ConfigEntry) * justsky_config->entry_capacity));
+
+    FILE* file = fopen(config_path, "r");
 
     if (!file)
     {
@@ -92,8 +93,8 @@ JUSTSKY_Config *justsky_load_config(const char* config_path)
 
     while (fgets(line, sizeof(line), file))
     {
-        JUSTSKY_ConfigEntry *config_entry = &justsky_config->config_entry_array[justsky_config->entry_count];
-		
+        JUSTSKY_ConfigEntry* config_entry = &justsky_config->config_entry_array[justsky_config->entry_count];
+
         b32 success = parse_line(line, config_entry);
 
         if (success)
@@ -112,7 +113,7 @@ JUSTSKY_Config *justsky_load_config(const char* config_path)
     return justsky_config;
 }
 
-void justsky_destroy_config(JUSTSKY_Config *config)
+void justsky_destroy_config(JUSTSKY_Config* config)
 {
     for (u32 index = 0; index < config->entry_count; ++index)
     {

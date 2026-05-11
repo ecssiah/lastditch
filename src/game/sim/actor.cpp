@@ -5,12 +5,12 @@
 #include "core/math_ext.h"
 #include "game/sim/world.h"
 
-const char *ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =
+const char* ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =
 {
     FOR_LIST_ACTOR_TYPE(DEFINE_LIST_STRING)
 };
 
-i32 actor_type_index_from_string(const char *actor_type_string)
+i32 actor_type_index_from_string(const char* actor_type_string)
 {
     for (u32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
     {
@@ -23,7 +23,7 @@ i32 actor_type_index_from_string(const char *actor_type_string)
     return -1;
 }
 
-void actor_get_forward(Actor *actor, vec3 out_forward)
+void actor_get_forward(Actor* actor, vec3 out_forward)
 {
     const f32 rotation_x = glm_rad(actor->rotation[0]);
     const f32 rotation_z = glm_rad(actor->rotation[2]);
@@ -35,7 +35,7 @@ void actor_get_forward(Actor *actor, vec3 out_forward)
     glm_vec3_normalize(out_forward);
 }
 
-void actor_get_right(Actor *actor, vec3 out_right)
+void actor_get_right(Actor* actor, vec3 out_right)
 {
     vec3 forward;
     actor_get_forward(actor, forward);
@@ -45,7 +45,7 @@ void actor_get_right(Actor *actor, vec3 out_right)
     glm_vec3_normalize(out_right);
 }
 
-void actor_get_up(Actor *actor, vec3 out_up)
+void actor_get_up(Actor* actor, vec3 out_up)
 {
     vec3 forward;
     actor_get_forward(actor, forward);
@@ -54,19 +54,19 @@ void actor_get_up(Actor *actor, vec3 out_up)
     actor_get_right(actor, right);
 
     glm_vec3_cross(forward, right, out_up);
-    
+
     glm_vec3_normalize(out_up);
 }
 
-void actor_add(ActorPool *actor_pool, Actor *actor)
+void actor_add(ActorPool* actor_pool, Actor* actor)
 {
     const ActorID actor_id = actor_pool->free_array[--actor_pool->free_count];
 
     actor->actor_id = actor_id;
-    
+
     actor_pool->active_array[actor_pool->active_count++] = actor_id;
     actor_pool->actor_array[actor_id] = *actor;
-    
+
     assert(actor_pool->free_count + actor_pool->active_count == ACTOR_MAX);
 }
 
@@ -114,6 +114,3 @@ void actor_add(ActorPool *actor_pool, Actor *actor)
 //     default: break;
 //     }
 // }
-
-
-

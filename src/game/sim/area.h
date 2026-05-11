@@ -20,7 +20,7 @@
     DO(AREA_TYPE_ROOM)                          \
     DO(AREA_TYPE_ELEVATOR)                      \
     DO(AREA_TYPE_TEMPLE)                        \
-    DO(AREA_TYPE_WIREFRAME)                     \
+    DO(AREA_TYPE_WIREFRAME)
 
 enum AreaType
 {
@@ -35,7 +35,7 @@ struct Area
 
     AreaID area_id;
     u32 floor_number;
-    
+
     Bounds2i bounds;
 
     u32 edge_id_count;
@@ -51,7 +51,7 @@ struct AreaOverlap
 struct AreaEdge
 {
     EdgeID edge_id;
-    
+
     AreaID area_a_id;
     AreaID area_b_id;
 
@@ -64,13 +64,13 @@ struct AreaEdge
 struct AreaPool
 {
     u32 floor_number;
-    
+
     u32 free_count;
     AreaID free_array[AREA_POOL_MAX];
 
     u32 active_count;
     AreaID active_array[AREA_POOL_MAX];
-    
+
     u32 active_lookup[AREA_POOL_MAX];
 
     Area area_array[AREA_POOL_MAX];
@@ -83,14 +83,14 @@ struct EdgePool
 
     u32 active_count;
     EdgeID active_array[EDGE_POOL_MAX];
-    
+
     u32 active_lookup[EDGE_POOL_MAX];
-    
+
     AreaEdge edge_array[EDGE_POOL_MAX];
 };
 
-void area_add(AreaPool *area_pool, Area *area);
-void area_remove(AreaPool *area_pool, const AreaID area_id);
+void area_add(AreaPool* area_pool, Area* area);
+void area_remove(AreaPool* area_pool, AreaID area_id);
 
-void area_add_edge(EdgePool *edge_pool, AreaEdge *area_edge);
-void area_remove_edge(EdgePool *edge_pool, const EdgeID edge_id);
+void area_add_edge(EdgePool* edge_pool, AreaEdge* area_edge);
+void area_remove_edge(EdgePool* edge_pool, EdgeID edge_id);

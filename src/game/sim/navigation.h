@@ -18,7 +18,7 @@ struct NodeRecord
     NodeID parent_id;
 
     NodeType node_type;
-    
+
     u32 g_cost;
     u32 f_cost;
 };
@@ -33,28 +33,28 @@ struct EdgeList
 {
     u32 count;
 
-    Edge *edge_array;
+    Edge* edge_array;
 };
 
 struct Graph
 {
     u32 node_count;
-    
-    NodeRecord *node_record_array;
 
-    EdgeList *edge_list_array;
+    NodeRecord* node_record_array;
+
+    EdgeList* edge_list_array;
 };
 
 struct Search
 {
-    NodeRecord *node_record_array;
+    NodeRecord* node_record_array;
 };
 
 struct Path
 {
     u32 count;
-    
-    NodeID *node_id_array;
+
+    NodeID* node_id_array;
 };
 
 struct Navigation
@@ -64,6 +64,5 @@ struct Navigation
 
 u32 heuristic(vec3 position_a, vec3 position_b);
 
-void navigation_init(Navigation *navigation);
-void navigation_update(Navigation *navigation);
-
+void navigation_init(Navigation* navigation);
+void navigation_update(Navigation* navigation);

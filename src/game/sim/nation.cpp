@@ -1,15 +1,15 @@
 #include "game/sim/nation.h"
 
-#include <string.h>
+#include <cstring>
 
 #include "game/sim/world.h"
 
-const char *NATION_TYPE_STRING[NATION_TYPE_COUNT] =
+const char* NATION_TYPE_STRING[NATION_TYPE_COUNT] =
 {
-    FOR_LIST_NATION_TYPE( DEFINE_LIST_STRING )
+    FOR_LIST_NATION_TYPE(DEFINE_LIST_STRING)
 };
 
-i32 nation_type_index_from_string(const char *nation_type_string)
+i32 nation_type_index_from_string(const char* nation_type_string)
 {
     for (u32 nation_type_index = 0; nation_type_index < NATION_TYPE_COUNT; ++nation_type_index)
     {

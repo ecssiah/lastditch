@@ -9,7 +9,7 @@
     DO(NATION_TYPE_WOLF)                        \
     DO(NATION_TYPE_EAGLE)                       \
     DO(NATION_TYPE_LION)                        \
-    DO(NATION_TYPE_BEAR)                        \
+    DO(NATION_TYPE_BEAR)
 
 enum NationType
 {
@@ -17,7 +17,7 @@ enum NationType
     NATION_TYPE_COUNT
 };
 
-extern const char *NATION_TYPE_STRING[NATION_TYPE_COUNT];
+extern const char* NATION_TYPE_STRING[NATION_TYPE_COUNT];
 
 struct Nation
 {
@@ -26,4 +26,4 @@ struct Nation
     ivec3 home_coordinate;
 };
 
-i32 nation_type_index_from_string(const char *nation_type_string);
+i32 nation_type_index_from_string(const char* nation_type_string);

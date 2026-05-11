@@ -24,14 +24,14 @@ struct VoxelVertex
 struct VoxelGpuData
 {
     vec3 position;
-    
+
     GLuint vao_id;
     GLuint vbo_id;
 
     u32 voxel_vertex_count;
     u32 voxel_vertex_capacity;
-    
-    VoxelVertex *voxel_vertex_array;
+
+    VoxelVertex* voxel_vertex_array;
 };
 
 struct ModelVertex
@@ -53,14 +53,14 @@ struct ModelGpuData
 
     u32 model_vertex_count;
     u32 model_vertex_capacity;
-    
-    ModelVertex *model_vertex_array;
+
+    ModelVertex* model_vertex_array;
 };
 
 struct SectorQuad
 {
     ivec3 local_coordinate;
-    
+
     Direction direction;
     BlockType block_type;
 };
@@ -68,11 +68,11 @@ struct SectorQuad
 struct SectorMesh
 {
     u32 sector_index;
-    
+
     u32 sector_quad_count;
     u32 sector_quad_capacity;
 
-    SectorQuad *sector_quad_array;
+    SectorQuad* sector_quad_array;
 };
 
 struct Viewpoint
@@ -103,8 +103,8 @@ struct DebugGpuData
 
     u32 debug_vertex_count;
     u32 debug_vertex_capacity;
-    
-    DebugVertex *debug_vertex_array;
+
+    DebugVertex* debug_vertex_array;
 };
 
 struct DebugRender
@@ -117,8 +117,8 @@ struct DebugRender
 
     u32 debug_gpu_data_count;
     u32 debug_gpu_data_capacity;
-    
-    DebugGpuData *debug_gpu_data_array;
+
+    DebugGpuData* debug_gpu_data_array;
 };
 
 struct VoxelRender
@@ -128,27 +128,27 @@ struct VoxelRender
     GLuint texture_array_id;
 
     GLint u_texture_sampler_location;
-    
+
     GLint u_normal_table_location;
     GLint u_uv_projection_table_location;
-    
+
     GLint u_projection_location;
     GLint u_view_location;
     GLint u_model_location;
 
-    JUSTSKY_Config *block_config;
-    
+    JUSTSKY_Config* block_config;
+
     u8 block_type_layer_array[BLOCK_TYPE_COUNT];
 
     u32 sector_mesh_count;
     u32 sector_mesh_capacity;
 
-    SectorMesh *sector_mesh_array;
+    SectorMesh* sector_mesh_array;
 
     u32 voxel_gpu_data_count;
     u32 voxel_gpu_data_capacity;
-    
-    VoxelGpuData *voxel_gpu_data_array;
+
+    VoxelGpuData* voxel_gpu_data_array;
 };
 
 struct ModelRender
@@ -165,7 +165,7 @@ struct ModelRender
 
     GLint u_texture_layer_location;
 
-    JUSTSKY_Config *actor_config;
+    JUSTSKY_Config* actor_config;
 
     u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
 
@@ -191,19 +191,19 @@ struct Screen
     GLuint font_texture_id;
 
     GLint u_font_texture_sampler_location;
-    
+
     GLint u_projection_location;
 };
 
 struct Shell
 {
     b32 active;
-    
+
     Screen screen;
     Render render;
 };
 
-void shell_init(Shell *shell);
-void shell_update(Platform *platform, Sim *sim);
-void shell_present(Shell *shell, Sim *sim);
+void shell_init(Shell* shell);
+void shell_update(Platform* platform, Sim* sim);
+void shell_present(Shell* shell, Sim* sim);
 void shell_close();

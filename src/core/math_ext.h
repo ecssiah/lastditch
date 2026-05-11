@@ -52,14 +52,14 @@ struct Bounds3f
 i32 min_i32(i32 a, i32 b);
 i32 max_i32(i32 a, i32 b);
 
-void bounds2i_max(const Bounds2i *bounds, ivec2 out_max);
-void bounds2i_min(const Bounds2i *bounds, ivec2 out_min);
+void bounds2i_max(const Bounds2i* bounds, ivec2 out_max);
+void bounds2i_min(const Bounds2i* bounds, ivec2 out_min);
 
-b32 bounds2i_overlaps(const Bounds2i *bounds_left, const Bounds2i *bounds_right);
-Bounds2i bounds2i_intersection(const Bounds2i *bounds_left, const Bounds2i *bounds_right);
+b32 bounds2i_overlaps(const Bounds2i* bounds_left, const Bounds2i* bounds_right);
+Bounds2i bounds2i_intersection(const Bounds2i* bounds_left, const Bounds2i* bounds_right);
 
-u32 bounds2i_subtract(const Bounds2i *bounds_left, const Bounds2i *bounds_right, Bounds2i *out_array);
+u32 bounds2i_subtract(const Bounds2i* bounds_left, const Bounds2i* bounds_right, Bounds2i* out_array);
 
-void bounds2i_print(const Bounds2i *bounds);
+void bounds2i_print(const Bounds2i* bounds);
 
 f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time);

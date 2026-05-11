@@ -13,9 +13,8 @@ struct World;
 struct BoxCollider
 {
     b32 collision_enabled;
-    
+
     vec3 radius;
 };
 
-void physics_update_actor(Actor *actor, World *world);
-
+void physics_update_actor(Actor* actor, World* world);

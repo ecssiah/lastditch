@@ -4,12 +4,13 @@
 #include "game/sim/ids.h"
 #include "game/sim/sim.h"
 
-void wander_run(Sim *sim, Act *act, f32 delta_time)
+void 
+wander_run(Sim* sim, Act* act, f32 delta_time)
 {
-    Actor *actor = &sim->population.actor_pool.actor_array[act->actor_id];
-    
-    WanderState *wander_state = &act->act_state.wander;
-    
+    Actor* actor = &sim->population.actor_pool.actor_array[act->actor_id];
+
+    WanderState* wander_state = &act->act_state.wander;
+
     if (wander_state->tick < wander_state->tick_limit)
     {
         wander_state->tick++;
@@ -39,18 +40,19 @@ void wander_run(Sim *sim, Act *act, f32 delta_time)
     );
 }
 
-void seek_run(Sim *sim, Act *act, f32 delta_time)
+void 
+seek_run(Sim* sim, Act* act, f32 delta_time)
 {
-
 }
 
-ActID work_add_act(Work *work, Actor *actor, ActType act_type, ActState act_state)
+ActID 
+work_add_act(Work* work, Actor* actor, ActType act_type, ActState act_state)
 {
-    ActPool *act_pool = &work->act_pool;
+    ActPool* act_pool = &work->act_pool;
 
     const ActID act_id = act_pool->free_array[--act_pool->free_count];
 
-    Act *act = &act_pool->act_array[act_id];
+    Act* act = &act_pool->act_array[act_id];
 
     act->actor_id = actor->actor_id;
     act->act_type = act_type;
@@ -69,9 +71,10 @@ ActID work_add_act(Work *work, Actor *actor, ActType act_type, ActState act_stat
     return act_id;
 }
 
-void work_init(Work *work)
+void 
+work_init(Work* work)
 {
-    ActPool *act_pool = &work->act_pool;
+    ActPool* act_pool = &work->act_pool;
 
     act_pool->active_count = 0;
     act_pool->free_count = ACT_MAX;
@@ -83,19 +86,22 @@ void work_init(Work *work)
     }
 }
 
-void work_update(Work *work, Sim *sim, f32 delta_time)
+void 
+work_update(Work* work, Sim* sim, f32 delta_time)
 {
-    ActPool *act_pool = &work->act_pool;
-    
+    ActPool* act_pool = &work->act_pool;
+
     for (PoolID pool_id = 0; pool_id < act_pool->active_count; ++pool_id)
     {
         const ActID act_id = act_pool->active_array[pool_id];
-        Act *act = &act_pool->act_array[act_id];
+        Act* act = &act_pool->act_array[act_id];
 
         switch (act->act_type)
         {
-        case ACT_TYPE_WANDER: wander_run(sim, act, delta_time); break;
-        case ACT_TYPE_SEEK: seek_run(sim, act, delta_time); break;
+        case ACT_TYPE_WANDER: wander_run(sim, act, delta_time);
+            break;
+        case ACT_TYPE_SEEK: seek_run(sim, act, delta_time);
+            break;
         default: break;
         }
     }

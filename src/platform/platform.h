@@ -25,7 +25,7 @@ constexpr f32 WINDOW_ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
     DO(BUTTON_S)                                \
     DO(BUTTON_SPACE)                            \
     DO(BUTTON_W)                                \
-    DO(BUTTON_Q)                                \
+    DO(BUTTON_Q)
 
 enum Button
 {
@@ -37,13 +37,13 @@ struct Input
 {
     Button glfw_keymap[GLFW_KEY_LAST + 1];
     Button glfw_buttonmap[GLFW_MOUSE_BUTTON_LAST + 1];
-    
+
     bool button_array_current[BUTTON_COUNT];
     bool button_array_previous[BUTTON_COUNT];
 
     f64 pointer_current_x;
     f64 pointer_current_y;
-    
+
     f64 pointer_previous_x;
     f64 pointer_previous_y;
 
@@ -59,8 +59,8 @@ struct Window
     i32 height;
 
     f32 aspect_ratio;
-    
-    GLFWwindow *glfw_window;
+
+    GLFWwindow* glfw_window;
 };
 
 struct Platform
@@ -71,16 +71,16 @@ struct Platform
     f64 time_previous;
 
     f32 delta_time;
-    
+
     Window window;
     Input input;
 };
 
-b32 platform_button_is_down(Platform *platform, Button key);
-b32 platform_button_is_pressed(Platform *platform, Button key);
-b32 platform_button_is_released(Platform *platform, Button key);
+b32 platform_button_is_down(Platform* platform, Button key);
+b32 platform_button_is_pressed(Platform* platform, Button key);
+b32 platform_button_is_released(Platform* platform, Button key);
 
-void platform_init(Platform *platform, const char *window_title);
-void platform_begin_frame(Platform *platform);
-void platform_end_frame(Platform *platform);
+void platform_init(Platform* platform, const char* window_title);
+void platform_begin_frame(Platform* platform);
+void platform_end_frame(Platform* platform);
 void platform_close();
