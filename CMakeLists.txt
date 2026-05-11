@@ -62,25 +62,68 @@ target_sources(
     external/stb/src/stb_image.c
     external/justsky/justsky_log.cpp
     external/justsky/justsky_config.cpp
-    src/core/math_ext.cpp
-    src/game/sim/actor.cpp
-    src/game/sim/action.cpp
-    src/game/sim/area.cpp
-    src/game/sim/debug.cpp
-    src/game/sim/direction.cpp
-    src/game/sim/nation.cpp
-    src/game/sim/navigation.cpp
-    src/game/sim/physics.cpp
-    src/game/sim/population.cpp
-    src/game/sim/work.cpp
-    src/game/sim/sim.cpp
-    src/game/sim/world.cpp
-    src/game/shell/gl_ext.cpp
-    src/game/shell/render.cpp
-    src/game/shell/screen.cpp
-    src/game/shell/shell.cpp
-    src/game/shell/viewpoint.cpp
-    src/platform/platform.cpp
+
+	src/core/math_ext.cpp
+	src/core/math_ext.h
+
+
+	src/game/shell/gl_ext.cpp
+	src/game/shell/gl_ext.h
+
+	src/game/shell/render.cpp
+	src/game/shell/render.h
+
+	src/game/shell/screen.cpp
+	src/game/shell/screen.h
+
+	src/game/shell/shell.cpp
+	src/game/shell/shell.h
+
+	src/game/shell/viewpoint.cpp
+	src/game/shell/viewpoint.h
+		
+	src/game/sim/actor.cpp
+	src/game/sim/actor.h
+
+	src/game/sim/action.cpp
+	src/game/sim/action.h
+
+	src/game/sim/area.cpp
+	src/game/sim/area.h
+
+	src/game/sim/debug.cpp
+	src/game/sim/debug.h
+
+	src/game/sim/direction.cpp
+	src/game/sim/direction.h
+		
+	src/game/sim/ids.h
+
+	src/game/sim/nation.cpp
+	src/game/sim/nation.h
+
+	src/game/sim/navigation.cpp
+	src/game/sim/navigation.h
+
+	src/game/sim/physics.cpp
+	src/game/sim/physics.h
+
+	src/game/sim/population.cpp
+	src/game/sim/population.h
+
+	src/game/sim/work.cpp
+	src/game/sim/work.h
+
+	src/game/sim/sim.cpp
+	src/game/sim/sim.h
+
+	src/game/sim/world.cpp
+	src/game/sim/world.h
+
+
+
+	src/platform/platform.cpp
+	src/platform/platform.h
 )
 
 target_compile_definitions(
