@@ -1,6 +1,7 @@
 #ifndef NATION_H
 #define NATION_H
 
+#include "core/macros.h"
 #include "core/types.h"
 
 #include <cglm/cglm.h>

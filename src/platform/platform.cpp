@@ -18,7 +18,7 @@ static void init_glfw(Platform *platform, const char *window_title)
 
     platform->window.width = WINDOW_WIDTH;
     platform->window.height = WINDOW_HEIGHT;
-    platform->window.aspect_ratio = (f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT;
+    platform->window.aspect_ratio = WINDOW_ASPECT_RATIO;
     
     platform->window.glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, NULL, NULL);
 

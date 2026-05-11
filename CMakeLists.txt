@@ -61,6 +61,7 @@ target_sources(
     external/glad/src/glad.c
     external/stb/src/stb_image.c
 		
+	src/core/macros.h
 	src/core/types.h
 		
 	src/core/config.h

@@ -17,7 +17,3 @@ typedef double      f64;
 
 typedef uint8_t     b8;
 typedef uint32_t    b32;
-
-// TODO: Move these
-#define DEFINE_LIST_ENUMERATION(name) name,
-#define DEFINE_LIST_STRING(name) #name,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/macros.h"
 #include "core/types.h"
 
 #define FOR_LIST_DIRECTION(DO)                  \

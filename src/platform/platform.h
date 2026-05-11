@@ -2,14 +2,15 @@
 
 #include "GLFW/glfw3.h"
 
+#include "core/macros.h"
 #include "core/types.h"
 
 #define WINDOW_TITLE "Last Ditch"
 
-#define WINDOW_WIDTH 1024
-#define WINDOW_HEIGHT 768
+constexpr i32 WINDOW_WIDTH = 1024;
+constexpr i32 WINDOW_HEIGHT = 768;
 
-#define WINDOW_ASPECT_RATIO ((f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT)
+constexpr f32 WINDOW_ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
 
 #define FOR_LIST_BUTTON(DO)                     \
     DO(BUTTON_NONE)                             \
