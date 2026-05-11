@@ -15,9 +15,9 @@ static void get_fbounds(BoxCollider *box_collider, vec3 position, Bounds3f *out_
     out_fbounds->max[1] = position[1] + box_collider->radius[1];
     out_fbounds->max[2] = position[2] + box_collider->radius[2];
 
-    const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
+    constexpr f32 world_size = WORLD_SIZE_IN_CELLS;
 
-    for (u32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    for (u32 axis_index = 0; axis_index < 3; ++axis_index)
     {
         if (out_fbounds->min[axis_index] < 0.0f)
         {
@@ -52,7 +52,7 @@ static void get_overlap_from_fbounds(Bounds3f *fbounds, Bounds3i *out_ibounds)
 
 static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time, World *world)
 {
-    if (actor->velocity[axis] == 0.0f)
+    if (actor->velocity[(size_t)axis] == 0.0f)
     {
         return;
     }
@@ -78,23 +78,25 @@ static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time
     Bounds3i overlap_bounds;
     get_overlap_from_fbounds(&swept_bounds, &overlap_bounds);
 
-    const f32 actor_min_prev = actor_bounds.min[axis];
-    const f32 actor_max_prev = actor_bounds.max[axis];
+    const size_t AXIS_VALUE = (size_t)axis;
+    
+    const f32 actor_min_prev = actor_bounds.min[AXIS_VALUE];
+    const f32 actor_max_prev = actor_bounds.max[AXIS_VALUE];
 
-    const f32 actor_min_next = actor_min_prev + step_delta_time * actor->velocity[axis];
-    const f32 actor_max_next = actor_max_prev + step_delta_time * actor->velocity[axis];
+    const f32 actor_min_next = actor_min_prev + step_delta_time * actor->velocity[AXIS_VALUE];
+    const f32 actor_max_next = actor_max_prev + step_delta_time * actor->velocity[AXIS_VALUE];
 
-    const i32 axis_s = (axis + 1) % AXIS_COUNT;
-    const i32 axis_t = (axis + 2) % AXIS_COUNT;
+    const i32 axis_s = (AXIS_VALUE + 1) % 3;
+    const i32 axis_t = (AXIS_VALUE + 2) % 3;
     
     b32 found = false;
-    f32 best = actor->velocity[axis] > 0 ? INFINITY : -INFINITY;
+    f32 best = actor->velocity[AXIS_VALUE] > 0 ? INFINITY : -INFINITY;
     
-    for (i32 z = overlap_bounds.min[AXIS_Z]; z <= overlap_bounds.max[AXIS_Z]; ++z)
+    for (i32 z = overlap_bounds.min[(size_t)Axis::z]; z <= overlap_bounds.max[(size_t)Axis::z]; ++z)
     {
-        for (i32 y = overlap_bounds.min[AXIS_Y]; y <= overlap_bounds.max[AXIS_Y]; ++y)
+        for (i32 y = overlap_bounds.min[(size_t)Axis::y]; y <= overlap_bounds.max[(size_t)Axis::y]; ++y)
         {
-            for (i32 x = overlap_bounds.min[AXIS_X]; x <= overlap_bounds.max[AXIS_X]; ++x)
+            for (i32 x = overlap_bounds.min[(size_t)Axis::x]; x <= overlap_bounds.max[(size_t)Axis::x]; ++x)
             {
                 const ivec3 cell_coordinate = { x, y, z };
                     
@@ -124,9 +126,9 @@ static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time
                     continue;
                 }
 
-                if (actor->velocity[axis] > 0)
+                if (actor->velocity[AXIS_VALUE] > 0)
                 {
-                    const f32 block_min = cell_coordinate[axis];
+                    const f32 block_min = cell_coordinate[AXIS_VALUE];
 
                     if (
                         block_min >= actor_max_prev &&
@@ -139,7 +141,7 @@ static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time
                 }
                 else
                 {
-                    const f32 block_max = cell_coordinate[axis] + 1.0f;
+                    const f32 block_max = cell_coordinate[AXIS_VALUE] + 1.0f;
 
                     if (
                         block_max <= actor_min_prev &&
@@ -156,25 +158,25 @@ static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time
 
     if (found)
     {
-        if (actor->velocity[axis] > 0)
+        if (actor->velocity[AXIS_VALUE] > 0)
         {
-            actor->position[axis] = best - actor->box_collider.radius[axis];
+            actor->position[AXIS_VALUE] = best - actor->box_collider.radius[AXIS_VALUE];
         }
         else
         {
-            actor->position[axis] = best + actor->box_collider.radius[axis];
+            actor->position[AXIS_VALUE] = best + actor->box_collider.radius[AXIS_VALUE];
 
-            if (axis == AXIS_Z)
+            if (axis == Axis::z)
             {
                 actor->is_grounded = true;
             }
         }
 
-        actor->velocity[axis] = 0.0f;
+        actor->velocity[AXIS_VALUE] = 0.0f;
     }
     else
     {
-        actor->position[axis] += step_delta_time * actor->velocity[axis];
+        actor->position[AXIS_VALUE] += step_delta_time * actor->velocity[AXIS_VALUE];
     }
 }
 
@@ -184,13 +186,13 @@ static void integrate(Actor *actor, World *world)
     
     if (actor->movement_type == MOVEMENT_TYPE_GROUND)
     {
-        if (actor->velocity[AXIS_Z] <= 0.0f)
+        if (actor->velocity[(size_t)Axis::z] <= 0.0f)
         {
-            actor->velocity[AXIS_Z] += world->delta_time * FALLING_GRAVITY_MODIFIER * world->gravity[AXIS_Z];
+            actor->velocity[(size_t)Axis::z] += world->delta_time * FALLING_GRAVITY_MODIFIER * world->gravity[(size_t)Axis::z];
         }
         else
         {
-            actor->velocity[AXIS_Z] += world->delta_time * RISING_GRAVITY_MODIFIER * world->gravity[AXIS_Z];
+            actor->velocity[(size_t)Axis::z] += world->delta_time * RISING_GRAVITY_MODIFIER * world->gravity[(size_t)Axis::z];
         }
     }
 
@@ -210,13 +212,13 @@ static void integrate(Actor *actor, World *world)
             step_count = 1;
         }
 
-        const f32 step_delta_time = world->delta_time / (f32)step_count;
+        const f32 step_delta_time = world->delta_time / step_count;
 
         for (u32 step_index = 0; step_index < step_count; ++step_index)
         {
-            resolve_axis_collisions(actor, AXIS_X, step_delta_time, world);
-            resolve_axis_collisions(actor, AXIS_Y, step_delta_time, world);
-            resolve_axis_collisions(actor, AXIS_Z, step_delta_time, world);
+            resolve_axis_collisions(actor, Axis::x, step_delta_time, world);
+            resolve_axis_collisions(actor, Axis::y, step_delta_time, world);
+            resolve_axis_collisions(actor, Axis::z, step_delta_time, world);
         }
     }
     else

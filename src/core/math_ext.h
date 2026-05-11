@@ -1,19 +1,16 @@
-#ifndef MATH_H
-#define MATH_H
+#pragma once
 
 #include <cglm/cglm.h>
 
 #include "core/types.h"
 
-#define EPSILON 1e-5f
+constexpr f32 EPSILON = 1e-5f;
 
-enum Axis
+enum class Axis
 {
-    AXIS_X,
-    AXIS_Y,
-    AXIS_Z,
-
-    AXIS_COUNT,
+    x,
+    y,
+    z,
 };
 
 struct Bounds1i
@@ -66,5 +63,3 @@ u32 bounds2i_subtract(const Bounds2i *bounds_left, const Bounds2i *bounds_right,
 void bounds2i_print(const Bounds2i *bounds);
 
 f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time);
-
-#endif

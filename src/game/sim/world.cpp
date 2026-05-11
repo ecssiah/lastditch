@@ -1000,19 +1000,20 @@ static void layout_tower_areas(World *world)
 
                 const Area area_copy = area_pool->area_array[area_id];
 
-                const Axis axis_split = area_copy.bounds.size[AXIS_X] > area_copy.bounds.size[AXIS_Y] ? AXIS_X : AXIS_Y;
-
-                if (area_copy.bounds.size[axis_split] >= (i32)AREA_EXPANSION_SIZE_MIN)
+                const Axis axis_split = area_copy.bounds.size[(size_t)Axis::x] > area_copy.bounds.size[(size_t)Axis::y] ? Axis::x : Axis::y;
+                const size_t axis_split_value = (size_t)axis_split;
+                
+                if (area_copy.bounds.size[axis_split_value] >= (i32)AREA_EXPANSION_SIZE_MIN)
                 {
-                    const u32 split_size = area_copy.bounds.size[axis_split] / 2 + (-2 + (rand() % 5));
+                    const u32 split_size = area_copy.bounds.size[axis_split_value] / 2 + (-2 + (rand() % 5));
 
                     Area area_a = area_copy;
                     Area area_b = area_copy;
 
-                    area_a.bounds.size[axis_split] = split_size;
+                    area_a.bounds.size[axis_split_value] = split_size;
 
-                    area_b.bounds.position[axis_split] = area_copy.bounds.position[axis_split] + split_size;
-                    area_b.bounds.size[axis_split] = area_copy.bounds.size[axis_split] - split_size;
+                    area_b.bounds.position[axis_split_value] = area_copy.bounds.position[axis_split_value] + split_size;
+                    area_b.bounds.size[axis_split_value] = area_copy.bounds.size[axis_split_value] - split_size;
 
                     area_add(area_pool, &area_a);
                     area_add(area_pool, &area_b);
@@ -1496,11 +1497,11 @@ static void layout_test_area(World *world)
 static AreaOverlap get_area_overlap(const Area *area_left, const Area *area_right)
 {
     AreaOverlap area_overlap = {
-        .direction = DIRECTION_EAST,
         .bounds = {
             { 0, 0 },
             { 0, 0 },
         },
+        .direction = DIRECTION_EAST,
     };
     
     ivec2 left_min, left_max;

@@ -7,21 +7,21 @@
 #include "game/sim/nation.h"
 #include "game/sim/physics.h"
 
-#define ACTOR_MAX 256
+constexpr i32 ACTOR_MAX = 256;
 
-#define AGENT_DEFAULT_GROUND_SPEED 1.0f
-#define AGENT_DEFAULT_JUMP_SPEED 28.0f
+constexpr f32 AGENT_DEFAULT_GROUND_SPEED = 1.0f;
+constexpr f32 AGENT_DEFAULT_JUMP_SPEED = 28.0f;
 
-#define JUDGE_DEFAULT_GROUND_SPEED 12.0f
-#define JUDGE_DEFAULT_JUMP_SPEED 28.0f
-#define JUDGE_DEFAULT_DEBUG_SPEED 32.0f
+constexpr f32 JUDGE_DEFAULT_GROUND_SPEED = 12.0f;
+constexpr f32 JUDGE_DEFAULT_JUMP_SPEED = 28.0f;
+constexpr f32 JUDGE_DEFAULT_DEBUG_SPEED = 32.0f;
 
-#define CAMERA_SENSITIVITY_X 0.1f
-#define CAMERA_SENSITIVITY_Y 0.1f
+constexpr f32 CAMERA_SENSITIVITY_X = 0.1f;
+constexpr f32 CAMERA_SENSITIVITY_Y = 0.1f;
 
-#define CAMERA_PITCH_LIMIT 89.99f
+constexpr f32 CAMERA_PITCH_LIMIT = 89.99f;
 
-#define ACTOR_ACT_MAX 128
+constexpr i32 ACTOR_ACT_MAX = 128;
 
 enum MovementType
 {
