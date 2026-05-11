@@ -1,7 +1,8 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
+using namespace glm;
 
 #include "justsky.h"
 
@@ -9,7 +10,6 @@
 
 #define DEBUG_AREAS false
 
-typedef struct DebugLine DebugLine;
 struct DebugLine
 {
     vec3 position_a;
@@ -17,7 +17,6 @@ struct DebugLine
     vec3 color;
 };
 
-typedef struct Debug Debug;
 struct Debug
 {
     u32 line_count;

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "justsky_log.h"
 #include "game/sim/debug.h"
 #include "game/sim/navigation.h"
 #include "game/sim/population.h"

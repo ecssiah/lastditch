@@ -1,6 +1,7 @@
 #ifndef SHELL_H
 #define SHELL_H
 
+#include <vector>
 #include <glad/glad.h>
 
 #include "justsky.h"
@@ -18,14 +19,12 @@
 extern const i32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3];
 extern const f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3];
 
-typedef struct VoxelVertex VoxelVertex;
 struct VoxelVertex
 {
     u32 a_vertex;
     u32 a_face;
 };
 
-typedef struct VoxelGpuData VoxelGpuData;
 struct VoxelGpuData
 {
     vec3 position;
@@ -33,13 +32,9 @@ struct VoxelGpuData
     GLuint vao_id;
     GLuint vbo_id;
 
-    u32 voxel_vertex_count;
-    u32 voxel_vertex_capacity;
-    
-    VoxelVertex *voxel_vertex_array;
+    std::vector<VoxelVertex> voxel_vertex_vector;
 };
 
-typedef struct ModelVertex ModelVertex;
 struct ModelVertex
 {
     f32 a_position[3];
@@ -47,7 +42,6 @@ struct ModelVertex
     f32 a_uv[2];
 };
 
-typedef struct ModelGpuData ModelGpuData;
 struct ModelGpuData
 {
     vec3 position;
@@ -58,13 +52,9 @@ struct ModelGpuData
     GLuint vao_id;
     GLuint vbo_id;
 
-    u32 model_vertex_count;
-    u32 model_vertex_capacity;
-    
-    ModelVertex *model_vertex_array;
+    std::vector<ModelVertex> model_vertex_vector;
 };
 
-typedef struct SectorQuad SectorQuad;
 struct SectorQuad
 {
     ivec3 local_coordinate;
@@ -73,18 +63,13 @@ struct SectorQuad
     BlockType block_type;
 };
 
-typedef struct SectorMesh SectorMesh;
 struct SectorMesh
 {
     u32 sector_index;
     
-    u32 sector_quad_count;
-    u32 sector_quad_capacity;
-
-    SectorQuad *sector_quad_array;
+    std::vector<SectorQuad> sector_quad_vector;
 };
 
-typedef struct Viewpoint Viewpoint;
 struct Viewpoint
 {
     vec3 position;
@@ -94,33 +79,26 @@ struct Viewpoint
     mat4 view_matrix;
 };
 
-typedef struct TextVertex TextVertex;
 struct TextVertex
 {
     f32 position[2];
     f32 uv[2];
 };
 
-typedef struct DebugVertex DebugVertex;
 struct DebugVertex
 {
     f32 a_position[3];
     f32 a_color[3];
 };
 
-typedef struct DebugGpuData DebugGpuData;
 struct DebugGpuData
 {
     GLuint vao_id;
     GLuint vbo_id;
 
-    u32 debug_vertex_count;
-    u32 debug_vertex_capacity;
-    
-    DebugVertex *debug_vertex_array;
+    std::vector<DebugVertex> debug_vertex_vector;
 };
 
-typedef struct DebugRender DebugRender;
 struct DebugRender
 {
     GLuint program_id;
@@ -129,13 +107,9 @@ struct DebugRender
     GLint u_view_location;
     GLint u_model_location;
 
-    u32 debug_gpu_data_count;
-    u32 debug_gpu_data_capacity;
-    
-    DebugGpuData *debug_gpu_data_array;
+    std::vector<DebugGpuData> debug_gpu_data_vector;
 };
 
-typedef struct VoxelRender VoxelRender;
 struct VoxelRender
 {
     GLuint program_id;
@@ -166,7 +140,6 @@ struct VoxelRender
     VoxelGpuData *voxel_gpu_data_array;
 };
 
-typedef struct ModelRender ModelRender;
 struct ModelRender
 {
     GLuint program_id;
@@ -188,7 +161,6 @@ struct ModelRender
     ModelGpuData model_gpu_data_array[ACTOR_MAX];
 };
 
-typedef struct Render Render;
 struct Render
 {
     DebugRender debug_render;
@@ -198,7 +170,6 @@ struct Render
     Viewpoint viewpoint;
 };
 
-typedef struct Screen Screen;
 struct Screen
 {
     GLuint program_id;
@@ -213,7 +184,6 @@ struct Screen
     GLint u_projection_location;
 };
 
-typedef struct Shell Shell;
 struct Shell
 {
     b32 active;

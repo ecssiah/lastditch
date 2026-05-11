@@ -1,10 +1,9 @@
-#include <string.h>
-
 #include "game/shell/render.h"
 #include "game/shell/screen.h"
 #include "game/shell/shell.h"
 #include "game/sim/sim.h"
 #include "platform/platform.h"
+#include "justsky_log.h"
 
 static Platform platform;
 static Shell shell;
@@ -28,6 +27,7 @@ int main()
         sim_update(&sim);
         
         shell_present(&shell, &sim);
+
         platform_end_frame(&platform);
     }
 

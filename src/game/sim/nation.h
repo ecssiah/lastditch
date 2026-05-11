@@ -1,9 +1,10 @@
 #ifndef NATION_H
 #define NATION_H
 
-#include "justsky.h"
+#include <glm/glm.hpp>
+using namespace glm;
 
-#include <cglm/cglm.h>
+#include "justsky.h"
 
 #define FOR_LIST_NATION_TYPE(DO)                \
     DO(NATION_TYPE_WOLF)                        \

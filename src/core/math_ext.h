@@ -1,9 +1,10 @@
 #ifndef MATH_H
 #define MATH_H
 
-#include <cglm/cglm.h>
-
 #include "justsky.h"
+
+#include <glm/glm.hpp>
+using namespace glm;
 
 #define EPSILON 1e-5f
 

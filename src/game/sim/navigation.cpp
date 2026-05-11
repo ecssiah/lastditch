@@ -2,7 +2,6 @@
 
 u32 heuristic(vec3 position_a, vec3 position_b)
 {
-
     return 0;
 }
 

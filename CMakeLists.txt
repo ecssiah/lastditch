@@ -117,6 +117,8 @@ target_compile_options(
     -Wextra
     -Wshadow
     -Wconversion
+    -Wno-sign-conversion
+    -Wno-sign-compare
 )
 
 add_custom_command(
@@ -126,7 +128,9 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/assets
 	        $<TARGET_FILE_DIR:lastditch>/assets
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${CMAKE_SOURCE_DIR}/config
-		$<TARGET_FILE_DIR:lastditch>/config
+            
+    COMMAND ${CMAKE_COMMAND} -E echo "Config..."
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/config
+            $<TARGET_FILE_DIR:lastditch>/config
 )

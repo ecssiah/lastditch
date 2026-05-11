@@ -3,15 +3,15 @@
 
 #include "justsky.h"
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
+using namespace glm;
 
 #define RISING_GRAVITY_MODIFIER 1.0f
 #define FALLING_GRAVITY_MODIFIER 1.7f
 
-typedef struct Actor Actor;
-typedef struct World World;
+struct Actor;
+struct World;
 
-typedef struct BoxCollider BoxCollider;
 struct BoxCollider
 {
     b32 collision_enabled;

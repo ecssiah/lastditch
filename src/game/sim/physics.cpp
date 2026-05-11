@@ -18,7 +18,7 @@ static void get_fbounds(BoxCollider *box_collider, vec3 position, Bounds3f *out_
 
     const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
 
-    for (u32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    for (i32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
         if (out_fbounds->min[axis_index] < 0.0f)
         {
@@ -63,7 +63,7 @@ static void resolve_axis_collisions(Actor *actor, Axis axis, f32 step_delta_time
 
     Bounds3f swept_bounds;
 
-    for (u32 axis_index = 0; axis_index < 3; ++axis_index)
+    for (i32 axis_index = 0; axis_index < 3; ++axis_index)
     {
         swept_bounds.min[axis_index] = fminf(
             actor_bounds.min[axis_index],
@@ -213,7 +213,7 @@ static void integrate(Actor *actor, World *world)
 
         const f32 step_delta_time = world->delta_time / (f32)step_count;
 
-        for (u32 step_index = 0; step_index < step_count; ++step_index)
+        for (i32 step_index = 0; step_index < step_count; ++step_index)
         {
             resolve_axis_collisions(actor, AXIS_X, step_delta_time, world);
             resolve_axis_collisions(actor, AXIS_Y, step_delta_time, world);
@@ -222,10 +222,7 @@ static void integrate(Actor *actor, World *world)
     }
     else
     {
-        vec3 displacement;
-        glm_vec3_scale(actor->velocity, world->delta_time, displacement);
-        
-        glm_vec3_add(actor->position, displacement, actor->position);
+        actor->position = actor->position + world->delta_time * actor->velocity;
     }
 }
 

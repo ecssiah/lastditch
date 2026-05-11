@@ -1,6 +1,8 @@
 #ifndef JUSTSKY_CONFIG_H
 #define JUSTSKY_CONFIG_H
 
+#include <glm/glm.hpp>
+using namespace glm;
 #include <stdlib.h>
 
 #include "justsky.h"
@@ -15,8 +17,8 @@ struct JUSTSKY_ConfigEntry
 typedef struct JUSTSKY_Config JUSTSKY_Config;
 struct JUSTSKY_Config
 {
-    u32 entry_count;
-    u32 entry_capacity;
+    i32 entry_count;
+    i32 entry_capacity;
     
     JUSTSKY_ConfigEntry *config_entry_array;
 };

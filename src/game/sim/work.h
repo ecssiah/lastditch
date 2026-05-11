@@ -1,8 +1,6 @@
 #ifndef WORK_H
 #define WORK_H
 
-#include <cglm/cglm.h>
-
 #include "justsky.h"
 
 #include "game/sim/actor.h"
@@ -11,16 +9,14 @@
 
 #define ACT_MAX 1 << 12
 
-typedef struct Sim Sim;
+struct Sim;
 
-typedef struct WanderState WanderState;
 struct WanderState
 {
     u32 tick;
     u32 tick_limit;
 };
 
-typedef struct SeekState SeekState;
 struct SeekState
 {
     ivec3 target_position;

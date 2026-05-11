@@ -1,23 +1,0 @@
-
-jsk.h,481
-#define JSK_HJSK_H2,14
-typedef int boolean;boolean6,50
-#define False False7,71
-#define True True8,87
-typedef unsigned char u8;u810,103
-typedef   signed char i8;i811,129
-typedef unsigned short u16;u1613,156
-typedef   signed short i16;i1614,184
-typedef unsigned int u32;u3216,213
-typedef   signed int i32;i3217,239
-typedef unsigned long long u64;u6419,266
-typedef   signed long long i64;i6420,298
-typedef  float f32;f3222,331
-typedef double f64;f6423,351
-
-jskgl.h,148
-#define JSKGL_HJSKGL_H2,16
-char *read_file(const char *path)read_file10,114
-u32 compile_shader(u32 type, const char *src)compile_shader39,591
-
-TAGS,0

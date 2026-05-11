@@ -115,7 +115,7 @@ JUSTSKY_Config *justsky_load_config(const char* config_path)
 
 void justsky_destroy_config(JUSTSKY_Config *config)
 {
-    for (u32 index = 0; index < config->entry_count; ++index)
+    for (i32 index = 0; index < config->entry_count; ++index)
     {
         free((void*)config->config_entry_array[index].key);
         free((void*)config->config_entry_array[index].value);

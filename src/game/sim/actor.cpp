@@ -12,7 +12,7 @@ const char *ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =
 
 i32 actor_type_index_from_string(const char *actor_type_string)
 {
-    for (u32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
+    for (i32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
     {
         if (strcmp(actor_type_string, ACTOR_TYPE_STRING[actor_type_index]) == 0)
         {
@@ -23,39 +23,37 @@ i32 actor_type_index_from_string(const char *actor_type_string)
     return -1;
 }
 
-void actor_get_forward(Actor *actor, vec3 out_forward)
+vec3 actor_get_forward(Actor *actor)
 {
-    const f32 rotation_x = glm_rad(actor->rotation[0]);
-    const f32 rotation_z = glm_rad(actor->rotation[2]);
+    const f32 rotation_x = glm::radians(actor->rotation[0]);
+    const f32 rotation_z = glm::radians(actor->rotation[2]);
 
-    out_forward[0] = cosf(rotation_x) * cosf(rotation_z);
-    out_forward[1] = cosf(rotation_x) * sinf(rotation_z);
-    out_forward[2] = sinf(rotation_x);
-
-    glm_vec3_normalize(out_forward);
-}
-
-void actor_get_right(Actor *actor, vec3 out_right)
-{
-    vec3 forward;
-    actor_get_forward(actor, forward);
-
-    glm_vec3_cross(forward, GLM_ZUP, out_right);
-
-    glm_vec3_normalize(out_right);
-}
-
-void actor_get_up(Actor *actor, vec3 out_up)
-{
-    vec3 forward;
-    actor_get_forward(actor, forward);
-
-    vec3 right;
-    actor_get_right(actor, right);
-
-    glm_vec3_cross(forward, right, out_up);
+    vec3 forward = {
+        cosf(rotation_x) * cosf(rotation_z),
+        cosf(rotation_x) * sinf(rotation_z),
+        sinf(rotation_x),
+    };
     
-    glm_vec3_normalize(out_up);
+    return glm::normalize(forward);
+}
+
+vec3 actor_get_right(Actor *actor)
+{
+    vec3 forward = actor_get_forward(actor);
+
+    vec3 right = glm::cross(forward, { 0, 0, 1 });
+
+    return glm::normalize(right);
+}
+
+vec3 actor_get_up(Actor *actor)
+{
+    vec3 forward = actor_get_forward(actor);
+    vec3 right = actor_get_right(actor);
+
+    vec3 up = glm::cross(forward, right);
+
+    return glm::normalize(up);
 }
 
 void actor_add(ActorPool *actor_pool, Actor *actor)

@@ -1,49 +1,48 @@
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "viewpoint.h"
 
 #include "justsky.h"
 
-void viewpoint_get_forward(Viewpoint *viewpoint, vec3 out_forward)
+vec3 viewpoint_get_forward(Viewpoint *viewpoint)
 {
-    const f32 rotation_x = glm_rad(viewpoint->rotation[0]);
-    const f32 rotation_z = glm_rad(viewpoint->rotation[2]);
+    const f32 rotation_x = glm::radians(viewpoint->rotation[0]);
+    const f32 rotation_z = glm::radians(viewpoint->rotation[2]);
 
-    out_forward[0] = cosf(rotation_x) * cosf(rotation_z);
-    out_forward[1] = cosf(rotation_x) * sinf(rotation_z);
-    out_forward[2] = sinf(rotation_x);
+    vec3 forward = {
+        cosf(rotation_x) * cosf(rotation_z),
+        cosf(rotation_x) * sinf(rotation_z),
+        sinf(rotation_x),
+    };
 
-    glm_vec3_normalize(out_forward);
+    return glm::normalize(forward);
 }
 
-void viewpoint_get_right(Viewpoint *viewpoint, vec3 out_right)
+vec3 viewpoint_get_right(Viewpoint *viewpoint)
 {
-    vec3 forward;
-    viewpoint_get_forward(viewpoint, forward);
+    vec3 forward = viewpoint_get_forward(viewpoint);
 
-    glm_vec3_cross(forward, GLM_ZUP, out_right);
+    vec3 right = glm::cross(forward, { 0, 0, 1 });
 
-    glm_vec3_normalize(out_right);
+    return glm::normalize(right);
 }
 
-void viewpoint_get_up(Viewpoint *viewpoint, vec3 out_up)
+vec3 viewpoint_get_up(Viewpoint *viewpoint)
 {
-    vec3 forward;
-    viewpoint_get_forward(viewpoint, forward);
+    vec3 forward = viewpoint_get_forward(viewpoint);
+    vec3 right = viewpoint_get_right(viewpoint);
 
-    vec3 right;
-    viewpoint_get_right(viewpoint, right);
+    vec3 up = glm::cross(forward, right);
 
-    glm_vec3_cross(forward, right, out_up);
-
-    glm_vec3_normalize(out_up);
+    return glm::normalize(up);
 }
 
-void viewpoint_get_view_matrix(Viewpoint *viewpoint, mat4 out_view_matrix)
+mat4 viewpoint_get_view_matrix(Viewpoint *viewpoint)
 {
-    vec3 forward;
-    viewpoint_get_forward(viewpoint, forward);
+    vec3 forward = viewpoint_get_forward(viewpoint);
     
-    vec3 center;
-    glm_vec3_add(viewpoint->position, forward, center);
-    
-    glm_lookat(viewpoint->position, center, GLM_ZUP, out_view_matrix);
+    vec3 center = viewpoint->position + forward;
+
+    return glm::lookAt(viewpoint->position, center, { 0, 0, 1 });
 }
