@@ -1,0 +1,11 @@
+#+TITLE: Last Ditch Design
+
+* Design
+
+
+
+* Notes
+
+"This separation of fact from meaning is not possible with an object-oriented approach, which is why every time a fact acquires a new meaning, the meaning has to be implemented as part of the class containing the fact."
+
+- Date-Oriented Design, Richard Fabian, p94
