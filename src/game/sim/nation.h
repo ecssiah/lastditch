@@ -6,16 +6,17 @@
 #include "core/types.h"
 
 #define FOR_LIST_NATION_TYPE(DO)                \
-    DO(NATION_TYPE_WOLF)                        \
-    DO(NATION_TYPE_EAGLE)                       \
-    DO(NATION_TYPE_LION)                        \
-    DO(NATION_TYPE_BEAR)
+    DO(wolf)                        \
+    DO(eagle)                       \
+    DO(lion)                        \
+    DO(bear)
 
-enum NationType
+enum class NationType
 {
     FOR_LIST_NATION_TYPE(DEFINE_LIST_ENUMERATION)
-    NATION_TYPE_COUNT
 };
+    
+constexpr i32 NATION_TYPE_COUNT = FOR_LIST_NATION_TYPE(DEFINE_ENUM_COUNT);
 
 extern const char* NATION_TYPE_STRING[NATION_TYPE_COUNT];
 

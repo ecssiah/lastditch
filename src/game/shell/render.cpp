@@ -199,7 +199,7 @@ static void load_block_texture_directory(Shell* shell)
 
     for (u32 layer_index = 0; layer_index < voxel_render->block_config->entry_count; ++layer_index)
     {
-        const JUSTSKY_ConfigEntry* config_entry = &voxel_render->block_config->config_entry_array[layer_index];
+        const ConfigEntry* config_entry = &voxel_render->block_config->config_entry_array[layer_index];
 
         char texture_path[256];
 
@@ -242,13 +242,13 @@ static void load_actor_texture_directory(Shell* shell)
 
     for (u32 layer_index = 0; layer_index < model_render->actor_config->entry_count; ++layer_index)
     {
-        const JUSTSKY_ConfigEntry* config_entry = &model_render->actor_config->config_entry_array[layer_index];
+        const ConfigEntry* config_entry = &model_render->actor_config->config_entry_array[layer_index];
 
         char texture_path[256];
 
         snprintf(texture_path, sizeof(texture_path), "%s/%s", actor_texture_directory, config_entry->value);
 
-        const u32 nation_type_index = nation_type_index_from_string(config_entry->key);
+        const i32 nation_type_index = nation_type_index_from_string(config_entry->key);
 
         assert(nation_type_index >= 0);
         assert(nation_type_index < NATION_TYPE_COUNT);

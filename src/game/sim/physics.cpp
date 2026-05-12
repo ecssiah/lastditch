@@ -191,7 +191,7 @@ static void integrate(Actor* actor, World* world)
 {
     actor->is_grounded = false;
 
-    if (actor->movement_type == MOVEMENT_TYPE_GROUND)
+    if (actor->movement_type == MovementType::ground)
     {
         if (actor->velocity[static_cast<size_t>(Axis::z)] <= 0.0f)
         {
@@ -243,9 +243,9 @@ void physics_update_actor(Actor* actor, World* world)
 {
     switch (actor->movement_type)
     {
-    case MOVEMENT_TYPE_GROUND: integrate(actor, world);
+    case MovementType::ground: integrate(actor, world);
         break;
-    case MOVEMENT_TYPE_DEBUG: integrate(actor, world);
+    case MovementType::debug: integrate(actor, world);
         break;
     default: break;
     }

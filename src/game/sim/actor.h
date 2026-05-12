@@ -23,24 +23,28 @@ constexpr f32 CAMERA_PITCH_LIMIT = 89.99f;
 
 constexpr i32 ACTOR_ACT_MAX = 128;
 
-enum MovementType
-{
-    MOVEMENT_TYPE_GROUND,
-    MOVEMENT_TYPE_DEBUG,
+#define FOR_LIST_MOVEMENT_TYPE(DO)                                             \
+    DO(ground)                                                                 \
+    DO(debug)
 
-    MOVEMENT_TYPE_COUNT,
+enum class MovementType
+{
+    FOR_LIST_MOVEMENT_TYPE(DEFINE_LIST_ENUMERATION)
 };
 
+constexpr i32 MOVEMENT_TYPE_COUNT = FOR_LIST_MOVEMENT_TYPE(DEFINE_ENUM_COUNT);
+
 #define FOR_LIST_ACTOR_TYPE(DO)                 \
-    DO(ACTOR_TYPE_FREE)                         \
-    DO(ACTOR_TYPE_JUDGE)                        \
-    DO(ACTOR_TYPE_AGENT)
+    DO(none)                         \
+    DO(judge)                        \
+    DO(agent)
 
 enum ActorType
 {
     FOR_LIST_ACTOR_TYPE(DEFINE_LIST_ENUMERATION)
-    ACTOR_TYPE_COUNT,
 };
+
+constexpr i32 ACTOR_TYPE_COUNT = FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_COUNT);
 
 extern const char* ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT];
 

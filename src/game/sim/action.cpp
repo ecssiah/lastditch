@@ -18,7 +18,7 @@ static void apply_move_action(Actor* judge, Action* action)
 
     switch (judge->movement_type)
     {
-    case MOVEMENT_TYPE_GROUND:
+    case MovementType::ground:
         {
             vec3 judge_forward_flat;
             judge_forward_flat[0] = judge_forward[0];
@@ -46,7 +46,7 @@ static void apply_move_action(Actor* judge, Action* action)
 
             break;
         }
-    case MOVEMENT_TYPE_DEBUG:
+    case MovementType::debug:
         {
             glm_vec3_scale(judge_right, action->action_value[0], velocity_right);
             glm_vec3_scale(judge_forward, action->action_value[1], velocity_forward);
@@ -96,18 +96,18 @@ static void apply_debug_mode_action(Actor* judge)
 {
     switch (judge->movement_type)
     {
-    case MOVEMENT_TYPE_GROUND:
+    case MovementType::ground:
         {
-            judge->movement_type = MOVEMENT_TYPE_DEBUG;
+            judge->movement_type = MovementType::debug;
             judge->speed = JUDGE_DEFAULT_DEBUG_SPEED;
 
             judge->box_collider.collision_enabled = false;
 
             break;
         }
-    case MOVEMENT_TYPE_DEBUG:
+    case MovementType::debug:
         {
-            judge->movement_type = MOVEMENT_TYPE_GROUND;
+            judge->movement_type = MovementType::ground;
             judge->speed = JUDGE_DEFAULT_GROUND_SPEED;
 
             judge->box_collider.collision_enabled = true;

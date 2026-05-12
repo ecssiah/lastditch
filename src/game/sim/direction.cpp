@@ -1,5 +1,3 @@
-#include <cassert>
-
 #include "game/sim/direction.h"
 
 const char* DIRECTION_STRING[DIRECTION_COUNT] =

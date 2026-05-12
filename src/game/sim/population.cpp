@@ -14,9 +14,9 @@ static void
 init_judge(Population *population)
 {
     Actor judge = {
-        .actor_type = ACTOR_TYPE_JUDGE,
-        .nation_type = NATION_TYPE_LION,
-        .movement_type = MOVEMENT_TYPE_GROUND,
+        .actor_type = ActorType::judge,
+        .nation_type = NationType::lion,
+        .movement_type = MovementType::ground,
         .position = {WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f},
         .rotation = {0.0f, 0.0f, 90.0f},
         .rotation_target = {0.0f, 0.0f, 90.0f},
@@ -44,7 +44,7 @@ init_agents(Population *population, Work *work)
         for (u32 agent_index = 0; agent_index < AGENT_INITIAL_COUNT; ++agent_index)
         {
             const auto nation_type = static_cast<NationType>(rand() % NATION_TYPE_COUNT);
-            const Nation* nation = &population->nation_array[nation_type];
+            const Nation* nation = &population->nation_array[static_cast<u8>(nation_type)];
 
             const vec3 position = {
                 static_cast<f32>(nation->home_coordinate[0]) - 6 + rand() % 12,
@@ -55,15 +55,15 @@ init_agents(Population *population, Work *work)
             const vec3 rotation = {0.0f, 0.0f, static_cast<f32>(rand() % 360)};
 
             Actor agent = {
-                .actor_type = ACTOR_TYPE_AGENT,
-                .movement_type = MOVEMENT_TYPE_GROUND,
+                .actor_type = ActorType::agent,
                 .nation_type = nation_type,
+                .movement_type = MovementType::ground,
                 .position = {position[0], position[1], position[2]},
                 .rotation = {rotation[0], rotation[1], rotation[2]},
                 .rotation_target = {rotation[0], rotation[1], rotation[2]},
-                .velocity = {0.0f, 0.0f, 0.0f},
-                .speed = AGENT_DEFAULT_GROUND_SPEED,
                 .is_grounded = false,
+                .speed = AGENT_DEFAULT_GROUND_SPEED,
+                .velocity = {0.0f, 0.0f, 0.0f},
                 .box_collider = {
                     .collision_enabled = true,
                     .radius = {0.40f, 0.40f, 0.90f},
@@ -83,7 +83,7 @@ init_agents(Population *population, Work *work)
 
             LOG_INFO(
                 "Generated %s Agent, ID: %i at (%.1f %.1f %.1f)",
-                NATION_TYPE_STRING[agent.nation_type],
+                NATION_TYPE_STRING[static_cast<u8>(agent.nation_type)],
                 agent.actor_id,
                 agent.position[0], agent.position[1], agent.position[2]
             );
@@ -96,33 +96,33 @@ init_nations(Population *population)
 {
     constexpr f32 nation_offset = 76.0f;
 
-    Nation* wolf_nation = &population->nation_array[NATION_TYPE_WOLF];
+    Nation* wolf_nation = &population->nation_array[static_cast<u8>(NationType::wolf)];
 
-    wolf_nation->nation_type = NATION_TYPE_WOLF;
+    wolf_nation->nation_type = NationType::wolf;
 
     wolf_nation->home_coordinate[0] = WORLD_CENTER_F32 + nation_offset;
     wolf_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
     wolf_nation->home_coordinate[2] = ROOF_Z + 3.0f;
 
-    Nation* eagle_nation = &population->nation_array[NATION_TYPE_EAGLE];
+    Nation* eagle_nation = &population->nation_array[static_cast<u8>(NationType::eagle)];
 
-    eagle_nation->nation_type = NATION_TYPE_EAGLE;
+    eagle_nation->nation_type = NationType::eagle;
 
     eagle_nation->home_coordinate[0] = WORLD_CENTER_F32 - nation_offset;
     eagle_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
     eagle_nation->home_coordinate[2] = ROOF_Z + 3.0f;
 
-    Nation* bear_nation = &population->nation_array[NATION_TYPE_BEAR];
+    Nation* bear_nation = &population->nation_array[static_cast<u8>(NationType::bear)];
 
-    bear_nation->nation_type = NATION_TYPE_BEAR;
+    bear_nation->nation_type = NationType::bear;
 
     bear_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
     bear_nation->home_coordinate[1] = WORLD_CENTER_F32 + nation_offset;
     bear_nation->home_coordinate[2] = ROOF_Z + 1.0f;
 
-    Nation* lion_nation = &population->nation_array[NATION_TYPE_LION];
+    Nation* lion_nation = &population->nation_array[static_cast<u8>(NationType::lion)];
 
-    lion_nation->nation_type = NATION_TYPE_LION;
+    lion_nation->nation_type = NationType::lion;
 
     lion_nation->home_coordinate[0] = WORLD_CENTER_F32 + 0.0f;
     lion_nation->home_coordinate[1] = WORLD_CENTER_F32 - nation_offset;

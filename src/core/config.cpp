@@ -23,7 +23,7 @@ static void strip_newline(char* str)
     }
 }
 
-static b32 parse_line(char* line, JUSTSKY_ConfigEntry* out_config_entry)
+static b32 parse_line(char* line, ConfigEntry* out_config_entry)
 {
     strip_newline(line);
 
@@ -56,9 +56,9 @@ static void extend_capacity(JUSTSKY_Config* config)
 {
     size_t new_capacity = config->entry_capacity * 2;
 
-    auto new_config_entry_array = static_cast<JUSTSKY_ConfigEntry*>(realloc(
+    auto new_config_entry_array = static_cast<ConfigEntry*>(realloc(
         config->config_entry_array,
-        new_capacity * sizeof(JUSTSKY_ConfigEntry)
+        new_capacity * sizeof(ConfigEntry)
     ));
 
     if (!new_config_entry_array)
@@ -77,8 +77,8 @@ JUSTSKY_Config* justsky_load_config(const char* config_path)
     justsky_config->entry_count = 0;
     justsky_config->entry_capacity = 16;
 
-    justsky_config->config_entry_array = static_cast<JUSTSKY_ConfigEntry*>(malloc(
-        sizeof(JUSTSKY_ConfigEntry) * justsky_config->entry_capacity));
+    justsky_config->config_entry_array = static_cast<ConfigEntry*>(malloc(
+        sizeof(ConfigEntry) * justsky_config->entry_capacity));
 
     FILE* file = fopen(config_path, "r");
 
@@ -93,7 +93,7 @@ JUSTSKY_Config* justsky_load_config(const char* config_path)
 
     while (fgets(line, sizeof(line), file))
     {
-        JUSTSKY_ConfigEntry* config_entry = &justsky_config->config_entry_array[justsky_config->entry_count];
+        ConfigEntry* config_entry = &justsky_config->config_entry_array[justsky_config->entry_count];
 
         b32 success = parse_line(line, config_entry);
 
