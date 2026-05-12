@@ -1,5 +1,3 @@
-#include <string.h>
-
 #include "game/shell/render.h"
 #include "game/shell/screen.h"
 #include "game/shell/shell.h"

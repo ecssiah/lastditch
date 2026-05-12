@@ -41,27 +41,27 @@ static void init_buttons(Platform* platform)
 
     for (i32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
-        input->glfw_keymap[glfw_key_index] = BUTTON_NONE;
+        input->glfw_keymap[glfw_key_index] = Button::none;
     }
 
     for (i32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
-        input->glfw_buttonmap[glfw_button_index] = BUTTON_NONE;
+        input->glfw_buttonmap[glfw_button_index] = Button::none;
     }
 
-    input->glfw_keymap[GLFW_KEY_A] = BUTTON_A;
-    input->glfw_keymap[GLFW_KEY_D] = BUTTON_D;
-    input->glfw_keymap[GLFW_KEY_E] = BUTTON_E;
-    input->glfw_keymap[GLFW_KEY_ESCAPE] = BUTTON_ESCAPE;
-    input->glfw_keymap[GLFW_KEY_Q] = BUTTON_Q;
-    input->glfw_keymap[GLFW_KEY_S] = BUTTON_S;
-    input->glfw_keymap[GLFW_KEY_SPACE] = BUTTON_SPACE;
-    input->glfw_keymap[GLFW_KEY_TAB] = BUTTON_TAB;
-    input->glfw_keymap[GLFW_KEY_W] = BUTTON_W;
+    input->glfw_keymap[GLFW_KEY_A] = Button::a;
+    input->glfw_keymap[GLFW_KEY_D] = Button::d;
+    input->glfw_keymap[GLFW_KEY_E] = Button::e;
+    input->glfw_keymap[GLFW_KEY_ESCAPE] = Button::escape;
+    input->glfw_keymap[GLFW_KEY_Q] = Button::q;
+    input->glfw_keymap[GLFW_KEY_S] = Button::s;
+    input->glfw_keymap[GLFW_KEY_SPACE] = Button::space;
+    input->glfw_keymap[GLFW_KEY_TAB] = Button::tab;
+    input->glfw_keymap[GLFW_KEY_W] = Button::w;
 
-    input->glfw_buttonmap[GLFW_MOUSE_BUTTON_LEFT] = BUTTON_MOUSE_1;
-    input->glfw_buttonmap[GLFW_MOUSE_BUTTON_RIGHT] = BUTTON_MOUSE_2;
-    input->glfw_buttonmap[GLFW_MOUSE_BUTTON_MIDDLE] = BUTTON_MOUSE_3;
+    input->glfw_buttonmap[GLFW_MOUSE_BUTTON_LEFT] = Button::mouse_1;
+    input->glfw_buttonmap[GLFW_MOUSE_BUTTON_RIGHT] = Button::mouse_2;
+    input->glfw_buttonmap[GLFW_MOUSE_BUTTON_MIDDLE] = Button::mouse_3;
 }
 
 static void init_mouse(Platform* platform)
@@ -104,25 +104,27 @@ static void update_buttons(Platform* platform)
     for (i32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
         const Button button = input->glfw_keymap[glfw_key_index];
+        const i32 button_index = static_cast<i32>(button);
 
-        if (button == BUTTON_NONE)
+        if (button == Button::none)
         {
             continue;
         }
 
-        input->button_array_current[button] = glfwGetKey(platform->window.glfw_window, glfw_key_index) == GLFW_PRESS;
+        input->button_array_current[button_index] = glfwGetKey(platform->window.glfw_window, glfw_key_index) == GLFW_PRESS;
     }
 
     for (i32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
         const Button button = input->glfw_buttonmap[glfw_button_index];
-
-        if (button == BUTTON_NONE)
+        const i32 button_index = static_cast<i32>(button);
+        
+        if (button == Button::none)
         {
             continue;
         }
 
-        input->button_array_current[button] = glfwGetMouseButton(platform->window.glfw_window, glfw_button_index) ==
+        input->button_array_current[button_index] = glfwGetMouseButton(platform->window.glfw_window, glfw_button_index) ==
             GLFW_PRESS;
     }
 }
@@ -152,22 +154,28 @@ static void update_pointer(Platform* platform)
 
 b32 platform_button_is_down(Platform* platform, Button button)
 {
-    return platform->input.button_array_current[button];
+    const i32 button_index = static_cast<i32>(button);
+    
+    return platform->input.button_array_current[button_index];
 }
 
 b32 platform_button_is_pressed(Platform* platform, Button button)
 {
+    const i32 button_index = static_cast<i32>(button);
+    
     return (
-        platform->input.button_array_current[button] &&
-        !platform->input.button_array_previous[button]
+        platform->input.button_array_current[button_index] &&
+        !platform->input.button_array_previous[button_index]
     );
 }
 
 b32 platform_button_is_released(Platform* platform, Button button)
 {
+    const i32 button_index = static_cast<i32>(button);
+    
     return (
-        !platform->input.button_array_current[button] &&
-        platform->input.button_array_previous[button]
+        !platform->input.button_array_current[button_index] &&
+        platform->input.button_array_previous[button_index]
     );
 }
 
@@ -196,7 +204,7 @@ void platform_begin_frame(Platform* platform)
 
 void platform_end_frame(Platform* platform)
 {
-    if (platform_button_is_pressed(platform, BUTTON_ESCAPE))
+    if (platform_button_is_pressed(platform, Button::escape))
     {
         platform->active = false;
 

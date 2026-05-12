@@ -136,7 +136,7 @@ struct VoxelRender
     GLint u_view_location;
     GLint u_model_location;
 
-    JUSTSKY_Config* block_config;
+    ConfigData* block_config;
 
     u8 block_type_layer_array[BLOCK_TYPE_COUNT];
 
@@ -165,7 +165,7 @@ struct ModelRender
 
     GLint u_texture_layer_location;
 
-    JUSTSKY_Config* actor_config;
+    ConfigData* actor_config;
 
     u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
 

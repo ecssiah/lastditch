@@ -15,30 +15,30 @@
 
 #define DOOR_MINIMUM_EDGE_SIZE 5
 
-#define FOR_LIST_AREA_TYPE(DO)                  \
-    DO(AREA_TYPE_OPEN)                          \
-    DO(AREA_TYPE_ROOM)                          \
-    DO(AREA_TYPE_ELEVATOR)                      \
-    DO(AREA_TYPE_TEMPLE)                        \
-    DO(AREA_TYPE_WIREFRAME)
+#define FOR_LIST_AREA_TYPE(DO)                                                 \
+  DO(open)                                                                     \
+  DO(room)                                                                     \
+  DO(elevator)                                                                 \
+  DO(temple)                                                                   \
+  DO(wireframe)
 
-enum AreaType
+enum class AreaType
 {
     FOR_LIST_AREA_TYPE(DEFINE_LIST_ENUMERATION)
-
-    AREA_TYPE_COUNT
 };
+
+constexpr i32 AREA_TYPE_COUNT = FOR_LIST_AREA_TYPE(DEFINE_ENUM_COUNT);
 
 struct Area
 {
     AreaType area_type;
 
     AreaID area_id;
-    u32 floor_number;
+    i32 floor_number;
 
     Bounds2i bounds;
 
-    u32 edge_id_count;
+    i32 edge_id_count;
     EdgeID edge_id_array[AREA_EDGE_MAX];
 };
 

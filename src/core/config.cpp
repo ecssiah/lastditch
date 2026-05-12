@@ -52,7 +52,7 @@ static b32 parse_line(char* line, ConfigEntry* out_config_entry)
     return true;
 }
 
-static void extend_capacity(JUSTSKY_Config* config)
+static void extend_capacity(ConfigData* config)
 {
     size_t new_capacity = config->entry_capacity * 2;
 
@@ -71,14 +71,14 @@ static void extend_capacity(JUSTSKY_Config* config)
     config->entry_capacity = static_cast<u32>(new_capacity);
 }
 
-JUSTSKY_Config* justsky_load_config(const char* config_path)
+ConfigData* config_load(const char* config_path)
 {
-    auto justsky_config = static_cast<JUSTSKY_Config*>(malloc(sizeof(JUSTSKY_Config)));
-    justsky_config->entry_count = 0;
-    justsky_config->entry_capacity = 16;
+    ConfigData* config_data = static_cast<ConfigData*>(malloc(sizeof(ConfigData)));
+    config_data->entry_count = 0;
+    config_data->entry_capacity = 16;
 
-    justsky_config->config_entry_array = static_cast<ConfigEntry*>(malloc(
-        sizeof(ConfigEntry) * justsky_config->entry_capacity));
+    config_data->config_entry_array = static_cast<ConfigEntry*>(malloc(
+        sizeof(ConfigEntry) * config_data->entry_capacity));
 
     FILE* file = fopen(config_path, "r");
 
@@ -86,36 +86,36 @@ JUSTSKY_Config* justsky_load_config(const char* config_path)
     {
         LOG_ERROR("Config not found: %s", config_path);
 
-        return justsky_config;
+        return config_data;
     }
 
     char line[512];
 
     while (fgets(line, sizeof(line), file))
     {
-        ConfigEntry* config_entry = &justsky_config->config_entry_array[justsky_config->entry_count];
+        ConfigEntry* config_entry = &config_data->config_entry_array[config_data->entry_count];
 
         b32 success = parse_line(line, config_entry);
 
         if (success)
         {
-            justsky_config->entry_count += 1;
+            config_data->entry_count += 1;
 
-            if (justsky_config->entry_count >= justsky_config->entry_capacity)
+            if (config_data->entry_count >= config_data->entry_capacity)
             {
-                extend_capacity(justsky_config);
+                extend_capacity(config_data);
             }
         }
     }
 
     fclose(file);
 
-    return justsky_config;
+    return config_data;
 }
 
-void justsky_destroy_config(JUSTSKY_Config* config)
+void config_destroy(ConfigData* config)
 {
-    for (u32 index = 0; index < config->entry_count; ++index)
+    for (i32 index = 0; index < config->entry_count; ++index)
     {
         free((void*)config->config_entry_array[index].key);
         free((void*)config->config_entry_array[index].value);

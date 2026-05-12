@@ -13,34 +13,34 @@ static void queue_move_action(Platform* platform, Sim* sim)
         .action_value = {0.0f, 0.0f, 0.0f},
     };
 
-    if (platform_button_is_down(platform, BUTTON_A))
+    if (platform_button_is_down(platform, Button::a))
     {
         move_action.action_value[0] -= 1.0f;
     }
 
-    if (platform_button_is_down(platform, BUTTON_D))
+    if (platform_button_is_down(platform, Button::d))
     {
         move_action.action_value[0] += 1.0f;
     }
 
-    if (platform_button_is_down(platform, BUTTON_W))
+    if (platform_button_is_down(platform, Button::w))
     {
         move_action.action_value[1] += 1.0f;
     }
 
-    if (platform_button_is_down(platform, BUTTON_S))
+    if (platform_button_is_down(platform, Button::s))
     {
         move_action.action_value[1] -= 1.0f;
     }
 
     glm_vec3_normalize(move_action.action_value);
 
-    if (platform_button_is_down(platform, BUTTON_E))
+    if (platform_button_is_down(platform, Button::e))
     {
         move_action.action_value[2] += 1.0f;
     }
 
-    if (platform_button_is_down(platform, BUTTON_Q))
+    if (platform_button_is_down(platform, Button::q))
     {
         move_action.action_value[2] -= 1.0f;
     }
@@ -100,12 +100,12 @@ void shell_update(Platform* platform, Sim* sim)
         queue_rotate_action(platform, sim);
     }
 
-    if (platform_button_is_pressed(platform, BUTTON_SPACE))
+    if (platform_button_is_pressed(platform, Button::space))
     {
         queue_jump_action(sim);
     }
 
-    if (platform_button_is_released(platform, BUTTON_TAB))
+    if (platform_button_is_released(platform, Button::tab))
     {
         queue_debug_mode_action(sim);
     }

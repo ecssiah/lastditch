@@ -16,9 +16,8 @@ constexpr f32 JUDGE_DEFAULT_GROUND_SPEED = 12.0f;
 constexpr f32 JUDGE_DEFAULT_JUMP_SPEED = 28.0f;
 constexpr f32 JUDGE_DEFAULT_DEBUG_SPEED = 32.0f;
 
-constexpr f32 CAMERA_SENSITIVITY_X = 0.1f;
-constexpr f32 CAMERA_SENSITIVITY_Y = 0.1f;
-
+constexpr f32 CAMERA_SENSITIVITY_X = 0.2f;
+constexpr f32 CAMERA_SENSITIVITY_Y = 0.2f;
 constexpr f32 CAMERA_PITCH_LIMIT = 89.99f;
 
 constexpr i32 ACTOR_ACT_MAX = 128;
@@ -34,10 +33,10 @@ enum class MovementType
 
 constexpr i32 MOVEMENT_TYPE_COUNT = FOR_LIST_MOVEMENT_TYPE(DEFINE_ENUM_COUNT);
 
-#define FOR_LIST_ACTOR_TYPE(DO)                 \
-    DO(none)                         \
-    DO(judge)                        \
-    DO(agent)
+#define FOR_LIST_ACTOR_TYPE(DO)                                                \
+  DO(none)                                                                     \
+  DO(judge)                                                                    \
+  DO(agent)
 
 enum ActorType
 {

@@ -8,7 +8,7 @@ struct ConfigEntry
     const char* value;
 };
 
-struct JUSTSKY_Config
+struct ConfigData
 {
     u32 entry_count;
     u32 entry_capacity;
@@ -16,5 +16,5 @@ struct JUSTSKY_Config
     ConfigEntry* config_entry_array;
 };
 
-JUSTSKY_Config* justsky_load_config(const char* config_path);
-void justsky_destroy_config(JUSTSKY_Config* config);
+ConfigData* config_load(const char* config_path);
+void config_destroy(ConfigData* config);

@@ -1,11 +1,10 @@
 #include "game/shell/render.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <glad/glad.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "stb_image.h"
+#include <stb_image.h>
 
 #include "core/types.h"
 #include "core/config.h"
@@ -808,7 +807,7 @@ static void init_voxel_render(Shell* shell, Sim* sim)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    voxel_render->block_config = justsky_load_config("config/block.ini");
+    voxel_render->block_config = config_load("config/block.ini");
 
     load_block_texture_directory(shell);
 
@@ -867,7 +866,7 @@ static void init_model_render(Shell* shell, Sim* sim)
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    model_render->actor_config = justsky_load_config("config/actor.ini");
+    model_render->actor_config = config_load("config/actor.ini");
 
     load_actor_texture_directory(shell);
 

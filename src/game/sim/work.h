@@ -21,16 +21,16 @@ struct SeekState
     ivec3 target_position;
 };
 
-#define FOR_LIST_ACT_TYPE(DO)              \
-    DO(ACT_TYPE_WANDER)                    \
-    DO(ACT_TYPE_SEEK)
+#define FOR_LIST_ACT_TYPE(DO)                                                  \
+  DO(wander)                                                                   \
+  DO(seek)
 
 enum ActType
 {
     FOR_LIST_ACT_TYPE(DEFINE_LIST_ENUMERATION)
-
-    ACT_TYPE_COUNT
 };
+
+constexpr i32 ACT_TYPE_COUNT = FOR_LIST_ACT_TYPE(DEFINE_ENUM_COUNT);
 
 union ActState
 {

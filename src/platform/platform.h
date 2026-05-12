@@ -1,37 +1,36 @@
 #pragma once
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 #include "core/macros.h"
 #include "core/types.h"
-
-#define WINDOW_TITLE "Last Ditch"
 
 constexpr i32 WINDOW_WIDTH = 1024;
 constexpr i32 WINDOW_HEIGHT = 768;
 
 constexpr f32 WINDOW_ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
 
-#define FOR_LIST_BUTTON(DO)                     \
-    DO(BUTTON_NONE)                             \
-    DO(BUTTON_A)                                \
-    DO(BUTTON_D)                                \
-    DO(BUTTON_E)                                \
-    DO(BUTTON_ESCAPE)                           \
-    DO(BUTTON_MOUSE_1)                          \
-    DO(BUTTON_MOUSE_2)                          \
-    DO(BUTTON_MOUSE_3)                          \
-    DO(BUTTON_TAB)                              \
-    DO(BUTTON_S)                                \
-    DO(BUTTON_SPACE)                            \
-    DO(BUTTON_W)                                \
-    DO(BUTTON_Q)
+#define FOR_LIST_BUTTON(DO)                                                    \
+  DO(none)                                                                     \
+  DO(a)                                                                        \
+  DO(d)                                                                        \
+  DO(e)                                                                        \
+  DO(escape)                                                                   \
+  DO(mouse_1)                                                                  \
+  DO(mouse_2)                                                                  \
+  DO(mouse_3)                                                                  \
+  DO(tab)                                                                      \
+  DO(s)                                                                        \
+  DO(space)                                                                    \
+  DO(w)                                                                        \
+  DO(q)
 
-enum Button
+enum class Button
 {
     FOR_LIST_BUTTON(DEFINE_LIST_ENUMERATION)
-    BUTTON_COUNT
 };
+
+constexpr i32 BUTTON_COUNT = FOR_LIST_BUTTON(DEFINE_ENUM_COUNT);
 
 struct Input
 {

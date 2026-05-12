@@ -98,9 +98,11 @@ work_update(Work* work, Sim* sim, f32 delta_time)
 
         switch (act->act_type)
         {
-        case ACT_TYPE_WANDER: wander_run(sim, act, delta_time);
+        case ActType::wander: 
+            wander_run(sim, act, delta_time);
             break;
-        case ACT_TYPE_SEEK: seek_run(sim, act, delta_time);
+        case ActType::seek: 
+            seek_run(sim, act, delta_time);
             break;
         default: break;
         }

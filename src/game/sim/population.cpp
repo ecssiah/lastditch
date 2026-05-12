@@ -79,7 +79,7 @@ init_agents(Population *population, Work *work)
                 }
             };
 
-            work_add_act(work, &agent, ACT_TYPE_WANDER, act_state);
+            work_add_act(work, &agent, ActType::wander, act_state);
 
             LOG_INFO(
                 "Generated %s Agent, ID: %i at (%.1f %.1f %.1f)",

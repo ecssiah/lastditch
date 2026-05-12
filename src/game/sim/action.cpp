@@ -122,13 +122,17 @@ static void apply_action(Actor* judge, Action* action)
 {
     switch (action->type)
     {
-    case ActionType::move: apply_move_action(judge, action);
+    case ActionType::move: 
+        apply_move_action(judge, action);
         break;
-    case ActionType::rotate: apply_rotate_action(judge, action);
+    case ActionType::rotate: 
+        apply_rotate_action(judge, action);
         break;
-    case ActionType::jump: apply_jump_action(judge);
+    case ActionType::jump: 
+        apply_jump_action(judge);
         break;
-    case ActionType::debug_mode: apply_debug_mode_action(judge);
+    case ActionType::debug_mode: 
+        apply_debug_mode_action(judge);
         break;
     default: break;
     }

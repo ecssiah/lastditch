@@ -5,11 +5,11 @@
 #include "core/macros.h"
 #include "core/types.h"
 
-#define FOR_LIST_NATION_TYPE(DO)                \
-    DO(wolf)                        \
-    DO(eagle)                       \
-    DO(lion)                        \
-    DO(bear)
+#define FOR_LIST_NATION_TYPE(DO)                                               \
+  DO(wolf)                                                                     \
+  DO(eagle)                                                                    \
+  DO(lion)                                                                     \
+  DO(bear)
 
 enum class NationType
 {

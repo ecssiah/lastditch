@@ -1,20 +1,20 @@
 #include "math_ext.h"
 
-#include <math.h>
+#include <cmath>
 
 #include "log.h"
 
-i32 min_i32(i32 a, i32 b)
+i32 min_i32(const i32 a, const i32 b)
 {
     return a < b ? a : b;
 }
 
-i32 max_i32(i32 a, i32 b)
+i32 max_i32(const i32 a, const i32 b)
 {
     return a > b ? a : b;
 }
 
-f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time)
+f32 lerp_to(const f32 current, const f32 target, const f32 speed, const f32 delta_time)
 {
     const f32 alpha = 1.0f - expf(-speed * delta_time);
     f32 delta = target - current;
@@ -25,6 +25,7 @@ f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time)
 
         return current + delta * alpha;
     }
+    
     return target;
 }
 

@@ -1,5 +1,4 @@
-#ifndef SIM_H
-#define SIM_H
+#pragma once
 
 #include "core/types.h"
 #include "game/sim/action.h"
@@ -8,8 +7,6 @@
 #include "game/sim/population.h"
 #include "game/sim/work.h"
 #include "game/sim/world.h"
-
-using Sim = struct Sim;
 
 struct Sim
 {
@@ -32,5 +29,3 @@ struct Sim
 void sim_init(Sim* sim);
 void sim_update(Sim* sim);
 void sim_close(Sim* sim);
-
-#endif

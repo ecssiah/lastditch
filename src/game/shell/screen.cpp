@@ -91,7 +91,7 @@ static void draw_text(Shell* shell, const char* text, f32 x, f32 y)
     f32 cell_width = 1.0f / 8.0f;
     f32 cell_height = 1.0f / 12.0f;
 
-    u64 len = strlen(text);
+    const u64 len = strlen(text);
 
     i32 vertex_count = 0;
     u64 vertex_max = len * 6;

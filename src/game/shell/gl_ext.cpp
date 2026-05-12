@@ -1,7 +1,7 @@
 #include "game/shell/gl_ext.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include "core/log.h"
 

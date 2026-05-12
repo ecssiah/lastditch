@@ -758,9 +758,9 @@ place_area(World* world, Area* area)
 static void 
 construct_tower(World* world)
 {
-    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        const ivec3 floor_origin = {TOWER_BORDER, TOWER_BORDER, static_cast<i32>(floor_number * FLOOR_SIZE_Z)};
+        const ivec3 floor_origin = {TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z};
 
         world_set_block_type_cube(
             world,
@@ -801,7 +801,8 @@ construct_tower(World* world)
 
         for (i32 cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + static_cast<i32>(TOWER_SIZE) - 1; ++cell_x)
         {
-            i32 north_position_z, north_size_z;
+            i32 north_position_z;
+            i32 north_size_z;
 
             const u32 north_offset = rand() % (FLOOR_SIZE_Z - 2);
 
@@ -823,7 +824,8 @@ construct_tower(World* world)
                 BlockType::panel_2
             );
 
-            i32 south_position_z, south_size_z;
+            i32 south_position_z;
+            i32 south_size_z;
 
             const u32 south_offset = rand() % (FLOOR_SIZE_Z - 2);
 
@@ -848,7 +850,8 @@ construct_tower(World* world)
 
         for (i32 cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + static_cast<i32>(TOWER_SIZE) - 1; ++cell_y)
         {
-            i32 east_position_z, east_size_z;
+            i32 east_position_z;
+            i32 east_size_z;
 
             const u32 east_offset = rand() % (FLOOR_SIZE_Z - 2);
 
@@ -870,7 +873,8 @@ construct_tower(World* world)
                 BlockType::panel_2
             );
 
-            i32 west_position_z, west_size_z;
+            i32 west_position_z;
+            i32 west_size_z;
 
             const u32 west_offset = rand() % (FLOOR_SIZE_Z - 2);
 
@@ -935,7 +939,7 @@ layout_roof_areas(World* world)
         for (i32 area_x = TOWER_BORDER; area_x < TOWER_SIZE + TOWER_BORDER; area_x += roof_area_size)
         {
             Area roof_area = {
-                .area_type = AREA_TYPE_OPEN,
+                .area_type = AreaType::open,
                 .floor_number = TOWER_FLOOR_COUNT,
                 .bounds = {
                     {area_x, area_y},
@@ -950,13 +954,16 @@ layout_roof_areas(World* world)
 
 static void layout_elevator_areas(World* world)
 {
-    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT + 1; ++floor_number)
+    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT + 1; ++floor_number)
     {
         Area elevator_shaft = {
-            .area_type = AREA_TYPE_ELEVATOR,
+            .area_type = AreaType::elevator,
             .floor_number = floor_number,
             .bounds = {
-                {WORLD_CENTER_I32 - ELEVATOR_SIZE / 2, WORLD_CENTER_I32 - ELEVATOR_SIZE / 2},
+                {
+                    WORLD_CENTER_I32 - ELEVATOR_SIZE / 2, 
+                    WORLD_CENTER_I32 - ELEVATOR_SIZE / 2
+                },
                 {ELEVATOR_SIZE, ELEVATOR_SIZE},
             },
         };
@@ -968,43 +975,67 @@ static void layout_elevator_areas(World* world)
 static void 
 layout_tower_areas(World* world)
 {
-    for (u32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
         AreaPool* area_pool = &world->area_pool_array[floor_number];
 
         Area area_quadrant_1 = {
-            .area_type = AREA_TYPE_ROOM,
+            .area_type = AreaType::room,
             .floor_number = floor_number,
             .bounds = {
-                {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q1)][0], SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q1)][1]},
-                {SECTION_SIZE_ARRAY[static_cast<u8>(Section::q1)][0], SECTION_SIZE_ARRAY[static_cast<u8>(Section::q1)][1]}
+                {
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q1)][0], 
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q1)][1]
+                },
+                {
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q1)][0], 
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q1)][1]
+                },
             },
         };
 
         Area area_quadrant_2 = {
-            .area_type = AREA_TYPE_ROOM,
+            .area_type = AreaType::room,
             .floor_number = floor_number,
             .bounds = {
-                {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q2)][0], SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q2)][1]},
-                {SECTION_SIZE_ARRAY[static_cast<u8>(Section::q2)][0], SECTION_SIZE_ARRAY[static_cast<u8>(Section::q2)][1]}
+                {
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q2)][0], 
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q2)][1]
+                },
+                {
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q2)][0], 
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q2)][1]
+                },
             },
         };
 
         Area area_quadrant_3 = {
-            .area_type = AREA_TYPE_ROOM,
+            .area_type = AreaType::room,
             .floor_number = floor_number,
             .bounds = {
-                {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q3)][0], SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q3)][1]},
-                {SECTION_SIZE_ARRAY[static_cast<u8>(Section::q3)][0], SECTION_SIZE_ARRAY[static_cast<u8>(Section::q3)][1]}
+                {
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q3)][0], 
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q3)][1]
+                },
+                {
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q3)][0], 
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q3)][1]
+                }
             },
         };
 
         Area area_quadrant_4 = {
-            .area_type = AREA_TYPE_ROOM,
+            .area_type = AreaType::room,
             .floor_number = floor_number,
             .bounds = {
-                {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q4)][0], SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q4)][1]},
-                {SECTION_SIZE_ARRAY[static_cast<u8>(Section::q4)][0], SECTION_SIZE_ARRAY[static_cast<u8>(Section::q4)][1]}
+                {
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q4)][0], 
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q4)][1]
+                },
+                {
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q4)][0], 
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q4)][1]
+                },
             },
         };
 
@@ -1013,17 +1044,17 @@ layout_tower_areas(World* world)
         area_add(area_pool, &area_quadrant_3);
         area_add(area_pool, &area_quadrant_4);
 
-        u32 area_id_removal_count = 0;
-        u32 area_indices_to_remove[4 << AREA_EXPANSION_ITERATION_COUNT];
+        i32 area_id_removal_count = 0;
+        i32 area_indices_to_remove[4 << AREA_EXPANSION_ITERATION_COUNT];
 
-        for (u32 iteration = 0; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
+        for (i32 iteration = 0; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
         {
-            u32 pool_index = 0;
-            u32 initial_count = area_pool->active_count;
+            i32 pool_index = 0;
+            const i32 initial_count = area_pool->active_count;
 
             while (pool_index < initial_count)
             {
-                const u32 area_id = area_pool->active_array[pool_index];
+                const i32 area_id = area_pool->active_array[pool_index];
 
                 const Area area_copy = area_pool->area_array[area_id];
 
@@ -1031,6 +1062,7 @@ layout_tower_areas(World* world)
                                             static_cast<size_t>(Axis::y)]
                                             ? Axis::x
                                             : Axis::y;
+                
                 const size_t axis_split_value = static_cast<size_t>(axis_split);
 
                 if (area_copy.bounds.size[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
@@ -1079,7 +1111,7 @@ layout_tower_areas(World* world)
             }
 
             Area section_area = {
-                .area_type = AREA_TYPE_OPEN,
+                .area_type = AreaType::open,
                 .floor_number = floor_number,
                 .bounds = {
                     {SECTION_ORIGIN_ARRAY[section_index][0], SECTION_ORIGIN_ARRAY[section_index][1]},
@@ -1514,7 +1546,7 @@ layout_test_area(World* world)
     };
 
     Area test_room1 = {
-        .area_type = AREA_TYPE_WIREFRAME,
+        .area_type = AreaType::wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
         .bounds = {
             {test_area_position[0], test_area_position[1]},
@@ -1523,7 +1555,7 @@ layout_test_area(World* world)
     };
 
     Area test_room2 = {
-        .area_type = AREA_TYPE_WIREFRAME,
+        .area_type = AreaType::wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
         .bounds = {
             {test_area_position[0] + 10, test_area_position[1] + 10},
@@ -1907,11 +1939,14 @@ construct_areas(World* world, u32 floor_number)
 
         switch (area->area_type)
         {
-        case AREA_TYPE_ROOM: construct_room(world, area);
+        case AreaType::room: 
+            construct_room(world, area);
             break;
-        case AREA_TYPE_ELEVATOR: construct_elevator(world, area);
+        case AreaType::elevator: 
+            construct_elevator(world, area);
             break;
-        case AREA_TYPE_WIREFRAME: construct_wireframe(world, area);
+        case AreaType::wireframe: 
+            construct_wireframe(world, area);
             break;
         default: break;
         }
@@ -1928,7 +1963,7 @@ place_content(World* world, u32 floor_number)
         const AreaID area_id = area_pool->active_array[pool_id];
         const Area* area = &area_pool->area_array[area_id];
 
-        if (area->area_type != AREA_TYPE_ROOM)
+        if (area->area_type != AreaType::room)
         {
             continue;
         }
