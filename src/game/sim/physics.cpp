@@ -92,19 +92,19 @@ static void resolve_axis_collisions(Actor& actor, Axis axis, f32 step_delta_time
 
     const Bounds3i grid_overlap_bounds = get_grid_overlap_from_bounds(swept_bounds);
 
-    const size_t axis_value = static_cast<size_t>(axis);
+    const size_t axis_index = static_cast<size_t>(axis);
 
-    const f32 actor_min_prev = actor_bounds.min[axis_value];
-    const f32 actor_max_prev = actor_bounds.max[axis_value];
+    const f32 actor_min_prev = actor_bounds.min[axis_index];
+    const f32 actor_max_prev = actor_bounds.max[axis_index];
 
-    const f32 actor_min_next = actor_min_prev + step_delta_time * actor.velocity[axis_value];
-    const f32 actor_max_next = actor_max_prev + step_delta_time * actor.velocity[axis_value];
+    const f32 actor_min_next = actor_min_prev + step_delta_time * actor.velocity[axis_index];
+    const f32 actor_max_next = actor_max_prev + step_delta_time * actor.velocity[axis_index];
 
-    const i32 axis_s = (axis_value + 1) % 3;
-    const i32 axis_t = (axis_value + 2) % 3;
+    const i32 axis_s = (axis_index + 1) % 3;
+    const i32 axis_t = (axis_index + 2) % 3;
 
     b32 found = false;
-    f32 best = actor.velocity[axis_value] > 0 ? INFINITY : -INFINITY;
+    f32 best = actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY;
 
     for (
         i32 z = grid_overlap_bounds.min[static_cast<size_t>(Axis::z)]; 
@@ -149,9 +149,9 @@ static void resolve_axis_collisions(Actor& actor, Axis axis, f32 step_delta_time
                     continue;
                 }
 
-                if (actor.velocity[axis_value] > 0)
+                if (actor.velocity[axis_index] > 0)
                 {
-                    const f32 block_min = cell_coordinate[axis_value];
+                    const f32 block_min = cell_coordinate[axis_index];
 
                     if (
                         block_min >= actor_max_prev &&
@@ -164,7 +164,7 @@ static void resolve_axis_collisions(Actor& actor, Axis axis, f32 step_delta_time
                 }
                 else
                 {
-                    const f32 block_max = cell_coordinate[axis_value] + 1.0f;
+                    const f32 block_max = cell_coordinate[axis_index] + 1.0f;
 
                     if (
                         block_max <= actor_min_prev &&
@@ -181,13 +181,13 @@ static void resolve_axis_collisions(Actor& actor, Axis axis, f32 step_delta_time
 
     if (found)
     {
-        if (actor.velocity[axis_value] > 0)
+        if (actor.velocity[axis_index] > 0)
         {
-            actor.position[axis_value] = best - actor.box_collider.radius[axis_value];
+            actor.position[axis_index] = best - actor.box_collider.radius[axis_index];
         }
         else
         {
-            actor.position[axis_value] = best + actor.box_collider.radius[axis_value];
+            actor.position[axis_index] = best + actor.box_collider.radius[axis_index];
 
             if (axis == Axis::z)
             {
@@ -195,11 +195,11 @@ static void resolve_axis_collisions(Actor& actor, Axis axis, f32 step_delta_time
             }
         }
 
-        actor.velocity[axis_value] = 0.0f;
+        actor.velocity[axis_index] = 0.0f;
     }
     else
     {
-        actor.position[axis_value] += step_delta_time * actor.velocity[axis_value];
+        actor.position[axis_index] += step_delta_time * actor.velocity[axis_index];
     }
 }
 
@@ -210,24 +210,36 @@ integrate(Actor& actor, World& world)
 
     if (actor.movement_type == MovementType::ground)
     {
+        constexpr i32 axis_index = static_cast<i32>(Axis::z);
+        
         if (actor.velocity[static_cast<size_t>(Axis::z)] <= 0.0f)
         {
-            actor.velocity[static_cast<size_t>(Axis::z)] += world.delta_time * FALLING_GRAVITY_MODIFIER * world.
-                gravity[static_cast<size_t>(Axis::z)];
+            const f32 dz = world.delta_time * FALLING_GRAVITY_MODIFIER * world.gravity[axis_index];
+            
+            actor.velocity[axis_index] = glm::clamp(
+                actor.velocity[axis_index] + dz, 
+                -MAX_VELOCITY, 
+                MAX_VELOCITY
+            );
         }
         else
         {
-            actor.velocity[static_cast<size_t>(Axis::z)] += world.delta_time * RISING_GRAVITY_MODIFIER * world.
-                gravity[static_cast<size_t>(Axis::z)];
+            const f32 dz = world.delta_time * RISING_GRAVITY_MODIFIER * world.gravity[axis_index];
+            
+            actor.velocity[axis_index] = glm::clamp(
+                actor.velocity[axis_index] + dz,
+                -MAX_VELOCITY,
+                MAX_VELOCITY
+            );
         }
     }
 
     if (actor.box_collider.collision_enabled)
     {
         const glm::vec3 move = {
-            fabsf(world.delta_time * actor.velocity[0]),
-            fabsf(world.delta_time * actor.velocity[1]),
-            fabsf(world.delta_time * actor.velocity[2]),
+            fabsf(world.delta_time * actor.velocity.x),
+            fabsf(world.delta_time * actor.velocity.y),
+            fabsf(world.delta_time * actor.velocity.z),
         };
 
         const f32 max_move = fmaxf(move[0], fmaxf(move[1], move[2]));

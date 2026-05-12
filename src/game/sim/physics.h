@@ -4,6 +4,8 @@
 
 #include "core/types.h"
 
+constexpr f32 MAX_VELOCITY = 200.0f;
+
 constexpr f32 RISING_GRAVITY_MODIFIER = 1.0f;
 constexpr f32 FALLING_GRAVITY_MODIFIER = 1.7f;
 

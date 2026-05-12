@@ -10,12 +10,14 @@
 #include "game/sim/world.h"
 #include "game/shell/gl_ext.h"
 
-static void load_textures(Screen* screen, const char* textures_path)
+static void load_textures(Screen& screen, const char* textures_path)
 {
     char path[512];
     snprintf(path, sizeof(path), "%s/null_terminator.png", textures_path);
 
-    int width, height, channels;
+    i32 width;
+    i32 height;
+    i32 channels;
 
     stbi_set_flip_vertically_on_load(0);
 
@@ -27,8 +29,8 @@ static void load_textures(Screen* screen, const char* textures_path)
         return;
     }
 
-    glGenTextures(1, &screen->font_texture_id);
-    glBindTexture(GL_TEXTURE_2D, screen->font_texture_id);
+    glGenTextures(1, &screen.font_texture_id);
+    glBindTexture(GL_TEXTURE_2D, screen.font_texture_id);
 
     GLint internal_format;
     GLenum format;
@@ -163,25 +165,25 @@ static void draw_text(Shell& shell, const char* text, f32 x, f32 y)
 
 void screen_init(Shell& shell, Platform& platform)
 {
-    Screen* screen = &shell.screen;
+    Screen& screen = shell.screen;
 
-    GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
-    GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
+    const GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
+    const GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
 
-    screen->program_id = glCreateProgram();
+    screen.program_id = glCreateProgram();
 
-    glAttachShader(screen->program_id, vert_shader);
-    glAttachShader(screen->program_id, frag_shader);
+    glAttachShader(screen.program_id, vert_shader);
+    glAttachShader(screen.program_id, frag_shader);
 
-    glLinkProgram(screen->program_id);
+    glLinkProgram(screen.program_id);
 
-    glUseProgram(screen->program_id);
+    glUseProgram(screen.program_id);
 
-    screen->u_font_texture_sampler_location = glGetUniformLocation(screen->program_id, "u_font_texture_sampler");
+    screen.u_font_texture_sampler_location = glGetUniformLocation(screen.program_id, "u_font_texture_sampler");
 
-    glUniform1i(screen->u_font_texture_sampler_location, 0);
+    glUniform1i(screen.u_font_texture_sampler_location, 0);
 
-    screen->u_projection_location = glGetUniformLocation(screen->program_id, "u_projection_matrix");
+    screen.u_projection_location = glGetUniformLocation(screen.program_id, "u_projection_matrix");
 
     i32 fb_width, fb_height;
     glfwGetFramebufferSize(platform.window.glfw_window, &fb_width, &fb_height);
@@ -189,7 +191,7 @@ void screen_init(Shell& shell, Platform& platform)
     const glm::mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
 
     glUniformMatrix4fv(
-        screen->u_projection_location, 
+        screen.u_projection_location, 
         1, 
         GL_FALSE, 
         glm::value_ptr(shell_projection_matrix)
@@ -198,11 +200,11 @@ void screen_init(Shell& shell, Platform& platform)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    glGenVertexArrays(1, &screen->vao_id);
-    glGenBuffers(1, &screen->vbo_id);
+    glGenVertexArrays(1, &screen.vao_id);
+    glGenBuffers(1, &screen.vbo_id);
 
-    glBindVertexArray(screen->vao_id);
-    glBindBuffer(GL_ARRAY_BUFFER, screen->vbo_id);
+    glBindVertexArray(screen.vao_id);
+    glBindBuffer(GL_ARRAY_BUFFER, screen.vbo_id);
 
     glVertexAttribPointer(
         0,
@@ -285,8 +287,8 @@ static void draw_debug_info(Shell& shell, Sim& sim)
             sector_coordinate_text,
             sizeof(sector_coordinate_text),
             "SEC %i %i",
-            sector_coordinate[0],
-            sector_coordinate[1]
+            sector_coordinate.x,
+            sector_coordinate.y
         );
     }
     else
@@ -345,9 +347,9 @@ static void draw_debug_info(Shell& shell, Sim& sim)
 
 void screen_update(Shell& shell, Sim& sim)
 {
-    Screen* screen = &shell.screen;
+    Screen& screen = shell.screen;
 
-    glUseProgram(screen->program_id);
+    glUseProgram(screen.program_id);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -357,10 +359,10 @@ void screen_update(Shell& shell, Sim& sim)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindVertexArray(screen->vao_id);
+    glBindVertexArray(screen.vao_id);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, screen->font_texture_id);
+    glBindTexture(GL_TEXTURE_2D, screen.font_texture_id);
 
     draw_debug_info(shell, sim);
 
