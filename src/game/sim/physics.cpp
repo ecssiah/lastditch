@@ -242,7 +242,7 @@ integrate(Actor& actor, World& world)
             fabsf(world.delta_time * actor.velocity.z),
         };
 
-        const f32 max_move = fmaxf(move[0], fmaxf(move[1], move[2]));
+        const f32 max_move = fmaxf(move.x, fmaxf(move.y, move.z));
 
         i32 step_count = static_cast<i32>(ceilf(max_move));
         if (step_count < 1)

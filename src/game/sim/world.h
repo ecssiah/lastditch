@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include "core/types.h"
 #include "game/sim/area.h"
 #include "game/sim/direction.h"
@@ -212,7 +214,7 @@ struct World
 
     glm::vec3 gravity;
 
-    Cell* cell_array;
+    std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array;
 
     AreaPool area_pool_array[FLOOR_COUNT];
     EdgePool edge_pool;
@@ -240,8 +242,8 @@ i32 world_get_stride(Direction direction);
 
 u32 world_get_floor(i32 z);
 
-b32 world_is_solid(World& world, i32 x, i32 y, i32 z);
-b32 world_is_clear(World& world, i32 x, i32 y, i32 z, u8 direction_mask);
+b32 world_is_solid(const World& world, i32 x, i32 y, i32 z);
+b32 world_is_clear(const World& world, i32 x, i32 y, i32 z, u8 direction_mask);
 
 i32 world_block_type_index_from_string(const char* block_type_string);
 

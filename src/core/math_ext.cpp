@@ -169,16 +169,16 @@ get_forward(const glm::vec3& rotation)
         sinf(rotation_x),
     };
 
-    return glm::normalize(forward);
+    return normalize_safe(forward);
 }
 
 glm::vec3 
 get_right(const glm::vec3& rotation)
 {
     const glm::vec3 forward = get_forward(rotation);
-    const glm::vec3 right = glm::cross(forward, {0, 0, 1});
+    const glm::vec3 right = glm::cross(forward, WORLD_UP);
 
-    return glm::normalize(right);
+    return normalize_safe(right);
 }
 
 glm::vec3 
@@ -188,5 +188,15 @@ get_up(const glm::vec3& rotation)
     const glm::vec3 right = get_right(rotation);
     const glm::vec3 up = glm::cross(forward, right);
 
-    return glm::normalize(up);
+    return normalize_safe(up);
+}
+
+glm::vec3 normalize_safe(const glm::vec3& a)
+{
+    if (glm::dot(a, a) <= EPSILON)
+    {
+        return glm::vec3(0.0f);
+    }
+
+    return glm::normalize(a);
 }

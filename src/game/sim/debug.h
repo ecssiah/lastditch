@@ -5,7 +5,7 @@
 #include "core/types.h"
 
 constexpr i32 DEBUG_LINE_MAX = 1 << 13;
-constexpr b32 DEBUG_AREAS = false;
+constexpr b32 DEBUG_AREAS = true;
 
 struct DebugLine
 {

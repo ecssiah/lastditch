@@ -33,7 +33,7 @@ static void queue_move_action(Platform& platform, Sim& sim)
         move_action.action_value[1] -= 1.0f;
     }
 
-    move_action.action_value = glm::normalize(move_action.action_value);
+    move_action.action_value = normalize_safe(move_action.action_value);
 
     if (platform_button_is_down(platform, Button::e))
     {

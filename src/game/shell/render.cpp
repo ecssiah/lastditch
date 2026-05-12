@@ -616,15 +616,15 @@ static void init_glad(Platform& platform)
     glViewport(0, 0, framebuffer_width, framebuffer_height);
 }
 
-static void init_viewpoint(Render* render)
+static void init_viewpoint(Render& render)
 {
-    render->viewpoint.position = glm::vec3(0.0f, 0.0f, 0.0f);
-    render->viewpoint.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+    render.viewpoint.position = glm::vec3(0.0f, 0.0f, 0.0f);
+    render.viewpoint.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
     
-    render->viewpoint.projection_matrix = glm::mat4(1.0f);
-    render->viewpoint.view_matrix = glm::mat4(1.0f);
+    render.viewpoint.projection_matrix = glm::mat4(1.0f);
+    render.viewpoint.view_matrix = glm::mat4(1.0f);
     
-    render->viewpoint.projection_matrix = get_projection_matrix();
+    render.viewpoint.projection_matrix = get_projection_matrix();
 }
 
 static void init_debug_render(Shell& shell)
@@ -972,7 +972,7 @@ void render_init(Shell& shell, Platform& platform, Sim& sim)
 {
     init_glad(platform);
 
-    init_viewpoint(&shell.render);
+    init_viewpoint(shell.render);
 
     init_debug_render(shell);
     init_voxel_render(shell, sim);

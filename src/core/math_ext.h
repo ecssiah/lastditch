@@ -6,6 +6,10 @@
 
 constexpr f32 EPSILON = 1e-5f;
 
+const glm::vec3 WORLD_RIGHT = glm::vec3(1.0f, 0.0f, 0.0f);
+const glm::vec3 WORLD_FORWARD = glm::vec3(0.0f, 1.0f, 0.0f);
+const glm::vec3 WORLD_UP = glm::vec3(0.0f, 0.0f, 1.0f);
+
 enum class Axis
 {
     x, 
@@ -67,3 +71,5 @@ f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time);
 glm::vec3 get_forward(const glm::vec3& rotation);
 glm::vec3 get_right(const glm::vec3& rotation);
 glm::vec3 get_up(const glm::vec3& rotation);
+
+glm::vec3 normalize_safe(const glm::vec3& a);

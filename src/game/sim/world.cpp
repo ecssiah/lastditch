@@ -1,7 +1,6 @@
 #include "game/sim/world.h"
 
 #include <cstdlib>
-#include <cstring>
 
 #include "core/types.h"
 #include "core/math_ext.h"
@@ -397,36 +396,32 @@ world_sector_coordinate_to_index(glm::ivec2 sector_coordinate)
 glm::ivec2
 world_sector_index_to_coordinate(u32 sector_index)
 {
-    constexpr i32 mask = WORLD_SIZE_IN_SECTORS - 1;
-    
     return {
-        sector_index >> (0 * WORLD_SIZE_IN_SECTORS_LOG2) & mask,
-        sector_index >> (1 * WORLD_SIZE_IN_SECTORS_LOG2),
+        static_cast<i32>(sector_index % WORLD_SIZE_IN_SECTORS),
+        static_cast<i32>(sector_index / WORLD_SIZE_IN_SECTORS),
     };
 }
 
 u32 
 world_cell_coordinate_to_index(i32 x, i32 y, i32 z)
 {
-    const u32 cell_index = (
-        (x << (0 * WORLD_SIZE_IN_CELLS_LOG2)) +
-        (y << (1 * WORLD_SIZE_IN_CELLS_LOG2)) +
-        (z << (2 * WORLD_SIZE_IN_CELLS_LOG2))
-    );
-
-    return cell_index;
+    return x * WORLD_STRIDE_X + y * WORLD_STRIDE_Y + z * WORLD_STRIDE_Z;
 }
 
 glm::ivec3
 world_cell_index_to_coordinate(u32 cell_index)
 {
-    constexpr u32 world_mask = WORLD_SIZE_IN_CELLS - 1;
+    const i32 z = static_cast<i32>(cell_index / WORLD_STRIDE_Z);
 
-    return {
-        cell_index >> (0 * WORLD_SIZE_IN_CELLS_LOG2) & world_mask,
-        cell_index >> (1 * WORLD_SIZE_IN_CELLS_LOG2) & world_mask,
-        cell_index >> (2 * WORLD_SIZE_IN_CELLS_LOG2),
-    };
+    cell_index -= z * WORLD_STRIDE_Z;
+
+    const i32 y = static_cast<i32>(cell_index / WORLD_STRIDE_Y);
+
+    cell_index -= y * WORLD_STRIDE_Y;
+
+    const i32 x = static_cast<i32>(cell_index);
+
+    return {x, y, z};
 }
 
 glm::ivec2
@@ -451,8 +446,8 @@ glm::ivec3
 world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z)
 {
     return {
-        x & SECTOR_SIZE_IN_CELLS - 1,
-        y & SECTOR_SIZE_IN_CELLS - 1,
+        x & (SECTOR_SIZE_IN_CELLS - 1),
+        y & (SECTOR_SIZE_IN_CELLS - 1),
         z,
     };
 }
@@ -525,7 +520,7 @@ world_block_type_index_from_string(const char* block_type_string)
 }
 
 b32 
-world_is_solid(World& world, i32 x, i32 y, i32 z)
+world_is_solid(const World& world, i32 x, i32 y, i32 z)
 {
     if (!world_cell_coordinate_is_valid(x, y, z))
     {
@@ -540,9 +535,9 @@ world_is_solid(World& world, i32 x, i32 y, i32 z)
 }
 
 b32 
-world_is_clear(World& world, i32 x, i32 y, i32 z, u8 direction_mask)
+world_is_clear(const World& world, i32 x, i32 y, i32 z, u8 direction_mask)
 {
-    for (u32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
         if (direction_mask & (1 << direction_index))
         {
@@ -552,7 +547,7 @@ world_is_clear(World& world, i32 x, i32 y, i32 z, u8 direction_mask)
                 z + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
             };
 
-            if (world_is_solid(world, neighbor_position[0], neighbor_position[1], neighbor_position[2]))
+            if (world_is_solid(world, neighbor_position.x, neighbor_position.y, neighbor_position.z))
             {
                 return false;
             }
@@ -586,7 +581,7 @@ world_get_direction_mask(World& world, i32 x, i32 y, i32 z)
         }
         else
         {
-            const u32 neighbor_cell_index = cell_index + world_get_stride(static_cast<Direction>(direction_index));
+            const i32 neighbor_cell_index = cell_index + world_get_stride(static_cast<Direction>(direction_index));
 
             if (world.cell_array[neighbor_cell_index].block_type == BlockType::none)
             {
@@ -598,7 +593,7 @@ world_get_direction_mask(World& world, i32 x, i32 y, i32 z)
     return direction_mask;
 }
 
-Cell* 
+Cell*
 world_get_cell(World& world, i32 x, i32 y, i32 z)
 {
     if (!world_cell_coordinate_is_valid(x, y, z))
@@ -606,7 +601,7 @@ world_get_cell(World& world, i32 x, i32 y, i32 z)
         return nullptr;
     }
 
-    const u32 cell_index = world_cell_coordinate_to_index(x, y, z);
+    const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
 
     return &world.cell_array[cell_index];
 }
@@ -623,8 +618,7 @@ world_set_block_type(World& world, i32 x, i32 y, i32 z, BlockType block_type)
 }
 
 void 
-world_set_block_type_cube(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, 
-                            BlockType block_type)
+world_set_block_type_cube(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
     const glm::ivec3 max = {
         x + size_x,
@@ -658,8 +652,7 @@ world_get_content_level(i32 z)
 }
 
 void 
-world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z,
-                              BlockType block_type)
+world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
     const glm::ivec3 max = {
         x + size_x,
@@ -689,8 +682,7 @@ world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size
 }
 
 void 
-world_set_block_type_wireframe(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z,
-                                    BlockType block_type)
+world_set_block_type_wireframe(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
     const glm::ivec3 max = {
         x + size_x,
@@ -1701,9 +1693,7 @@ calculate_area_edges(World& world, i32 floor_number)
 static void 
 init_cell_array(World& world)
 {
-    world.cell_array = static_cast<Cell*>(calloc(WORLD_VOLUME_IN_CELLS, sizeof(Cell)));
-
-    for (u32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
         world.cell_array[cell_index].cell_index = cell_index;
     }
@@ -1712,18 +1702,18 @@ init_cell_array(World& world)
 static void 
 init_area_pool_array(World& world)
 {
-    for (u32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    for (i32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        AreaPool* area_pool = &world.area_pool_array[floor_number];
+        AreaPool& area_pool = world.area_pool_array[floor_number];
 
-        area_pool->floor_number = floor_number;
-        area_pool->active_count = 0;
-        area_pool->free_count = AREA_POOL_MAX;
+        area_pool.floor_number = floor_number;
+        area_pool.active_count = 0;
+        area_pool.free_count = AREA_POOL_MAX;
 
         for (PoolID pool_id = 0; pool_id < AREA_POOL_MAX; ++pool_id)
         {
-            area_pool->free_array[pool_id] = pool_id;
-            area_pool->active_lookup[pool_id] = UINT32_MAX;
+            area_pool.free_array[pool_id] = pool_id;
+            area_pool.active_lookup[pool_id] = UINT32_MAX;
         }
     }
 }
@@ -1746,13 +1736,13 @@ init_edge_pool(World& world)
 static void 
 calculate_world_direction_mask(World& world)
 {
-    for (u32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    for (i32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
-        Cell* cell = &world.cell_array[cell_index];
+        Cell& cell = world.cell_array[cell_index];
 
         const glm::ivec3 cell_coordinate = world_cell_index_to_coordinate(cell_index);
 
-        cell->direction_mask = world_get_direction_mask(
+        cell.direction_mask = world_get_direction_mask(
             world,
             cell_coordinate[0],
             cell_coordinate[1],
@@ -2090,9 +2080,10 @@ world_init(World& world, Debug& debug)
 
     calculate_world_direction_mask(world);
 
-#if DEBUG_AREAS
-    draw_debug_info(debug, world);
-#endif
+    if (DEBUG_AREAS)
+    {
+        draw_debug_info(debug, world);
+    }
 }
 
 void 
@@ -2112,5 +2103,5 @@ world_update(World& world, Population& population)
 void 
 world_close(World& world)
 {
-    free(world.cell_array);
+    
 }

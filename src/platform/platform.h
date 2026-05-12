@@ -8,7 +8,7 @@
 constexpr i32 WINDOW_WIDTH = 1024;
 constexpr i32 WINDOW_HEIGHT = 768;
 
-constexpr f32 WINDOW_ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT;
+constexpr f32 WINDOW_ASPECT_RATIO = static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT);
 
 #define FOR_LIST_BUTTON(DO)                                                    \
   DO(none)                                                                     \

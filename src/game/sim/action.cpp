@@ -26,12 +26,7 @@ static void apply_move_action(Actor& judge, Action& action)
             velocity_right = action.action_value[0] * judge_right;
             velocity_forward = action.action_value[1] * judge_forward_xy;
             
-            glm::vec3 move_velocity = judge.speed * (velocity_right + velocity_forward);
-
-            if (glm::length(move_velocity) > 0.0f)
-            {
-                move_velocity = judge.speed * glm::normalize(move_velocity);
-            }
+            glm::vec3 move_velocity = judge.speed * normalize_safe(velocity_right + velocity_forward);
     
             judge.velocity.x = move_velocity.x;
             judge.velocity.y = move_velocity.y;
