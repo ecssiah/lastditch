@@ -21,13 +21,11 @@ Direction direction_opposite(const Direction* direction)
 {
     switch (*direction)
     {
-    case DIRECTION_EAST: return DIRECTION_WEST;
-    case DIRECTION_WEST: return DIRECTION_EAST;
-    case DIRECTION_NORTH: return DIRECTION_SOUTH;
-    case DIRECTION_SOUTH: return DIRECTION_NORTH;
-    case DIRECTION_UP: return DIRECTION_DOWN;
-    case DIRECTION_DOWN: return DIRECTION_UP;
+    case Direction::east: return Direction::west;
+    case Direction::west: return Direction::east;
+    case Direction::north: return Direction::south;
+    case Direction::south: return Direction::north;
+    case Direction::up: return Direction::down;
+    case Direction::down: return Direction::up;
     }
-
-    assert(false && "Unknown direction");
 }

@@ -489,13 +489,12 @@ world_get_stride(Direction direction)
 {
     switch (direction)
     {
-    case DIRECTION_EAST: return +WORLD_STRIDE_X;
-    case DIRECTION_WEST: return -WORLD_STRIDE_X;
-    case DIRECTION_NORTH: return +WORLD_STRIDE_Y;
-    case DIRECTION_SOUTH: return -WORLD_STRIDE_Y;
-    case DIRECTION_UP: return +WORLD_STRIDE_Z;
-    case DIRECTION_DOWN: return -WORLD_STRIDE_Z;
-    case DIRECTION_COUNT: break;
+    case Direction::east: return +WORLD_STRIDE_X;
+    case Direction::west: return -WORLD_STRIDE_X;
+    case Direction::north: return +WORLD_STRIDE_Y;
+    case Direction::south: return -WORLD_STRIDE_Y;
+    case Direction::up: return +WORLD_STRIDE_Z;
+    case Direction::down: return -WORLD_STRIDE_Z;
     }
 
     assert(false);
@@ -1542,7 +1541,7 @@ get_area_overlap(const Area* area_left, const Area* area_right)
             {0, 0},
             {0, 0},
         },
-        .direction = DIRECTION_EAST,
+        .direction = Direction::east,
     };
 
     ivec2 left_min, left_max;
@@ -1561,7 +1560,7 @@ get_area_overlap(const Area* area_left, const Area* area_right)
 
         if (overlap_y_min < overlap_y_max)
         {
-            area_overlap.direction = DIRECTION_EAST;
+            area_overlap.direction = Direction::east;
 
             area_overlap.bounds.position[0] = left_max[0];
             area_overlap.bounds.position[1] = overlap_y_min;
@@ -1577,7 +1576,7 @@ get_area_overlap(const Area* area_left, const Area* area_right)
 
         if (overlap_y_min < overlap_y_max)
         {
-            area_overlap.direction = DIRECTION_WEST;
+            area_overlap.direction = Direction::west;
 
             area_overlap.bounds.position[0] = left_min[0];
             area_overlap.bounds.position[1] = overlap_y_min;
@@ -1593,7 +1592,7 @@ get_area_overlap(const Area* area_left, const Area* area_right)
 
         if (overlap_x_min < overlap_x_max)
         {
-            area_overlap.direction = DIRECTION_NORTH;
+            area_overlap.direction = Direction::north;
 
             area_overlap.bounds.position[0] = overlap_x_min;
             area_overlap.bounds.position[1] = left_max[1];
@@ -1609,7 +1608,7 @@ get_area_overlap(const Area* area_left, const Area* area_right)
 
         if (overlap_x_min < overlap_x_max)
         {
-            area_overlap.direction = DIRECTION_SOUTH;
+            area_overlap.direction = Direction::south;
 
             area_overlap.bounds.position[0] = overlap_x_min;
             area_overlap.bounds.position[1] = left_min[1];
@@ -1752,7 +1751,7 @@ construct_doors(World* world, const Area* area)
 
             constexpr ivec3 door_frame_size = {3, 1, 3};
 
-            if (edge_direction == DIRECTION_NORTH)
+            if (edge_direction == Direction::north)
             {
                 world_set_block_type_cube(
                     world,
@@ -1768,7 +1767,7 @@ construct_doors(World* world, const Area* area)
                     BLOCK_TYPE_NONE
                 );
             }
-            else if (edge_direction == DIRECTION_SOUTH)
+            else if (edge_direction == Direction::south)
             {
                 world_set_block_type_cube(
                     world,
@@ -1795,7 +1794,7 @@ construct_doors(World* world, const Area* area)
 
             constexpr ivec3 door_frame_size = {1, 3, 3};
 
-            if (edge_direction == DIRECTION_EAST)
+            if (edge_direction == Direction::east)
             {
                 world_set_block_type_cube(
                     world,
@@ -1811,7 +1810,7 @@ construct_doors(World* world, const Area* area)
                     BLOCK_TYPE_NONE
                 );
             }
-            else if (edge_direction == DIRECTION_WEST)
+            else if (edge_direction == Direction::west)
             {
                 world_set_block_type_cube(
                     world,

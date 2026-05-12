@@ -6,9 +6,9 @@
 #include <string.h>
 #include <time.h>
 
-static FILE* JUSTSKY_LOG_FILE;
-static char JUSTSKY_LOG_BASE_PATH[256];
-static char JUSTSKY_CURRENT_DAY_STRING[11];
+static FILE* LD_LOG_FILE;
+static char LD_LOG_BASE_PATH[256];
+static char LD_CURRENT_DAY_STRING[11];
 
 static const char* LOG_LEVEL_TO_STRING[5] =
 {
@@ -19,51 +19,50 @@ static const char* LOG_LEVEL_TO_STRING[5] =
     "FATAL"
 };
 
-
 void log_init()
 {
     auto directory_name = "log/";
 
-    strncpy(JUSTSKY_LOG_BASE_PATH, directory_name, sizeof(JUSTSKY_LOG_BASE_PATH) - 1);
+    strncpy(LD_LOG_BASE_PATH, directory_name, sizeof(LD_LOG_BASE_PATH) - 1);
 
-    if (!JUSTSKY_LOG_FILE)
+    if (!LD_LOG_FILE)
     {
-        JUSTSKY_LOG_FILE = stderr;
+        LD_LOG_FILE = stderr;
     }
 
     LOG_INFO("\n\nLOG INIT\n");
 }
 
-void log_message(ELogLevel log_level, const char* file, int line, const char* fmt, ...)
+void log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...)
 {
-    if (!JUSTSKY_LOG_FILE)
+    if (!LD_LOG_FILE)
     {
-        JUSTSKY_LOG_FILE = stderr;
+        LD_LOG_FILE = stderr;
     }
 
-    time_t now = time(NULL);
-    struct tm tm_info;
+    const time_t now = time(NULL);
+    tm tm_info;
     localtime_r(&now, &tm_info);
 
     char file_timestamp[11];
     strftime(file_timestamp, sizeof(file_timestamp), "%Y_%m_%d", &tm_info);
 
-    if (JUSTSKY_LOG_BASE_PATH[0] != '\0' && strcmp(file_timestamp, JUSTSKY_CURRENT_DAY_STRING) != 0)
+    if (LD_LOG_BASE_PATH[0] != '\0' && strcmp(file_timestamp, LD_CURRENT_DAY_STRING) != 0)
     {
-        if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
+        if (LD_LOG_FILE && LD_LOG_FILE != stderr)
         {
-            fclose(JUSTSKY_LOG_FILE);
+            fclose(LD_LOG_FILE);
         }
 
-        strncpy(JUSTSKY_CURRENT_DAY_STRING, file_timestamp, sizeof(JUSTSKY_CURRENT_DAY_STRING) - 1);
+        strncpy(LD_CURRENT_DAY_STRING, file_timestamp, sizeof(LD_CURRENT_DAY_STRING) - 1);
 
         char path[512];
-        snprintf(path, sizeof(path), "%sengine_%s.log", JUSTSKY_LOG_BASE_PATH, file_timestamp);
+        snprintf(path, sizeof(path), "%sengine_%s.log", LD_LOG_BASE_PATH, file_timestamp);
 
-        JUSTSKY_LOG_FILE = fopen(path, "a");
-        if (!JUSTSKY_LOG_FILE)
+        LD_LOG_FILE = fopen(path, "a");
+        if (!LD_LOG_FILE)
         {
-            JUSTSKY_LOG_FILE = stderr;
+            LD_LOG_FILE = stderr;
         }
     }
 
@@ -87,10 +86,10 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
         line
     );
 
-    if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
+    if (LD_LOG_FILE && LD_LOG_FILE != stderr)
     {
         fprintf(
-            JUSTSKY_LOG_FILE,
+            LD_LOG_FILE,
             "[%s] [%s] (%s:%d) ",
             timestamp,
             LOG_LEVEL_TO_STRING[static_cast<size_t>(log_level)],
@@ -107,9 +106,9 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
 
     vfprintf(stderr, fmt, args);
 
-    if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
+    if (LD_LOG_FILE && LD_LOG_FILE != stderr)
     {
-        vfprintf(JUSTSKY_LOG_FILE, fmt, args_copy);
+        vfprintf(LD_LOG_FILE, fmt, args_copy);
     }
 
     va_end(args_copy);
@@ -117,19 +116,19 @@ void log_message(ELogLevel log_level, const char* file, int line, const char* fm
 
     fprintf(stderr, "\n");
 
-    if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
+    if (LD_LOG_FILE && LD_LOG_FILE != stderr)
     {
-        fprintf(JUSTSKY_LOG_FILE, "\n");
-        fflush(JUSTSKY_LOG_FILE);
+        fprintf(LD_LOG_FILE, "\n");
+        fflush(LD_LOG_FILE);
     }
 
-    if (log_level == ELogLevel::fatal)
+    if (log_level == LogLevel::fatal)
     {
         fflush(stderr);
 
-        if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
+        if (LD_LOG_FILE && LD_LOG_FILE != stderr)
         {
-            fflush(JUSTSKY_LOG_FILE);
+            fflush(LD_LOG_FILE);
         }
 
         exit(EXIT_FAILURE);
@@ -140,8 +139,8 @@ void log_close()
 {
     LOG_INFO("\n\nLOG CLOSE\n");
 
-    if (JUSTSKY_LOG_FILE && JUSTSKY_LOG_FILE != stderr)
+    if (LD_LOG_FILE && LD_LOG_FILE != stderr)
     {
-        fclose(JUSTSKY_LOG_FILE);
+        fclose(LD_LOG_FILE);
     }
 }

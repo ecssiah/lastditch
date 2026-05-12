@@ -3,20 +3,20 @@
 #include "core/macros.h"
 #include "core/types.h"
 
-#define FOR_LIST_DIRECTION(DO)                  \
-    DO(DIRECTION_EAST)                          \
-    DO(DIRECTION_WEST)                          \
-    DO(DIRECTION_NORTH)                         \
-    DO(DIRECTION_SOUTH)                         \
-    DO(DIRECTION_UP)                            \
-    DO(DIRECTION_DOWN)
+#define FOR_LIST_DIRECTION(DO)                                                 \
+  DO(east)                                                                     \
+  DO(west)                                                                     \
+  DO(north)                                                                    \
+  DO(south)                                                                    \
+  DO(up)                                                                       \
+  DO(down)
 
-enum Direction
+enum class Direction : u8
 {
     FOR_LIST_DIRECTION(DEFINE_LIST_ENUMERATION)
-
-    DIRECTION_COUNT
 };
+
+constexpr i32 DIRECTION_COUNT = 0 FOR_LIST_DIRECTION(DEFINE_ENUM_COUNT);
 
 #define DIRECTION_FROM_MASK(mask) (__builtin_ctz(mask))
 

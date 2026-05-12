@@ -546,9 +546,9 @@ static void emit_sector_face(SectorQuad* sector_quad, VoxelGpuData* voxel_gpu_da
     for (u32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
         const ivec3 vertex_position = {
-            sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][0],
-            sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][1],
-            sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[sector_quad->direction][vertex_index][2],
+            sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][0],
+            sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][1],
+            sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][2],
         };
 
         VoxelVertex voxel_vertex;
@@ -560,7 +560,7 @@ static void emit_sector_face(SectorQuad* sector_quad, VoxelGpuData* voxel_gpu_da
 
         voxel_vertex.a_face =
             ((sector_quad->block_type & 255u) << 0u) |
-            ((sector_quad->direction & 7u) << 8u);
+            ((static_cast<u8>(sector_quad->direction) & 7u) << 8u);
 
         add_voxel_vertex(voxel_gpu_data, voxel_vertex);
     }
