@@ -21,7 +21,7 @@ find_library(COCOA_FRAMEWORK Cocoa)
 find_library(IOKIT_FRAMEWORK IOKit)
 find_library(COREVIDEO_FRAMEWORK CoreVideo)
 
-find_package(glfw3 CONFIG REQUIRED)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4)
 
 add_executable(
         lastditch
@@ -31,7 +31,7 @@ add_executable(
 target_include_directories(
         lastditch
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/justsky
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/cglm/include
         ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
         ${CMAKE_CURRENT_SOURCE_DIR}/external/stb/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src

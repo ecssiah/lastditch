@@ -499,7 +499,6 @@ world_get_stride(Direction direction)
     }
 
     assert(false);
-    __builtin_unreachable();
 }
 
 u32 
