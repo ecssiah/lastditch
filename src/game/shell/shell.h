@@ -23,7 +23,7 @@ struct VoxelVertex
 
 struct VoxelGpuData
 {
-    ld_vec3 position;
+    vec3 position;
 
     GLuint vao_id;
     GLuint vbo_id;
@@ -40,8 +40,8 @@ struct ModelVertex
 
 struct ModelGpuData
 {
-    ld_vec3 position;
-    ld_vec3 rotation;
+    vec3 position;
+    vec3 rotation;
 
     i32 texture_layer;
 
@@ -53,7 +53,7 @@ struct ModelGpuData
 
 struct SectorQuad
 {
-    ld_ivec3 local_coordinate;
+    ivec3 local_coordinate;
 
     Direction direction;
     BlockType block_type;
@@ -68,11 +68,11 @@ struct SectorMesh
 
 struct Viewpoint
 {
-    ld_vec3 position;
-    ld_vec3 rotation;
+    vec3 position;
+    vec3 rotation;
 
-    ld_mat4 projection_matrix;
-    ld_mat4 view_matrix;
+    mat4 projection_matrix;
+    mat4 view_matrix;
 };
 
 struct TextVertex

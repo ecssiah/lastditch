@@ -77,7 +77,7 @@ static void load_textures(Screen& screen, const char* textures_path)
     stbi_image_free(pixel_data_array);
 }
 
-static ld_mat4 get_orthographic_projection_matrix(f32 width, f32 height)
+static mat4 get_orthographic_projection_matrix(f32 width, f32 height)
 {
     return orthographic_matrix(
         0.0f, 
@@ -185,7 +185,7 @@ void screen_init(Shell& shell, Platform& platform)
     i32 fb_width, fb_height;
     glfwGetFramebufferSize(platform.window.glfw_window, &fb_width, &fb_height);
 
-    const ld_mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
+    const mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
 
     glUniformMatrix4fv(
         screen.u_projection_location, 
@@ -234,8 +234,8 @@ static void draw_debug_info(Shell& shell, Sim& sim)
 {
     const Actor& judge = sim.population.actor_pool.actor_array[sim.population.judge_id];
 
-    const ld_ivec3 cell_coordinate = world_position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
-    const ld_ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
+    const ivec3 cell_coordinate = world_position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
+    const ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
 
     char position_text[64];
     char velocity_text[64];

@@ -44,13 +44,13 @@ init_agents(Population& population, Work& work)
             const NationType nation_type = static_cast<NationType>(rand() % NATION_TYPE_COUNT);
             const Nation* nation = &population.nation_array[static_cast<u8>(nation_type)];
 
-            const ld_vec3 position = {
+            const vec3 position = {
                 static_cast<f32>(nation->home_coordinate.x) - 6 + rand() % 12,
                 static_cast<f32>(nation->home_coordinate.y) - 6 + rand() % 12,
                 static_cast<f32>(nation->home_coordinate.z) + 4,
             };
 
-            const ld_vec3 rotation = {0.0f, 0.0f, static_cast<f32>(rand() % 360)};
+            const vec3 rotation = {0.0f, 0.0f, static_cast<f32>(rand() % 360)};
 
             Actor agent = {
                 .actor_type = ActorType::agent,
@@ -61,10 +61,10 @@ init_agents(Population& population, Work& work)
                 .rotation_target = rotation,
                 .is_grounded = false,
                 .speed = AGENT_DEFAULT_GROUND_SPEED,
-                .velocity = ld_vec3_init(0.0f),
+                .velocity = vec3_broadcast(0.0f),
                 .box_collider = {
                     .collision_enabled = true,
-                    .radius = ld_vec3_init(0.40f, 0.40f, 0.90f),
+                    .radius = {0.40f, 0.40f, 0.90f},
                 },
             };
 

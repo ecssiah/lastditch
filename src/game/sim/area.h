@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/math_ext.h"
+#include "core/geometry.h"
 #include "core/types.h"
 #include "game/sim/direction.h"
 #include "game/sim/ids.h"
@@ -36,7 +36,7 @@ struct Area
     AreaID area_id;
     i32 floor_number;
 
-    Bounds2i bounds;
+    irange2 range;
 
     i32 edge_id_count;
     EdgeID edge_id_array[AREA_EDGE_MAX];
@@ -44,7 +44,7 @@ struct Area
 
 struct AreaOverlap
 {
-    Bounds2i bounds;
+    irange2 range;
     Direction direction;
 };
 

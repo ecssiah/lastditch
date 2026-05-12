@@ -19,7 +19,7 @@ wander_run(Sim& sim, Act& act, f32 delta_time)
     {
         const f32 direction_angle = static_cast<f32>(rand() % 360);
 
-        const ld_vec2 direction = {
+        const vec2 direction = {
             cosf(to_radians(direction_angle)),
             sinf(to_radians(direction_angle))
         };

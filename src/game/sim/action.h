@@ -19,7 +19,7 @@ struct Action
 {
     ActionType type;
 
-    ld_vec3 action_value;
+    vec3 action_value;
 };
 
 struct ActionQueue

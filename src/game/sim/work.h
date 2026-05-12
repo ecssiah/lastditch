@@ -16,7 +16,7 @@ struct WanderState
 
 struct SeekState
 {
-    ld_ivec3 target_position;
+    ivec3 target_position;
 };
 
 #define FOR_LIST_ACT_TYPE(DO)                                                  \

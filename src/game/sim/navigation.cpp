@@ -1,6 +1,6 @@
 #include "navigation.h"
 
-u32 heuristic(const ld_vec3& a, const ld_vec3& b)
+u32 heuristic(const vec3& a, const vec3& b)
 {
     return 0;
 }

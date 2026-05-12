@@ -80,7 +80,7 @@ const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     {+0, -1, +0},
 };
 
-static ld_mat4 get_projection_matrix()
+static mat4 get_projection_matrix()
 {
     return projection_matrix(
         to_radians(60.0f),
@@ -401,9 +401,9 @@ static void generate_sector_mesh(VoxelRender* voxel_render, Sim& sim, i32 sector
     SectorMesh sector_mesh = {};
     sector_mesh.sector_index = sector_index;
 
-    const ld_ivec2 sector_coordinate = world_sector_index_to_coordinate(sector_index);
+    const ivec2 sector_coordinate = world_sector_index_to_coordinate(sector_index);
 
-    const ld_ivec3 sector_cell_coordinate = {
+    const ivec3 sector_cell_coordinate = {
         sector_coordinate.x * SECTOR_SIZE_IN_CELLS,
         sector_coordinate.y * SECTOR_SIZE_IN_CELLS,
         0,
@@ -458,7 +458,7 @@ static void emit_sector_face(SectorQuad* sector_quad, VoxelGpuData* voxel_gpu_da
 {
     for (u32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-        const ld_ivec3 vertex_position = {
+        const ivec3 vertex_position = {
             sector_quad->local_coordinate.x + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][0],
             sector_quad->local_coordinate.y + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][1],
             sector_quad->local_coordinate.z + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][2],
@@ -486,7 +486,7 @@ static void convert_sector_mesh_to_voxel_gpu_data(SectorMesh* sector_mesh, Voxel
         return;
     }
 
-    const ld_ivec2 sector_coordinate = world_sector_index_to_coordinate(sector_mesh->sector_index);
+    const ivec2 sector_coordinate = world_sector_index_to_coordinate(sector_mesh->sector_index);
     
     *out_voxel_gpu_data = {};
 
@@ -618,11 +618,11 @@ static void init_glad(Platform& platform)
 
 static void init_viewpoint(Render& render)
 {
-    render.viewpoint.position = ld_vec3_init(0.0f, 0.0f, 0.0f);
-    render.viewpoint.rotation = ld_vec3_init(0.0f, 0.0f, 0.0f);
+    render.viewpoint.position = vec3_broadcast(0.0f);
+    render.viewpoint.rotation = vec3_broadcast(0.0f);
     
-    render.viewpoint.projection_matrix = ld_mat4_init(1.0f);
-    render.viewpoint.view_matrix = ld_mat4_init(1.0f);
+    render.viewpoint.projection_matrix = mat4_diagonal(1.0f);
+    render.viewpoint.view_matrix = mat4_diagonal(1.0f);
     
     render.viewpoint.projection_matrix = get_projection_matrix();
 }
@@ -810,9 +810,9 @@ static void update_viewpoint(Render* render, Sim& sim)
 {
     const Actor& judge = sim.population.actor_pool.actor_array[sim.population.judge_id];
 
-    constexpr ld_vec3 judge_eye_offset = {0.0f, 0.0f, 0.7f};
+    constexpr vec3 judge_eye_offset = {0.0f, 0.0f, 0.7f};
 
-    const ld_vec3 judge_eye_position = judge.position + judge_eye_offset;
+    const vec3 judge_eye_position = judge.position + judge_eye_offset;
     
     render->viewpoint.position = judge_eye_position;
     render->viewpoint.rotation = judge.rotation;
@@ -855,7 +855,7 @@ static void update_debug_render(Render* render, Sim& sim)
 
     upload_debug_gpu_data(&debug_gpu_data);
 
-    ld_mat4 model_matrix = ld_mat4_init(1.0f);
+    mat4 model_matrix = mat4_diagonal(1.0f);
 
     glUniformMatrix4fv(
         render->debug_render.u_model_location, 
@@ -900,7 +900,7 @@ static void update_voxel_render(Render* render)
     ) {
         const VoxelGpuData* voxel_gpu_data = &render->voxel_render.voxel_gpu_data_vector[voxel_gpu_data_index];
 
-        ld_mat4 model_matrix = ld_mat4_init(1.0f);
+        mat4 model_matrix = mat4_diagonal(1.0f);
         model_matrix = ld_translate(model_matrix, voxel_gpu_data->position);
 
         glUniformMatrix4fv(
@@ -947,7 +947,7 @@ static void update_model_render(Render* render, Sim& sim)
 
         ModelGpuData* model_gpu_data = &render->model_render.model_gpu_data_vector[actor_id];
 
-        ld_mat4 model_matrix = ld_mat4_init(1.0f);
+        mat4 model_matrix = mat4_diagonal(1.0f);
         model_matrix = ld_translate(model_matrix, actor.position);
         model_matrix = ld_rotate(model_matrix, WORLD_UP, to_radians(actor.rotation.z));
 

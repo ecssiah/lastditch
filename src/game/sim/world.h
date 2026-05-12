@@ -68,10 +68,6 @@ constexpr bool PLACE_ROOM_CONTENT = true;
 
 constexpr f32 GRAVITY_DEFAULT = -90.0f;
 
-constexpr ld_vec3 WORLD_RIGHT = ld_vec3_init(1.0f, 0.0f, 0.0f);
-constexpr ld_vec3 WORLD_FORWARD = ld_vec3_init(0.0f, 1.0f, 0.0f);
-constexpr ld_vec3 WORLD_UP = ld_vec3_init(0.0f, 0.0f, 1.0f);
-
 struct Population;
 
 #define FOR_LIST_BLOCK_TYPE(DO)                                                \
@@ -185,8 +181,8 @@ constexpr i32 SECTION_COUNT = FOR_LIST_SECTION(DEFINE_ENUM_COUNT);
 
 extern const char* SECTION_TYPE_STRING[SECTION_COUNT];
 
-extern const ld_ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT];
-extern const ld_ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT];
+extern const ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT];
+extern const ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT];
 
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_0[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_1[];
@@ -216,7 +212,7 @@ struct World
 
     f32 time_rate;
 
-    ld_vec3 gravity;
+    vec3 gravity;
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array;
 
@@ -227,20 +223,20 @@ struct World
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
 b32 world_sector_coordinate_is_valid(i32 x, i32 y);
 
-u32 world_sector_coordinate_to_index(ld_ivec2 sector_coordinate);
-ld_ivec2 world_sector_index_to_coordinate(u32 sector_index);
+u32 world_sector_coordinate_to_index(ivec2 sector_coordinate);
+ivec2 world_sector_index_to_coordinate(u32 sector_index);
 
 u32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z);
-ld_ivec3 world_cell_index_to_coordinate(u32 cell_index);
+ivec3 world_cell_index_to_coordinate(u32 cell_index);
 
 u32 world_cell_coordinate_to_sector_index(i32 x, i32 y);
-ld_ivec2 world_cell_coordinate_to_sector_coordinate(i32 x, i32 y);
+ivec2 world_cell_coordinate_to_sector_coordinate(i32 x, i32 y);
 
 u32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z);
-ld_ivec3 world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z);
+ivec3 world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z);
 
-ld_vec3 world_cell_coordinate_to_position(i32 x, i32 y, i32 z);
-ld_ivec3 world_position_to_cell_coordinate(f32 x, f32 y, f32 z);
+vec3 world_cell_coordinate_to_position(i32 x, i32 y, i32 z);
+ivec3 world_position_to_cell_coordinate(f32 x, f32 y, f32 z);
 
 i32 world_get_stride(Direction direction);
 

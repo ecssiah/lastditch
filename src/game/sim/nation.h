@@ -23,7 +23,7 @@ struct Nation
 {
     NationType nation_type;
 
-    ld_ivec3 home_coordinate;
+    ivec3 home_coordinate;
 };
 
 i32 nation_type_index_from_string(const char* nation_type_string);

@@ -10,7 +10,7 @@ static void queue_move_action(Platform& platform, Sim& sim)
 {
     Action move_action = {
         .type = ActionType::move,
-        .action_value = ld_vec3_init(0.0f),
+        .action_value = vec3_broadcast(0.0f),
     };
 
     if (platform_button_is_down(platform, Button::a))
@@ -66,7 +66,7 @@ static void queue_jump_action(Sim& sim)
 {
     Action jump_action = {
         .type = ActionType::jump,
-        .action_value = ld_vec3_init(1.0f),
+        .action_value = vec3_broadcast(1.0f),
     };
 
     action_add(sim.action_queue, jump_action);
@@ -76,7 +76,7 @@ static void queue_debug_mode_action(Sim& sim)
 {
     Action debug_action = {
         .type = ActionType::debug_mode,
-        .action_value = ld_vec3_init( 1.0f),
+        .action_value = vec3_broadcast( 1.0f),
     };
 
     action_add(sim.action_queue, debug_action);

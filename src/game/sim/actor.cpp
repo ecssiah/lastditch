@@ -2,7 +2,6 @@
 
 #include <cassert>
 
-#include "core/math_ext.h"
 #include "game/sim/world.h"
 
 const char* ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =

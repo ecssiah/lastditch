@@ -2,32 +2,31 @@
 
 #include "world.h"
 #include "core/log.h"
-#include "core/math_ext.h"
 #include "game/sim/actor.h"
 
 static void apply_move_action(Actor& judge, Action& action)
 {
-    ld_vec3 velocity_forward = ld_vec3_init(0.0f);
-    ld_vec3 velocity_right = ld_vec3_init(0.0f);
-    ld_vec3 velocity_up = ld_vec3_init(0.0f);
+    vec3 velocity_forward = vec3_broadcast(0.0f);
+    vec3 velocity_right = vec3_broadcast(0.0f);
+    vec3 velocity_up = vec3_broadcast(0.0f);
 
-    const ld_vec3 judge_forward = get_forward(judge.rotation);
-    const ld_vec3 judge_right = get_right(judge.rotation);
+    const vec3 judge_forward = get_forward(judge.rotation);
+    const vec3 judge_right = get_right(judge.rotation);
 
     switch (judge.movement_type)
     {
     case MovementType::ground:
         {
-            const ld_vec3 judge_forward_xy = ld_vec3_init(
+            const vec3 judge_forward_xy = {
                 judge_forward.x,
                 judge_forward.y,
                 0.0f
-            );
+            };
 
             velocity_right = action.action_value.x * judge_right;
             velocity_forward = action.action_value.y * judge_forward_xy;
             
-            ld_vec3 move_velocity = judge.speed * normalize(velocity_right + velocity_forward);
+            vec3 move_velocity = judge.speed * normalize(velocity_right + velocity_forward);
     
             judge.velocity.x = move_velocity.x;
             judge.velocity.y = move_velocity.y;

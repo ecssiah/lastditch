@@ -15,7 +15,7 @@ struct BoxCollider
 {
     b32 collision_enabled;
 
-    ld_vec3 radius;
+    vec3 radius;
 };
 
 void physics_update_actor(Actor& actor, World& world);

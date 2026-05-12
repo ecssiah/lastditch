@@ -1,14 +1,13 @@
 #include "game/sim/physics.h"
 
 #include "core/types.h"
-#include "core/math_ext.h"
 #include "game/sim/actor.h"
 #include "game/sim/world.h"
 
-static Bounds3f 
-get_bounds(const BoxCollider& box_collider, const ld_vec3 position)
+static range3 
+get_range(const BoxCollider& box_collider, const vec3& position)
 {
-    Bounds3f bounds_result = {
+    range3 range_result = {
         {
             position.x - box_collider.radius.x,
             position.y - box_collider.radius.y,
@@ -25,24 +24,24 @@ get_bounds(const BoxCollider& box_collider, const ld_vec3 position)
 
     for (i32 axis_index = 0; axis_index < 3; ++axis_index)
     {
-        if (bounds_result.min.elements[axis_index] < 0.0f)
+        if (range_result.min.elements[axis_index] < 0.0f)
         {
-            bounds_result.min.elements[axis_index] = 0.0f;
+            range_result.min.elements[axis_index] = 0.0f;
         }
 
-        if (bounds_result.max.elements[axis_index] > world_size)
+        if (range_result.max.elements[axis_index] > world_size)
         {
-            bounds_result.max.elements[axis_index] = world_size;
+            range_result.max.elements[axis_index] = world_size;
         }
     }
     
-    return bounds_result;
+    return range_result;
 }
 
-static Bounds3i 
-get_grid_overlap_from_bounds(const Bounds3f& bounds)
+static irange3 
+get_grid_overlap_from_range(const range3& bounds)
 {
-    Bounds3i bounds_result = {
+    irange3 range_result = {
         {
             static_cast<i32>(floorf(bounds.min.x)),
             static_cast<i32>(floorf(bounds.min.y)),
@@ -55,15 +54,15 @@ get_grid_overlap_from_bounds(const Bounds3f& bounds)
         },
     }; 
 
-    if (bounds_result.min.x < 0) bounds_result.min.x = 0;
-    if (bounds_result.min.y < 0) bounds_result.min.y = 0;
-    if (bounds_result.min.z < 0) bounds_result.min.z = 0;
+    if (range_result.min.x < 0) range_result.min.x = 0;
+    if (range_result.min.y < 0) range_result.min.y = 0;
+    if (range_result.min.z < 0) range_result.min.z = 0;
 
-    if (bounds_result.max.x >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) bounds_result.max.x = WORLD_SIZE_IN_CELLS - 1;
-    if (bounds_result.max.y >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) bounds_result.max.y = WORLD_SIZE_IN_CELLS - 1;
-    if (bounds_result.max.z >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) bounds_result.max.z = WORLD_SIZE_IN_CELLS - 1;
+    if (range_result.max.x >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) range_result.max.x = WORLD_SIZE_IN_CELLS - 1;
+    if (range_result.max.y >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) range_result.max.y = WORLD_SIZE_IN_CELLS - 1;
+    if (range_result.max.z >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) range_result.max.z = WORLD_SIZE_IN_CELLS - 1;
     
-    return bounds_result;
+    return range_result;
 }
 
 static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time, World& world)
@@ -73,9 +72,9 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
         return;
     }
 
-    Bounds3f actor_bounds = get_bounds(actor.box_collider, actor.position);
+    range3 actor_bounds = get_range(actor.box_collider, actor.position);
 
-    Bounds3f swept_bounds;
+    range3 swept_bounds;
 
     for (i32 axis_index = 0; axis_index < 3; ++axis_index)
     {
@@ -90,7 +89,7 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
         );
     }
 
-    const Bounds3i grid_overlap_bounds = get_grid_overlap_from_bounds(swept_bounds);
+    const irange3 grid_overlap_bounds = get_grid_overlap_from_range(swept_bounds);
 
     const size_t axis_index = static_cast<size_t>(axis);
 
@@ -121,7 +120,7 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
                 x <= grid_overlap_bounds.max.elements[static_cast<size_t>(axis::x)]; 
                 ++x
             ) {
-                const ld_ivec3 cell_coordinate = {x, y, z};
+                const ivec3 cell_coordinate = {x, y, z};
 
                 const Cell* cell = world_get_cell(world, x, y, z);
 
@@ -236,7 +235,7 @@ integrate(Actor& actor, World& world)
 
     if (actor.box_collider.collision_enabled)
     {
-        const ld_vec3 move = {
+        const vec3 move = {
             fabsf(world.delta_time * actor.velocity.x),
             fabsf(world.delta_time * actor.velocity.y),
             fabsf(world.delta_time * actor.velocity.z),
@@ -261,7 +260,7 @@ integrate(Actor& actor, World& world)
     }
     else
     {
-        const ld_vec3 displacement = world.delta_time * actor.velocity;
+        const vec3 displacement = world.delta_time * actor.velocity;
 
         actor.position = actor.position + displacement;
     }

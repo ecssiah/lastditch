@@ -54,15 +54,15 @@ struct Actor
     NationType nation_type;
     MovementType movement_type;
 
-    ld_vec3 position;
+    vec3 position;
 
-    ld_vec3 rotation;
-    ld_vec3 rotation_target;
+    vec3 rotation;
+    vec3 rotation_target;
 
     b32 is_grounded;
 
     f32 speed;
-    ld_vec3 velocity;
+    vec3 velocity;
 
     BoxCollider box_collider;
 

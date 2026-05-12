@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <vector>
 
 #include "core/types.h"
 
@@ -13,7 +14,7 @@ enum class axis
     z,
 };
 
-struct ld_vec2
+struct vec2
 {
     union
     {
@@ -27,7 +28,7 @@ struct ld_vec2
     };
 };
 
-struct ld_vec3
+struct vec3
 {
     union
     {
@@ -42,7 +43,7 @@ struct ld_vec3
     };
 };
 
-struct ld_ivec2
+struct ivec2
 {
     union
     {
@@ -56,7 +57,7 @@ struct ld_ivec2
     };
 };
 
-struct ld_ivec3
+struct ivec3
 {
     union
     {
@@ -71,9 +72,34 @@ struct ld_ivec3
     };
 };
 
-struct ld_mat4
+struct mat4
 {
     f32 elements[4][4];
+};
+
+// TODO: Make consistent with other ranges
+struct irange2
+{
+    ivec2 position;
+    ivec2 size;
+};
+
+struct irange3
+{
+    ivec3 min;
+    ivec3 max;
+};
+
+struct range2
+{
+    vec2 min;
+    vec2 max;
+};
+
+struct range3
+{
+    vec3 min;
+    vec3 max;
 };
 
 constexpr i32 
@@ -106,56 +132,32 @@ ld_clamp(const f32 value, const f32 min, const f32 max)
     return std::max(min, std::min(value, max));
 }
 
-constexpr ld_vec2 
-ld_vec2_init(const f32 x, const f32 y)
-{
-    return {x, y};
-}
-
-constexpr ld_vec3 
-ld_vec3_init(const f32 x, const f32 y, const f32 z)
-{
-    return {x, y, z};
-}
-
-constexpr ld_ivec2 
-ld_ivec2_init(const i32 x, const i32 y)
-{
-    return {x, y};
-}
-
-constexpr ld_ivec3 
-ld_ivec3_init(const i32 x, const i32 y, const i32 z)
-{
-    return {x, y, z};
-}
-
-constexpr ld_vec2 
-ld_vec2_init(const f32 scalar)
+constexpr vec2 
+vec2_broadcast(const f32 scalar)
 {
     return {scalar, scalar};
 }
 
-constexpr ld_vec3 
-ld_vec3_init(const f32 scalar)
+constexpr vec3 
+vec3_broadcast(const f32 scalar)
 {
     return {scalar, scalar, scalar};
 }
 
-constexpr ld_ivec2 
-ld_ivec2_init(const i32 scalar)
+constexpr ivec2 
+ivec2_broadcast(const i32 scalar)
 {
     return {scalar, scalar};
 }
 
-constexpr ld_ivec3 
-ld_ivec3_init(const i32 scalar)
+constexpr ivec3 
+ivec3_broadcast(const i32 scalar)
 {
     return {scalar, scalar, scalar};
 }
 
-constexpr ld_mat4
-ld_mat4_init(const f32 scalar)
+constexpr mat4
+mat4_diagonal(const f32 scalar)
 {
     return {
         {
@@ -167,41 +169,59 @@ ld_mat4_init(const f32 scalar)
     };
 }
 
-ld_vec2 operator+(const ld_vec2& a, const ld_vec2& b);
-ld_vec3 operator+(const ld_vec3& a, const ld_vec3& b);
-ld_ivec2 operator+(const ld_ivec2& a, const ld_ivec2& b);
-ld_ivec3 operator+(const ld_ivec3& a, const ld_ivec3& b);
+constexpr vec3 WORLD_RIGHT = {1.0f, 0.0f, 0.0f};
+constexpr vec3 WORLD_FORWARD = {0.0f, 1.0f, 0.0f};
+constexpr vec3 WORLD_UP = {0.0f, 0.0f, 1.0f};
 
-ld_vec2 operator-(const ld_vec2& a, const ld_vec2& b);
-ld_vec3 operator-(const ld_vec3& a, const ld_vec3& b);
-ld_ivec2 operator-(const ld_ivec2& a, const ld_ivec2& b);
-ld_ivec3 operator-(const ld_ivec3& a, const ld_ivec3& b);
+vec2 operator+(const vec2& a, const vec2& b);
+vec3 operator+(const vec3& a, const vec3& b);
+ivec2 operator+(const ivec2& a, const ivec2& b);
+ivec3 operator+(const ivec3& a, const ivec3& b);
 
-ld_vec2 operator*(f32 scalar, const ld_vec2& a);
-ld_vec3 operator*(f32 scalar, const ld_vec3& a);
-ld_ivec2 operator*(i32 scalar, const ld_ivec2& a);
-ld_ivec3 operator*(i32 scalar, const ld_ivec3& a);
+vec2 operator-(const vec2& a, const vec2& b);
+vec3 operator-(const vec3& a, const vec3& b);
+ivec2 operator-(const ivec2& a, const ivec2& b);
+ivec3 operator-(const ivec3& a, const ivec3& b);
 
-f32 length(const ld_vec3& a);
-f32 length(const ld_vec2& a);
+vec2 operator*(f32 scalar, const vec2& a);
+vec3 operator*(f32 scalar, const vec3& a);
+ivec2 operator*(i32 scalar, const ivec2& a);
+ivec3 operator*(i32 scalar, const ivec3& a);
 
-f32 length_squared(const ld_vec3& a);
-f32 length_squared(const ld_vec2& a);
+f32 length(const vec3& a);
+f32 length(const vec2& a);
 
-ld_vec2 normalize(const ld_vec2& a);
-ld_vec3 normalize(const ld_vec3& a);
+f32 length_squared(const vec3& a);
+f32 length_squared(const vec2& a);
 
-f32 dot(const ld_vec2& a, const ld_vec2& b);
-f32 dot(const ld_vec3& a, const ld_vec3& b);
+vec2 normalize(const vec2& a);
+vec3 normalize(const vec3& a);
 
-ld_vec3 cross(const ld_vec3& a, const ld_vec3& b);
+f32 dot(const vec2& a, const vec2& b);
+f32 dot(const vec3& a, const vec3& b);
 
-ld_mat4 operator*(const ld_mat4& a, const ld_mat4& b);
+vec3 cross(const vec3& a, const vec3& b);
 
-ld_mat4 ld_translate(const ld_mat4& a, const ld_vec3& translation);
-ld_mat4 ld_rotate(const ld_mat4& a, const ld_vec3& axis, f32 angle);
+mat4 operator*(const mat4& a, const mat4& b);
 
-ld_mat4 orthographic_matrix(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far);
-ld_mat4 projection_matrix(f32 fovy, f32 aspect, f32 near, f32 far);
+mat4 ld_translate(const mat4& a, const vec3& translation);
+mat4 ld_rotate(const mat4& a, const vec3& axis, f32 angle);
 
-ld_mat4 look_at(ld_vec3 position, ld_vec3 target, ld_vec3 up);
+mat4 orthographic_matrix(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far);
+mat4 projection_matrix(f32 fovy, f32 aspect, f32 near, f32 far);
+
+mat4 look_at(vec3 position, vec3 target, vec3 up);
+
+f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time);
+
+vec3 get_forward(const vec3& rotation);
+vec3 get_right(const vec3& rotation);
+vec3 get_up(const vec3& rotation);
+
+ivec2 irange2_max(const irange2& a);
+ivec2 irange2_min(const irange2& a);
+
+b32 irange2_overlaps(const irange2& a, const irange2& b);
+irange2 irange2_intersection(const irange2& a, const irange2& b);
+
+std::vector<irange2> irange2_subtract(const irange2& a, const irange2& b);

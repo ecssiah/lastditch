@@ -8,9 +8,9 @@ constexpr b32 DEBUG_AREAS = true;
 
 struct DebugLine
 {
-    ld_vec3 position_a;
-    ld_vec3 position_b;
-    ld_vec3 color;
+    vec3 position_a;
+    vec3 position_b;
+    vec3 color;
 };
 
 struct Debug
