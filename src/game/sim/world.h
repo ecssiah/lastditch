@@ -70,71 +70,71 @@ constexpr f32 GRAVITY_DEFAULT = -90.0f;
 
 struct Population;
 
-#define FOR_LIST_BLOCK_TYPE(DO)                 \
-    DO(BLOCK_TYPE_NONE)                         \
-    DO(BLOCK_TYPE_CARDINAL_EAST)                \
-    DO(BLOCK_TYPE_CARDINAL_WEST)                \
-    DO(BLOCK_TYPE_CARDINAL_NORTH)               \
-    DO(BLOCK_TYPE_CARDINAL_SOUTH)               \
-    DO(BLOCK_TYPE_WOLF_FLAG)                    \
-    DO(BLOCK_TYPE_EAGLE_FLAG)                   \
-    DO(BLOCK_TYPE_LION_FLAG)                    \
-    DO(BLOCK_TYPE_BEAR_FLAG)                   \
-    DO(BLOCK_TYPE_WOLF_STONE)                   \
-    DO(BLOCK_TYPE_EAGLE_STONE)                  \
-    DO(BLOCK_TYPE_LION_STONE)                   \
-    DO(BLOCK_TYPE_BEAR_STONE)                  \
-    DO(BLOCK_TYPE_WOLF_SYMBOL)                  \
-    DO(BLOCK_TYPE_EAGLE_SYMBOL)                 \
-    DO(BLOCK_TYPE_LION_SYMBOL)                  \
-    DO(BLOCK_TYPE_BEAR_SYMBOL)                 \
-    DO(BLOCK_TYPE_CARVED_1)                     \
-    DO(BLOCK_TYPE_CARVED_2)                     \
-    DO(BLOCK_TYPE_CARVED_3)                     \
-    DO(BLOCK_TYPE_CARVED_4)                     \
-    DO(BLOCK_TYPE_CAUTION_1)                    \
-    DO(BLOCK_TYPE_CAUTION_2)                    \
-    DO(BLOCK_TYPE_CAUTION_3)                    \
-    DO(BLOCK_TYPE_CAUTION_4)                    \
-    DO(BLOCK_TYPE_ENGRAVED_1)                   \
-    DO(BLOCK_TYPE_ENGRAVED_2)                   \
-    DO(BLOCK_TYPE_ENGRAVED_3)                   \
-    DO(BLOCK_TYPE_ENGRAVED_4)                   \
-    DO(BLOCK_TYPE_METAL_1)                      \
-    DO(BLOCK_TYPE_METAL_2)                      \
-    DO(BLOCK_TYPE_METAL_3)                      \
-    DO(BLOCK_TYPE_METAL_4)                      \
-    DO(BLOCK_TYPE_METAL_5)                      \
-    DO(BLOCK_TYPE_ORNATE_1)                     \
-    DO(BLOCK_TYPE_ORNATE_2)                     \
-    DO(BLOCK_TYPE_ORNATE_3)                     \
-    DO(BLOCK_TYPE_ORNATE_4)                     \
-    DO(BLOCK_TYPE_PANEL_1)                      \
-    DO(BLOCK_TYPE_PANEL_2)                      \
-    DO(BLOCK_TYPE_PANEL_3)                      \
-    DO(BLOCK_TYPE_PANEL_4)                      \
-    DO(BLOCK_TYPE_SERVER_1)                     \
-    DO(BLOCK_TYPE_SERVER_2)                     \
-    DO(BLOCK_TYPE_SERVER_3)                     \
-    DO(BLOCK_TYPE_SERVER_4)                     \
-    DO(BLOCK_TYPE_SERVER_5)                     \
-    DO(BLOCK_TYPE_SERVER_6)                     \
-    DO(BLOCK_TYPE_SERVER_7)                     \
-    DO(BLOCK_TYPE_SMOOTH_1)                     \
-    DO(BLOCK_TYPE_SMOOTH_2)                     \
-    DO(BLOCK_TYPE_SMOOTH_3)                     \
-    DO(BLOCK_TYPE_SMOOTH_4)                     \
-    DO(BLOCK_TYPE_VENT_1)                       \
-    DO(BLOCK_TYPE_VENT_2)                       \
-    DO(BLOCK_TYPE_VENT_3)                       \
-    DO(BLOCK_TYPE_VENT_4)
+#define FOR_LIST_BLOCK_TYPE(DO)                                                \
+  DO(none)                                                                     \
+  DO(cardinal_east)                                                            \
+  DO(cardinal_west)                                                            \
+  DO(cardinal_north)                                                           \
+  DO(cardinal_south)                                                           \
+  DO(wolf_flag)                                                                \
+  DO(eagle_flag)                                                               \
+  DO(lion_flag)                                                                \
+  DO(bear_flag)                                                                \
+  DO(wolf_stone)                                                               \
+  DO(eagle_stone)                                                              \
+  DO(lion_stone)                                                               \
+  DO(bear_stone)                                                               \
+  DO(wolf_symbol)                                                              \
+  DO(eagle_symbol)                                                             \
+  DO(lion_symbol)                                                              \
+  DO(bear_symbol)                                                              \
+  DO(carved_1)                                                                 \
+  DO(carved_2)                                                                 \
+  DO(carved_3)                                                                 \
+  DO(carved_4)                                                                 \
+  DO(caution_1)                                                                \
+  DO(caution_2)                                                                \
+  DO(caution_3)                                                                \
+  DO(caution_4)                                                                \
+  DO(engraved_1)                                                               \
+  DO(engraved_2)                                                               \
+  DO(engraved_3)                                                               \
+  DO(engraved_4)                                                               \
+  DO(metal_1)                                                                  \
+  DO(metal_2)                                                                  \
+  DO(metal_3)                                                                  \
+  DO(metal_4)                                                                  \
+  DO(metal_5)                                                                  \
+  DO(ornate_1)                                                                 \
+  DO(ornate_2)                                                                 \
+  DO(ornate_3)                                                                 \
+  DO(ornate_4)                                                                 \
+  DO(panel_1)                                                                  \
+  DO(panel_2)                                                                  \
+  DO(panel_3)                                                                  \
+  DO(panel_4)                                                                  \
+  DO(server_1)                                                                 \
+  DO(server_2)                                                                 \
+  DO(server_3)                                                                 \
+  DO(server_4)                                                                 \
+  DO(server_5)                                                                 \
+  DO(server_6)                                                                 \
+  DO(server_7)                                                                 \
+  DO(smooth_1)                                                                 \
+  DO(smooth_2)                                                                 \
+  DO(smooth_3)                                                                 \
+  DO(smooth_4)                                                                 \
+  DO(vent_1)                                                                   \
+  DO(vent_2)                                                                   \
+  DO(vent_3)                                                                   \
+  DO(vent_4)
 
-enum BlockType
+enum class BlockType
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_LIST_ENUMERATION)
-
-    BLOCK_TYPE_COUNT
 };
+
+constexpr i32 BLOCK_TYPE_COUNT = FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT);
 
 extern const char* BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT];
 
@@ -145,39 +145,39 @@ struct BlockTypeList
     i32 count;
 };
 
-#define FOR_LIST_SECTION(DO)                    \
-    DO(SECTION_CT)                              \
-    DO(SECTION_C1)                              \
-    DO(SECTION_C2)                              \
-    DO(SECTION_C3)                              \
-    DO(SECTION_C4)                              \
-    DO(SECTION_Q1)                              \
-    DO(SECTION_Q2)                              \
-    DO(SECTION_Q3)                              \
-    DO(SECTION_Q4)                              \
-    DO(SECTION_E1)                              \
-    DO(SECTION_E2)                              \
-    DO(SECTION_E3)                              \
-    DO(SECTION_NE)                              \
-    DO(SECTION_N1)                              \
-    DO(SECTION_N2)                              \
-    DO(SECTION_N3)                              \
-    DO(SECTION_NW)                              \
-    DO(SECTION_W1)                              \
-    DO(SECTION_W2)                              \
-    DO(SECTION_W3)                              \
-    DO(SECTION_SW)                              \
-    DO(SECTION_S1)                              \
-    DO(SECTION_S2)                              \
-    DO(SECTION_S3)                              \
-    DO(SECTION_SE)
+#define FOR_LIST_SECTION(DO)                                                   \
+  DO(ct)                                                                       \
+  DO(c1)                                                                       \
+  DO(c2)                                                                       \
+  DO(c3)                                                                       \
+  DO(c4)                                                                       \
+  DO(q1)                                                                       \
+  DO(q2)                                                                       \
+  DO(q3)                                                                       \
+  DO(q4)                                                                       \
+  DO(e1)                                                                       \
+  DO(e2)                                                                       \
+  DO(e3)                                                                       \
+  DO(ne)                                                                       \
+  DO(n1)                                                                       \
+  DO(n2)                                                                       \
+  DO(n3)                                                                       \
+  DO(nw)                                                                       \
+  DO(w1)                                                                       \
+  DO(w2)                                                                       \
+  DO(w3)                                                                       \
+  DO(sw)                                                                       \
+  DO(s1)                                                                       \
+  DO(s2)                                                                       \
+  DO(s3)                                                                       \
+  DO(se)
 
-enum Section
+enum class Section
 {
     FOR_LIST_SECTION(DEFINE_LIST_ENUMERATION)
-
-    SECTION_COUNT
 };
+
+constexpr i32 SECTION_COUNT = FOR_LIST_SECTION(DEFINE_ENUM_COUNT);
 
 extern const char* SECTION_TYPE_STRING[SECTION_COUNT];
 

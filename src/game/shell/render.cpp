@@ -205,7 +205,7 @@ static void load_block_texture_directory(Shell* shell)
 
         snprintf(texture_path, sizeof(texture_path), "%s/%s", block_texture_directory, config_entry->value);
 
-        const u32 block_type_index = world_block_type_index_from_string(config_entry->key);
+        const i32 block_type_index = world_block_type_index_from_string(config_entry->key);
 
         assert(block_type_index >= 0);
         assert(block_type_index < BLOCK_TYPE_COUNT);
@@ -511,7 +511,7 @@ static void generate_sector_mesh(VoxelRender* voxel_render, Sim* sim, u32 sector
 
                 const Cell* cell = &sim->world.cell_array[cell_index];
 
-                if (cell->block_type == BLOCK_TYPE_NONE)
+                if (cell->block_type == BlockType::none)
                 {
                     continue;
                 }
@@ -554,13 +554,13 @@ static void emit_sector_face(SectorQuad* sector_quad, VoxelGpuData* voxel_gpu_da
         VoxelVertex voxel_vertex;
 
         voxel_vertex.a_vertex =
-            ((vertex_position[0] & 63u) << 0u) |
-            ((vertex_position[1] & 63u) << 6u) |
-            ((vertex_position[2] & 255u) << 12u);
+            (vertex_position[0] & 63u) << 0u |
+            (vertex_position[1] & 63u) << 6u |
+            (vertex_position[2] & 255u) << 12u;
 
         voxel_vertex.a_face =
-            ((sector_quad->block_type & 255u) << 0u) |
-            ((static_cast<u8>(sector_quad->direction) & 7u) << 8u);
+            (static_cast<u8>(sector_quad->block_type) & 255u) << 0u |
+            (static_cast<u8>(sector_quad->direction) & 7u) << 8u;
 
         add_voxel_vertex(voxel_gpu_data, voxel_vertex);
     }

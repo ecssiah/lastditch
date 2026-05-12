@@ -110,7 +110,7 @@ static void resolve_axis_collisions(Actor* actor, Axis axis, f32 step_delta_time
                     continue;
                 }
 
-                if (cell->block_type == BLOCK_TYPE_NONE)
+                if (cell->block_type == BlockType::none)
                 {
                     continue;
                 }
