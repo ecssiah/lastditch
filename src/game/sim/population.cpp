@@ -72,7 +72,7 @@ init_agents(Population& population, Work& work)
 
             ActState act_state = {
                 .wander = {
-                    .tick = static_cast<u32>(rand() % 500),
+                    .tick = rand() % 500,
                     .tick_limit = 500,
                 }
             };

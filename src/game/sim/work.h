@@ -4,14 +4,14 @@
 #include "game/sim/actor.h"
 #include "game/sim/ids.h"
 
-#define ACT_MAX 1 << 12
+constexpr i32 ACT_MAX = 1 << 12;
 
 struct Sim;
 
 struct WanderState
 {
-    u32 tick;
-    u32 tick_limit;
+    i32 tick;
+    i32 tick_limit;
 };
 
 struct SeekState
@@ -19,9 +19,9 @@ struct SeekState
     ivec3 target_position;
 };
 
-#define FOR_LIST_ACT_TYPE(DO)                                                  \
-  DO(wander)                                                                   \
-  DO(seek)
+#define FOR_LIST_ACT_TYPE(DO)                                                    \
+    DO(wander)                                                                   \
+    DO(seek)
 
 enum ActType
 {
@@ -46,12 +46,12 @@ struct Act
 
 struct ActPool
 {
-    u32 active_count;
+    i32 active_count;
     ActID active_array[ACT_MAX];
 
     PoolID active_lookup[ACT_MAX];
 
-    u32 free_count;
+    i32 free_count;
     ActID free_array[ACT_MAX];
 
     Act act_array[ACT_MAX];
