@@ -126,12 +126,6 @@ to_degrees(const f32 radians)
     return radians * 57.295779513082323f;
 }
 
-constexpr f32 
-ld_clamp(const f32 value, const f32 min, const f32 max)
-{
-    return std::max(min, std::min(value, max));
-}
-
 constexpr vec2 
 vec2_broadcast(const f32 scalar)
 {
@@ -169,9 +163,9 @@ mat4_diagonal(const f32 scalar)
     };
 }
 
-constexpr vec3 WORLD_RIGHT = {1.0f, 0.0f, 0.0f};
-constexpr vec3 WORLD_FORWARD = {0.0f, 1.0f, 0.0f};
-constexpr vec3 WORLD_UP = {0.0f, 0.0f, 1.0f};
+constexpr vec3 UNIT_X = {1.0f, 0.0f, 0.0f};
+constexpr vec3 UNIT_Y = {0.0f, 1.0f, 0.0f};
+constexpr vec3 UNIT_Z = {0.0f, 0.0f, 1.0f};
 
 vec2 operator+(const vec2& a, const vec2& b);
 vec3 operator+(const vec3& a, const vec3& b);
@@ -204,15 +198,15 @@ vec3 cross(const vec3& a, const vec3& b);
 
 mat4 operator*(const mat4& a, const mat4& b);
 
-mat4 ld_translate(const mat4& a, const vec3& translation);
-mat4 ld_rotate(const mat4& a, const vec3& axis, f32 angle);
+mat4 mat4_translate(const mat4& a, const vec3& translation);
+mat4 mat4_rotate(const mat4& a, const vec3& axis, f32 angle);
 
 mat4 orthographic_matrix(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far);
 mat4 projection_matrix(f32 fovy, f32 aspect, f32 near, f32 far);
 
 mat4 look_at(vec3 position, vec3 target, vec3 up);
 
-f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time);
+f32 interpolate_to(f32 current, f32 target, f32 speed, f32 delta_time);
 
 vec3 get_forward(const vec3& rotation);
 vec3 get_right(const vec3& rotation);

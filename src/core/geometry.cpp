@@ -216,7 +216,7 @@ operator*(const mat4& a, const mat4& b)
 }
 
 mat4 
-ld_translate(const mat4& a, const vec3& translation)
+mat4_translate(const mat4& a, const vec3& translation)
 {
     mat4 translation_matrix = {};
 
@@ -232,7 +232,7 @@ ld_translate(const mat4& a, const vec3& translation)
 }
 
 mat4
-ld_rotate(const mat4& a, const vec3& axis, f32 angle)
+mat4_rotate(const mat4& a, const vec3& axis, f32 angle)
 {
     const vec3 n = normalize(axis);
 
@@ -319,7 +319,7 @@ look_at(const vec3 position, const vec3 target, const vec3 up)
 }
 
 f32 
-lerp_to(const f32 current, const f32 target, const f32 speed, const f32 delta_time)
+interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 delta_time)
 {
     const f32 alpha = 1.0f - expf(-speed * delta_time);
     f32 delta = target - current;
@@ -353,7 +353,7 @@ vec3
 get_right(const vec3& rotation)
 {
     const vec3 forward = get_forward(rotation);
-    const vec3 right = cross(forward, WORLD_UP);
+    const vec3 right = cross(forward, UNIT_Z);
 
     return normalize(right);
 }

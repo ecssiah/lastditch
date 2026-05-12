@@ -38,7 +38,7 @@ sim_update(Sim& sim)
     action_apply_queue(sim.action_queue, judge);
 
     work_update(sim.work, sim, sim.world.delta_time);
-    world_update(sim.world, sim.population);
+    UNIT_Zdate(sim.world, sim.population);
 }
 
 void

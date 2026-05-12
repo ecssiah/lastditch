@@ -37,7 +37,7 @@ static void apply_move_action(Actor& judge, Action& action)
         {
             velocity_right = action.action_value.x * judge_right;
             velocity_forward = action.action_value.y * judge_forward;
-            velocity_up = action.action_value.z * WORLD_UP;
+            velocity_up = action.action_value.z * UNIT_Z;
         
             judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
 

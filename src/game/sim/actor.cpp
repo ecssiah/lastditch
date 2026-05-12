@@ -61,7 +61,7 @@ void actor_add(ActorPool& actor_pool, Actor& actor)
 //             actor->actor_control.decision_clock = 0;
 //         }
 
-//         actor->rotation[2] = lerp_to(
+//         actor->rotation[2] = interpolate_to(
 //             actor->rotation[2],
 //             actor->rotation_target[2],
 //             5.0f,

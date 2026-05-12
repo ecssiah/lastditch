@@ -32,7 +32,7 @@ wander_run(Sim& sim, Act& act, f32 delta_time)
         wander_state.tick = 0;
     }
 
-    actor.rotation.z = lerp_to(
+    actor.rotation.z = interpolate_to(
         actor.rotation.z,
         actor.rotation_target.z,
         5.0f,

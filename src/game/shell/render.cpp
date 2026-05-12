@@ -901,7 +901,7 @@ static void update_voxel_render(Render* render)
         const VoxelGpuData* voxel_gpu_data = &render->voxel_render.voxel_gpu_data_vector[voxel_gpu_data_index];
 
         mat4 model_matrix = mat4_diagonal(1.0f);
-        model_matrix = ld_translate(model_matrix, voxel_gpu_data->position);
+        model_matrix = mat4_translate(model_matrix, voxel_gpu_data->position);
 
         glUniformMatrix4fv(
             render->voxel_render.u_model_location, 
@@ -948,8 +948,8 @@ static void update_model_render(Render* render, Sim& sim)
         ModelGpuData* model_gpu_data = &render->model_render.model_gpu_data_vector[actor_id];
 
         mat4 model_matrix = mat4_diagonal(1.0f);
-        model_matrix = ld_translate(model_matrix, actor.position);
-        model_matrix = ld_rotate(model_matrix, WORLD_UP, to_radians(actor.rotation.z));
+        model_matrix = mat4_translate(model_matrix, actor.position);
+        model_matrix = mat4_rotate(model_matrix, UNIT_Z, to_radians(actor.rotation.z));
 
         glUniformMatrix4fv(
             render->model_render.u_model_location, 

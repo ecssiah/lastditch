@@ -2082,7 +2082,7 @@ world_init(World& world, Debug& debug)
 }
 
 void 
-world_update(World& world, Population& population)
+UNIT_Zdate(World& world, Population& population)
 {
     const ActorPool& actor_pool = population.actor_pool;
 

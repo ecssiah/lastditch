@@ -215,7 +215,7 @@ integrate(Actor& actor, World& world)
         {
             const f32 dz = world.delta_time * FALLING_GRAVITY_MODIFIER * world.gravity.elements[axis_index];
             
-            actor.velocity.elements[axis_index] = ld_clamp(
+            actor.velocity.elements[axis_index] = std::clamp(
                 actor.velocity.elements[axis_index] + dz, 
                 -MAX_VELOCITY, 
                 MAX_VELOCITY
@@ -225,7 +225,7 @@ integrate(Actor& actor, World& world)
         {
             const f32 dz = world.delta_time * RISING_GRAVITY_MODIFIER * world.gravity.elements[axis_index];
             
-            actor.velocity.elements[axis_index] = ld_clamp(
+            actor.velocity.elements[axis_index] = std::clamp(
                 actor.velocity.elements[axis_index] + dz,
                 -MAX_VELOCITY,
                 MAX_VELOCITY
