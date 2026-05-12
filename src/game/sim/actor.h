@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
+#include "core/geometry.h"
 #include "core/types.h"
 #include "game/sim/ids.h"
 #include "game/sim/nation.h"
@@ -55,15 +54,15 @@ struct Actor
     NationType nation_type;
     MovementType movement_type;
 
-    glm::vec3 position;
+    ld_vec3 position;
 
-    glm::vec3 rotation;
-    glm::vec3 rotation_target;
+    ld_vec3 rotation;
+    ld_vec3 rotation_target;
 
     b32 is_grounded;
 
     f32 speed;
-    glm::vec3 velocity;
+    ld_vec3 velocity;
 
     BoxCollider box_collider;
 

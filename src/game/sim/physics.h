@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
+#include "core/geometry.h"
 #include "core/types.h"
 
 constexpr f32 MAX_VELOCITY = 200.0f;
@@ -16,7 +15,7 @@ struct BoxCollider
 {
     b32 collision_enabled;
 
-    glm::vec3 radius;
+    ld_vec3 radius;
 };
 
 void physics_update_actor(Actor& actor, World& world);

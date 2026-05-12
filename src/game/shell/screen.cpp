@@ -1,9 +1,6 @@
 #include "screen.h"
 
-#include <string.h>
 #include <glad/glad.h>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/gtc/type_ptr.inl>
 
 #include "stb_image.h"
 
@@ -80,9 +77,9 @@ static void load_textures(Screen& screen, const char* textures_path)
     stbi_image_free(pixel_data_array);
 }
 
-static glm::mat4 get_orthographic_projection_matrix(f32 width, f32 height)
+static ld_mat4 get_orthographic_projection_matrix(f32 width, f32 height)
 {
-    return glm::ortho(
+    return orthographic_matrix(
         0.0f, 
         width, 
         height, 
@@ -188,13 +185,13 @@ void screen_init(Shell& shell, Platform& platform)
     i32 fb_width, fb_height;
     glfwGetFramebufferSize(platform.window.glfw_window, &fb_width, &fb_height);
 
-    const glm::mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
+    const ld_mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
 
     glUniformMatrix4fv(
         screen.u_projection_location, 
         1, 
         GL_FALSE, 
-        glm::value_ptr(shell_projection_matrix)
+        (f32*)shell_projection_matrix.elements
     );
 
     glDeleteShader(vert_shader);
@@ -237,8 +234,8 @@ static void draw_debug_info(Shell& shell, Sim& sim)
 {
     const Actor& judge = sim.population.actor_pool.actor_array[sim.population.judge_id];
 
-    const glm::ivec3 cell_coordinate = world_position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
-    const glm::ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
+    const ld_ivec3 cell_coordinate = world_position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
+    const ld_ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
 
     char position_text[64];
     char velocity_text[64];
@@ -251,29 +248,29 @@ static void draw_debug_info(Shell& shell, Sim& sim)
         position_text,
         sizeof(position_text),
         "POS %.1f %.1f %.1f",
-        judge.position[0],
-        judge.position[1],
-        judge.position[2]
+        judge.position.x,
+        judge.position.y,
+        judge.position.z
     );
 
     snprintf(
         velocity_text,
         sizeof(velocity_text),
         "VEL %.1f %.1f %.1f",
-        judge.velocity[0],
-        judge.velocity[1],
-        judge.velocity[2]
+        judge.velocity.x,
+        judge.velocity.y,
+        judge.velocity.z
     );
 
-    if (world_cell_coordinate_is_valid(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]))
+    if (world_cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
     {
         snprintf(
             cell_coordinate_text,
             sizeof(cell_coordinate_text),
             "CEL %i %i %i",
-            cell_coordinate[0],
-            cell_coordinate[1],
-            cell_coordinate[2]
+            cell_coordinate.x,
+            cell_coordinate.y,
+            cell_coordinate.z
         );
     }
     else
@@ -281,7 +278,7 @@ static void draw_debug_info(Shell& shell, Sim& sim)
         strcpy(cell_coordinate_text, "CEL - - -");
     }
 
-    if (world_sector_coordinate_is_valid(sector_coordinate[0], sector_coordinate[1]))
+    if (world_sector_coordinate_is_valid(sector_coordinate.x, sector_coordinate.y))
     {
         snprintf(
             sector_coordinate_text,
@@ -296,9 +293,9 @@ static void draw_debug_info(Shell& shell, Sim& sim)
         strcpy(sector_coordinate_text, "SEC - -");
     }
 
-    const u32 floor_number = world_get_floor(cell_coordinate[2]);
+    const u32 floor_number = world_get_floor(cell_coordinate.z);
 
-    if (cell_coordinate[2] < 0)
+    if (cell_coordinate.z < 0)
     {
         strcpy(floor_text, "FLR -");
     }

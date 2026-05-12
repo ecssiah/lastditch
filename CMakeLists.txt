@@ -31,7 +31,6 @@ add_executable(
 target_include_directories(
     lastditch
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glm/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
     ${CMAKE_CURRENT_SOURCE_DIR}/external/stb/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src

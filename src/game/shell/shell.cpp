@@ -10,39 +10,39 @@ static void queue_move_action(Platform& platform, Sim& sim)
 {
     Action move_action = {
         .type = ActionType::move,
-        .action_value = {0.0f, 0.0f, 0.0f},
+        .action_value = ld_vec3_init(0.0f),
     };
 
     if (platform_button_is_down(platform, Button::a))
     {
-        move_action.action_value[0] -= 1.0f;
+        move_action.action_value.x -= 1.0f;
     }
 
     if (platform_button_is_down(platform, Button::d))
     {
-        move_action.action_value[0] += 1.0f;
+        move_action.action_value.x += 1.0f;
     }
 
     if (platform_button_is_down(platform, Button::w))
     {
-        move_action.action_value[1] += 1.0f;
+        move_action.action_value.y += 1.0f;
     }
 
     if (platform_button_is_down(platform, Button::s))
     {
-        move_action.action_value[1] -= 1.0f;
+        move_action.action_value.y -= 1.0f;
     }
 
-    move_action.action_value = normalize_safe(move_action.action_value);
+    move_action.action_value = normalize(move_action.action_value);
 
     if (platform_button_is_down(platform, Button::e))
     {
-        move_action.action_value[2] += 1.0f;
+        move_action.action_value.z += 1.0f;
     }
 
     if (platform_button_is_down(platform, Button::q))
     {
-        move_action.action_value[2] -= 1.0f;
+        move_action.action_value.z -= 1.0f;
     }
 
     action_add(sim.action_queue, move_action);
@@ -66,7 +66,7 @@ static void queue_jump_action(Sim& sim)
 {
     Action jump_action = {
         .type = ActionType::jump,
-        .action_value = {1.0f, 0.0f, 0.0f},
+        .action_value = ld_vec3_init(1.0f),
     };
 
     action_add(sim.action_queue, jump_action);
@@ -76,7 +76,7 @@ static void queue_debug_mode_action(Sim& sim)
 {
     Action debug_action = {
         .type = ActionType::debug_mode,
-        .action_value = { 1, 1, 1 },
+        .action_value = ld_vec3_init( 1.0f),
     };
 
     action_add(sim.action_queue, debug_action);

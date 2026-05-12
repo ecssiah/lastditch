@@ -1,17 +1,16 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "core/types.h"
+#include "core/geometry.h"
 
 constexpr i32 DEBUG_LINE_MAX = 1 << 13;
 constexpr b32 DEBUG_AREAS = true;
 
 struct DebugLine
 {
-    glm::vec3 position_a;
-    glm::vec3 position_b;
-    glm::vec3 color;
+    ld_vec3 position_a;
+    ld_vec3 position_b;
+    ld_vec3 color;
 };
 
 struct Debug

@@ -1,5 +1,6 @@
 #include "game/sim/world.h"
 
+#include <cassert>
 #include <cstdlib>
 
 #include "core/types.h"
@@ -19,7 +20,7 @@ const char* SECTION_TYPE_STRING[SECTION_COUNT] =
     FOR_LIST_SECTION(DEFINE_LIST_STRING)
 };
 
-const glm::ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT] =
+const ld_ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT] =
 {
     // SECTION_CT                              
     {
@@ -172,7 +173,7 @@ const glm::ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT] =
     },
 };
 
-const glm::ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT] =
+const ld_ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT] =
 {
     // SECTION_CT                              
     {
@@ -383,17 +384,12 @@ world_sector_coordinate_is_valid(i32 x, i32 y)
 }
 
 u32 
-world_sector_coordinate_to_index(glm::ivec2 sector_coordinate)
+world_sector_coordinate_to_index(ld_ivec2 sector_coordinate)
 {
-    const u32 sector_index = (
-        sector_coordinate[0] +
-        sector_coordinate[1] * WORLD_SIZE_IN_SECTORS
-    );
-
-    return sector_index;
+    return sector_coordinate.x + sector_coordinate.y * WORLD_SIZE_IN_SECTORS;
 }
 
-glm::ivec2
+ld_ivec2
 world_sector_index_to_coordinate(u32 sector_index)
 {
     return {
@@ -408,7 +404,7 @@ world_cell_coordinate_to_index(i32 x, i32 y, i32 z)
     return x * WORLD_STRIDE_X + y * WORLD_STRIDE_Y + z * WORLD_STRIDE_Z;
 }
 
-glm::ivec3
+ld_ivec3
 world_cell_index_to_coordinate(u32 cell_index)
 {
     const i32 z = static_cast<i32>(cell_index / WORLD_STRIDE_Z);
@@ -424,7 +420,7 @@ world_cell_index_to_coordinate(u32 cell_index)
     return {x, y, z};
 }
 
-glm::ivec2
+ld_ivec2
 world_cell_coordinate_to_sector_coordinate(i32 x, i32 y)
 {
     return {
@@ -436,13 +432,13 @@ world_cell_coordinate_to_sector_coordinate(i32 x, i32 y)
 u32 
 world_cell_coordinate_to_sector_index(i32 x, i32 y)
 {
-    const glm::ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(x, y);
+    const ld_ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(x, y);
     const u32 sector_index = world_sector_coordinate_to_index(sector_coordinate);
 
     return sector_index;
 }
 
-glm::ivec3
+ld_ivec3
 world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z)
 {
     return {
@@ -455,17 +451,17 @@ world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z)
 u32 
 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z)
 {
-    const glm::ivec3 local_coordinate = world_cell_coordinate_to_local_coordinate(x, y, z);
+    const ld_ivec3 local_coordinate = world_cell_coordinate_to_local_coordinate(x, y, z);
 
     const u32 local_index =
-        static_cast<u32>(local_coordinate[0] << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
-        static_cast<u32>(local_coordinate[1] << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
-        static_cast<u32>(local_coordinate[2] << (2 * SECTOR_SIZE_IN_CELLS_LOG2));
+        static_cast<u32>(local_coordinate.x << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
+        static_cast<u32>(local_coordinate.y << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
+        static_cast<u32>(local_coordinate.z << (2 * SECTOR_SIZE_IN_CELLS_LOG2));
 
     return local_index;
 }
 
-glm::vec3
+ld_vec3
 world_cell_coordinate_to_position(i32 x, i32 y, i32 z)
 {
     return {
@@ -475,7 +471,7 @@ world_cell_coordinate_to_position(i32 x, i32 y, i32 z)
     };
 }
 
-glm::ivec3
+ld_ivec3
 world_position_to_cell_coordinate(f32 x, f32 y, f32 z)
 {
     return {
@@ -541,7 +537,7 @@ world_is_clear(const World& world, i32 x, i32 y, i32 z, u8 direction_mask)
     {
         if (direction_mask & (1 << direction_index))
         {
-            const glm::ivec3 neighbor_position = {
+            const ld_ivec3 neighbor_position = {
                 x + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
                 y + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][1]),
                 z + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
@@ -566,14 +562,14 @@ world_get_direction_mask(World& world, i32 x, i32 y, i32 z)
 
     for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
-        const glm::ivec3 neighbor_position = {
+        const ld_ivec3 neighbor_position = {
             x + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
             y + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][1]),
             z + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
         };
 
-        const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_position[0], neighbor_position[1],
-                                                                  neighbor_position[2]);
+        const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_position.x, neighbor_position.y,
+                                                                  neighbor_position.z);
 
         if (!valid_neighbor)
         {
@@ -620,17 +616,17 @@ world_set_block_type(World& world, i32 x, i32 y, i32 z, BlockType block_type)
 void 
 world_set_block_type_cube(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    const glm::ivec3 max = {
+    const ld_ivec3 max = {
         x + size_x,
         y + size_y,
         z + size_z,
     };
 
-    for (i32 cell_z = z; cell_z < max[2]; ++cell_z)
+    for (i32 cell_z = z; cell_z < max.z; ++cell_z)
     {
-        for (i32 cell_y = y; cell_y < max[1]; ++cell_y)
+        for (i32 cell_y = y; cell_y < max.y; ++cell_y)
         {
-            for (i32 cell_x = x; cell_x < max[0]; ++cell_x)
+            for (i32 cell_x = x; cell_x < max.x; ++cell_x)
             {
                 world_set_block_type(world, cell_x, cell_y, cell_z, block_type);
             }
@@ -654,22 +650,22 @@ world_get_content_level(i32 z)
 void 
 world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    const glm::ivec3 max = {
+    const ld_ivec3 max = {
         x + size_x,
         y + size_y,
         z + size_z,
     };
 
-    for (i32 cell_z = z; cell_z < max[2]; ++cell_z)
+    for (i32 cell_z = z; cell_z < max.z; ++cell_z)
     {
-        for (i32 cell_y = y; cell_y < max[1]; ++cell_y)
+        for (i32 cell_y = y; cell_y < max.y; ++cell_y)
         {
-            for (i32 cell_x = x; cell_x < max[0]; ++cell_x)
+            for (i32 cell_x = x; cell_x < max.x; ++cell_x)
             {
                 const b32 at_boundary = (
-                    cell_x == x || cell_x == max[0] - 1 ||
-                    cell_y == y || cell_y == max[1] - 1 ||
-                    cell_z == z || cell_z == max[2] - 1
+                    cell_x == x || cell_x == max.x - 1 ||
+                    cell_y == y || cell_y == max.y - 1 ||
+                    cell_z == z || cell_z == max.z - 1
                 );
 
                 if (at_boundary)
@@ -684,23 +680,23 @@ world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size
 void 
 world_set_block_type_wireframe(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type)
 {
-    const glm::ivec3 max = {
+    const ld_ivec3 max = {
         x + size_x,
         y + size_y,
         z + size_z,
     };
 
-    for (i32 cell_z = z; cell_z < max[2]; ++cell_z)
+    for (i32 cell_z = z; cell_z < max.z; ++cell_z)
     {
-        for (i32 cell_y = y; cell_y < max[1]; ++cell_y)
+        for (i32 cell_y = y; cell_y < max.y; ++cell_y)
         {
-            for (i32 cell_x = x; cell_x < max[0]; ++cell_x)
+            for (i32 cell_x = x; cell_x < max.x; ++cell_x)
             {
                 i32 boundary_count = 0;
 
-                if (cell_x == x || cell_x == max[0] - 1) boundary_count++;
-                if (cell_y == y || cell_y == max[1] - 1) boundary_count++;
-                if (cell_z == z || cell_z == max[2] - 1) boundary_count++;
+                if (cell_x == x || cell_x == max.x - 1) boundary_count++;
+                if (cell_y == y || cell_y == max.y - 1) boundary_count++;
+                if (cell_z == z || cell_z == max.z - 1) boundary_count++;
 
                 if (boundary_count >= 2)
                 {
@@ -754,46 +750,46 @@ construct_tower(World& world)
 {
     for (i32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        const glm::ivec3 floor_origin = {TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z};
+        const ld_ivec3 floor_origin = {TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z};
 
         world_set_block_type_cube(
             world,
-            floor_origin[0], floor_origin[1], floor_origin[2],
+            floor_origin.x, floor_origin.y, floor_origin.z,
             TOWER_SIZE, TOWER_SIZE, 1,
             BlockType::smooth_2
         );
 
         world_set_block_type_cube(
             world,
-            floor_origin[0], floor_origin[1], floor_origin[2] + FLOOR_SIZE_Z - 1,
+            floor_origin.x, floor_origin.y, floor_origin.z + FLOOR_SIZE_Z - 1,
             TOWER_SIZE, TOWER_SIZE, 1,
             BlockType::smooth_2
         );
 
         world_set_block_type_wireframe(
             world,
-            floor_origin[0], floor_origin[1], floor_origin[2],
+            floor_origin.x, floor_origin.y, floor_origin.z,
             TOWER_SIZE, TOWER_SIZE, FLOOR_SIZE_Z,
             BlockType::caution_1
         );
 
         world_set_block_type_cube(
             world,
-            floor_origin[0] + 1, floor_origin[1] + TOWER_SIZE / 2 - TOWER_CENTER_HALL_SIZE / 2 + 4, floor_origin[2],
+            floor_origin.x + 1, floor_origin.y + TOWER_SIZE / 2 - TOWER_CENTER_HALL_SIZE / 2 + 4, floor_origin.z,
             TOWER_SIZE - 2, TOWER_CENTER_HALL_SIZE - 8, 1,
             BlockType::smooth_1
         );
 
         world_set_block_type_cube(
             world,
-            floor_origin[0] + TOWER_SIZE / 2 - TOWER_CENTER_HALL_SIZE / 2 + 4, floor_origin[1] + 1, floor_origin[2],
+            floor_origin.x + TOWER_SIZE / 2 - TOWER_CENTER_HALL_SIZE / 2 + 4, floor_origin.y + 1, floor_origin.z,
             TOWER_CENTER_HALL_SIZE - 8, TOWER_SIZE - 2, 1,
             BlockType::smooth_1
         );
 
-        const i32 cell_z = floor_origin[2];
+        const i32 cell_z = floor_origin.z;
 
-        for (i32 cell_x = floor_origin[0] + 1; cell_x < floor_origin[0] + static_cast<i32>(TOWER_SIZE) - 1; ++cell_x)
+        for (i32 cell_x = floor_origin.x + 1; cell_x < floor_origin.x + static_cast<i32>(TOWER_SIZE) - 1; ++cell_x)
         {
             i32 north_position_z;
             i32 north_size_z;
@@ -813,7 +809,7 @@ construct_tower(World& world)
 
             world_set_block_type_cube(
                 world,
-                cell_x, floor_origin[0] + TOWER_SIZE - 1, north_position_z,
+                cell_x, floor_origin.x + TOWER_SIZE - 1, north_position_z,
                 1, 1, north_size_z,
                 BlockType::panel_2
             );
@@ -836,13 +832,13 @@ construct_tower(World& world)
 
             world_set_block_type_cube(
                 world,
-                cell_x, floor_origin[0], south_position_z,
+                cell_x, floor_origin.x, south_position_z,
                 1, 1, south_size_z,
                 BlockType::panel_2
             );
         }
 
-        for (i32 cell_y = floor_origin[1] + 1; cell_y < floor_origin[1] + static_cast<i32>(TOWER_SIZE) - 1; ++cell_y)
+        for (i32 cell_y = floor_origin.y + 1; cell_y < floor_origin.y + static_cast<i32>(TOWER_SIZE) - 1; ++cell_y)
         {
             i32 east_position_z;
             i32 east_size_z;
@@ -862,7 +858,7 @@ construct_tower(World& world)
 
             world_set_block_type_cube(
                 world,
-                floor_origin[1] + TOWER_SIZE - 1, cell_y, east_position_z,
+                floor_origin.y + TOWER_SIZE - 1, cell_y, east_position_z,
                 1, 1, east_size_z,
                 BlockType::panel_2
             );
@@ -885,7 +881,7 @@ construct_tower(World& world)
 
             world_set_block_type_cube(
                 world,
-                floor_origin[1], cell_y, west_position_z,
+                floor_origin.y, cell_y, west_position_z,
                 1, 1, west_size_z,
                 BlockType::panel_2
             );
@@ -979,12 +975,12 @@ layout_tower_areas(World& world)
             .floor_number = floor_number,
             .bounds = {
                 {
-                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q1)][0], 
-                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q1)][1]
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q1)].x, 
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q1)].y
                 },
                 {
-                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q1)][0], 
-                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q1)][1]
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q1)].x, 
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q1)].y
                 },
             },
         };
@@ -994,12 +990,12 @@ layout_tower_areas(World& world)
             .floor_number = floor_number,
             .bounds = {
                 {
-                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q2)][0], 
-                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q2)][1]
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q2)].x, 
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q2)].y
                 },
                 {
-                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q2)][0], 
-                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q2)][1]
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q2)].x, 
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q2)].y
                 },
             },
         };
@@ -1009,12 +1005,12 @@ layout_tower_areas(World& world)
             .floor_number = floor_number,
             .bounds = {
                 {
-                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q3)][0], 
-                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q3)][1]
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q3)].x, 
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q3)].y
                 },
                 {
-                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q3)][0], 
-                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q3)][1]
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q3)].x, 
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q3)].y
                 }
             },
         };
@@ -1024,12 +1020,12 @@ layout_tower_areas(World& world)
             .floor_number = floor_number,
             .bounds = {
                 {
-                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q4)][0], 
-                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q4)][1]
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q4)].x, 
+                    SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::q4)].y
                 },
                 {
-                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q4)][0], 
-                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q4)][1]
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q4)].x, 
+                    SECTION_SIZE_ARRAY[static_cast<u8>(Section::q4)].y
                 },
             },
         };
@@ -1053,24 +1049,24 @@ layout_tower_areas(World& world)
 
                 const Area area_copy = area_pool.area_array[area_id];
 
-                const Axis axis_split = area_copy.bounds.size[static_cast<size_t>(Axis::x)] > area_copy.bounds.size[
-                                            static_cast<size_t>(Axis::y)]
-                                            ? Axis::x
-                                            : Axis::y;
+                const axis axis_split = area_copy.bounds.size.elements[static_cast<size_t>(axis::x)] > area_copy.bounds.size.elements[
+                                            static_cast<size_t>(axis::y)]
+                                            ? axis::x
+                                            : axis::y;
                 
                 const i32 axis_split_value = static_cast<size_t>(axis_split);
 
-                if (area_copy.bounds.size[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
+                if (area_copy.bounds.size.elements[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
                 {
-                    const i32 split_size = area_copy.bounds.size[axis_split_value] / 2 + (-2 + (rand() % 5));
+                    const i32 split_size = area_copy.bounds.size.elements[axis_split_value] / 2 + (-2 + (rand() % 5));
 
                     Area area_a = area_copy;
                     Area area_b = area_copy;
 
-                    area_a.bounds.size[axis_split_value] = split_size;
+                    area_a.bounds.size.elements[axis_split_value] = split_size;
 
-                    area_b.bounds.position[axis_split_value] = area_copy.bounds.position[axis_split_value] + split_size;
-                    area_b.bounds.size[axis_split_value] = area_copy.bounds.size[axis_split_value] - split_size;
+                    area_b.bounds.position.elements[axis_split_value] = area_copy.bounds.position.elements[axis_split_value] + split_size;
+                    area_b.bounds.size.elements[axis_split_value] = area_copy.bounds.size.elements[axis_split_value] - split_size;
 
                     area_add(area_pool, area_a);
                     area_add(area_pool, area_b);
@@ -1109,8 +1105,8 @@ layout_tower_areas(World& world)
                 .area_type = AreaType::open,
                 .floor_number = floor_number,
                 .bounds = {
-                    {SECTION_ORIGIN_ARRAY[section_index][0], SECTION_ORIGIN_ARRAY[section_index][1]},
-                    {SECTION_SIZE_ARRAY[section_index][0], SECTION_SIZE_ARRAY[section_index][1]},
+                    {SECTION_ORIGIN_ARRAY[section_index].x, SECTION_ORIGIN_ARRAY[section_index].y},
+                    {SECTION_SIZE_ARRAY[section_index].x, SECTION_SIZE_ARRAY[section_index].y},
                 },
             };
 
@@ -1122,7 +1118,7 @@ layout_tower_areas(World& world)
 static void 
 setup_wolf_territory(World& world)
 {
-    constexpr glm::ivec3 temple_origin = {
+    constexpr ld_ivec3 temple_origin = {
         TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         ROOF_Z,
@@ -1130,28 +1126,28 @@ setup_wolf_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        temple_origin[0], temple_origin[1], temple_origin[2],
+        temple_origin.x, temple_origin.y, temple_origin.z,
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
         BlockType::wolf_stone
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2],
+        temple_origin.x + 1, temple_origin.y + 1, temple_origin.z,
         TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BlockType::smooth_4
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0], temple_origin[1], temple_origin[2] + FLOOR_SIZE_Z - 1,
+        temple_origin.x, temple_origin.y, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
         BlockType::wolf_stone
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + FLOOR_SIZE_Z - 1,
+        temple_origin.x + 1, temple_origin.y + 1, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BlockType::smooth_4
     );
@@ -1160,34 +1156,34 @@ setup_wolf_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + pillar_offset, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::wolf_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        temple_origin.x + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.y + pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::wolf_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + pillar_offset, temple_origin[1] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[2] + 1,
+        temple_origin.x + pillar_offset, temple_origin.y + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::wolf_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[1] + TEMPLE_SIZE_X - pillar_offset - 1,
-        temple_origin[2] + 1,
+        temple_origin.x + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_X - pillar_offset - 1,
+        temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::wolf_symbol
     );
 
-    constexpr glm::ivec3 platform_origin = {
+    constexpr ld_ivec3 platform_origin = {
         TOWER_BORDER + TOWER_SIZE,
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
         ROOF_Z,
@@ -1195,28 +1191,28 @@ setup_wolf_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], platform_origin[2],
+        platform_origin.x, platform_origin.y, platform_origin.z,
         PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
         BlockType::smooth_2
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] - 1, platform_origin[1], platform_origin[2] + 1,
+        platform_origin.x - 1, platform_origin.y, platform_origin.z + 1,
         PLATFORM_SIZE_Y + 1, PLATFORM_SIZE_X, 1,
         BlockType::none
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + 2, platform_origin[1] + 2, platform_origin[2] + 1,
+        platform_origin.x + 2, platform_origin.y + 2, platform_origin.z + 1,
         2, 2, 2,
         BlockType::server_1
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + 6, platform_origin[1] + 2, platform_origin[2] + 1,
+        platform_origin.x + 6, platform_origin.y + 2, platform_origin.z + 1,
         2, 2, 2,
         BlockType::server_2
     );
@@ -1225,7 +1221,7 @@ setup_wolf_territory(World& world)
 static void 
 setup_eagle_territory(World& world)
 {
-    constexpr glm::ivec3 temple_origin = {
+    constexpr ld_ivec3 temple_origin = {
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         ROOF_Z,
@@ -1233,28 +1229,28 @@ setup_eagle_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        temple_origin[0], temple_origin[1], temple_origin[2],
+        temple_origin.x, temple_origin.y, temple_origin.z,
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
         BlockType::eagle_stone
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2],
+        temple_origin.x + 1, temple_origin.y + 1, temple_origin.z,
         TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BlockType::smooth_4
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0], temple_origin[1], temple_origin[2] + FLOOR_SIZE_Z - 1,
+        temple_origin.x, temple_origin.y, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
         BlockType::eagle_stone
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + FLOOR_SIZE_Z - 1,
+        temple_origin.x + 1, temple_origin.y + 1, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BlockType::smooth_4
     );
@@ -1263,34 +1259,34 @@ setup_eagle_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + pillar_offset, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::eagle_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        temple_origin.x + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.y + pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::eagle_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + pillar_offset, temple_origin[1] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[2] + 1,
+        temple_origin.x + pillar_offset, temple_origin.y + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::eagle_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[1] + TEMPLE_SIZE_X - pillar_offset - 1,
-        temple_origin[2] + 1,
+        temple_origin.x + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_X - pillar_offset - 1,
+        temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::eagle_symbol
     );
 
-    constexpr glm::ivec3 platform_origin = {
+    constexpr ld_ivec3 platform_origin = {
         TOWER_BORDER - PLATFORM_SIZE_Y,
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
         ROOF_Z,
@@ -1298,28 +1294,28 @@ setup_eagle_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], platform_origin[2],
+        platform_origin.x, platform_origin.y, platform_origin.z,
         PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
         BlockType::smooth_2
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], platform_origin[2] + 1,
+        platform_origin.x, platform_origin.y, platform_origin.z + 1,
         PLATFORM_SIZE_Y + 1, PLATFORM_SIZE_X, 1,
         BlockType::none
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + PLATFORM_SIZE_Y - 4, platform_origin[1] + PLATFORM_SIZE_X - 4, platform_origin[2] + 1,
+        platform_origin.x + PLATFORM_SIZE_Y - 4, platform_origin.y + PLATFORM_SIZE_X - 4, platform_origin.z + 1,
         2, 2, 2,
         BlockType::server_1
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + PLATFORM_SIZE_Y - 8, platform_origin[1] + PLATFORM_SIZE_X - 4, platform_origin[2] + 1,
+        platform_origin.x + PLATFORM_SIZE_Y - 8, platform_origin.y + PLATFORM_SIZE_X - 4, platform_origin.z + 1,
         2, 2, 2,
         BlockType::server_2
     );
@@ -1328,7 +1324,7 @@ setup_eagle_territory(World& world)
 static void 
 setup_bear_territory(World& world)
 {
-    constexpr glm::ivec3 temple_origin = {
+    constexpr ld_ivec3 temple_origin = {
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         ROOF_Z,
@@ -1336,28 +1332,28 @@ setup_bear_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        temple_origin[0], temple_origin[1], temple_origin[2],
+        temple_origin.x, temple_origin.y, temple_origin.z,
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
         BlockType::bear_stone
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2],
+        temple_origin.x + 1, temple_origin.y + 1, temple_origin.z,
         TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
         BlockType::smooth_4
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0], temple_origin[1], temple_origin[2] + FLOOR_SIZE_Z - 1,
+        temple_origin.x, temple_origin.y, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
         BlockType::bear_stone
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + FLOOR_SIZE_Z - 1,
+        temple_origin.x + 1, temple_origin.y + 1, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
         BlockType::smooth_4
     );
@@ -1366,34 +1362,34 @@ setup_bear_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + pillar_offset, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::bear_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + pillar_offset, temple_origin[1] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[2] + 1,
+        temple_origin.x + pillar_offset, temple_origin.y + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::bear_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        temple_origin.x + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.y + pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::bear_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[1] + TEMPLE_SIZE_Y - pillar_offset - 1,
-        temple_origin[2] + 1,
+        temple_origin.x + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_Y - pillar_offset - 1,
+        temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::bear_symbol
     );
 
-    constexpr glm::ivec3 platform_origin = {
+    constexpr ld_ivec3 platform_origin = {
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
         TOWER_BORDER + TOWER_SIZE,
         ROOF_Z,
@@ -1401,28 +1397,28 @@ setup_bear_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], platform_origin[2],
+        platform_origin.x, platform_origin.y, platform_origin.z,
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BlockType::smooth_2
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1] - 1, platform_origin[2] + 1,
+        platform_origin.x, platform_origin.y - 1, platform_origin.z + 1,
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y + 1, 1,
         BlockType::none
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + 2, platform_origin[1] + PLATFORM_SIZE_Y - 4, platform_origin[2] + 1,
+        platform_origin.x + 2, platform_origin.y + PLATFORM_SIZE_Y - 4, platform_origin.z + 1,
         2, 2, 2,
         BlockType::server_1
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + 2, platform_origin[1] + PLATFORM_SIZE_Y - 8, platform_origin[2] + 1,
+        platform_origin.x + 2, platform_origin.y + PLATFORM_SIZE_Y - 8, platform_origin.z + 1,
         2, 2, 2,
         BlockType::server_2
     );
@@ -1431,7 +1427,7 @@ setup_bear_territory(World& world)
 static void 
 setup_lion_territory(World& world)
 {
-    constexpr glm::ivec3 temple_origin = {
+    constexpr ld_ivec3 temple_origin = {
         WORLD_CENTER_I32 - TEMPLE_SIZE_X / 2,
         TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         ROOF_Z,
@@ -1439,28 +1435,28 @@ setup_lion_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        temple_origin[0], temple_origin[1], temple_origin[2],
+        temple_origin.x, temple_origin.y, temple_origin.z,
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
         BlockType::lion_stone
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2],
+        temple_origin.x + 1, temple_origin.y + 1, temple_origin.z,
         TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
         BlockType::smooth_4
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0], temple_origin[1], temple_origin[2] + FLOOR_SIZE_Z - 1,
+        temple_origin.x, temple_origin.y, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
         BlockType::lion_stone
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + 1, temple_origin[1] + 1, temple_origin[2] + FLOOR_SIZE_Z - 1,
+        temple_origin.x + 1, temple_origin.y + 1, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
         BlockType::smooth_4
     );
@@ -1469,34 +1465,34 @@ setup_lion_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + pillar_offset, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::lion_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + pillar_offset, temple_origin[1] + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin[2] + 1,
+        temple_origin.x + pillar_offset, temple_origin.y + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::lion_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[1] + pillar_offset, temple_origin[2] + 1,
+        temple_origin.x + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.y + pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::lion_symbol
     );
 
     world_set_block_type_cube(
         world,
-        temple_origin[0] + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin[1] + TEMPLE_SIZE_Y - pillar_offset - 1,
-        temple_origin[2] + 1,
+        temple_origin.x + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_Y - pillar_offset - 1,
+        temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::lion_symbol
     );
 
-    constexpr glm::ivec3 platform_origin = {
+    constexpr ld_ivec3 platform_origin = {
         WORLD_CENTER_I32 - PLATFORM_SIZE_X / 2,
         TOWER_BORDER - PLATFORM_SIZE_Y,
         ROOF_Z,
@@ -1504,28 +1500,28 @@ setup_lion_territory(World& world)
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1], platform_origin[2],
+        platform_origin.x, platform_origin.y, platform_origin.z,
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y, 1,
         BlockType::smooth_2
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0], platform_origin[1] + 1, platform_origin[2] + 1,
+        platform_origin.x, platform_origin.y + 1, platform_origin.z + 1,
         PLATFORM_SIZE_X, PLATFORM_SIZE_Y + 1, 1,
         BlockType::none
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + PLATFORM_SIZE_X - 4, platform_origin[1] + 2, platform_origin[2] + 1,
+        platform_origin.x + PLATFORM_SIZE_X - 4, platform_origin.y + 2, platform_origin.z + 1,
         2, 2, 2,
         BlockType::server_1
     );
 
     world_set_block_type_cube(
         world,
-        platform_origin[0] + PLATFORM_SIZE_X - 4, platform_origin[1] + 6, platform_origin[2] + 1,
+        platform_origin.x + PLATFORM_SIZE_X - 4, platform_origin.y + 6, platform_origin.z + 1,
         2, 2, 2,
         BlockType::server_2
     );
@@ -1534,7 +1530,7 @@ setup_lion_territory(World& world)
 static void 
 layout_test_area(World& world)
 {
-    constexpr glm::ivec3 test_area_position = {
+    constexpr ld_ivec3 test_area_position = {
         WORLD_CENTER_I32 - 20,
         WORLD_CENTER_I32 + 20,
         TOWER_FLOOR_COUNT * FLOOR_SIZE_Z,
@@ -1544,7 +1540,7 @@ layout_test_area(World& world)
         .area_type = AreaType::wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
         .bounds = {
-            {test_area_position[0], test_area_position[1]},
+            {test_area_position.x, test_area_position.y},
             {40, 40},
         },
     };
@@ -1553,7 +1549,7 @@ layout_test_area(World& world)
         .area_type = AreaType::wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
         .bounds = {
-            {test_area_position[0] + 10, test_area_position[1] + 10},
+            {test_area_position.x + 10, test_area_position.y + 10},
             {20, 20},
         },
     };
@@ -1573,74 +1569,74 @@ get_area_overlap(const Area& a, const Area& b)
         .direction = Direction::east,
     };
 
-    const glm::ivec2 left_min = bounds2i_min(a.bounds);
-    const glm::ivec2 right_min = bounds2i_min(b.bounds);
+    const ld_ivec2 left_min = bounds2i_min(a.bounds);
+    const ld_ivec2 right_min = bounds2i_min(b.bounds);
 
-    const glm::ivec2 left_max = bounds2i_max(a.bounds);
-    const glm::ivec2 right_max = bounds2i_max(b.bounds);
+    const ld_ivec2 left_max = bounds2i_max(a.bounds);
+    const ld_ivec2 right_max = bounds2i_max(b.bounds);
 
-    if (left_max[0] == right_min[0])
+    if (left_max.x == right_min.x)
     {
-        const i32 overlap_y_min = max_i32(left_min[1], right_min[1]);
-        const i32 overlap_y_max = min_i32(left_max[1], right_max[1]);
+        const i32 overlap_y_min = max_i32(left_min.y, right_min.y);
+        const i32 overlap_y_max = min_i32(left_max.y, right_max.y);
 
         if (overlap_y_min < overlap_y_max)
         {
             area_overlap.direction = Direction::east;
 
-            area_overlap.bounds.position[0] = left_max[0];
-            area_overlap.bounds.position[1] = overlap_y_min;
+            area_overlap.bounds.position.x = left_max.x;
+            area_overlap.bounds.position.y = overlap_y_min;
 
-            area_overlap.bounds.size[0] = 1;
-            area_overlap.bounds.size[1] = overlap_y_max - overlap_y_min;
+            area_overlap.bounds.size.x = 1;
+            area_overlap.bounds.size.y = overlap_y_max - overlap_y_min;
         }
     }
-    else if (left_min[0] == right_max[0])
+    else if (left_min.x == right_max.x)
     {
-        const i32 overlap_y_min = max_i32(left_min[1], right_min[1]);
-        const i32 overlap_y_max = min_i32(left_max[1], right_max[1]);
+        const i32 overlap_y_min = max_i32(left_min.y, right_min.y);
+        const i32 overlap_y_max = min_i32(left_max.y, right_max.y);
 
         if (overlap_y_min < overlap_y_max)
         {
             area_overlap.direction = Direction::west;
 
-            area_overlap.bounds.position[0] = left_min[0];
-            area_overlap.bounds.position[1] = overlap_y_min;
+            area_overlap.bounds.position.x = left_min.x;
+            area_overlap.bounds.position.y = overlap_y_min;
 
-            area_overlap.bounds.size[0] = 1;
-            area_overlap.bounds.size[1] = overlap_y_max - overlap_y_min;
+            area_overlap.bounds.size.x = 1;
+            area_overlap.bounds.size.y = overlap_y_max - overlap_y_min;
         }
     }
-    else if (left_max[1] == right_min[1])
+    else if (left_max.y == right_min.y)
     {
-        const i32 overlap_x_min = max_i32(left_min[0], right_min[0]);
-        const i32 overlap_x_max = min_i32(left_max[0], right_max[0]);
+        const i32 overlap_x_min = max_i32(left_min.x, right_min.x);
+        const i32 overlap_x_max = min_i32(left_max.x, right_max.x);
 
         if (overlap_x_min < overlap_x_max)
         {
             area_overlap.direction = Direction::north;
 
-            area_overlap.bounds.position[0] = overlap_x_min;
-            area_overlap.bounds.position[1] = left_max[1];
+            area_overlap.bounds.position.x = overlap_x_min;
+            area_overlap.bounds.position.y = left_max.y;
 
-            area_overlap.bounds.size[0] = overlap_x_max - overlap_x_min;
-            area_overlap.bounds.size[1] = 1;
+            area_overlap.bounds.size.x = overlap_x_max - overlap_x_min;
+            area_overlap.bounds.size.y = 1;
         }
     }
-    else if (left_min[1] == right_max[1])
+    else if (left_min.y == right_max.y)
     {
-        const i32 overlap_x_min = max_i32(left_min[0], right_min[0]);
-        const i32 overlap_x_max = min_i32(left_max[0], right_max[0]);
+        const i32 overlap_x_min = max_i32(left_min.x, right_min.x);
+        const i32 overlap_x_max = min_i32(left_max.x, right_max.x);
 
         if (overlap_x_min < overlap_x_max)
         {
             area_overlap.direction = Direction::south;
 
-            area_overlap.bounds.position[0] = overlap_x_min;
-            area_overlap.bounds.position[1] = left_min[1];
+            area_overlap.bounds.position.x = overlap_x_min;
+            area_overlap.bounds.position.y = left_min.y;
 
-            area_overlap.bounds.size[0] = overlap_x_max - overlap_x_min;
-            area_overlap.bounds.size[1] = 1;
+            area_overlap.bounds.size.x = overlap_x_max - overlap_x_min;
+            area_overlap.bounds.size.y = 1;
         }
     }
 
@@ -1667,7 +1663,7 @@ calculate_area_edges(World& world, i32 floor_number)
 
             const AreaOverlap area_overlap = get_area_overlap(area_left, area_right);
 
-            if (area_overlap.bounds.size[0] > 0 && area_overlap.bounds.size[1] > 0)
+            if (area_overlap.bounds.size.x > 0 && area_overlap.bounds.size.y > 0)
             {
                 AreaEdge area_edge = {
                     .edge_id = INT32_MAX,
@@ -1740,13 +1736,13 @@ calculate_world_direction_mask(World& world)
     {
         Cell& cell = world.cell_array[cell_index];
 
-        const glm::ivec3 cell_coordinate = world_cell_index_to_coordinate(cell_index);
+        const ld_ivec3 cell_coordinate = world_cell_index_to_coordinate(cell_index);
 
         cell.direction_mask = world_get_direction_mask(
             world,
-            cell_coordinate[0],
-            cell_coordinate[1],
-            cell_coordinate[2]
+            cell_coordinate.x,
+            cell_coordinate.y,
+            cell_coordinate.z
         );
     }
 }
@@ -1756,7 +1752,7 @@ construct_doors(World& world, const Area& area)
 {
     for (i32 index = 0; index < area.edge_id_count; ++index)
     {
-        constexpr glm::ivec3 door_size = glm::ivec3(1, 1, 2);
+        constexpr ld_ivec3 door_size = {1, 1, 2};
         
         const EdgeID edge_id = area.edge_id_array[index];
         const AreaEdge* area_edge = &world.edge_pool.edge_array[edge_id];
@@ -1765,29 +1761,29 @@ construct_doors(World& world, const Area& area)
             area.area_id == area_edge->area_a_id ? area_edge->area_a_direction : area_edge->area_b_direction
         );
 
-        if (area_edge->area_overlap.bounds.size[0] >= DOOR_MINIMUM_EDGE_SIZE)
+        if (area_edge->area_overlap.bounds.size.x >= DOOR_MINIMUM_EDGE_SIZE)
         {
-            const glm::ivec3 door_position = {
-                area_edge->area_overlap.bounds.position[0] + area_edge->area_overlap.bounds.size[0] / 2,
-                area_edge->area_overlap.bounds.position[1],
+            const ld_ivec3 door_position = {
+                area_edge->area_overlap.bounds.position.x + area_edge->area_overlap.bounds.size.x / 2,
+                area_edge->area_overlap.bounds.position.y,
                 static_cast<i32>(area.floor_number * FLOOR_SIZE_Z + 1),
             };
 
-            constexpr glm::ivec3 door_frame_size = glm::ivec3(3, 1, 3);
+            constexpr ld_ivec3 door_frame_size = {3, 1, 3};
 
             if (edge_direction == Direction::north)
             {
                 world_set_block_type_cube(
                     world,
-                    door_position[0] - 1, door_position[1] - 1, door_position[2],
-                    door_frame_size[0], door_frame_size[1], door_frame_size[2],
+                    door_position.x - 1, door_position.y - 1, door_position.z,
+                    door_frame_size.x, door_frame_size.y, door_frame_size.z,
                     BlockType::panel_3
                 );
 
                 world_set_block_type_cube(
                     world,
-                    door_position[0], door_position[1] - 1, door_position[2],
-                    door_size[0], door_size[1], door_size[2],
+                    door_position.x, door_position.y - 1, door_position.z,
+                    door_size.x, door_size.y, door_size.z,
                     BlockType::none
                 );
             }
@@ -1795,42 +1791,42 @@ construct_doors(World& world, const Area& area)
             {
                 world_set_block_type_cube(
                     world,
-                    door_position[0] - 1, door_position[1], door_position[2],
-                    door_frame_size[0], door_frame_size[1], door_frame_size[2],
+                    door_position.x - 1, door_position.y, door_position.z,
+                    door_frame_size.x, door_frame_size.y, door_frame_size.z,
                     BlockType::panel_3
                 );
 
                 world_set_block_type_cube(
                     world,
-                    door_position[0], door_position[1], door_position[2],
-                    door_size[0], door_size[1], door_size[2],
+                    door_position.x, door_position.y, door_position.z,
+                    door_size.x, door_size.y, door_size.z,
                     BlockType::none
                 );
             }
         }
-        else if (area_edge->area_overlap.bounds.size[1] >= DOOR_MINIMUM_EDGE_SIZE)
+        else if (area_edge->area_overlap.bounds.size.y >= DOOR_MINIMUM_EDGE_SIZE)
         {
-            const glm::ivec3 door_position = {
-                area_edge->area_overlap.bounds.position[0],
-                area_edge->area_overlap.bounds.position[1] + area_edge->area_overlap.bounds.size[1] / 2,
+            const ld_ivec3 door_position = {
+                area_edge->area_overlap.bounds.position.x,
+                area_edge->area_overlap.bounds.position.y + area_edge->area_overlap.bounds.size.y / 2,
                 static_cast<i32>(area.floor_number * FLOOR_SIZE_Z + 1),
             };
 
-            constexpr glm::ivec3 door_frame_size = {1, 3, 3};
+            constexpr ld_ivec3 door_frame_size = {1, 3, 3};
 
             if (edge_direction == Direction::east)
             {
                 world_set_block_type_cube(
                     world,
-                    door_position[0] - 1, door_position[1] - 1, door_position[2],
-                    door_frame_size[0], door_frame_size[1], door_frame_size[2],
+                    door_position.x - 1, door_position.y - 1, door_position.z,
+                    door_frame_size.x, door_frame_size.y, door_frame_size.z,
                     BlockType::panel_3
                 );
 
                 world_set_block_type_cube(
                     world,
-                    door_position[0] - 1, door_position[1], door_position[2],
-                    door_size[0], door_size[1], door_size[2],
+                    door_position.x - 1, door_position.y, door_position.z,
+                    door_size.x, door_size.y, door_size.z,
                     BlockType::none
                 );
             }
@@ -1838,14 +1834,14 @@ construct_doors(World& world, const Area& area)
             {
                 world_set_block_type_cube(
                     world,
-                    door_position[0], door_position[1] - 1, door_position[2],
-                    door_frame_size[0], door_frame_size[1], door_frame_size[2],
+                    door_position.x, door_position.y - 1, door_position.z,
+                    door_frame_size.x, door_frame_size.y, door_frame_size.z,
                     BlockType::panel_3
                 );
 
                 world_set_block_type_cube(
                     world,
-                    door_position[0], door_position[1], door_position[2],
+                    door_position.x, door_position.y, door_position.z,
                     1, 1, 2,
                     BlockType::none
                 );
@@ -1859,15 +1855,15 @@ construct_room(World& world, const Area& area)
 {
     world_set_block_type_box(
         world,
-        area.bounds.position[0], area.bounds.position[1], area.floor_number * FLOOR_SIZE_Z,
-        area.bounds.size[0], area.bounds.size[1], FLOOR_SIZE_Z,
+        area.bounds.position.x, area.bounds.position.y, area.floor_number * FLOOR_SIZE_Z,
+        area.bounds.size.x, area.bounds.size.y, FLOOR_SIZE_Z,
         BlockType::smooth_4
     );
 
     world_set_block_type_box(
         world,
-        area.bounds.position[0], area.bounds.position[1], area.floor_number * FLOOR_SIZE_Z,
-        area.bounds.size[0], area.bounds.size[1], 1,
+        area.bounds.position.x, area.bounds.position.y, area.floor_number * FLOOR_SIZE_Z,
+        area.bounds.size.x, area.bounds.size.y, 1,
         BlockType::smooth_3
     );
 
@@ -1879,29 +1875,29 @@ construct_elevator(World& world, const Area& area)
 {
     world_set_block_type_box(
         world,
-        area.bounds.position[0], area.bounds.position[1], area.floor_number * FLOOR_SIZE_Z,
-        area.bounds.size[0], area.bounds.size[1], FLOOR_SIZE_Z,
+        area.bounds.position.x, area.bounds.position.y, area.floor_number * FLOOR_SIZE_Z,
+        area.bounds.size.x, area.bounds.size.y, FLOOR_SIZE_Z,
         BlockType::metal_2
     );
 
     world_set_block_type_box(
         world,
-        area.bounds.position[0] + 3, area.bounds.position[1], area.floor_number * FLOOR_SIZE_Z + 1,
-        area.bounds.size[0] - 6, area.bounds.size[1], FLOOR_SIZE_Z - 4,
+        area.bounds.position.x + 3, area.bounds.position.y, area.floor_number * FLOOR_SIZE_Z + 1,
+        area.bounds.size.x - 6, area.bounds.size.y, FLOOR_SIZE_Z - 4,
         BlockType::none
     );
 
     world_set_block_type_box(
         world,
-        area.bounds.position[0], area.bounds.position[1] + 3, area.floor_number * FLOOR_SIZE_Z + 1,
-        area.bounds.size[0], area.bounds.size[1] - 6, FLOOR_SIZE_Z - 4,
+        area.bounds.position.x, area.bounds.position.y + 3, area.floor_number * FLOOR_SIZE_Z + 1,
+        area.bounds.size.x, area.bounds.size.y - 6, FLOOR_SIZE_Z - 4,
         BlockType::none
     );
 
     world_set_block_type_box(
         world,
-        area.bounds.position[0] + 3, area.bounds.position[1] + 3, area.floor_number * FLOOR_SIZE_Z,
-        area.bounds.size[0] - 6, area.bounds.size[1] - 6, FLOOR_SIZE_Z,
+        area.bounds.position.x + 3, area.bounds.position.y + 3, area.floor_number * FLOOR_SIZE_Z,
+        area.bounds.size.x - 6, area.bounds.size.y - 6, FLOOR_SIZE_Z,
         BlockType::none
     );
 }
@@ -1911,8 +1907,8 @@ construct_wireframe(World& world, const Area& area)
 {
     world_set_block_type_wireframe(
         world,
-        area.bounds.position[0], area.bounds.position[1], area.floor_number * FLOOR_SIZE_Z,
-        area.bounds.size[0], area.bounds.size[1], FLOOR_SIZE_Z,
+        area.bounds.position.x, area.bounds.position.y, area.floor_number * FLOOR_SIZE_Z,
+        area.bounds.size.x, area.bounds.size.y, FLOOR_SIZE_Z,
         BlockType::caution_1
     );
 }
@@ -1967,13 +1963,13 @@ place_content(World& world, i32 floor_number)
 
         const BlockTypeList* content_block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
 
-        const u32 stack_count = area.bounds.size[0] * area.bounds.size[1] / 14;
+        const u32 stack_count = area.bounds.size.x * area.bounds.size.y / 14;
 
         for (u32 stack_index = 0; stack_index < stack_count; ++stack_index)
         {
-            const glm::ivec2 stack_position = {
-                area.bounds.position[0] + 1 + rand() % (area.bounds.size[0] - 2),
-                area.bounds.position[1] + 1 + rand() % (area.bounds.size[1] - 2)
+            const ld_ivec2 stack_position = {
+                area.bounds.position.x + 1 + rand() % (area.bounds.size.x - 2),
+                area.bounds.position.y + 1 + rand() % (area.bounds.size.y - 2)
             };
 
             const u32 stack_size_z = rand() % (FLOOR_SIZE_Z - 6);
@@ -1983,7 +1979,7 @@ place_content(World& world, i32 floor_number)
 
             world_set_block_type_cube(
                 world,
-                stack_position[0], stack_position[1], floor_number * FLOOR_SIZE_Z + 1,
+                stack_position.x, stack_position.y, floor_number * FLOOR_SIZE_Z + 1,
                 1, 1, stack_size_z,
                 content_block_type
             );
@@ -2004,13 +2000,13 @@ draw_debug_info(Debug& debug, World& world)
         const PoolID area_id = area_pool.active_array[pool_id];
         const Area& area = area_pool.area_array[area_id];
 
-        const glm::ivec2 area_min = bounds2i_min(area.bounds);
-        const glm::ivec2 area_max = bounds2i_max(area.bounds);
+        const ld_ivec2 area_min = bounds2i_min(area.bounds);
+        const ld_ivec2 area_max = bounds2i_max(area.bounds);
 
         debug_draw_box(
             debug,
-            area_min[0], area_min[1], area.floor_number * FLOOR_SIZE_Z,
-            area_max[0], area_max[1], area.floor_number * FLOOR_SIZE_Z + 2.0f,
+            area_min.x, area_min.y, area.floor_number * FLOOR_SIZE_Z,
+            area_max.x, area_max.y, area.floor_number * FLOOR_SIZE_Z + 2.0f,
             1.0f, 0.0f, 0.0f
         );
 
@@ -2019,16 +2015,16 @@ draw_debug_info(Debug& debug, World& world)
             const EdgeID edge_id = area.edge_id_array[index];
             const AreaEdge& area_edge = edge_pool.edge_array[edge_id];
 
-            const glm::ivec3 door_position = {
-                area_edge.area_overlap.bounds.position[0] + area_edge.area_overlap.bounds.size[0] / 2,
-                area_edge.area_overlap.bounds.position[1] + area_edge.area_overlap.bounds.size[1] / 2,
+            const ld_ivec3 door_position = {
+                area_edge.area_overlap.bounds.position.x + area_edge.area_overlap.bounds.size.x / 2,
+                area_edge.area_overlap.bounds.position.y + area_edge.area_overlap.bounds.size.y / 2,
                 static_cast<i32>(area.floor_number * FLOOR_SIZE_Z + 1),
             };
 
             debug_draw_box(
                 debug,
-                door_position[0], door_position[1], door_position[2],
-                door_position[0] + 1, door_position[1] + 1, door_position[2] + 1,
+                door_position.x, door_position.y, door_position.z,
+                door_position.x + 1, door_position.y + 1, door_position.z + 1,
                 0.0f, 1.0f, 0.0f
             );
         }
@@ -2048,9 +2044,9 @@ world_init(World& world, Debug& debug)
 
     world.time_rate = 1.0f;
 
-    world.gravity[0] = 0.0f;
-    world.gravity[1] = 0.0f;
-    world.gravity[2] = GRAVITY_DEFAULT;
+    world.gravity.x = 0.0f;
+    world.gravity.y = 0.0f;
+    world.gravity.z = GRAVITY_DEFAULT;
 
     init_cell_array(world);
 

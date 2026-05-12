@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "core/types.h"
 #include "game/sim/actor.h"
 #include "game/sim/ids.h"
@@ -18,7 +16,7 @@ struct WanderState
 
 struct SeekState
 {
-    glm::ivec3 target_position;
+    ld_ivec3 target_position;
 };
 
 #define FOR_LIST_ACT_TYPE(DO)                                                  \

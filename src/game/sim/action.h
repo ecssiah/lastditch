@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
+#include "core/geometry.h"
 #include "core/types.h"
 
 constexpr i32 ACTION_QUEUE_CAPACITY = 1u << 6;
@@ -20,7 +19,7 @@ struct Action
 {
     ActionType type;
 
-    glm::vec3 action_value;
+    ld_vec3 action_value;
 };
 
 struct ActionQueue

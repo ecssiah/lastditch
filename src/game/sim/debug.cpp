@@ -1,5 +1,7 @@
 #include "debug.h"
 
+#include <cstdlib>
+
 void debug_draw_line(Debug& debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 r, f32 g, f32 b)
 {
     if (debug.line_count >= debug.line_capacity)
@@ -9,17 +11,17 @@ void debug_draw_line(Debug& debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 b
 
     DebugLine& debug_line = debug.line_array[debug.line_count++];
 
-    debug_line.position_a[0] = ax;
-    debug_line.position_a[1] = ay;
-    debug_line.position_a[2] = az;
+    debug_line.position_a.x = ax;
+    debug_line.position_a.y = ay;
+    debug_line.position_a.z = az;
 
-    debug_line.position_b[0] = bx;
-    debug_line.position_b[1] = by;
-    debug_line.position_b[2] = bz;
+    debug_line.position_b.x = bx;
+    debug_line.position_b.y = by;
+    debug_line.position_b.z = bz;
 
-    debug_line.color[0] = r;
-    debug_line.color[1] = g;
-    debug_line.color[2] = b;
+    debug_line.color.x = r;
+    debug_line.color.y = g;
+    debug_line.color.z = b;
 }
 
 void debug_draw_box(Debug& debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f32 max_y, f32 max_z, f32 r, f32 g, f32 b)

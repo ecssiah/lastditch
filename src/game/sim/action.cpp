@@ -1,32 +1,33 @@
 #include "game/sim/action.h"
 
+#include "world.h"
 #include "core/log.h"
 #include "core/math_ext.h"
 #include "game/sim/actor.h"
 
 static void apply_move_action(Actor& judge, Action& action)
 {
-    glm::vec3 velocity_forward(0.0f);
-    glm::vec3 velocity_right(0.0f);
-    glm::vec3 velocity_up(0.0f);
+    ld_vec3 velocity_forward = ld_vec3_init(0.0f);
+    ld_vec3 velocity_right = ld_vec3_init(0.0f);
+    ld_vec3 velocity_up = ld_vec3_init(0.0f);
 
-    const glm::vec3 judge_forward = get_forward(judge.rotation);
-    const glm::vec3 judge_right = get_right(judge.rotation);
+    const ld_vec3 judge_forward = get_forward(judge.rotation);
+    const ld_vec3 judge_right = get_right(judge.rotation);
 
     switch (judge.movement_type)
     {
     case MovementType::ground:
         {
-            const glm::vec3 judge_forward_xy = {
-                judge_forward[0],
-                judge_forward[1],
-                0.0f,
-            };
+            const ld_vec3 judge_forward_xy = ld_vec3_init(
+                judge_forward.x,
+                judge_forward.y,
+                0.0f
+            );
 
-            velocity_right = action.action_value[0] * judge_right;
-            velocity_forward = action.action_value[1] * judge_forward_xy;
+            velocity_right = action.action_value.x * judge_right;
+            velocity_forward = action.action_value.y * judge_forward_xy;
             
-            glm::vec3 move_velocity = judge.speed * normalize_safe(velocity_right + velocity_forward);
+            ld_vec3 move_velocity = judge.speed * normalize(velocity_right + velocity_forward);
     
             judge.velocity.x = move_velocity.x;
             judge.velocity.y = move_velocity.y;
@@ -35,9 +36,9 @@ static void apply_move_action(Actor& judge, Action& action)
         }
     case MovementType::debug:
         {
-            velocity_right = action.action_value[0] * judge_right;
-            velocity_forward = action.action_value[1] * judge_forward;
-            velocity_up = action.action_value[2] * glm::vec3(0, 0, 1);
+            velocity_right = action.action_value.x * judge_right;
+            velocity_forward = action.action_value.y * judge_forward;
+            velocity_up = action.action_value.z * WORLD_UP;
         
             judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
 

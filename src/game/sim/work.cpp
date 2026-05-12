@@ -19,22 +19,22 @@ wander_run(Sim& sim, Act& act, f32 delta_time)
     {
         const f32 direction_angle = static_cast<f32>(rand() % 360);
 
-        const glm::vec2 direction = {
-            cosf(glm::radians(direction_angle)),
-            sinf(glm::radians(direction_angle))
+        const ld_vec2 direction = {
+            cosf(to_radians(direction_angle)),
+            sinf(to_radians(direction_angle))
         };
 
-        actor.velocity[0] = direction[0] * AGENT_DEFAULT_GROUND_SPEED;
-        actor.velocity[1] = direction[1] * AGENT_DEFAULT_GROUND_SPEED;
+        actor.velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;
+        actor.velocity.y = direction.y * AGENT_DEFAULT_GROUND_SPEED;
 
-        actor.rotation_target[2] = direction_angle;
+        actor.rotation_target.z = direction_angle;
 
         wander_state.tick = 0;
     }
 
-    actor.rotation[2] = lerp_to(
-        actor.rotation[2],
-        actor.rotation_target[2],
+    actor.rotation.z = lerp_to(
+        actor.rotation.z,
+        actor.rotation_target.z,
         5.0f,
         delta_time
     );

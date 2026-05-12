@@ -1,6 +1,6 @@
 #include "game/sim/actor.h"
 
-#include <cstring>
+#include <cassert>
 
 #include "core/math_ext.h"
 #include "game/sim/world.h"
