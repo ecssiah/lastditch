@@ -4,5 +4,5 @@
 #include "game/shell/shell.h"
 #include "platform/platform.h"
 
-void screen_init(Shell* shell, Platform* platform);
-void screen_update(Shell* shell, Sim* sim);
+void screen_init(Shell& shell, Platform& platform);
+void screen_update(Shell& shell, Sim& sim);

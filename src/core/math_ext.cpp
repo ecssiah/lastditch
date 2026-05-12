@@ -4,17 +4,20 @@
 
 #include "log.h"
 
-i32 min_i32(const i32 a, const i32 b)
+i32 
+min_i32(const i32 a, const i32 b)
 {
     return a < b ? a : b;
 }
 
-i32 max_i32(const i32 a, const i32 b)
+i32 
+max_i32(const i32 a, const i32 b)
 {
     return a > b ? a : b;
 }
 
-f32 lerp_to(const f32 current, const f32 target, const f32 speed, const f32 delta_time)
+f32 
+lerp_to(const f32 current, const f32 target, const f32 speed, const f32 delta_time)
 {
     const f32 alpha = 1.0f - expf(-speed * delta_time);
     f32 delta = target - current;
@@ -29,28 +32,32 @@ f32 lerp_to(const f32 current, const f32 target, const f32 speed, const f32 delt
     return target;
 }
 
-void bounds2i_max(const Bounds2i* bounds, ivec2 out_max)
+glm::ivec2
+bounds2i_max(const Bounds2i& a)
 {
-    out_max[0] = bounds->position[0] + bounds->size[0];
-    out_max[1] = bounds->position[1] + bounds->size[1];
+    return {
+        a.position[0] + a.size[0],
+        a.position[1] + a.size[1],
+    };
 }
 
-void bounds2i_min(const Bounds2i* bounds, ivec2 out_min)
+glm::ivec2 
+bounds2i_min(const Bounds2i& a)
 {
-    out_min[0] = bounds->position[0];
-    out_min[1] = bounds->position[1];
+    return {
+        a.position[0],
+        a.position[1],
+    };
 }
 
-b32 bounds2i_overlaps(const Bounds2i* bounds_left, const Bounds2i* bounds_right)
+b32 
+bounds2i_overlaps(const Bounds2i& a, const Bounds2i& b)
 {
-    ivec2 left_min, left_max;
-    ivec2 right_min, right_max;
+    const glm::ivec2 left_min = bounds2i_min(a);
+    const glm::ivec2 left_max = bounds2i_max(a);
 
-    bounds2i_min(bounds_left, left_min);
-    bounds2i_max(bounds_left, left_max);
-
-    bounds2i_min(bounds_right, right_min);
-    bounds2i_max(bounds_right, right_max);
+    const glm::ivec2 right_min = bounds2i_min(b);
+    const glm::ivec2 right_max = bounds2i_max(b);
 
     return !(
         left_max[0] <= right_min[0] ||
@@ -60,99 +67,126 @@ b32 bounds2i_overlaps(const Bounds2i* bounds_left, const Bounds2i* bounds_right)
     );
 }
 
-Bounds2i bounds2i_intersection(const Bounds2i* bounds_left, const Bounds2i* bounds_right)
+Bounds2i 
+bounds2i_intersection(const Bounds2i& a, const Bounds2i& b)
 {
-    ivec2 left_min, left_max;
-    bounds2i_min(bounds_left, left_min);
-    bounds2i_max(bounds_left, left_max);
+    const glm::ivec2 left_min = bounds2i_min(a);
+    const glm::ivec2 left_max = bounds2i_max(a);
 
-    ivec2 right_min, right_max;
-    bounds2i_min(bounds_right, right_min);
-    bounds2i_max(bounds_right, right_max);
+    const glm::ivec2 right_min = bounds2i_min(b);
+    const glm::ivec2 right_max = bounds2i_max(b);
 
-    const ivec2 o_min = {
+    const glm::ivec2 o_min = {
         max_i32(left_min[0], right_min[0]),
         max_i32(left_min[1], right_min[1])
     };
 
-    const ivec2 o_max = {
+    const glm::ivec2 o_max = {
         min_i32(left_max[0], right_max[0]),
         min_i32(left_max[1], right_max[1])
     };
 
-    Bounds2i bounds_result = {
+    return {
         {o_min[0], o_min[1]},
         {o_max[0] - o_min[0], o_max[1] - o_min[1]},
     };
-
-    return bounds_result;
 }
 
-u32 bounds2i_subtract(const Bounds2i* bounds_left, const Bounds2i* bounds_right, Bounds2i* out)
+std::vector<Bounds2i> 
+bounds2i_subtract(const Bounds2i& a, const Bounds2i& b)
 {
-    u32 count = 0;
+    std::vector<Bounds2i> bounds_vector = std::vector<Bounds2i>();
 
-    ivec2 left_min, left_max;
-    bounds2i_min(bounds_left, left_min);
-    bounds2i_max(bounds_left, left_max);
+    const glm::ivec2 left_min = bounds2i_min(a);
+    const glm::ivec2 left_max = bounds2i_max(a);
 
-    ivec2 right_min, right_max;
-    bounds2i_min(bounds_right, right_min);
-    bounds2i_max(bounds_right, right_max);
-
-    if (!bounds2i_overlaps(bounds_left, bounds_right))
+    if (!bounds2i_overlaps(a, b))
     {
-        return 0;
+        return bounds_vector;
     }
 
-    const Bounds2i intersection = bounds2i_intersection(bounds_left, bounds_right);
+    const Bounds2i intersection = bounds2i_intersection(a, b);
 
-    ivec2 intersection_min, intersection_max;
-    bounds2i_min(&intersection, intersection_min);
-    bounds2i_max(&intersection, intersection_max);
+    const glm::ivec2 intersection_min = bounds2i_min(intersection);
+    const glm::ivec2 intersection_max = bounds2i_max(intersection);
 
     if (intersection_min[0] > left_min[0])
     {
-        out[count++] = (Bounds2i){
+        bounds_vector.push_back({
             .position = {left_min[0], left_min[1]},
             .size = {intersection_min[0] - left_min[0], left_max[1] - left_min[1]}
-        };
+        });
     }
 
     if (intersection_max[0] < left_max[0])
     {
-        out[count++] = (Bounds2i){
+        bounds_vector.push_back({
             .position = {intersection_max[0], left_min[1]},
             .size = {left_max[0] - intersection_max[0], left_max[1] - left_min[1]}
-        };
+        });
     }
 
     if (intersection_min[1] > left_min[1])
     {
-        out[count++] = (Bounds2i){
+        bounds_vector.push_back({
             .position = {intersection_min[0], left_min[1]},
             .size = {intersection_max[0] - intersection_min[0], intersection_min[1] - left_min[1]}
-        };
+        });
     }
 
     if (intersection_max[1] < left_max[1])
     {
-        out[count++] = (Bounds2i){
+        bounds_vector.push_back({
             .position = {intersection_min[0], intersection_max[1]},
             .size = {intersection_max[0] - intersection_min[0], left_max[1] - intersection_max[1]}
-        };
+        });
     }
 
-    return count;
+    return bounds_vector;
 }
 
-void bounds2i_print(const Bounds2i* bounds)
+void 
+bounds2i_print(const Bounds2i& a)
 {
     LOG_INFO(
         "Bounds2i{ (%i %i), (%i %i) }",
-        bounds->position[0],
-        bounds->position[1],
-        bounds->size[0],
-        bounds->size[1]
+        a.position[0],
+        a.position[1],
+        a.size[0],
+        a.size[1]
     );
+}
+
+glm::vec3 
+get_forward(const glm::vec3& rotation)
+{
+    const f32 rotation_x = glm::radians(rotation.x);
+    const f32 rotation_z = glm::radians(rotation.z);
+
+    const glm::vec3 forward = {
+        cosf(rotation_x) * cosf(rotation_z),
+        cosf(rotation_x) * sinf(rotation_z),
+        sinf(rotation_x),
+    };
+
+    return glm::normalize(forward);
+}
+
+glm::vec3 
+get_right(const glm::vec3& rotation)
+{
+    const glm::vec3 forward = get_forward(rotation);
+    const glm::vec3 right = glm::cross(forward, {0, 0, 1});
+
+    return glm::normalize(right);
+}
+
+glm::vec3 
+get_up(const glm::vec3& rotation)
+{
+    const glm::vec3 forward = get_forward(rotation);
+    const glm::vec3 right = get_right(rotation);
+    const glm::vec3 up = glm::cross(forward, right);
+
+    return glm::normalize(up);
 }

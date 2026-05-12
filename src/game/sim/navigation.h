@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
 
 #include "core/types.h"
 #include "game/sim/ids.h"
@@ -62,7 +62,7 @@ struct Navigation
     Graph graph;
 };
 
-u32 heuristic(vec3 position_a, vec3 position_b);
+u32 heuristic(const glm::vec3& a, const glm::vec3& b);
 
-void navigation_init(Navigation* navigation);
-void navigation_update(Navigation* navigation);
+void navigation_init(Navigation& navigation);
+void navigation_update(Navigation& navigation);

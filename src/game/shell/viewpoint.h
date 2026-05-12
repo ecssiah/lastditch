@@ -1,11 +1,8 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
 
 #include "game/shell/shell.h"
 
-void viewpoint_get_forward(Viewpoint* viewpoint, vec3 out_forward);
-void viewpoint_get_right(Viewpoint* viewpoint, vec3 out_right);
-void viewpoint_get_up(Viewpoint* viewpoint, vec3 out_up);
+glm::mat4 viewpoint_get_view_matrix(const Viewpoint& viewpoint);
 
-void viewpoint_get_view_matrix(Viewpoint* viewpoint, mat4 out_view_matrix);

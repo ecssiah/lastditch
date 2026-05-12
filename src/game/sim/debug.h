@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
 
 #include "core/types.h"
 
@@ -9,9 +9,9 @@ constexpr b32 DEBUG_AREAS = false;
 
 struct DebugLine
 {
-    vec3 position_a;
-    vec3 position_b;
-    vec3 color;
+    glm::vec3 position_a;
+    glm::vec3 position_b;
+    glm::vec3 color;
 };
 
 struct Debug
@@ -22,9 +22,9 @@ struct Debug
     DebugLine* line_array;
 };
 
-void debug_draw_line(Debug* debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 r, f32 g, f32 b);
-void debug_draw_box(Debug* debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f32 max_y, f32 max_z, f32 r, f32 g, f32 b);
+void debug_draw_line(Debug& debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 r, f32 g, f32 b);
+void debug_draw_box(Debug& debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f32 max_y, f32 max_z, f32 r, f32 g, f32 b);
 
-void debug_reset(Debug* debug);
-void debug_init(Debug* debug);
-void debug_close(Debug* debug);
+void debug_reset(Debug& debug);
+void debug_init(Debug& debug);
+void debug_close(Debug& debug);

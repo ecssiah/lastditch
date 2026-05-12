@@ -2,6 +2,8 @@
 
 #include <string.h>
 #include <glad/glad.h>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtc/type_ptr.inl>
 
 #include "stb_image.h"
 
@@ -76,12 +78,19 @@ static void load_textures(Screen* screen, const char* textures_path)
     stbi_image_free(pixel_data_array);
 }
 
-static void get_orthographic_projection_matrix(f32 width, f32 height, mat4 out_projection_matrix)
+static glm::mat4 get_orthographic_projection_matrix(f32 width, f32 height)
 {
-    glm_ortho(0.0f, width, height, 0.0f, -1.0f, 1.0f, out_projection_matrix);
+    return glm::ortho(
+        0.0f, 
+        width, 
+        height, 
+        0.0f, 
+        -1.0f, 
+        1.0f
+    );
 }
 
-static void draw_text(Shell* shell, const char* text, f32 x, f32 y)
+static void draw_text(Shell& shell, const char* text, f32 x, f32 y)
 {
     f32 scale = 2.0f;
 
@@ -145,16 +154,16 @@ static void draw_text(Shell* shell, const char* text, f32 x, f32 y)
         cursor_x += char_width;
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, shell->screen.vbo_id);
+    glBindBuffer(GL_ARRAY_BUFFER, shell.screen.vbo_id);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(static_cast<u64>(vertex_count) * sizeof(TextVertex)),
                  text_vertex_array, GL_DYNAMIC_DRAW);
 
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
 
-void screen_init(Shell* shell, Platform* platform)
+void screen_init(Shell& shell, Platform& platform)
 {
-    Screen* screen = &shell->screen;
+    Screen* screen = &shell.screen;
 
     GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
     GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
@@ -174,13 +183,17 @@ void screen_init(Shell* shell, Platform* platform)
 
     screen->u_projection_location = glGetUniformLocation(screen->program_id, "u_projection_matrix");
 
-    int fb_width, fb_height;
-    glfwGetFramebufferSize(platform->window.glfw_window, &fb_width, &fb_height);
+    i32 fb_width, fb_height;
+    glfwGetFramebufferSize(platform.window.glfw_window, &fb_width, &fb_height);
 
-    mat4 shell_projection_matrix;
-    get_orthographic_projection_matrix(fb_width, fb_height, shell_projection_matrix);
+    const glm::mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
 
-    glUniformMatrix4fv(screen->u_projection_location, 1, GL_FALSE, (f32*)shell_projection_matrix);
+    glUniformMatrix4fv(
+        screen->u_projection_location, 
+        1, 
+        GL_FALSE, 
+        glm::value_ptr(shell_projection_matrix)
+    );
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -218,15 +231,12 @@ void screen_init(Shell* shell, Platform* platform)
     load_textures(screen, "assets/textures/font");
 }
 
-static void draw_debug_info(Shell* shell, Sim* sim)
+static void draw_debug_info(Shell& shell, Sim& sim)
 {
-    const Actor* judge = &sim->population.actor_pool.actor_array[sim->population.judge_id];
+    const Actor& judge = sim.population.actor_pool.actor_array[sim.population.judge_id];
 
-    ivec3 cell_coordinate;
-    world_position_to_cell_coordinate(judge->position[0], judge->position[1], judge->position[2], cell_coordinate);
-
-    ivec2 sector_coordinate;
-    world_cell_coordinate_to_sector_coordinate(cell_coordinate[0], cell_coordinate[1], sector_coordinate);
+    const glm::ivec3 cell_coordinate = world_position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
+    const glm::ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
 
     char position_text[64];
     char velocity_text[64];
@@ -239,18 +249,18 @@ static void draw_debug_info(Shell* shell, Sim* sim)
         position_text,
         sizeof(position_text),
         "POS %.1f %.1f %.1f",
-        judge->position[0],
-        judge->position[1],
-        judge->position[2]
+        judge.position[0],
+        judge.position[1],
+        judge.position[2]
     );
 
     snprintf(
         velocity_text,
         sizeof(velocity_text),
         "VEL %.1f %.1f %.1f",
-        judge->velocity[0],
-        judge->velocity[1],
-        judge->velocity[2]
+        judge.velocity[0],
+        judge.velocity[1],
+        judge.velocity[2]
     );
 
     if (world_cell_coordinate_is_valid(cell_coordinate[0], cell_coordinate[1], cell_coordinate[2]))
@@ -316,7 +326,7 @@ static void draw_debug_info(Shell* shell, Sim* sim)
         }
     }
 
-    switch (judge->movement_type)
+    switch (judge.movement_type)
     {
     case MovementType::ground: strcpy(movement_type_text, "MOV Ground");
         break;
@@ -333,9 +343,9 @@ static void draw_debug_info(Shell* shell, Sim* sim)
     draw_text(shell, movement_type_text, 20, 120);
 }
 
-void screen_update(Shell* shell, Sim* sim)
+void screen_update(Shell& shell, Sim& sim)
 {
-    Screen* screen = &shell->screen;
+    Screen* screen = &shell.screen;
 
     glUseProgram(screen->program_id);
 

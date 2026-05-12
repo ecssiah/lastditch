@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
 
 #include "core/types.h"
 #include "game/sim/actor.h"
@@ -18,7 +18,7 @@ struct WanderState
 
 struct SeekState
 {
-    ivec3 target_position;
+    glm::ivec3 target_position;
 };
 
 #define FOR_LIST_ACT_TYPE(DO)                                                  \
@@ -64,10 +64,10 @@ struct Work
     ActPool act_pool;
 };
 
-void wander_run(Sim* sim, Act* act, f32 delta_time);
-void seek_run(Sim* sim, Act* act, f32 delta_time);
+void wander_run(Sim& sim, Act& act, f32 delta_time);
+void seek_run(Sim& sim, Act& act, f32 delta_time);
 
-ActID work_add_act(Work* work, Actor* actor, ActType act_type, ActState act_state);
+ActID work_add_act(Work& work, Actor& actor, ActType act_type, ActState act_state);
 
-void work_init(Work* work);
-void work_update(Work* work, Sim* sim, f32 delta_time);
+void work_init(Work& work);
+void work_update(Work& work, Sim& sim, f32 delta_time);

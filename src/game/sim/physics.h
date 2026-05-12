@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
 
 #include "core/types.h"
 
@@ -14,7 +14,7 @@ struct BoxCollider
 {
     b32 collision_enabled;
 
-    vec3 radius;
+    glm::vec3 radius;
 };
 
-void physics_update_actor(Actor* actor, World* world);
+void physics_update_actor(Actor& actor, World& world);

@@ -5,6 +5,7 @@
 #include <cstring>
 #include <glad/glad.h>
 #include <stb_image.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "core/types.h"
 #include "core/config.h"
@@ -82,14 +83,13 @@ const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     {+0, -1, +0},
 };
 
-static void get_projection_matrix(mat4 out_projection_matrix)
+static glm::mat4 get_projection_matrix()
 {
-    glm_perspective(
-        glm_rad(60.0f),
+    return glm::perspective(
+        glm::radians(60.0f),
         WINDOW_ASPECT_RATIO,
         0.1f,
-        1000.0f,
-        out_projection_matrix
+        1000.0f
     );
 }
 
@@ -132,8 +132,8 @@ static void upload_debug_gpu_data(DebugGpuData* debug_gpu_data)
 
     glBufferData(
         GL_ARRAY_BUFFER,
-        debug_gpu_data->debug_vertex_count * sizeof(DebugVertex),
-        debug_gpu_data->debug_vertex_array,
+        debug_gpu_data->debug_vertex_vector.size() * sizeof(DebugVertex),
+        debug_gpu_data->debug_vertex_vector.data(),
         GL_DYNAMIC_DRAW
     );
 
@@ -172,11 +172,11 @@ static void load_texture_array_layer(const char* texture_path, const GLint layer
     LOG_INFO("Loaded texture: %s", texture_path);
 }
 
-static void load_block_texture_directory(Shell* shell)
+static void load_block_texture_directory(Shell& shell)
 {
     auto block_texture_directory = "assets/textures/block";
 
-    VoxelRender* voxel_render = &shell->render.voxel_render;
+    VoxelRender* voxel_render = &shell.render.voxel_render;
 
     glGenTextures(1, &voxel_render->texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render->texture_array_id);
@@ -215,11 +215,11 @@ static void load_block_texture_directory(Shell* shell)
     }
 }
 
-static void load_actor_texture_directory(Shell* shell)
+static void load_actor_texture_directory(Shell& shell)
 {
     auto actor_texture_directory = "assets/textures/model";
 
-    ModelRender* model_render = &shell->render.model_render;
+    ModelRender* model_render = &shell.render.model_render;
 
     glGenTextures(1, &model_render->texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render->texture_array_id);
@@ -291,10 +291,8 @@ static void load_model_obj(const char* path, ModelGpuData* out_model_gpu_data)
 
     rewind(file);
 
-    out_model_gpu_data->model_vertex_count = 0;
-    out_model_gpu_data->model_vertex_array = static_cast<ModelVertex*>(malloc(face_count * 3 * sizeof(ModelVertex)));
-
-    assert(out_model_gpu_data->model_vertex_count < face_count * 3);
+    out_model_gpu_data->model_vertex_vector.clear();
+    out_model_gpu_data->model_vertex_vector.reserve(face_count * 3);
 
     auto vertex_array = static_cast<f32*>(malloc(vertex_count * 3 * sizeof(f32)));
     auto normal_array = static_cast<f32*>(malloc(normal_count * 3 * sizeof(f32)));
@@ -372,27 +370,24 @@ static void load_model_obj(const char* path, ModelGpuData* out_model_gpu_data)
 
             for (u32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
             {
-                ModelVertex model_vertex;
+                ModelVertex model_vertex = {};
 
-                memcpy(
-                    model_vertex.a_position,
-                    &vertex_array[(position_index_array[model_vertex_index] - 1) * 3],
-                    sizeof(f32) * 3
-                );
-
-                memcpy(
-                    model_vertex.a_normal,
-                    &normal_array[(normal_index_array[model_vertex_index] - 1) * 3],
-                    sizeof(f32) * 3
-                );
-
-                memcpy(
-                    model_vertex.a_uv,
-                    &uv_array[(uv_index_array[model_vertex_index] - 1) * 2],
-                    sizeof(f32) * 2
-                );
-
-                out_model_gpu_data->model_vertex_array[out_model_gpu_data->model_vertex_count++] = model_vertex;
+                const i32 position_index = (position_index_array[model_vertex_index] - 1) * 3;
+                const i32 normal_index = (normal_index_array[model_vertex_index] - 1) * 3;
+                const i32 uv_index = (uv_index_array[model_vertex_index] - 1) * 2;
+                
+                model_vertex.a_position[0] = vertex_array[position_index + 0];
+                model_vertex.a_position[1] = vertex_array[position_index + 1];
+                model_vertex.a_position[2] = vertex_array[position_index + 2];
+                
+                model_vertex.a_normal[0] = normal_array[normal_index + 0];
+                model_vertex.a_normal[1] = normal_array[normal_index + 1];
+                model_vertex.a_normal[2] = normal_array[normal_index + 2];
+                
+                model_vertex.a_uv[0] = uv_array[uv_index + 0];
+                model_vertex.a_uv[1] = uv_array[uv_index + 1];
+                
+                out_model_gpu_data->model_vertex_vector.push_back(model_vertex);
             }
         }
     }
@@ -404,99 +399,18 @@ static void load_model_obj(const char* path, ModelGpuData* out_model_gpu_data)
     fclose(file);
 }
 
-static void add_sector_quad(SectorMesh* sector_mesh, SectorQuad sector_quad)
+static void generate_sector_mesh(VoxelRender* voxel_render, Sim& sim, i32 sector_index)
 {
-    if (sector_mesh->sector_quad_count == sector_mesh->sector_quad_capacity)
-    {
-        sector_mesh->sector_quad_capacity = sector_mesh->sector_quad_capacity
-                                                ? sector_mesh->sector_quad_capacity * 2
-                                                : 64;
-        sector_mesh->sector_quad_array = static_cast<SectorQuad*>(realloc(sector_mesh->sector_quad_array,
-                                                                          sector_mesh->sector_quad_capacity * sizeof(
-                                                                              SectorQuad)));
-    }
-
-    sector_mesh->sector_quad_array[sector_mesh->sector_quad_count++] = sector_quad;
-}
-
-static void add_sector_mesh(VoxelRender* voxel_render, SectorMesh* sector_mesh)
-{
-    if (voxel_render->sector_mesh_count == voxel_render->sector_mesh_capacity)
-    {
-        const u32 new_capacity = voxel_render->sector_mesh_capacity ? voxel_render->sector_mesh_capacity * 2 : 64;
-
-        auto new_array = static_cast<SectorMesh*>(realloc(
-            voxel_render->sector_mesh_array,
-            (size_t)new_capacity * sizeof(SectorMesh)
-        ));
-
-        assert(new_array);
-
-        voxel_render->sector_mesh_array = new_array;
-        voxel_render->sector_mesh_capacity = new_capacity;
-    }
-
-    voxel_render->sector_mesh_array[voxel_render->sector_mesh_count++] = *sector_mesh;
-
-    sector_mesh->sector_quad_array = nullptr;
-    sector_mesh->sector_quad_count = 0;
-    sector_mesh->sector_quad_capacity = 0;
-}
-
-static void add_voxel_vertex(VoxelGpuData* voxel_gpu_data, VoxelVertex voxel_vertex)
-{
-    if (voxel_gpu_data->voxel_vertex_count == voxel_gpu_data->voxel_vertex_capacity)
-    {
-        voxel_gpu_data->voxel_vertex_capacity = voxel_gpu_data->voxel_vertex_capacity
-                                                    ? voxel_gpu_data->voxel_vertex_capacity * 2
-                                                    : 64;
-        voxel_gpu_data->voxel_vertex_array = static_cast<VoxelVertex*>(realloc(voxel_gpu_data->voxel_vertex_array,
-                                                                               voxel_gpu_data->voxel_vertex_capacity *
-                                                                               sizeof(VoxelVertex)));
-    }
-
-    voxel_gpu_data->voxel_vertex_array[voxel_gpu_data->voxel_vertex_count++] = voxel_vertex;
-}
-
-static void add_voxel_gpu_data(VoxelRender* voxel_render, VoxelGpuData* voxel_gpu_data)
-{
-    if (voxel_render->voxel_gpu_data_count == voxel_render->voxel_gpu_data_capacity)
-    {
-        const u32 new_capacity = voxel_render->voxel_gpu_data_capacity ? voxel_render->voxel_gpu_data_capacity * 2 : 64;
-
-        auto new_array = static_cast<VoxelGpuData*>(realloc(
-            voxel_render->voxel_gpu_data_array,
-            (size_t)new_capacity * sizeof(VoxelGpuData)
-        ));
-
-        assert(new_array);
-
-        voxel_render->voxel_gpu_data_array = new_array;
-        voxel_render->voxel_gpu_data_capacity = new_capacity;
-    }
-
-    voxel_render->voxel_gpu_data_array[voxel_render->voxel_gpu_data_count++] = *voxel_gpu_data;
-
-    voxel_gpu_data->voxel_vertex_count = 0;
-    voxel_gpu_data->voxel_vertex_capacity = 0;
-    voxel_gpu_data->voxel_vertex_array = nullptr;
-}
-
-static void generate_sector_mesh(VoxelRender* voxel_render, Sim* sim, u32 sector_index)
-{
-    SectorMesh sector_mesh;
+    SectorMesh sector_mesh = {};
     sector_mesh.sector_index = sector_index;
-    sector_mesh.sector_quad_count = 0;
-    sector_mesh.sector_quad_capacity = 0;
-    sector_mesh.sector_quad_array = nullptr;
 
-    ivec2 sector_coordinate;
-    world_sector_index_to_coordinate(sector_index, sector_coordinate);
+    const glm::ivec2 sector_coordinate = world_sector_index_to_coordinate(sector_index);
 
-    ivec3 sector_cell_coordinate;
-    sector_cell_coordinate[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
-    sector_cell_coordinate[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
-    sector_cell_coordinate[2] = 0;
+    const glm::ivec3 sector_cell_coordinate = {
+        sector_coordinate[0] * SECTOR_SIZE_IN_CELLS,
+        sector_coordinate[1] * SECTOR_SIZE_IN_CELLS,
+        0,
+    };
 
     for (i32 cell_z = 0; cell_z < static_cast<i32>(SECTOR_HEIGHT_IN_CELLS); ++cell_z)
     {
@@ -508,7 +422,7 @@ static void generate_sector_mesh(VoxelRender* voxel_render, Sim* sim, u32 sector
             {
                 const u32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
 
-                const Cell* cell = &sim->world.cell_array[cell_index];
+                const Cell* cell = &sim.world.cell_array[cell_index];
 
                 if (cell->block_type == BlockType::none)
                 {
@@ -529,7 +443,7 @@ static void generate_sector_mesh(VoxelRender* voxel_render, Sim* sim, u32 sector
                     sector_quad.local_coordinate[1] = cell_y - sector_cell_coordinate[1];
                     sector_quad.local_coordinate[2] = cell_z;
 
-                    add_sector_quad(&sector_mesh, sector_quad);
+                    sector_mesh.sector_quad_vector.push_back(sector_quad);
 
                     test_direction_mask &= test_direction_mask - 1;
                 }
@@ -537,14 +451,14 @@ static void generate_sector_mesh(VoxelRender* voxel_render, Sim* sim, u32 sector
         }
     }
 
-    add_sector_mesh(voxel_render, &sector_mesh);
+    voxel_render->sector_mesh_vector.push_back(sector_mesh);
 }
 
 static void emit_sector_face(SectorQuad* sector_quad, VoxelGpuData* voxel_gpu_data)
 {
     for (u32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-        const ivec3 vertex_position = {
+        const glm::ivec3 vertex_position = {
             sector_quad->local_coordinate[0] + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][0],
             sector_quad->local_coordinate[1] + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][1],
             sector_quad->local_coordinate[2] + VOXEL_VERTEX_ARRAY[static_cast<u8>(sector_quad->direction)][vertex_index][2],
@@ -561,29 +475,28 @@ static void emit_sector_face(SectorQuad* sector_quad, VoxelGpuData* voxel_gpu_da
             (static_cast<u8>(sector_quad->block_type) & 255u) << 0u |
             (static_cast<u8>(sector_quad->direction) & 7u) << 8u;
 
-        add_voxel_vertex(voxel_gpu_data, voxel_vertex);
+        voxel_gpu_data->voxel_vertex_vector.push_back(voxel_vertex);
     }
 }
 
 static void convert_sector_mesh_to_voxel_gpu_data(SectorMesh* sector_mesh, VoxelGpuData* out_voxel_gpu_data)
 {
-    if (sector_mesh->sector_quad_count == 0)
+    if (sector_mesh->sector_quad_vector.empty())
     {
         return;
     }
 
-    memset(out_voxel_gpu_data, 0, sizeof(VoxelGpuData));
-
-    ivec2 sector_coordinate;
-    world_sector_index_to_coordinate(sector_mesh->sector_index, sector_coordinate);
+    const glm::ivec2 sector_coordinate = world_sector_index_to_coordinate(sector_mesh->sector_index);
+    
+    *out_voxel_gpu_data = {};
 
     out_voxel_gpu_data->position[0] = sector_coordinate[0] * SECTOR_SIZE_IN_CELLS;
     out_voxel_gpu_data->position[1] = sector_coordinate[1] * SECTOR_SIZE_IN_CELLS;
     out_voxel_gpu_data->position[2] = 0.0f;
 
-    for (u32 quad_index = 0; quad_index < sector_mesh->sector_quad_count; ++quad_index)
+    for (i32 quad_index = 0; quad_index < sector_mesh->sector_quad_vector.size(); ++quad_index)
     {
-        SectorQuad* sector_quad = &sector_mesh->sector_quad_array[quad_index];
+        SectorQuad* sector_quad = &sector_mesh->sector_quad_vector[quad_index];
 
         emit_sector_face(sector_quad, out_voxel_gpu_data);
     }
@@ -626,21 +539,12 @@ static void upload_voxel_gpu_data(VoxelGpuData* voxel_gpu_data)
 
     glBufferData(
         GL_ARRAY_BUFFER,
-        voxel_gpu_data->voxel_vertex_count * sizeof(VoxelVertex),
-        voxel_gpu_data->voxel_vertex_array,
+        voxel_gpu_data->voxel_vertex_vector.size() * sizeof(VoxelVertex),
+        voxel_gpu_data->voxel_vertex_vector.data(),
         GL_DYNAMIC_DRAW
     );
 
     glBindVertexArray(0);
-}
-
-static void add_model_gpu_data(ModelRender* model_render, i32 actor_index, ModelGpuData* model_gpu_data)
-{
-    model_render->model_gpu_data_array[actor_index] = *model_gpu_data;
-
-    model_gpu_data->model_vertex_count = 0;
-    model_gpu_data->model_vertex_capacity = 0;
-    model_gpu_data->model_vertex_array = nullptr;
 }
 
 static void upload_model_gpu_data(ModelGpuData* model_gpu_data)
@@ -692,47 +596,43 @@ static void upload_model_gpu_data(ModelGpuData* model_gpu_data)
 
     glBufferData(
         GL_ARRAY_BUFFER,
-        model_gpu_data->model_vertex_count * sizeof(ModelVertex),
-        model_gpu_data->model_vertex_array,
+        model_gpu_data->model_vertex_vector.size() * sizeof(ModelVertex),
+        model_gpu_data->model_vertex_vector.data(),
         GL_DYNAMIC_DRAW
     );
 
     glBindVertexArray(0);
 }
 
-static void init_glad(Platform* platform)
+static void init_glad(Platform& platform)
 {
     const i32 glad_load_gl_result = gladLoadGL();
 
     assert(glad_load_gl_result != 0);
 
     i32 framebuffer_width, framebuffer_height;
-    glfwGetFramebufferSize(platform->window.glfw_window, &framebuffer_width, &framebuffer_height);
+    glfwGetFramebufferSize(platform.window.glfw_window, &framebuffer_width, &framebuffer_height);
 
     glViewport(0, 0, framebuffer_width, framebuffer_height);
 }
 
 static void init_viewpoint(Render* render)
 {
-    glm_vec3_zero(render->viewpoint.position);
-    glm_vec3_zero(render->viewpoint.rotation);
-
-    glm_mat4_identity(render->viewpoint.projection_matrix);
-    glm_mat4_identity(render->viewpoint.view_matrix);
-
-    get_projection_matrix(render->viewpoint.projection_matrix);
+    render->viewpoint.position = glm::vec3(0.0f, 0.0f, 0.0f);
+    render->viewpoint.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+    
+    render->viewpoint.projection_matrix = glm::mat4(1.0f);
+    render->viewpoint.view_matrix = glm::mat4(1.0f);
+    
+    render->viewpoint.projection_matrix = get_projection_matrix();
 }
 
-static void init_debug_render(Shell* shell)
+static void init_debug_render(Shell& shell)
 {
-    DebugRender* debug_render = &shell->render.debug_render;
+    DebugRender* debug_render = &shell.render.debug_render;
 
-    debug_render->debug_gpu_data_count = 0;
-    debug_render->debug_gpu_data_capacity = 0;
-    debug_render->debug_gpu_data_array = nullptr;
-
-    GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
-    GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
+    const GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
+    const GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
 
     debug_render->program_id = glCreateProgram();
 
@@ -747,27 +647,23 @@ static void init_debug_render(Shell* shell)
     debug_render->u_view_location = glGetUniformLocation(debug_render->program_id, "u_view_matrix");
     debug_render->u_model_location = glGetUniformLocation(debug_render->program_id, "u_model_matrix");
 
-    glUniformMatrix4fv(debug_render->u_projection_location, 1, GL_FALSE,
-                       (f32*)shell->render.viewpoint.projection_matrix);
+    glUniformMatrix4fv(
+        debug_render->u_projection_location, 
+        1,
+        GL_FALSE,
+        glm::value_ptr(shell.render.viewpoint.projection_matrix)
+    );
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 }
 
-static void init_voxel_render(Shell* shell, Sim* sim)
+static void init_voxel_render(Shell& shell, Sim& sim)
 {
-    VoxelRender* voxel_render = &shell->render.voxel_render;
+    VoxelRender* voxel_render = &shell.render.voxel_render;
 
-    voxel_render->sector_mesh_count = 0;
-    voxel_render->sector_mesh_capacity = 0;
-    voxel_render->sector_mesh_array = nullptr;
-
-    voxel_render->voxel_gpu_data_count = 0;
-    voxel_render->voxel_gpu_data_capacity = 0;
-    voxel_render->voxel_gpu_data_array = nullptr;
-
-    GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
-    GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
+    const GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
+    const GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
     voxel_render->program_id = glCreateProgram();
 
@@ -792,8 +688,10 @@ static void init_voxel_render(Shell* shell, Sim* sim)
 
     glUniform3fv(voxel_render->u_normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
 
-    voxel_render->u_uv_projection_table_location = glGetUniformLocation(voxel_render->program_id,
-                                                                        "u_uv_projection_table");
+    voxel_render->u_uv_projection_table_location = glGetUniformLocation(
+        voxel_render->program_id,
+        "u_uv_projection_table"
+    );
 
     glUniform3fv(voxel_render->u_uv_projection_table_location, DIRECTION_COUNT * 2, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
 
@@ -801,8 +699,12 @@ static void init_voxel_render(Shell* shell, Sim* sim)
     voxel_render->u_view_location = glGetUniformLocation(voxel_render->program_id, "u_view_matrix");
     voxel_render->u_model_location = glGetUniformLocation(voxel_render->program_id, "u_model_matrix");
 
-    glUniformMatrix4fv(voxel_render->u_projection_location, 1, GL_FALSE,
-                       (f32*)shell->render.viewpoint.projection_matrix);
+    glUniformMatrix4fv(
+        voxel_render->u_projection_location, 
+        1, 
+        GL_FALSE,
+        glm::value_ptr(shell.render.viewpoint.projection_matrix)
+    );
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -814,41 +716,34 @@ static void init_voxel_render(Shell* shell, Sim* sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render->texture_array_id);
 
-    for (u32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    for (i32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
-        generate_sector_mesh(&shell->render.voxel_render, sim, sector_index);
+        generate_sector_mesh(&shell.render.voxel_render, sim, sector_index);
     }
 
-    for (u32 sector_mesh_index = 0; sector_mesh_index < voxel_render->sector_mesh_count; ++sector_mesh_index)
+    for (i32 sector_mesh_index = 0; sector_mesh_index < voxel_render->sector_mesh_vector.size(); ++sector_mesh_index)
     {
-        SectorMesh* sector_mesh = &voxel_render->sector_mesh_array[sector_mesh_index];
+        SectorMesh* sector_mesh = &voxel_render->sector_mesh_vector[sector_mesh_index];
 
-        VoxelGpuData voxel_gpu_data;
-        glm_vec3_zero(voxel_gpu_data.position);
+        VoxelGpuData voxel_gpu_data = {};
 
         convert_sector_mesh_to_voxel_gpu_data(sector_mesh, &voxel_gpu_data);
 
-        free(sector_mesh->sector_quad_array);
-
-        sector_mesh->sector_quad_count = 0;
-        sector_mesh->sector_quad_capacity = 0;
-        sector_mesh->sector_quad_array = nullptr;
-
-        add_voxel_gpu_data(voxel_render, &voxel_gpu_data);
+        voxel_render->voxel_gpu_data_vector.push_back(voxel_gpu_data);
     }
 
-    for (u32 voxel_gpu_data_index = 0; voxel_gpu_data_index < voxel_render->voxel_gpu_data_count; ++
+    for (i32 voxel_gpu_data_index = 0; voxel_gpu_data_index < voxel_render->voxel_gpu_data_vector.size(); ++
          voxel_gpu_data_index)
     {
-        VoxelGpuData* voxel_gpu_data = &voxel_render->voxel_gpu_data_array[voxel_gpu_data_index];
+        VoxelGpuData* voxel_gpu_data = &voxel_render->voxel_gpu_data_vector[voxel_gpu_data_index];
 
         upload_voxel_gpu_data(voxel_gpu_data);
     }
 }
 
-static void init_model_render(Shell* shell, Sim* sim)
+static void init_model_render(Shell& shell, Sim& sim)
 {
-    ModelRender* model_render = &shell->render.model_render;
+    ModelRender* model_render = &shell.render.model_render;
 
     GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
     GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
@@ -882,86 +777,96 @@ static void init_model_render(Shell* shell, Sim* sim)
     model_render->u_view_location = glGetUniformLocation(model_render->program_id, "u_view_matrix");
     model_render->u_model_location = glGetUniformLocation(model_render->program_id, "u_model_matrix");
 
-    glUniformMatrix4fv(shell->render.model_render.u_projection_location, 1, GL_FALSE,
-                       (f32*)shell->render.viewpoint.projection_matrix);
+    glUniformMatrix4fv(
+        shell.render.model_render.u_projection_location, 
+        1, 
+        GL_FALSE,
+        glm::value_ptr(shell.render.viewpoint.projection_matrix)
+    );
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
+    
+    model_render->model_gpu_data_vector.resize(ACTOR_MAX);
 
-    for (PoolID pool_id = 0; pool_id < sim->population.actor_pool.active_count; ++pool_id)
+    for (PoolID pool_id = 0; pool_id < sim.population.actor_pool.active_count; ++pool_id)
     {
-        const ActorID actor_id = sim->population.actor_pool.active_array[pool_id];
-        const Actor* actor = &sim->population.actor_pool.actor_array[actor_id];
+        const ActorID actor_id = sim.population.actor_pool.active_array[pool_id];
+        const Actor& actor = sim.population.actor_pool.actor_array[actor_id];
 
-        ModelGpuData model_gpu_data;
+        ModelGpuData model_gpu_data = {};
 
         load_model_obj("assets/model/actor.obj", &model_gpu_data);
 
-        model_gpu_data.texture_layer = model_render->actor_type_layer_array[static_cast<i32>(actor->nation_type)];
+        model_gpu_data.texture_layer = model_render->actor_type_layer_array[static_cast<i32>(actor.nation_type)];
 
-        add_model_gpu_data(model_render, actor_id, &model_gpu_data);
+        model_render->model_gpu_data_vector[actor_id] = model_gpu_data;
 
-        upload_model_gpu_data(&model_render->model_gpu_data_array[actor_id]);
+        upload_model_gpu_data(&model_render->model_gpu_data_vector[actor_id]);
     }
 }
 
-static void update_viewpoint(Render* render, Sim* sim)
+static void update_viewpoint(Render* render, Sim& sim)
 {
-    const Actor* judge = &sim->population.actor_pool.actor_array[sim->population.judge_id];
+    const Actor& judge = sim.population.actor_pool.actor_array[sim.population.judge_id];
 
-    constexpr vec3 judge_eye_offset = {0.0f, 0.0f, 0.7f};
+    constexpr glm::vec3 judge_eye_offset = glm::vec3(0.0f, 0.0f, 0.7f);
 
-    vec3 judge_eye_position;
-    glm_vec3_add((f32*)judge->position, (f32*)judge_eye_offset, judge_eye_position);
-
-    glm_vec3_copy(judge_eye_position, render->viewpoint.position);
-    glm_vec3_copy((f32*)judge->rotation, render->viewpoint.rotation);
+    const glm::vec3 judge_eye_position = judge.position + judge_eye_offset;
+    
+    render->viewpoint.position = judge_eye_position;
+    render->viewpoint.rotation = judge.rotation;
 }
 
-static void update_debug_render(Render* render, Sim* sim)
+static void update_debug_render(Render* render, Sim& sim)
 {
     glUseProgram(render->debug_render.program_id);
 
-    viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
+    render->viewpoint.view_matrix = viewpoint_get_view_matrix(render->viewpoint);
 
-    glUniformMatrix4fv(render->debug_render.u_view_location, 1, GL_FALSE, (f32*)render->viewpoint.view_matrix);
+    glUniformMatrix4fv(
+        render->debug_render.u_view_location, 
+        1, 
+        GL_FALSE, 
+        glm::value_ptr(render->viewpoint.view_matrix)
+    );
 
     glEnable(GL_DEPTH_TEST);
 
-    DebugGpuData debug_gpu_data;
-    debug_gpu_data.debug_vertex_count = 0;
-    debug_gpu_data.debug_vertex_capacity = 2 * sim->debug.line_count;
-    debug_gpu_data.debug_vertex_array = static_cast<DebugVertex*>(malloc(
-        debug_gpu_data.debug_vertex_capacity * sizeof(DebugVertex)));
-
-    for (u32 debug_line_index = 0; debug_line_index < sim->debug.line_count; ++debug_line_index)
+    DebugGpuData debug_gpu_data = {};
+    
+    for (i32 debug_line_index = 0; debug_line_index < sim.debug.line_count; ++debug_line_index)
     {
-        const DebugLine* debug_line = &sim->debug.line_array[debug_line_index];
+        const DebugLine& debug_line = sim.debug.line_array[debug_line_index];
 
         const DebugVertex debug_vertex_a = {
-            {debug_line->position_a[0], debug_line->position_a[1], debug_line->position_a[2]},
-            {debug_line->color[0], debug_line->color[1], debug_line->color[2]},
+            {debug_line.position_a[0], debug_line.position_a[1], debug_line.position_a[2]},
+            {debug_line.color[0], debug_line.color[1], debug_line.color[2]},
         };
 
         const DebugVertex debug_vertex_b = {
-            {debug_line->position_b[0], debug_line->position_b[1], debug_line->position_b[2]},
-            {debug_line->color[0], debug_line->color[1], debug_line->color[2]},
+            {debug_line.position_b[0], debug_line.position_b[1], debug_line.position_b[2]},
+            {debug_line.color[0], debug_line.color[1], debug_line.color[2]},
         };
 
-        debug_gpu_data.debug_vertex_array[debug_gpu_data.debug_vertex_count++] = debug_vertex_a;
-        debug_gpu_data.debug_vertex_array[debug_gpu_data.debug_vertex_count++] = debug_vertex_b;
+        debug_gpu_data.debug_vertex_vector.push_back(debug_vertex_a);
+        debug_gpu_data.debug_vertex_vector.push_back(debug_vertex_b);
     }
 
     upload_debug_gpu_data(&debug_gpu_data);
 
-    mat4 model_matrix;
-    glm_mat4_identity(model_matrix);
+    glm::mat4 model_matrix = glm::mat4(1.0f);
 
-    glUniformMatrix4fv(render->debug_render.u_model_location, 1, GL_FALSE, (f32*)model_matrix);
+    glUniformMatrix4fv(
+        render->debug_render.u_model_location, 
+        1, 
+        GL_FALSE, 
+        glm::value_ptr(model_matrix)
+    );
 
     glBindVertexArray(debug_gpu_data.vao_id);
 
-    glDrawArrays(GL_LINES, 0, debug_gpu_data.debug_vertex_count);
+    glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(debug_gpu_data.debug_vertex_vector.size()));
 
     glBindVertexArray(0);
 }
@@ -970,9 +875,14 @@ static void update_voxel_render(Render* render)
 {
     glUseProgram(render->voxel_render.program_id);
 
-    viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
+    render->viewpoint.view_matrix = viewpoint_get_view_matrix(render->viewpoint);
 
-    glUniformMatrix4fv(render->voxel_render.u_view_location, 1, GL_FALSE, (f32*)render->viewpoint.view_matrix);
+    glUniformMatrix4fv(
+        render->voxel_render.u_view_location, 
+        1, 
+        GL_FALSE, 
+        glm::value_ptr(render->viewpoint.view_matrix)
+    );
 
     glEnable(GL_DEPTH_TEST);
 
@@ -983,31 +893,43 @@ static void update_voxel_render(Render* render)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->voxel_render.texture_array_id);
 
-    for (u32 voxel_gpu_data_index = 0; voxel_gpu_data_index < render->voxel_render.voxel_gpu_data_count; ++
-         voxel_gpu_data_index)
-    {
-        const VoxelGpuData* voxel_gpu_data = &render->voxel_render.voxel_gpu_data_array[voxel_gpu_data_index];
+    for (
+        i32 voxel_gpu_data_index = 0; 
+        voxel_gpu_data_index < render->voxel_render.voxel_gpu_data_vector.size(); 
+        ++voxel_gpu_data_index
+    ) {
+        const VoxelGpuData* voxel_gpu_data = &render->voxel_render.voxel_gpu_data_vector[voxel_gpu_data_index];
 
-        mat4 model_matrix;
-        glm_translate_make(model_matrix, (f32*)voxel_gpu_data->position);
+        glm::mat4 model_matrix = glm::mat4(1.0f);
+        model_matrix = glm::translate(model_matrix, voxel_gpu_data->position);
 
-        glUniformMatrix4fv(render->voxel_render.u_model_location, 1, GL_FALSE, (f32*)model_matrix);
+        glUniformMatrix4fv(
+            render->voxel_render.u_model_location, 
+            1, 
+            GL_FALSE, 
+            glm::value_ptr(model_matrix)
+        );
 
         glBindVertexArray(voxel_gpu_data->vao_id);
 
-        glDrawArrays(GL_TRIANGLES, 0, voxel_gpu_data->voxel_vertex_count);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(voxel_gpu_data->voxel_vertex_vector.size()));
 
         glBindVertexArray(0);
     }
 }
 
-static void update_model_render(Render* render, Sim* sim)
+static void update_model_render(Render* render, Sim& sim)
 {
     glUseProgram(render->model_render.program_id);
 
-    viewpoint_get_view_matrix(&render->viewpoint, render->viewpoint.view_matrix);
+    render->viewpoint.view_matrix = viewpoint_get_view_matrix(render->viewpoint);
 
-    glUniformMatrix4fv(render->voxel_render.u_view_location, 1, GL_FALSE, (f32*)render->viewpoint.view_matrix);
+    glUniformMatrix4fv(
+        render->voxel_render.u_view_location, 
+        1, 
+        GL_FALSE, 
+        glm::value_ptr(render->viewpoint.view_matrix)
+    );
 
     glEnable(GL_DEPTH_TEST);
 
@@ -1018,50 +940,55 @@ static void update_model_render(Render* render, Sim* sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render->model_render.texture_array_id);
 
-    for (PoolID pool_id = 0; pool_id < sim->population.actor_pool.active_count; ++pool_id)
+    for (PoolID pool_id = 0; pool_id < sim.population.actor_pool.active_count; ++pool_id)
     {
-        const ActorID actor_id = sim->population.actor_pool.active_array[pool_id];
-        Actor* actor = &sim->population.actor_pool.actor_array[actor_id];
+        const ActorID actor_id = sim.population.actor_pool.active_array[pool_id];
+        Actor& actor = sim.population.actor_pool.actor_array[actor_id];
 
-        ModelGpuData* model_gpu_data = &render->model_render.model_gpu_data_array[actor_id];
+        ModelGpuData* model_gpu_data = &render->model_render.model_gpu_data_vector[actor_id];
 
-        mat4 model_matrix;
-        glm_translate_make(model_matrix, actor->position);
-        glm_rotate_z(model_matrix, glm_rad(actor->rotation[2]), model_matrix);
+        glm::mat4 model_matrix = glm::mat4(1.0f);
+        model_matrix = glm::translate(model_matrix, actor.position);
+        model_matrix = glm::rotate(model_matrix, glm::radians(actor.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        glUniformMatrix4fv(render->model_render.u_model_location, 1, GL_FALSE, (f32*)model_matrix);
+        glUniformMatrix4fv(
+            render->model_render.u_model_location, 
+            1, 
+            GL_FALSE, 
+            glm::value_ptr(model_matrix)
+        );
 
         glUniform1i(render->model_render.u_texture_layer_location, model_gpu_data->texture_layer);
 
         glBindVertexArray(model_gpu_data->vao_id);
 
-        glDrawArrays(GL_TRIANGLES, 0, model_gpu_data->model_vertex_count);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model_gpu_data->model_vertex_vector.size()));
 
         glBindVertexArray(0);
     }
 }
 
-void render_init(Shell* shell, Platform* platform, Sim* sim)
+void render_init(Shell& shell, Platform& platform, Sim& sim)
 {
     init_glad(platform);
 
-    init_viewpoint(&shell->render);
+    init_viewpoint(&shell.render);
 
     init_debug_render(shell);
     init_voxel_render(shell, sim);
     init_model_render(shell, sim);
 }
 
-void render_update(Shell* shell, Sim* sim)
+void render_update(Shell& shell, Sim& sim)
 {
-    constexpr vec4 clear_color = CLEAR_COLOR;
+    constexpr glm::vec4 clear_color = CLEAR_COLOR;
 
-    glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
+    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    update_viewpoint(&shell->render, sim);
+    update_viewpoint(&shell.render, sim);
 
-    update_debug_render(&shell->render, sim);
-    update_voxel_render(&shell->render);
-    update_model_render(&shell->render, sim);
+    update_debug_render(&shell.render, sim);
+    update_voxel_render(&shell.render);
+    update_model_render(&shell.render, sim);
 }

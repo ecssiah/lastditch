@@ -89,8 +89,8 @@ struct EdgePool
     AreaEdge edge_array[EDGE_POOL_MAX];
 };
 
-void area_add(AreaPool* area_pool, Area* area);
-void area_remove(AreaPool* area_pool, AreaID area_id);
+void area_add(AreaPool& area_pool, Area& area);
+void area_remove(AreaPool& area_pool, AreaID area_id);
 
-void area_add_edge(EdgePool* edge_pool, AreaEdge* area_edge);
-void area_remove_edge(EdgePool* edge_pool, EdgeID edge_id);
+void area_add_edge(EdgePool& edge_pool, AreaEdge& area_edge);
+void area_remove_edge(EdgePool& edge_pool, EdgeID edge_id);

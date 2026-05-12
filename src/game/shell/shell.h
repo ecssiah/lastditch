@@ -17,21 +17,18 @@ extern const f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3];
 
 struct VoxelVertex
 {
-    u32 a_vertex;
-    u32 a_face;
+    i32 a_vertex;
+    i32 a_face;
 };
 
 struct VoxelGpuData
 {
-    vec3 position;
+    glm::vec3 position;
 
     GLuint vao_id;
     GLuint vbo_id;
 
-    u32 voxel_vertex_count;
-    u32 voxel_vertex_capacity;
-
-    VoxelVertex* voxel_vertex_array;
+    std::vector<VoxelVertex> voxel_vertex_vector;
 };
 
 struct ModelVertex
@@ -43,23 +40,20 @@ struct ModelVertex
 
 struct ModelGpuData
 {
-    vec3 position;
-    vec3 rotation;
+    glm::vec3 position;
+    glm::vec3 rotation;
 
-    u32 texture_layer;
+    i32 texture_layer;
 
     GLuint vao_id;
     GLuint vbo_id;
 
-    u32 model_vertex_count;
-    u32 model_vertex_capacity;
-
-    ModelVertex* model_vertex_array;
+    std::vector<ModelVertex> model_vertex_vector;
 };
 
 struct SectorQuad
 {
-    ivec3 local_coordinate;
+    glm::ivec3 local_coordinate;
 
     Direction direction;
     BlockType block_type;
@@ -67,21 +61,18 @@ struct SectorQuad
 
 struct SectorMesh
 {
-    u32 sector_index;
+    i32 sector_index;
 
-    u32 sector_quad_count;
-    u32 sector_quad_capacity;
-
-    SectorQuad* sector_quad_array;
+    std::vector<SectorQuad> sector_quad_vector;
 };
 
 struct Viewpoint
 {
-    vec3 position;
-    vec3 rotation;
+    glm::vec3 position;
+    glm::vec3 rotation;
 
-    mat4 projection_matrix;
-    mat4 view_matrix;
+    glm::mat4 projection_matrix;
+    glm::mat4 view_matrix;
 };
 
 struct TextVertex
@@ -101,10 +92,7 @@ struct DebugGpuData
     GLuint vao_id;
     GLuint vbo_id;
 
-    u32 debug_vertex_count;
-    u32 debug_vertex_capacity;
-
-    DebugVertex* debug_vertex_array;
+    std::vector<DebugVertex> debug_vertex_vector;
 };
 
 struct DebugRender
@@ -115,10 +103,7 @@ struct DebugRender
     GLint u_view_location;
     GLint u_model_location;
 
-    u32 debug_gpu_data_count;
-    u32 debug_gpu_data_capacity;
-
-    DebugGpuData* debug_gpu_data_array;
+    std::vector<DebugGpuData> debug_gpu_data_vector;
 };
 
 struct VoxelRender
@@ -140,15 +125,8 @@ struct VoxelRender
 
     u8 block_type_layer_array[BLOCK_TYPE_COUNT];
 
-    u32 sector_mesh_count;
-    u32 sector_mesh_capacity;
-
-    SectorMesh* sector_mesh_array;
-
-    u32 voxel_gpu_data_count;
-    u32 voxel_gpu_data_capacity;
-
-    VoxelGpuData* voxel_gpu_data_array;
+    std::vector<SectorMesh> sector_mesh_vector;
+    std::vector<VoxelGpuData> voxel_gpu_data_vector;
 };
 
 struct ModelRender
@@ -169,7 +147,7 @@ struct ModelRender
 
     u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
 
-    ModelGpuData model_gpu_data_array[ACTOR_MAX];
+    std::vector<ModelGpuData> model_gpu_data_vector;
 };
 
 struct Render
@@ -203,7 +181,7 @@ struct Shell
     Render render;
 };
 
-void shell_init(Shell* shell);
-void shell_update(Platform* platform, Sim* sim);
-void shell_present(Shell* shell, Sim* sim);
+void shell_init(Shell& shell);
+void shell_update(Platform& platform, Sim& sim);
+void shell_present(Shell& shell, Sim& sim);
 void shell_close();

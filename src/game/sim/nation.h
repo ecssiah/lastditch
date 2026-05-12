@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
 
 #include "core/macros.h"
 #include "core/types.h"
@@ -24,7 +24,7 @@ struct Nation
 {
     NationType nation_type;
 
-    ivec3 home_coordinate;
+    glm::ivec3 home_coordinate;
 };
 
 i32 nation_type_index_from_string(const char* nation_type_string);

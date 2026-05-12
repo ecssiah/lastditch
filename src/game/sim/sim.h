@@ -26,6 +26,6 @@ struct Sim
     Population population;
 };
 
-void sim_init(Sim* sim);
-void sim_update(Sim* sim);
-void sim_close(Sim* sim);
+void sim_init(Sim& sim);
+void sim_update(Sim& sim);
+void sim_close(Sim& sim);

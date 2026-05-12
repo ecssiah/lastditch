@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cglm/cglm.h>
-
 #include "core/types.h"
 #include "game/sim/area.h"
 #include "game/sim/direction.h"
@@ -181,8 +179,8 @@ constexpr i32 SECTION_COUNT = FOR_LIST_SECTION(DEFINE_ENUM_COUNT);
 
 extern const char* SECTION_TYPE_STRING[SECTION_COUNT];
 
-extern const ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT];
-extern const ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT];
+extern const glm::ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT];
+extern const glm::ivec2 SECTION_SIZE_ARRAY[SECTION_COUNT];
 
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_0[];
 extern const BlockType AREA_CONTENT_ARRAY_LEVEL_1[];
@@ -212,7 +210,7 @@ struct World
 
     f32 time_rate;
 
-    vec3 gravity;
+    glm::vec3 gravity;
 
     Cell* cell_array;
 
@@ -223,46 +221,46 @@ struct World
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
 b32 world_sector_coordinate_is_valid(i32 x, i32 y);
 
-u32 world_sector_coordinate_to_index(ivec2 sector_coordinate);
-void world_sector_index_to_coordinate(u32 sector_index, ivec2 out_sector_coordinate);
+u32 world_sector_coordinate_to_index(glm::ivec2 sector_coordinate);
+glm::ivec2 world_sector_index_to_coordinate(u32 sector_index);
 
 u32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z);
-void world_cell_index_to_coordinate(u32 cell_index, ivec3 out_cell_coordinate);
+glm::ivec3 world_cell_index_to_coordinate(u32 cell_index);
 
 u32 world_cell_coordinate_to_sector_index(i32 x, i32 y);
-void world_cell_coordinate_to_sector_coordinate(i32 x, i32 y, ivec2 out_sector_coordinate);
+glm::ivec2 world_cell_coordinate_to_sector_coordinate(i32 x, i32 y);
 
 u32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z);
-void world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z, ivec3 out_local_coordinate);
+glm::ivec3 world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z);
 
-void world_cell_coordinate_to_position(i32 x, i32 y, i32 z, vec3 out_position);
-void world_position_to_cell_coordinate(f32 x, f32 y, f32 z, ivec3 out_cell_coordinate);
+glm::vec3 world_cell_coordinate_to_position(i32 x, i32 y, i32 z);
+glm::ivec3 world_position_to_cell_coordinate(f32 x, f32 y, f32 z);
 
 i32 world_get_stride(Direction direction);
 
 u32 world_get_floor(i32 z);
 
-b32 world_is_solid(World* world, i32 x, i32 y, i32 z);
-b32 world_is_clear(World* world, i32 x, i32 y, i32 z, u8 direction_mask);
+b32 world_is_solid(World& world, i32 x, i32 y, i32 z);
+b32 world_is_clear(World& world, i32 x, i32 y, i32 z, u8 direction_mask);
 
 i32 world_block_type_index_from_string(const char* block_type_string);
 
-u8 world_get_direction_mask(World* world, i32 x, i32 y, i32 z);
+u8 world_get_direction_mask(World& world, i32 x, i32 y, i32 z);
 
-Cell* world_get_cell(World* world, i32 x, i32 y, i32 z);
+Cell* world_get_cell(World& world, i32 x, i32 y, i32 z);
 
-Cell* world_get_free_cell(World* world, i32 x, i32 y, i32 z);
+Cell* world_get_free_cell(World& world, i32 x, i32 y, i32 z);
 
-void world_set_block_type(World* world, i32 x, i32 y, i32 z, BlockType block_type);
-void world_set_block_type_box(World* world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z,
+void world_set_block_type(World& world, i32 x, i32 y, i32 z, BlockType block_type);
+void world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z,
                               BlockType block_type);
-void world_set_block_type_cube(World* world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z,
+void world_set_block_type_cube(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z,
                                BlockType block_type);
 
 u32 world_get_content_level(i32 z);
 
-void world_construct_area(World* world, const Area* area);
+void world_construct_area(World& world, const Area* area);
 
-void world_init(World* world, Debug* debug);
-void world_update(World* world, Population* population);
-void world_close(World* world);
+void world_init(World& world, Debug& debug);
+void world_update(World& world, Population& population);
+void world_close(World& world);

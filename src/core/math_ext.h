@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
 
 #include "core/types.h"
 
@@ -8,8 +8,8 @@ constexpr f32 EPSILON = 1e-5f;
 
 enum class Axis
 {
-    x,
-    y,
+    x, 
+    y, 
     z,
 };
 
@@ -21,14 +21,14 @@ struct Bounds1i
 
 struct Bounds2i
 {
-    ivec2 position;
-    ivec2 size;
+    glm::ivec2 position;
+    glm::ivec2 size;
 };
 
 struct Bounds3i
 {
-    ivec3 min;
-    ivec3 max;
+    glm::ivec3 min;
+    glm::ivec3 max;
 };
 
 struct Bounds1f
@@ -39,27 +39,31 @@ struct Bounds1f
 
 struct Bounds2f
 {
-    vec2 min;
-    vec2 max;
+    glm::vec2 min;
+    glm::vec2 max;
 };
 
 struct Bounds3f
 {
-    vec3 min;
-    vec3 max;
+    glm::vec3 min;
+    glm::vec3 max;
 };
 
 i32 min_i32(i32 a, i32 b);
 i32 max_i32(i32 a, i32 b);
 
-void bounds2i_max(const Bounds2i* bounds, ivec2 out_max);
-void bounds2i_min(const Bounds2i* bounds, ivec2 out_min);
+glm::ivec2 bounds2i_max(const Bounds2i& a);
+glm::ivec2 bounds2i_min(const Bounds2i& a);
 
-b32 bounds2i_overlaps(const Bounds2i* bounds_left, const Bounds2i* bounds_right);
-Bounds2i bounds2i_intersection(const Bounds2i* bounds_left, const Bounds2i* bounds_right);
+b32 bounds2i_overlaps(const Bounds2i& a, const Bounds2i& b);
+Bounds2i bounds2i_intersection(const Bounds2i& a, const Bounds2i& b);
 
-u32 bounds2i_subtract(const Bounds2i* bounds_left, const Bounds2i* bounds_right, Bounds2i* out_array);
+std::vector<Bounds2i> bounds2i_subtract(const Bounds2i& a, const Bounds2i& b);
 
-void bounds2i_print(const Bounds2i* bounds);
+void bounds2i_print(const Bounds2i& a);
 
 f32 lerp_to(f32 current, f32 target, f32 speed, f32 delta_time);
+
+glm::vec3 get_forward(const glm::vec3& rotation);
+glm::vec3 get_right(const glm::vec3& rotation);
+glm::vec3 get_up(const glm::vec3& rotation);

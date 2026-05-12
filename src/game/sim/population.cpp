@@ -1,7 +1,5 @@
 #include "game/sim/population.h"
 
-#include <string.h>
-
 #include "core/types.h"
 #include "core/log.h"
 #include "game/sim/actor.h"
@@ -11,7 +9,7 @@
 #include "game/sim/world.h"
 
 static void 
-init_judge(Population *population)
+init_judge(Population& population)
 {
     Actor judge = {
         .actor_type = ActorType::judge,
@@ -29,30 +27,30 @@ init_judge(Population *population)
         },
     };
 
-    actor_add(&population->actor_pool, &judge);
+    actor_add(population.actor_pool, judge);
 
-    population->judge_id = judge.actor_id;
+    population.judge_id = judge.actor_id;
 
-    LOG_INFO("Generated Judge, ID: %i", population->judge_id);
+    LOG_INFO("Generated Judge, ID: %i", population.judge_id);
 }
 
 static void 
-init_agents(Population *population, Work *work)
+init_agents(Population& population, Work& work)
 {
     for (u32 nation_index = 0; nation_index < NATION_TYPE_COUNT; ++nation_index)
     {
         for (u32 agent_index = 0; agent_index < AGENT_INITIAL_COUNT; ++agent_index)
         {
             const auto nation_type = static_cast<NationType>(rand() % NATION_TYPE_COUNT);
-            const Nation* nation = &population->nation_array[static_cast<u8>(nation_type)];
+            const Nation* nation = &population.nation_array[static_cast<u8>(nation_type)];
 
-            const vec3 position = {
+            const glm::vec3 position = {
                 static_cast<f32>(nation->home_coordinate[0]) - 6 + rand() % 12,
                 static_cast<f32>(nation->home_coordinate[1]) - 6 + rand() % 12,
                 static_cast<f32>(nation->home_coordinate[2]) + 4,
             };
 
-            const vec3 rotation = {0.0f, 0.0f, static_cast<f32>(rand() % 360)};
+            const glm::vec3 rotation = {0.0f, 0.0f, static_cast<f32>(rand() % 360)};
 
             Actor agent = {
                 .actor_type = ActorType::agent,
@@ -70,7 +68,7 @@ init_agents(Population *population, Work *work)
                 },
             };
 
-            actor_add(&population->actor_pool, &agent);
+            actor_add(population.actor_pool, agent);
 
             ActState act_state = {
                 .wander = {
@@ -79,7 +77,7 @@ init_agents(Population *population, Work *work)
                 }
             };
 
-            work_add_act(work, &agent, ActType::wander, act_state);
+            work_add_act(work, agent, ActType::wander, act_state);
 
             LOG_INFO(
                 "Generated %s Agent, ID: %i at (%.1f %.1f %.1f)",
@@ -92,11 +90,11 @@ init_agents(Population *population, Work *work)
 }
 
 void 
-init_nations(Population *population)
+init_nations(Population& population)
 {
     constexpr f32 nation_offset = 76.0f;
 
-    Nation* wolf_nation = &population->nation_array[static_cast<u8>(NationType::wolf)];
+    Nation* wolf_nation = &population.nation_array[static_cast<u8>(NationType::wolf)];
 
     wolf_nation->nation_type = NationType::wolf;
 
@@ -104,7 +102,7 @@ init_nations(Population *population)
     wolf_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
     wolf_nation->home_coordinate[2] = ROOF_Z + 3.0f;
 
-    Nation* eagle_nation = &population->nation_array[static_cast<u8>(NationType::eagle)];
+    Nation* eagle_nation = &population.nation_array[static_cast<u8>(NationType::eagle)];
 
     eagle_nation->nation_type = NationType::eagle;
 
@@ -112,7 +110,7 @@ init_nations(Population *population)
     eagle_nation->home_coordinate[1] = WORLD_CENTER_F32 + 0.0f;
     eagle_nation->home_coordinate[2] = ROOF_Z + 3.0f;
 
-    Nation* bear_nation = &population->nation_array[static_cast<u8>(NationType::bear)];
+    Nation* bear_nation = &population.nation_array[static_cast<u8>(NationType::bear)];
 
     bear_nation->nation_type = NationType::bear;
 
@@ -120,7 +118,7 @@ init_nations(Population *population)
     bear_nation->home_coordinate[1] = WORLD_CENTER_F32 + nation_offset;
     bear_nation->home_coordinate[2] = ROOF_Z + 1.0f;
 
-    Nation* lion_nation = &population->nation_array[static_cast<u8>(NationType::lion)];
+    Nation* lion_nation = &population.nation_array[static_cast<u8>(NationType::lion)];
 
     lion_nation->nation_type = NationType::lion;
 
@@ -130,20 +128,20 @@ init_nations(Population *population)
 }
 
 static void 
-init_actor_pool(Population* population)
+init_actor_pool(Population& population)
 {
-    population->actor_pool.free_count = ACTOR_MAX;
-    population->actor_pool.active_count = 0;
+    population.actor_pool.free_count = ACTOR_MAX;
+    population.actor_pool.active_count = 0;
 
     for (PoolID pool_id = 0; pool_id < ACTOR_MAX; ++pool_id)
     {
-        population->actor_pool.active_array[pool_id] = 0;
-        population->actor_pool.free_array[pool_id] = pool_id;
+        population.actor_pool.active_array[pool_id] = 0;
+        population.actor_pool.free_array[pool_id] = pool_id;
     }
 }
 
 void 
-population_init(Population* population, Work* work)
+population_init(Population& population, Work& work)
 {
     init_nations(population);
 

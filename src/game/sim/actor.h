@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cglm/cglm.h>
+#include <glm/glm.hpp>
 
 #include "core/types.h"
 #include "game/sim/ids.h"
@@ -55,29 +55,29 @@ struct Actor
     NationType nation_type;
     MovementType movement_type;
 
-    vec3 position;
+    glm::vec3 position;
 
-    vec3 rotation;
-    vec3 rotation_target;
+    glm::vec3 rotation;
+    glm::vec3 rotation_target;
 
     b32 is_grounded;
 
     f32 speed;
-    vec3 velocity;
+    glm::vec3 velocity;
 
     BoxCollider box_collider;
 
-    u32 act_id_count;
+    i32 act_id_count;
     ActID act_id_array[ACTOR_ACT_MAX];
 };
 
 struct ActorPool
 {
-    u32 active_count;
+    i32 active_count;
     ActorID active_array[ACTOR_MAX];
-    u32 active_lookup[ACTOR_MAX];
+    i32 active_lookup[ACTOR_MAX];
 
-    u32 free_count;
+    i32 free_count;
     ActorID free_array[ACTOR_MAX];
 
     Actor actor_array[ACTOR_MAX];
@@ -85,9 +85,5 @@ struct ActorPool
 
 i32 actor_type_index_from_string(const char* actor_type_string);
 
-void actor_get_forward(Actor* actor, vec3 out_forward);
-void actor_get_right(Actor* actor, vec3 out_right);
-void actor_get_up(Actor* actor, vec3 out_up);
-
-void actor_add(ActorPool* actor_pool, Actor* actor);
-void actor_control(World* world, Actor* actor);
+void actor_add(ActorPool& actor_pool, Actor& actor);
+void actor_control(World& world, Actor& actor);
