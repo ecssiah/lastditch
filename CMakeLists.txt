@@ -64,6 +64,9 @@ target_sources(
     src/core/config.h
     src/core/config.cpp
 
+    src/core/geometry.h
+    src/core/geometry.cpp
+
     src/core/log.h
     src/core/log.cpp
         
