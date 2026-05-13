@@ -26,4 +26,4 @@ struct Nation
     ivec3 home_coordinate;
 };
 
-i32 nation_type_index_from_string(const char* nation_type_string);
+i32 nation_type_index_from_string(const std::string& nation_type_string);

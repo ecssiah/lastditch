@@ -501,11 +501,11 @@ world_get_floor(i32 z)
 }
 
 i32 
-world_block_type_index_from_string(const char* block_type_string)
+world_block_type_index_from_string(const std::string& block_type_string)
 {
     for (i32 block_type_index = 0; block_type_index < BLOCK_TYPE_COUNT; ++block_type_index)
     {
-        if (strcmp(block_type_string, BLOCK_TYPE_STRING[block_type_index]) == 0)
+        if (block_type_string == BLOCK_TYPE_STRING[block_type_index])
         {
             return block_type_index;
         }

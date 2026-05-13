@@ -1,20 +1,17 @@
 #pragma once
 
-#include "core/types.h"
+#include <vector>
 
 struct ConfigEntry
 {
-    const char* key;
-    const char* value;
+    std::string key;
+    std::string value;
 };
 
 struct ConfigData
 {
-    u32 entry_count;
-    u32 entry_capacity;
-
-    ConfigEntry* config_entry_array;
+    std::vector<ConfigEntry> entry_vector;
 };
 
-ConfigData* config_load(const char* config_path);
-void config_destroy(ConfigData* config);
+ConfigData config_load(const std::string& config_path);
+void config_destroy(ConfigData& config);

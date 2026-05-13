@@ -242,15 +242,15 @@ load_block_texture_directory(Shell& shell)
         nullptr
     );
 
-    assert(voxel_render.block_config->entry_count <= BLOCK_TYPE_COUNT);
+    assert(voxel_render.block_config_data.entry_vector.size() <= BLOCK_TYPE_COUNT);
 
-    for (i32 layer_index = 0; layer_index < voxel_render.block_config->entry_count; ++layer_index)
+    for (i32 layer_index = 0; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
     {
-        const ConfigEntry& config_entry = voxel_render.block_config->config_entry_array[layer_index];
+        const ConfigEntry& config_entry = voxel_render.block_config_data.entry_vector[layer_index];
 
         char texture_path[256];
 
-        snprintf(texture_path, sizeof(texture_path), "%s/%s", block_texture_directory, config_entry.value);
+        snprintf(texture_path, sizeof(texture_path), "%s/%s", block_texture_directory, config_entry.value.c_str());
 
         const i32 block_type_index = world_block_type_index_from_string(config_entry.key);
 
@@ -286,15 +286,15 @@ load_actor_texture_directory(Shell& shell)
         nullptr
     );
 
-    assert(model_render.actor_config->entry_count <= NATION_TYPE_COUNT);
+    assert(model_render.actor_config_data.entry_vector.size() <= NATION_TYPE_COUNT);
 
-    for (i32 layer_index = 0; layer_index < model_render.actor_config->entry_count; ++layer_index)
+    for (i32 layer_index = 0; layer_index < model_render.actor_config_data.entry_vector.size(); ++layer_index)
     {
-        const ConfigEntry& config_entry = model_render.actor_config->config_entry_array[layer_index];
+        const ConfigEntry& config_entry = model_render.actor_config_data.entry_vector[layer_index];
 
         char texture_path[256];
 
-        snprintf(texture_path, sizeof(texture_path), "%s/%s", actor_texture_directory, config_entry.value);
+        snprintf(texture_path, sizeof(texture_path), "%s/%s", actor_texture_directory, config_entry.value.c_str());
 
         const i32 nation_type_index = nation_type_index_from_string(config_entry.key);
 
@@ -755,7 +755,7 @@ init_voxel_render(Shell& shell, const Sim& sim)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    voxel_render.block_config = config_load("config/block.ini");
+    voxel_render.block_config_data = config_load("config/block.ini");
 
     load_block_texture_directory(shell);
 
@@ -805,7 +805,7 @@ init_model_render(Shell& shell, const Sim& sim)
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    model_render.actor_config = config_load("config/actor.ini");
+    model_render.actor_config_data = config_load("config/actor.ini");
 
     load_actor_texture_directory(shell);
 
