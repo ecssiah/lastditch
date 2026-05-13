@@ -25,7 +25,7 @@ constexpr i32 ACTOR_ACT_MAX = 128;
     DO(ground)                                                                 \
     DO(debug)
 
-enum class MovementType
+enum class MovementType : u8
 {
     FOR_LIST_MOVEMENT_TYPE(DEFINE_ENUM_VARIANTS)
 };
@@ -73,16 +73,16 @@ struct Actor
 struct ActorPool
 {
     i32 active_count;
-    ActorID active_array[ACTOR_MAX];
-    i32 active_lookup[ACTOR_MAX];
+    std::array<ActorID, ACTOR_MAX> active_array;
+    std::array<i32, ACTOR_MAX> active_lookup;
 
     i32 free_count;
-    ActorID free_array[ACTOR_MAX];
+    std::array<ActorID, ACTOR_MAX> free_array;
 
-    Actor actor_array[ACTOR_MAX];
+    std::array<Actor, ACTOR_MAX> actor_array;
 };
 
-i32 actor_type_index_from_string(const char* actor_type_string);
+i32 actor_type_index_from_string(const std::string& actor_type_string);
 
 void actor_add(ActorPool& actor_pool, Actor& actor);
 void actor_control(World& world, Actor& actor);

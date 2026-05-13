@@ -4,7 +4,7 @@
 #include "core/types.h"
 #include "game/sim/ids.h"
 
-enum class NodeType
+enum class NodeType : u8
 {
     open,
     closed,

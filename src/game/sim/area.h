@@ -5,24 +5,24 @@
 #include "game/sim/direction.h"
 #include "game/sim/ids.h"
 
-#define AREA_POOL_MAX 1 << 12
-#define EDGE_POOL_MAX 1 << 12
+constexpr i32 AREA_POOL_MAX = 1 << 12;
+constexpr i32 EDGE_POOL_MAX = 1 << 12;
 
-#define AREA_EDGE_MAX 1 << 5
+constexpr i32 AREA_EDGE_MAX = 1 << 5;
 
-#define AREA_EXPANSION_ITERATION_COUNT 5
-#define AREA_EXPANSION_SIZE_MIN 8
+constexpr i32 AREA_EXPANSION_ITERATION_COUNT = 5;
+constexpr i32 AREA_EXPANSION_SIZE_MIN = 8;
 
-#define DOOR_MINIMUM_EDGE_SIZE 5
+constexpr i32 DOOR_MINIMUM_EDGE_SIZE = 5;
 
-#define FOR_LIST_AREA_TYPE(DO)                                                 \
-  DO(open)                                                                     \
-  DO(room)                                                                     \
-  DO(elevator)                                                                 \
-  DO(temple)                                                                   \
-  DO(wireframe)
+#define FOR_LIST_AREA_TYPE(DO)                                                  \
+  DO(open)                                                                      \
+  DO(room)                                                                      \
+  DO(elevator)                                                                  \
+  DO(temple)                                                                    \
+  DO(wireframe)                                                                 \
 
-enum class AreaType
+enum class AreaType : u8
 {
     FOR_LIST_AREA_TYPE(DEFINE_ENUM_VARIANTS)
 };
@@ -36,15 +36,15 @@ struct Area
     AreaID area_id;
     i32 floor_number;
 
-    ibounds2 range;
+    ibounds2 bounds;
 
     i32 edge_id_count;
-    EdgeID edge_id_array[AREA_EDGE_MAX];
+    std::array<EdgeID, AREA_EDGE_MAX> edge_id_array;
 };
 
 struct AreaOverlap
 {
-    ibounds2 range;
+    ibounds2 bounds;
     Direction direction;
 };
 
@@ -66,27 +66,27 @@ struct AreaPool
     i32 floor_number;
 
     i32 free_count;
-    AreaID free_array[AREA_POOL_MAX];
+    std::array<AreaID, AREA_POOL_MAX> free_array;
 
     i32 active_count;
-    AreaID active_array[AREA_POOL_MAX];
+    std::array<AreaID, AREA_POOL_MAX> active_array;
 
-    i32 active_lookup[AREA_POOL_MAX];
+    std::array<i32, AREA_POOL_MAX> active_lookup;
 
-    Area area_array[AREA_POOL_MAX];
+    std::array<Area, AREA_POOL_MAX> area_array;
 };
 
 struct EdgePool
 {
     i32 free_count;
-    EdgeID free_array[EDGE_POOL_MAX];
+    std::array<EdgeID, EDGE_POOL_MAX> free_array;
 
     i32 active_count;
-    EdgeID active_array[EDGE_POOL_MAX];
+    std::array<EdgeID, EDGE_POOL_MAX> active_array;
 
-    i32 active_lookup[EDGE_POOL_MAX];
+    std::array<i32, EDGE_POOL_MAX> active_lookup;
 
-    AreaEdge edge_array[EDGE_POOL_MAX];
+    std::array<AreaEdge, EDGE_POOL_MAX> edge_array;
 };
 
 void area_add(AreaPool& area_pool, Area& area);

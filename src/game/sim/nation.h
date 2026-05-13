@@ -10,7 +10,7 @@
   DO(lion)                                                                     \
   DO(bear)
 
-enum class NationType
+enum class NationType : u8
 {
     FOR_LIST_NATION_TYPE(DEFINE_ENUM_VARIANTS)
 };

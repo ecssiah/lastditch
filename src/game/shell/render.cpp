@@ -84,44 +84,6 @@ get_gl_error_string(GLenum err)
     }
 }
 
-static char* 
-read_file(const char* path)
-{
-    FILE* file = fopen(path, "rb");
-
-    if (!file)
-    {
-        LOG_ERROR("Failed to open file: %s\n", path);
-        return NULL;
-    }
-
-    fseek(file, 0, SEEK_END);
-    const long size = ftell(file);
-
-    if (size < 0)
-    {
-        LOG_ERROR("File read file: %s\n", path);
-        return NULL;
-    }
-
-    rewind(file);
-
-    auto buffer = static_cast<char*>(malloc((size_t)size + 1));
-
-    if (!buffer)
-    {
-        fclose(file);
-        return NULL;
-    }
-
-    fread(buffer, 1, static_cast<size_t>(size), file);
-    buffer[size] = '\0';
-
-    fclose(file);
-
-    return buffer;
-}
-
 static void 
 check_gl_error(const char* label)
 {
@@ -464,7 +426,7 @@ generate_sector_mesh(VoxelRender& voxel_render, const Sim& sim, const i32 sector
 
                 while (test_direction_mask)
                 {
-                    const Direction direction = static_cast<Direction>(DIRECTION_FROM_MASK(test_direction_mask));
+                    const Direction direction = direction_from_mask(test_direction_mask);
 
                     SectorQuad sector_quad;
                     sector_quad.direction = direction;

@@ -409,18 +409,18 @@ ibounds2_intersection(const ibounds2& a, const ibounds2& b)
 std::vector<ibounds2> 
 ibounds2_subtract(const ibounds2& a, const ibounds2& b)
 {
-    std::vector<ibounds2> range_vector = std::vector<ibounds2>();
+    std::vector<ibounds2> bounds_vector = std::vector<ibounds2>();
 
     if (!ibounds2_overlaps(a, b))
     {
-        return range_vector;
+        return bounds_vector;
     }
 
     const ibounds2 intersection = ibounds2_intersection(a, b);
 
     if (intersection.min.x > a.min.x)
     {
-        range_vector.push_back({
+        bounds_vector.push_back({
             .min = {a.min.x, a.min.y},
             .max = {intersection.min.x, a.max.y},
         });
@@ -428,7 +428,7 @@ ibounds2_subtract(const ibounds2& a, const ibounds2& b)
 
     if (intersection.max.x < a.max.x)
     {
-        range_vector.push_back({
+        bounds_vector.push_back({
             .min = {intersection.max.x, a.min.y},
             .max = {a.max.x, a.max.y}
         });
@@ -436,7 +436,7 @@ ibounds2_subtract(const ibounds2& a, const ibounds2& b)
 
     if (intersection.min.y > a.min.y)
     {
-        range_vector.push_back({
+        bounds_vector.push_back({
             .min = {intersection.min.x, a.min.y},
             .max = {intersection.max.x, intersection.min.y}
         });
@@ -444,11 +444,11 @@ ibounds2_subtract(const ibounds2& a, const ibounds2& b)
 
     if (intersection.max.y < a.max.y)
     {
-        range_vector.push_back({
+        bounds_vector.push_back({
             .min = {intersection.min.x, intersection.max.y},
             .max = {intersection.max.x, a.max.y}
         });
     }
 
-    return range_vector;
+    return bounds_vector;
 }

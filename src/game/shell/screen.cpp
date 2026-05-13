@@ -1,5 +1,6 @@
 #include "screen.h"
 
+#include <format>
 #include <glad/glad.h>
 
 #include "stb_image.h"
@@ -77,70 +78,54 @@ static void load_textures(Screen& screen, const char* textures_path)
     stbi_image_free(pixel_data_array);
 }
 
-static mat4 get_orthographic_projection_matrix(f32 width, f32 height)
+static void draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
 {
-    return orthographic_matrix(
-        0.0f, 
-        width, 
-        height, 
-        0.0f, 
-        -1.0f, 
-        1.0f
-    );
-}
+    constexpr f32 scale = 2.0f;
 
-static void draw_text(Shell& shell, const char* text, f32 x, f32 y)
-{
-    f32 scale = 2.0f;
+    constexpr f32 char_width = 8.0f * scale;
+    constexpr f32 char_height = 8.0f * scale;
 
-    f32 char_width = 8.0f * scale;
-    f32 char_height = 8.0f * scale;
-
-    f32 cell_width = 1.0f / 8.0f;
-    f32 cell_height = 1.0f / 12.0f;
-
-    const u64 len = strlen(text);
+    constexpr f32 cell_width = 1.0f / 8.0f;
+    constexpr f32 cell_height = 1.0f / 12.0f;
 
     i32 vertex_count = 0;
-    u64 vertex_max = len * 6;
+    u64 vertex_max = text.length() * 6;
 
     TextVertex text_vertex_array[vertex_max];
 
     f32 cursor_x = x;
 
-    for (i32 text_index = 0; text_index < static_cast<i32>(len); text_index++)
+    for (const char text_char : text)
     {
-        const char text_char = text[text_index];
-
         if (text_char < 32 || text_char > 126)
         {
             cursor_x += char_width;
             continue;
         }
 
-        i32 ascii_value = text_char - 32;
+        const i32 ascii_value = text_char - 32;
 
-        i32 texture_col = ascii_value % 8;
-        i32 texture_row = ascii_value / 8;
+        const i32 texture_col = ascii_value % 8;
+        const i32 texture_row = ascii_value / 8;
 
-        f32 u0 = texture_col * cell_width;
-        f32 v0 = texture_row * cell_height;
+        const f32 u0 = texture_col * cell_width;
+        const f32 v0 = texture_row * cell_height;
 
-        f32 u1 = u0 + cell_width;
-        f32 v1 = v0 + cell_height;
+        const f32 u1 = u0 + cell_width;
+        const f32 v1 = v0 + cell_height;
 
-        f32 x0 = cursor_x;
-        f32 y0 = y;
-        f32 x1 = cursor_x + char_width;
-        f32 y1 = y + char_height;
+        const f32 x0 = cursor_x;
+        const f32 y0 = y;
+        const f32 x1 = cursor_x + char_width;
+        const f32 y1 = y + char_height;
 
-        TextVertex text_vertex0 = {{x0, y0}, {u0, v0}};
-        TextVertex text_vertex1 = {{x1, y0}, {u1, v0}};
-        TextVertex text_vertex2 = {{x1, y1}, {u1, v1}};
+        const TextVertex text_vertex0 = {{x0, y0}, {u0, v0}};
+        const TextVertex text_vertex1 = {{x1, y0}, {u1, v0}};
+        const TextVertex text_vertex2 = {{x1, y1}, {u1, v1}};
 
-        TextVertex text_vertex3 = {{x0, y0}, {u0, v0}};
-        TextVertex text_vertex4 = {{x1, y1}, {u1, v1}};
-        TextVertex text_vertex5 = {{x0, y1}, {u0, v1}};
+        const TextVertex text_vertex3 = {{x0, y0}, {u0, v0}};
+        const TextVertex text_vertex4 = {{x1, y1}, {u1, v1}};
+        const TextVertex text_vertex5 = {{x0, y1}, {u0, v1}};
 
         text_vertex_array[vertex_count++] = text_vertex0;
         text_vertex_array[vertex_count++] = text_vertex1;
@@ -154,13 +139,18 @@ static void draw_text(Shell& shell, const char* text, f32 x, f32 y)
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, shell.screen.vbo_id);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(static_cast<u64>(vertex_count) * sizeof(TextVertex)),
-                 text_vertex_array, GL_DYNAMIC_DRAW);
+    
+    glBufferData(
+        GL_ARRAY_BUFFER, 
+        static_cast<GLsizeiptr>(vertex_count * sizeof(TextVertex)),
+        text_vertex_array, 
+        GL_DYNAMIC_DRAW
+    );
 
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
 
-void screen_init(Shell& shell, Platform& platform)
+void screen_init(Shell& shell, const Platform& platform)
 {
     Screen& screen = shell.screen;
 
@@ -182,11 +172,19 @@ void screen_init(Shell& shell, Platform& platform)
 
     screen.u_projection_location = glGetUniformLocation(screen.program_id, "u_projection_matrix");
 
-    i32 fb_width, fb_height;
-    glfwGetFramebufferSize(platform.window.glfw_window, &fb_width, &fb_height);
+    i32 framebuffer_width; 
+    i32 framebuffer_height;
+    glfwGetFramebufferSize(platform.window.glfw_window, &framebuffer_width, &framebuffer_height);
 
-    const mat4 shell_projection_matrix = get_orthographic_projection_matrix(fb_width, fb_height);
-
+    const mat4 shell_projection_matrix = orthographic_matrix(
+        0.0f, 
+        framebuffer_width, 
+        framebuffer_height, 
+        0.0f, 
+        -1.0f, 
+        1.0f
+    );
+    
     glUniformMatrix4fv(
         screen.u_projection_location, 
         1, 
@@ -220,7 +218,7 @@ void screen_init(Shell& shell, Platform& platform)
         GL_FLOAT,
         GL_FALSE,
         sizeof(TextVertex),
-        (void*)offsetof(TextVertex, uv)
+        reinterpret_cast<void*>(offsetof(TextVertex, uv))
     );
 
     glEnableVertexAttribArray(1);
@@ -237,101 +235,81 @@ static void draw_debug_info(Shell& shell, Sim& sim)
     const ivec3 cell_coordinate = world_position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
     const ivec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
 
-    char position_text[64];
-    char velocity_text[64];
-    char cell_coordinate_text[64];
-    char sector_coordinate_text[64];
-    char floor_text[64];
-    char movement_type_text[128];
-
-    snprintf(
-        position_text,
-        sizeof(position_text),
-        "POS %.1f %.1f %.1f",
-        judge.position.x,
-        judge.position.y,
-        judge.position.z
-    );
-
-    snprintf(
-        velocity_text,
-        sizeof(velocity_text),
-        "VEL %.1f %.1f %.1f",
-        judge.velocity.x,
-        judge.velocity.y,
-        judge.velocity.z
-    );
-
+    const std::string position_text =
+        std::format(
+            "POS {:.1f} {:.1f} {:.1f}",
+            judge.position.x,
+            judge.position.y,
+            judge.position.z
+        );
+    
+    const std::string velocity_text =
+        std::format(
+        "VEL {:.1f} {:.1f} {:.1f}",
+            judge.velocity.x,
+            judge.velocity.y,
+            judge.velocity.z
+        );
+    
+    std::string cell_coordinate_text = "CEL - - -";
+    std::string sector_coordinate_text = "SEC - -";
+    std::string floor_text = "FLR -";
+    std::string movement_type_text;
+    
     if (world_cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
     {
-        snprintf(
-            cell_coordinate_text,
-            sizeof(cell_coordinate_text),
-            "CEL %i %i %i",
-            cell_coordinate.x,
-            cell_coordinate.y,
-            cell_coordinate.z
-        );
-    }
-    else
-    {
-        strcpy(cell_coordinate_text, "CEL - - -");
+        cell_coordinate_text =
+            std::format(
+                "CEL {} {} {}",
+                cell_coordinate.x,
+                cell_coordinate.y,
+                cell_coordinate.z
+            );
     }
 
     if (world_sector_coordinate_is_valid(sector_coordinate.x, sector_coordinate.y))
-    {
-        snprintf(
-            sector_coordinate_text,
-            sizeof(sector_coordinate_text),
-            "SEC %i %i",
-            sector_coordinate.x,
-            sector_coordinate.y
-        );
-    }
-    else
-    {
-        strcpy(sector_coordinate_text, "SEC - -");
+    {  
+        sector_coordinate_text =
+            std::format(
+                "SEC {} {}",
+                sector_coordinate.x,
+                sector_coordinate.y
+            );
     }
 
-    const u32 floor_number = world_get_floor(cell_coordinate.z);
-
-    if (cell_coordinate.z < 0)
+    if (cell_coordinate.z >= 0)
     {
-        strcpy(floor_text, "FLR -");
-    }
-    else
-    {
-        if (floor_number >= FLOOR_COUNT)
+        const i32 floor_number = world_get_floor(cell_coordinate.z);
+        
+        if (floor_number < FLOOR_COUNT)
         {
-            strcpy(floor_text, "FLR -");
-        }
-        else if (floor_number >= TOWER_FLOOR_COUNT)
-        {
-            snprintf(
-                floor_text,
-                sizeof(floor_text),
-                "FLR R-%i",
-                floor_number
-            );
-        }
-        else
-        {
-            snprintf(
-                floor_text,
-                sizeof(floor_text),
-                "FLR T-%i",
-                floor_number
-            );
+            if (floor_number < TOWER_FLOOR_COUNT)
+            {
+                floor_text =
+                     std::format(
+                         "FLR T-{}",
+                         floor_number
+                     );
+            }
+            else
+            {
+                floor_text =
+                    std::format(
+                        "FLR R-{}",
+                        floor_number
+                    );
+            }
         }
     }
 
     switch (judge.movement_type)
     {
-    case MovementType::ground: strcpy(movement_type_text, "MOV Ground");
+    case MovementType::ground: 
+        movement_type_text = "MOV Ground";
         break;
-    case MovementType::debug: strcpy(movement_type_text, "MOV Debug");
+    case MovementType::debug: 
+        movement_type_text = "MOV Debug";
         break;
-    default: break;
     }
 
     draw_text(shell, position_text, 20, 20);
@@ -344,7 +322,7 @@ static void draw_debug_info(Shell& shell, Sim& sim)
 
 void screen_update(Shell& shell, Sim& sim)
 {
-    Screen& screen = shell.screen;
+    const Screen& screen = shell.screen;
 
     glUseProgram(screen.program_id);
 

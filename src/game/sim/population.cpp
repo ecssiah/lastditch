@@ -31,7 +31,14 @@ init_judge(Population& population)
 
     population.judge_id = judge.actor_id;
 
-    LOG_INFO("Generated Judge, ID: %i", population.judge_id);
+    LOG_INFO(
+        "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)", 
+        NATION_TYPE_STRING[static_cast<u8>(judge.nation_type)],
+        population.judge_id,
+        judge.position.x, 
+        judge.position.y, 
+        judge.position.z
+    );
 }
 
 static void 
@@ -41,13 +48,15 @@ init_agents(Population& population, Work& work)
     {
         for (i32 agent_index = 0; agent_index < AGENT_INITIAL_COUNT; ++agent_index)
         {
-            const NationType nation_type = static_cast<NationType>(rand() % NATION_TYPE_COUNT);
-            const Nation* nation = &population.nation_array[static_cast<u8>(nation_type)];
+            const i32 nation_type_index = rand() % NATION_TYPE_COUNT;
+            
+            const NationType nation_type = static_cast<NationType>(nation_type_index);
+            const Nation& nation = population.nation_array[nation_type_index];
 
             const vec3 position = {
-                static_cast<f32>(nation->home_coordinate.x) - 6 + rand() % 12,
-                static_cast<f32>(nation->home_coordinate.y) - 6 + rand() % 12,
-                static_cast<f32>(nation->home_coordinate.z) + 4,
+                static_cast<f32>(nation.home_coordinate.x) - 6 + rand() % 12,
+                static_cast<f32>(nation.home_coordinate.y) - 6 + rand() % 12,
+                static_cast<f32>(nation.home_coordinate.z) + 4,
             };
 
             const vec3 rotation = {0.0f, 0.0f, static_cast<f32>(rand() % 360)};
@@ -80,10 +89,12 @@ init_agents(Population& population, Work& work)
             work_add_act(work, agent, ActType::wander, act_state);
 
             LOG_INFO(
-                "Generated %s Agent, ID: %i at (%.1f %.1f %.1f)",
-                NATION_TYPE_STRING[static_cast<u8>(agent.nation_type)],
+                "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",
+                NATION_TYPE_STRING[nation_type_index],
                 agent.actor_id,
-                agent.position.x, agent.position.y, agent.position.z
+                agent.position.x, 
+                agent.position.y, 
+                agent.position.z
             );
         }
     }

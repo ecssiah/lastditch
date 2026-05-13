@@ -9,11 +9,11 @@ const char* ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =
     FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_STRINGS)
 };
 
-i32 actor_type_index_from_string(const char* actor_type_string)
+i32 actor_type_index_from_string(const std::string& actor_type_string)
 {
     for (i32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
     {
-        if (strcmp(actor_type_string, ACTOR_TYPE_STRING[actor_type_index]) == 0)
+        if (actor_type_string == ACTOR_TYPE_STRING[actor_type_index])
         {
             return actor_type_index;
         }

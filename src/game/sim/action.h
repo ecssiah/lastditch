@@ -7,7 +7,7 @@ constexpr i32 ACTION_QUEUE_CAPACITY = 1u << 6;
 
 struct Actor;
 
-enum class ActionType
+enum class ActionType : u8
 {
     move,
     rotate,

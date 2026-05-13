@@ -12,7 +12,7 @@ constexpr f32 EPSILON = 1e-5f;
     DO(y)                                                   \
     DO(z)                                                   \
 
-enum class axis
+enum class axis : u8
 {
     FOR_LIST_AXIS(DEFINE_ENUM_VARIANTS)
 };
@@ -142,7 +142,6 @@ struct mat4
     }
 };
 
-// TODO: Make consistent with other ranges
 struct ibounds2
 {
     ivec2 min;

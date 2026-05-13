@@ -129,7 +129,7 @@ struct Population;
   DO(vent_3)                                                                   \
   DO(vent_4)
 
-enum class BlockType
+enum class BlockType : u8
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_VARIANTS)
 };
@@ -172,7 +172,7 @@ struct BlockTypeList
   DO(s3)                                                                       \
   DO(se)
 
-enum class Section
+enum class Section : u8
 {
     FOR_LIST_SECTION(DEFINE_ENUM_VARIANTS)
 };

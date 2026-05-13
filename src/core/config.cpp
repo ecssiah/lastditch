@@ -56,10 +56,6 @@ ConfigData config_load(const std::string& config_path)
         {
             config_data.entry_vector.push_back(config_entry);
         }
-        else
-        {
-            LOG_WARN("Invalid config entry: %s", line.c_str());
-        }
     }
 
     return config_data;

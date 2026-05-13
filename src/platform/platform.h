@@ -25,7 +25,7 @@ constexpr f32 WINDOW_ASPECT_RATIO = static_cast<f32>(WINDOW_WIDTH) / static_cast
   DO(w)                                                                        \
   DO(q)
 
-enum class Button
+enum class Button : u8
 {
     FOR_LIST_BUTTON(DEFINE_ENUM_VARIANTS)
 };
