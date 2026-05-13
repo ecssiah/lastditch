@@ -2010,8 +2010,12 @@ place_content(World& world, i32 floor_number)
 }
 
 static void 
-draw_debug_info(Debug& debug, World& world)
+draw_debug_info(Debug& debug, const World& world)
 {
+    constexpr vec3 red = {1.0f, 0.0f, 0.0f};
+    constexpr vec3 green = {0.0f, 1.0f, 0.0f};
+    constexpr vec3 blue = {0.0f, 0.0f, 1.0f};
+    
     constexpr i32 debug_floor_number = TOWER_FLOOR_COUNT - 1;
 
     const EdgePool& edge_pool = world.edge_pool;
@@ -2022,12 +2026,19 @@ draw_debug_info(Debug& debug, World& world)
         const PoolID area_id = area_pool.active_array[pool_id];
         const Area& area = area_pool.area_array[area_id];
 
-        debug_add_box(
-            debug,
-            area.bounds.min.x, area.bounds.min.y, area.floor_number * FLOOR_SIZE_Z,
-            area.bounds.max.x, area.bounds.max.y, area.floor_number * FLOOR_SIZE_Z + 2.0f,
-            1.0f, 0.0f, 0.0f
-        );
+        const vec3 area_debug_min = {
+            static_cast<f32>(area.bounds.min.x), 
+            static_cast<f32>(area.bounds.min.y), 
+            static_cast<f32>(area.floor_number * FLOOR_SIZE_Z)
+        };
+        
+        const vec3 area_debug_max = {
+            static_cast<f32>(area.bounds.max.x), 
+            static_cast<f32>(area.bounds.max.y), 
+            area.floor_number * FLOOR_SIZE_Z + 2.0f
+        };
+        
+        debug_add_box(debug, area_debug_min, area_debug_max, red);
 
         for (i32 index = 0; index < static_cast<i32>(area.edge_id_count); ++index)
         {
@@ -2042,11 +2053,14 @@ draw_debug_info(Debug& debug, World& world)
                 static_cast<i32>(area.floor_number * FLOOR_SIZE_Z + 1),
             };
 
+            const vec3 edge_debug_min = {static_cast<f32>(door_position.x), static_cast<f32>(door_position.y), static_cast<f32>(door_position.z)};
+            const vec3 edge_debug_max = {door_position.x + 1.0f, door_position.y + 1.0f, door_position.z + 1.0f};
+            
             debug_add_box(
                 debug,
-                door_position.x, door_position.y, door_position.z,
-                door_position.x + 1, door_position.y + 1, door_position.z + 1,
-                0.0f, 1.0f, 0.0f
+                edge_debug_min,
+                edge_debug_max,
+                green
             );
         }
     }

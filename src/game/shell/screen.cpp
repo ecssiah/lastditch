@@ -1,17 +1,17 @@
 #include "screen.h"
 
+#include <cassert>
 #include <format>
 #include <glad/glad.h>
+#include <stb_image.h>
 
-#include "stb_image.h"
-
+#include "core/log.h"
 #include "game/sim/world.h"
 #include "game/shell/render.h"
 
-static void load_textures(Screen& screen, const char* textures_path)
+static void load_textures(Screen& screen, const std::string& textures_path)
 {
-    char path[512];
-    snprintf(path, sizeof(path), "%s/null_terminator.png", textures_path);
+    const std::string font_path = std::format("{}/null_terminator.png", textures_path);
 
     i32 width;
     i32 height;
@@ -19,13 +19,9 @@ static void load_textures(Screen& screen, const char* textures_path)
 
     stbi_set_flip_vertically_on_load(0);
 
-    u8* pixel_data_array = stbi_load(path, &width, &height, &channels, 0);
+    u8* pixel_data_array = stbi_load(font_path.c_str(), &width, &height, &channels, 0);
 
-    if (!pixel_data_array)
-    {
-        printf("Failed to load font texture: %s\n", path);
-        return;
-    }
+    assert(pixel_data_array != nullptr);
 
     glGenTextures(1, &screen.font_texture_id);
     glBindTexture(GL_TEXTURE_2D, screen.font_texture_id);
@@ -50,7 +46,7 @@ static void load_textures(Screen& screen, const char* textures_path)
     }
     else
     {
-        printf("Unsupported channel count: %d\n", channels);
+        LOG_ERROR("Unsupported channel count: %d", channels);
 
         stbi_image_free(pixel_data_array);
 
