@@ -24,14 +24,14 @@ get_range(const BoxCollider& box_collider, const vec3& position)
 
     for (i32 axis_index = 0; axis_index < 3; ++axis_index)
     {
-        if (range_result.min.elements[axis_index] < 0.0f)
+        if (range_result.min[axis_index] < 0.0f)
         {
-            range_result.min.elements[axis_index] = 0.0f;
+            range_result.min[axis_index] = 0.0f;
         }
 
-        if (range_result.max.elements[axis_index] > world_size)
+        if (range_result.max[axis_index] > world_size)
         {
-            range_result.max.elements[axis_index] = world_size;
+            range_result.max[axis_index] = world_size;
         }
     }
     
@@ -67,7 +67,7 @@ get_grid_overlap_from_range(const range3& bounds)
 
 static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time, World& world)
 {
-    if (actor.velocity.elements[static_cast<size_t>(axis)] == 0.0f)
+    if (actor.velocity[static_cast<size_t>(axis)] == 0.0f)
     {
         return;
     }
@@ -78,14 +78,14 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
 
     for (i32 axis_index = 0; axis_index < 3; ++axis_index)
     {
-        swept_bounds.min.elements[axis_index] = fminf(
-            actor_bounds.min.elements[axis_index],
-            actor_bounds.min.elements[axis_index] + step_delta_time * actor.velocity.elements[axis_index]
+        swept_bounds.min[axis_index] = fminf(
+            actor_bounds.min[axis_index],
+            actor_bounds.min[axis_index] + step_delta_time * actor.velocity[axis_index]
         );
 
-        swept_bounds.max.elements[axis_index] = fmaxf(
-            actor_bounds.max.elements[axis_index],
-            actor_bounds.max.elements[axis_index] + step_delta_time * actor.velocity.elements[axis_index]
+        swept_bounds.max[axis_index] = fmaxf(
+            actor_bounds.max[axis_index],
+            actor_bounds.max[axis_index] + step_delta_time * actor.velocity[axis_index]
         );
     }
 
@@ -93,31 +93,31 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
 
     const size_t axis_index = static_cast<size_t>(axis);
 
-    const f32 actor_min_prev = actor_bounds.min.elements[axis_index];
-    const f32 actor_max_prev = actor_bounds.max.elements[axis_index];
+    const f32 actor_min_prev = actor_bounds.min[axis_index];
+    const f32 actor_max_prev = actor_bounds.max[axis_index];
 
-    const f32 actor_min_next = actor_min_prev + step_delta_time * actor.velocity.elements[axis_index];
-    const f32 actor_max_next = actor_max_prev + step_delta_time * actor.velocity.elements[axis_index];
+    const f32 actor_min_next = actor_min_prev + step_delta_time * actor.velocity[axis_index];
+    const f32 actor_max_next = actor_max_prev + step_delta_time * actor.velocity[axis_index];
 
     const i32 axis_s = (axis_index + 1) % 3;
     const i32 axis_t = (axis_index + 2) % 3;
 
     b32 found = false;
-    f32 best = actor.velocity.elements[axis_index] > 0 ? INFINITY : -INFINITY;
+    f32 best = actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY;
 
     for (
-        i32 z = grid_overlap_bounds.min.elements[static_cast<size_t>(axis::z)]; 
-        z <= grid_overlap_bounds.max.elements[static_cast<size_t>(axis::z)]; 
+        i32 z = grid_overlap_bounds.min[static_cast<size_t>(axis::z)]; 
+        z <= grid_overlap_bounds.max[static_cast<size_t>(axis::z)]; 
         ++z
     ) {
         for (
-            i32 y = grid_overlap_bounds.min.elements[static_cast<size_t>(axis::y)]; 
-            y <= grid_overlap_bounds.max.elements[static_cast<size_t>(axis::y)]; 
+            i32 y = grid_overlap_bounds.min[static_cast<size_t>(axis::y)]; 
+            y <= grid_overlap_bounds.max[static_cast<size_t>(axis::y)]; 
             ++y
         ) {
             for (
-                i32 x = grid_overlap_bounds.min.elements[static_cast<size_t>(axis::x)]; 
-                x <= grid_overlap_bounds.max.elements[static_cast<size_t>(axis::x)]; 
+                i32 x = grid_overlap_bounds.min[static_cast<size_t>(axis::x)]; 
+                x <= grid_overlap_bounds.max[static_cast<size_t>(axis::x)]; 
                 ++x
             ) {
                 const ivec3 cell_coordinate = {x, y, z};
@@ -135,22 +135,22 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
                 }
 
                 if (
-                    actor_bounds.max.elements[axis_s] <= cell_coordinate.elements[axis_s] ||
-                    actor_bounds.min.elements[axis_s] >= cell_coordinate.elements[axis_s] + 1.0f
+                    actor_bounds.max[axis_s] <= cell_coordinate[axis_s] ||
+                    actor_bounds.min[axis_s] >= cell_coordinate[axis_s] + 1.0f
                 ) {
                     continue;
                 }
 
                 if (
-                    actor_bounds.max.elements[axis_t] <= cell_coordinate.elements[axis_t] ||
-                    actor_bounds.min.elements[axis_t] >= cell_coordinate.elements[axis_t] + 1.0f
+                    actor_bounds.max[axis_t] <= cell_coordinate[axis_t] ||
+                    actor_bounds.min[axis_t] >= cell_coordinate[axis_t] + 1.0f
                 ) {
                     continue;
                 }
 
-                if (actor.velocity.elements[axis_index] > 0)
+                if (actor.velocity[axis_index] > 0)
                 {
-                    const f32 block_min = cell_coordinate.elements[axis_index];
+                    const f32 block_min = cell_coordinate[axis_index];
 
                     if (
                         block_min >= actor_max_prev &&
@@ -163,7 +163,7 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
                 }
                 else
                 {
-                    const f32 block_max = cell_coordinate.elements[axis_index] + 1.0f;
+                    const f32 block_max = cell_coordinate[axis_index] + 1.0f;
 
                     if (
                         block_max <= actor_min_prev &&
@@ -180,13 +180,13 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
 
     if (found)
     {
-        if (actor.velocity.elements[axis_index] > 0)
+        if (actor.velocity[axis_index] > 0)
         {
-            actor.position.elements[axis_index] = best - actor.box_collider.radius.elements[axis_index];
+            actor.position[axis_index] = best - actor.box_collider.radius[axis_index];
         }
         else
         {
-            actor.position.elements[axis_index] = best + actor.box_collider.radius.elements[axis_index];
+            actor.position[axis_index] = best + actor.box_collider.radius[axis_index];
 
             if (axis == axis::z)
             {
@@ -194,7 +194,7 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
             }
         }
 
-        actor.velocity.elements[axis_index] = 0.0f;
+        actor.velocity[axis_index] = 0.0f;
     }
     else
     {

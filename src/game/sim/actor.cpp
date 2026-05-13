@@ -6,7 +6,7 @@
 
 const char* ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =
 {
-    FOR_LIST_ACTOR_TYPE(DEFINE_LIST_STRING)
+    FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_STRINGS)
 };
 
 i32 actor_type_index_from_string(const char* actor_type_string)

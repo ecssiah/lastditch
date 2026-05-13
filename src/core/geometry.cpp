@@ -207,7 +207,7 @@ operator*(const mat4& a, const mat4& b)
         {
             for (i32 i = 0; i < 4; ++i)
             {
-                result.elements[column][row] += a.elements[i][row] * b.elements[column][i];
+                result[column][row] += a[i][row] * b[column][i];
             }
         }
     }
@@ -220,13 +220,13 @@ mat4_translate(const mat4& a, const vec3& translation)
 {
     mat4 translation_matrix = {};
 
-    translation_matrix.elements[0][0] = 1.0f;
-    translation_matrix.elements[1][1] = 1.0f;
-    translation_matrix.elements[2][2] = 1.0f;
-    translation_matrix.elements[3][3] = 1.0f;
-    translation_matrix.elements[3][0] = translation.x;
-    translation_matrix.elements[3][1] = translation.y;
-    translation_matrix.elements[3][2] = translation.z;
+    translation_matrix[0][0] = 1.0f;
+    translation_matrix[1][1] = 1.0f;
+    translation_matrix[2][2] = 1.0f;
+    translation_matrix[3][3] = 1.0f;
+    translation_matrix[3][0] = translation.x;
+    translation_matrix[3][1] = translation.y;
+    translation_matrix[3][2] = translation.z;
 
     return a * translation_matrix;
 }
@@ -242,19 +242,19 @@ mat4_rotate(const mat4& a, const vec3& axis, f32 angle)
 
     mat4 rotation = {};
 
-    rotation.elements[0][0] = c + n.x * n.x * t;
-    rotation.elements[0][1] = n.x * n.y * t + n.z * s;
-    rotation.elements[0][2] = n.x * n.z * t - n.y * s;
+    rotation[0][0] = c + n.x * n.x * t;
+    rotation[0][1] = n.x * n.y * t + n.z * s;
+    rotation[0][2] = n.x * n.z * t - n.y * s;
 
-    rotation.elements[1][0] = n.y * n.x * t - n.z * s;
-    rotation.elements[1][1] = c + n.y * n.y * t;
-    rotation.elements[1][2] = n.y * n.z * t + n.x * s;
+    rotation[1][0] = n.y * n.x * t - n.z * s;
+    rotation[1][1] = c + n.y * n.y * t;
+    rotation[1][2] = n.y * n.z * t + n.x * s;
 
-    rotation.elements[2][0] = n.z * n.x * t + n.y * s;
-    rotation.elements[2][1] = n.z * n.y * t - n.x * s;
-    rotation.elements[2][2] = c + n.z * n.z * t;
+    rotation[2][0] = n.z * n.x * t + n.y * s;
+    rotation[2][1] = n.z * n.y * t - n.x * s;
+    rotation[2][2] = c + n.z * n.z * t;
 
-    rotation.elements[3][3] = 1.0f;
+    rotation[3][3] = 1.0f;
 
     return a * rotation;
 }
@@ -263,12 +263,12 @@ mat4
 orthographic_matrix(const f32 left, const f32 right, const f32 bottom, const f32 top, const f32 near, const f32 far)
 {
     mat4 result = {};
-    result.elements[0][0] = 2.0f / (right - left);
-    result.elements[1][1] = 2.0f / (top - bottom);
-    result.elements[2][2] = -2.0f / (far - near);
-    result.elements[3][0] = -(right + left) / (right - left);
-    result.elements[3][1] = -(top + bottom) / (top - bottom);
-    result.elements[3][2] = -(far + near) / (far - near);
+    result[0][0] = 2.0f / (right - left);
+    result[1][1] = 2.0f / (top - bottom);
+    result[2][2] = -2.0f / (far - near);
+    result[3][0] = -(right + left) / (right - left);
+    result[3][1] = -(top + bottom) / (top - bottom);
+    result[3][2] = -(far + near) / (far - near);
     
     return result;
 }
@@ -279,11 +279,11 @@ projection_matrix(const f32 fovy, const f32 aspect, const f32 near, const f32 fa
     const f32 tan_half_fovy = tan(fovy / 2.0f);
     
     mat4 result = {};
-    result.elements[0][0] = 1.0f / (aspect * tan_half_fovy);
-    result.elements[1][1] = 1.0f / (tan_half_fovy);
-    result.elements[2][2] = -(far + near) / (far - near);
-    result.elements[2][3] = -1.0f;
-    result.elements[3][2] = -(2.0f * far * near) / (far - near);
+    result[0][0] = 1.0f / (aspect * tan_half_fovy);
+    result[1][1] = 1.0f / (tan_half_fovy);
+    result[2][2] = -(far + near) / (far - near);
+    result[2][3] = -1.0f;
+    result[3][2] = -(2.0f * far * near) / (far - near);
 
     return result;
 }
@@ -297,17 +297,17 @@ look_at(const vec3 position, const vec3 target, const vec3 up)
 
     mat4 result = {};
 
-    result.elements[0][0] = right.x;
-    result.elements[1][0] = right.y;
-    result.elements[2][0] = right.z;
+    result[0][0] = right.x;
+    result[1][0] = right.y;
+    result[2][0] = right.z;
 
-    result.elements[0][1] = camera_up.x;
-    result.elements[1][1] = camera_up.y;
-    result.elements[2][1] = camera_up.z;
+    result[0][1] = camera_up.x;
+    result[1][1] = camera_up.y;
+    result[2][1] = camera_up.z;
 
-    result.elements[0][2] = -forward.x;
-    result.elements[1][2] = -forward.y;
-    result.elements[2][2] = -forward.z;
+    result[0][2] = -forward.x;
+    result[1][2] = -forward.y;
+    result[2][2] = -forward.z;
 
     result.elements[3][0] = -dot(right, position);
     result.elements[3][1] = -dot(camera_up, position);

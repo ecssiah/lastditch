@@ -26,6 +26,18 @@ struct vec2
 
         f32 elements[2];
     };
+
+    constexpr f32&
+    operator[](const i32 index)
+    {
+        return elements[index];
+    }
+
+    constexpr const f32&
+    operator[](const i32 index) const
+    {
+        return elements[index];
+    }
 };
 
 struct vec3
@@ -41,6 +53,18 @@ struct vec3
 
         f32 elements[3];
     };
+    
+    constexpr f32&
+    operator[](const i32 index)
+    {
+        return elements[index];
+    }
+
+    constexpr const f32&
+    operator[](const i32 index) const
+    {
+        return elements[index];
+    }
 };
 
 struct ivec2
@@ -55,6 +79,18 @@ struct ivec2
 
         i32 elements[2];
     };
+    
+    constexpr i32&
+    operator[](const i32 index)
+    {
+        return elements[index];
+    }
+
+    constexpr const i32&
+    operator[](const i32 index) const
+    {
+        return elements[index];
+    }
 };
 
 struct ivec3
@@ -69,12 +105,36 @@ struct ivec3
         };
 
         i32 elements[3];
-    };
+    };  
+    
+    constexpr i32&
+    operator[](const i32 index)
+    {
+        return elements[index];
+    }
+
+    constexpr const i32&
+    operator[](const i32 index) const
+    {
+        return elements[index];
+    }
 };
 
 struct mat4
 {
     f32 elements[4][4];
+        
+    constexpr f32*
+    operator[](const i32 index)
+    {
+        return elements[index];
+    }
+
+    constexpr const f32*
+    operator[](const i32 index) const
+    {
+        return elements[index];
+    }
 };
 
 // TODO: Make consistent with other ranges

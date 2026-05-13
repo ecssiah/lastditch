@@ -1,5 +1,5 @@
 #pragma once
 
-#define DEFINE_LIST_ENUMERATION(name) name,
-#define DEFINE_LIST_STRING(name) #name,
-#define DEFINE_ENUM_COUNT(name) +1
+#define DEFINE_ENUM_VARIANTS(label) label,
+#define DEFINE_ENUM_STRINGS(label) #label,
+#define DEFINE_ENUM_COUNT(label) +1

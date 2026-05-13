@@ -11,12 +11,12 @@
 
 const char* BLOCK_TYPE_STRING[BLOCK_TYPE_COUNT] =
 {
-    FOR_LIST_BLOCK_TYPE(DEFINE_LIST_STRING)
+    FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_STRINGS)
 };
 
 const char* SECTION_TYPE_STRING[SECTION_COUNT] =
 {
-    FOR_LIST_SECTION(DEFINE_LIST_STRING)
+    FOR_LIST_SECTION(DEFINE_ENUM_STRINGS)
 };
 
 const ivec2 SECTION_ORIGIN_ARRAY[SECTION_COUNT] =
@@ -1048,24 +1048,24 @@ layout_tower_areas(World& world)
 
                 const Area area_copy = area_pool.area_array[area_id];
 
-                const axis axis_split = area_copy.range.size.elements[static_cast<size_t>(axis::x)] > area_copy.range.size.elements[
+                const axis axis_split = area_copy.range.size[static_cast<size_t>(axis::x)] > area_copy.range.size[
                                             static_cast<size_t>(axis::y)]
                                             ? axis::x
                                             : axis::y;
                 
                 const i32 axis_split_value = static_cast<size_t>(axis_split);
 
-                if (area_copy.range.size.elements[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
+                if (area_copy.range.size[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
                 {
-                    const i32 split_size = area_copy.range.size.elements[axis_split_value] / 2 + (-2 + (rand() % 5));
+                    const i32 split_size = area_copy.range.size[axis_split_value] / 2 + (-2 + (rand() % 5));
 
                     Area area_a = area_copy;
                     Area area_b = area_copy;
 
-                    area_a.range.size.elements[axis_split_value] = split_size;
+                    area_a.range.size[axis_split_value] = split_size;
 
-                    area_b.range.position.elements[axis_split_value] = area_copy.range.position.elements[axis_split_value] + split_size;
-                    area_b.range.size.elements[axis_split_value] = area_copy.range.size.elements[axis_split_value] - split_size;
+                    area_b.range.position[axis_split_value] = area_copy.range.position[axis_split_value] + split_size;
+                    area_b.range.size[axis_split_value] = area_copy.range.size[axis_split_value] - split_size;
 
                     area_add(area_pool, area_a);
                     area_add(area_pool, area_b);

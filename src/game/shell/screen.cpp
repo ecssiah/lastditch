@@ -191,7 +191,7 @@ void screen_init(Shell& shell, Platform& platform)
         screen.u_projection_location, 
         1, 
         GL_FALSE, 
-        (f32*)shell_projection_matrix.elements
+        (f32*)shell_projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
