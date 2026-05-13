@@ -5,7 +5,7 @@
 #include "stb_image.h"
 
 #include "game/sim/world.h"
-#include "game/shell/gl_ext.h"
+#include "game/shell/render.h"
 
 static void load_textures(Screen& screen, const char* textures_path)
 {
@@ -164,8 +164,8 @@ void screen_init(Shell& shell, Platform& platform)
 {
     Screen& screen = shell.screen;
 
-    const GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
-    const GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
+    const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
+    const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
 
     screen.program_id = glCreateProgram();
 

@@ -110,8 +110,6 @@ ivec3 operator*(i32 scalar, const ivec3& a)
     };
 }
 
-
-
 f32 
 length(const vec2& a)
 {
@@ -310,11 +308,11 @@ look_at(const vec3 position, const vec3 target, const vec3 up)
     result[1][2] = -forward.y;
     result[2][2] = -forward.z;
 
-    result.elements[3][0] = -dot(right, position);
-    result.elements[3][1] = -dot(camera_up, position);
-    result.elements[3][2] = dot(forward, position);
+    result[3][0] = -dot(right, position);
+    result[3][1] = -dot(camera_up, position);
+    result[3][2] = dot(forward, position);
 
-    result.elements[3][3] = 1.0f;
+    result[3][3] = 1.0f;
 
     return result;
 }

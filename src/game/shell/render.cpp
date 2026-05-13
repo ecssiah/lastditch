@@ -10,7 +10,6 @@
 #include "game/sim/debug.h"
 #include "game/sim/population.h"
 #include "game/sim/world.h"
-#include "game/shell/gl_ext.h"
 #include "game/shell/shell.h"
 #include "game/shell/viewpoint.h"
 
@@ -79,6 +78,71 @@ const f32 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT][3] =
     {+1, +0, +0},
     {+0, -1, +0},
 };
+
+static const char* get_gl_error_string(GLenum err)
+{
+    switch (err)
+    {
+        case GL_INVALID_ENUM: return "GL_INVALID_ENUM";
+        case GL_INVALID_VALUE: return "GL_INVALID_VALUE";
+        case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION";
+        case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
+        case GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION";
+        default: return "UNKNOWN_ERROR";
+    }
+}
+
+static char* read_file(const char* path)
+{
+    FILE* file = fopen(path, "rb");
+
+    if (!file)
+    {
+        LOG_ERROR("Failed to open file: %s\n", path);
+        return NULL;
+    }
+
+    fseek(file, 0, SEEK_END);
+    const long size = ftell(file);
+
+    if (size < 0)
+    {
+        LOG_ERROR("File read file: %s\n", path);
+        return NULL;
+    }
+
+    rewind(file);
+
+    auto buffer = static_cast<char*>(malloc((size_t)size + 1));
+
+    if (!buffer)
+    {
+        fclose(file);
+        return NULL;
+    }
+
+    fread(buffer, 1, static_cast<size_t>(size), file);
+    buffer[size] = '\0';
+
+    fclose(file);
+
+    return buffer;
+}
+
+static void check_gl_error(const char* label)
+{
+    GLenum err;
+
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        LOG_ERROR(
+            "GL ERROR [%s]: %s (0x%x)\n",
+            label,
+            get_gl_error_string(err),
+            err
+        );
+    }
+}
 
 static mat4 get_projection_matrix()
 {
@@ -631,8 +695,8 @@ static void init_debug_render(Shell& shell)
 {
     DebugRender* debug_render = &shell.render.debug_render;
 
-    const GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
-    const GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
+    const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
+    const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
 
     debug_render->program_id = glCreateProgram();
 
@@ -662,8 +726,8 @@ static void init_voxel_render(Shell& shell, Sim& sim)
 {
     VoxelRender* voxel_render = &shell.render.voxel_render;
 
-    const GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
-    const GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
+    const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
+    const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
     voxel_render->program_id = glCreateProgram();
 
@@ -745,8 +809,8 @@ static void init_model_render(Shell& shell, Sim& sim)
 {
     ModelRender* model_render = &shell.render.model_render;
 
-    GLuint vert_shader = gl_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
-    GLuint frag_shader = gl_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
+    GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
+    GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
 
     model_render->program_id = glCreateProgram();
 
@@ -989,4 +1053,30 @@ void render_update(Shell& shell, Sim& sim)
     update_debug_render(&shell.render, sim);
     update_voxel_render(&shell.render);
     update_model_render(&shell.render, sim);
+}
+
+GLuint 
+render_compile_shader(GLenum type, const char* filepath)
+{
+    char* src_string = read_file(filepath);
+
+    const GLuint shader_id = glCreateShader(type);
+
+    glShaderSource(shader_id, 1, static_cast<const char* const*>(&src_string), NULL);
+    glCompileShader(shader_id);
+
+    GLint success;
+    glGetShaderiv(shader_id, GL_COMPILE_STATUS, &success);
+
+    if (!success)
+    {
+        GLchar info[512];
+        glGetShaderInfoLog(shader_id, 512, NULL, info);
+
+        LOG_ERROR("Shader error:\n%s\n", info);
+    }
+
+    free(src_string);
+
+    return shader_id;
 }

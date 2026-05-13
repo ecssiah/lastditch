@@ -66,8 +66,6 @@ target_sources(
     src/core/log.cpp
     src/core/macros.h
     src/core/types.h
-    src/game/shell/gl_ext.cpp
-    src/game/shell/gl_ext.h
     src/game/shell/render.cpp
     src/game/shell/render.h
     src/game/shell/screen.cpp
