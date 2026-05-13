@@ -368,7 +368,7 @@ get_up(const vec3& rotation)
 }
 
 ivec2 
-irange2_size(const irange2& a)
+ibounds2_size(const ibounds2& a)
 {
     return {
         a.max.x - a.min.x,
@@ -377,7 +377,7 @@ irange2_size(const irange2& a)
 }
 
 b32 
-irange2_overlaps(const irange2& a, const irange2& b)
+ibounds2_overlaps(const ibounds2& a, const ibounds2& b)
 {
     return !(
         a.max.x <= b.min.x ||
@@ -387,8 +387,8 @@ irange2_overlaps(const irange2& a, const irange2& b)
     );
 }
 
-irange2 
-irange2_intersection(const irange2& a, const irange2& b)
+ibounds2 
+ibounds2_intersection(const ibounds2& a, const ibounds2& b)
 {
     const ivec2 o_min = {
         max_i32(a.min.x, b.min.x),
@@ -406,17 +406,17 @@ irange2_intersection(const irange2& a, const irange2& b)
     };
 }
 
-std::vector<irange2> 
-irange2_subtract(const irange2& a, const irange2& b)
+std::vector<ibounds2> 
+ibounds2_subtract(const ibounds2& a, const ibounds2& b)
 {
-    std::vector<irange2> range_vector = std::vector<irange2>();
+    std::vector<ibounds2> range_vector = std::vector<ibounds2>();
 
-    if (!irange2_overlaps(a, b))
+    if (!ibounds2_overlaps(a, b))
     {
         return range_vector;
     }
 
-    const irange2 intersection = irange2_intersection(a, b);
+    const ibounds2 intersection = ibounds2_intersection(a, b);
 
     if (intersection.min.x > a.min.x)
     {

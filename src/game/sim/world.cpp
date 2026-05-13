@@ -718,9 +718,9 @@ place_area(World& world, Area& area)
         const i32 area_id = area_pool.active_array[pool_index];
         Area& area_test = area_pool.area_array[area_id];
 
-        if (irange2_overlaps(area_test.range, area.range))
+        if (ibounds2_overlaps(area_test.range, area.range))
         {
-            const std::vector<irange2> range_vector = irange2_subtract(area_test.range, area.range);
+            const std::vector<ibounds2> range_vector = ibounds2_subtract(area_test.range, area.range);
 
             for (i32 range_index = 0; range_index < range_vector.size(); ++range_index)
             {
@@ -1062,7 +1062,7 @@ layout_tower_areas(World& world)
                 const i32 area_id = area_pool.active_array[pool_index];
 
                 const Area area_copy = area_pool.area_array[area_id];
-                const ivec2 area_size = irange2_size(area_copy.range);
+                const ivec2 area_size = ibounds2_size(area_copy.range);
 
                 const axis axis_split =
                     area_size[static_cast<size_t>(axis::x)] > area_size[static_cast<size_t>(axis::y)]
@@ -1673,7 +1673,7 @@ calculate_area_edges(World& world, i32 floor_number)
 
             const AreaOverlap area_overlap = get_area_overlap(area_left, area_right);
             
-            const ivec2 area_overlap_size = irange2_size(area_overlap.range);
+            const ivec2 area_overlap_size = ibounds2_size(area_overlap.range);
 
             if (area_overlap_size.x > 0 && area_overlap_size.y > 0)
             {
@@ -1773,7 +1773,7 @@ construct_doors(World& world, const Area& area)
             area.area_id == area_edge->area_a_id ? area_edge->area_a_direction : area_edge->area_b_direction
         );
         
-        const ivec2 area_overlap_size = irange2_size(area_edge->area_overlap.range);
+        const ivec2 area_overlap_size = ibounds2_size(area_edge->area_overlap.range);
 
         if (area_overlap_size.x >= DOOR_MINIMUM_EDGE_SIZE)
         {
@@ -1867,7 +1867,7 @@ construct_doors(World& world, const Area& area)
 static void 
 construct_room(World& world, const Area& area)
 {
-    const ivec2 area_range_size = irange2_size(area.range); 
+    const ivec2 area_range_size = ibounds2_size(area.range); 
     
     world_set_block_type_box(
         world,
@@ -1889,7 +1889,7 @@ construct_room(World& world, const Area& area)
 static void 
 construct_elevator(World& world, const Area& area)
 {
-    const ivec2 area_range_size = irange2_size(area.range);
+    const ivec2 area_range_size = ibounds2_size(area.range);
     
     world_set_block_type_box(
         world,
@@ -1923,7 +1923,7 @@ construct_elevator(World& world, const Area& area)
 static void 
 construct_wireframe(World& world, const Area& area)
 {
-    const ivec2 area_range_size = irange2_size(area.range);
+    const ivec2 area_range_size = ibounds2_size(area.range);
     
     world_set_block_type_wireframe(
         world,
@@ -1983,7 +1983,7 @@ place_content(World& world, i32 floor_number)
 
         const BlockTypeList* content_block_type_list = &AREA_CONTENT_MASTER_LIST[content_level];
 
-        const ivec2 area_range_size = irange2_size(area.range);
+        const ivec2 area_range_size = ibounds2_size(area.range);
         
         const u32 stack_count = area_range_size.x * area_range_size.y / 14;
 
@@ -2034,7 +2034,7 @@ draw_debug_info(Debug& debug, World& world)
             const EdgeID edge_id = area.edge_id_array[index];
             const AreaEdge& area_edge = edge_pool.edge_array[edge_id];
 
-            const ivec2 area_overlap_range_size = irange2_size(area_edge.area_overlap.range);
+            const ivec2 area_overlap_range_size = ibounds2_size(area_edge.area_overlap.range);
             
             const ivec3 door_position = {
                 area_edge.area_overlap.range.min.x + area_overlap_range_size.x / 2,

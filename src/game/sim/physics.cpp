@@ -4,79 +4,54 @@
 #include "game/sim/actor.h"
 #include "game/sim/world.h"
 
-static range3 
-get_range(const BoxCollider& box_collider, const vec3& position)
+static bounds3 
+get_box_collider_bounds(const BoxCollider& box_collider, const vec3& position)
 {
-    range3 range_result = {
+    constexpr f32 world_size = WORLD_SIZE_IN_CELLS;
+    
+    return {
         {
-            position.x - box_collider.radius.x,
-            position.y - box_collider.radius.y,
-            position.z - box_collider.radius.z
+            std::max(0.0f, position.x - box_collider.radius.x),
+            std::max(0.0f, position.y - box_collider.radius.y),
+            std::max(0.0f, position.z - box_collider.radius.z)
         },
         {
-            position.x + box_collider.radius.x,
-            position.y + box_collider.radius.y,
-            position.z + box_collider.radius.z,
+            std::min(position.x + box_collider.radius.x, world_size),
+            std::min(position.y + box_collider.radius.y, world_size),
+            std::min(position.z + box_collider.radius.z, world_size),
         },
     };
-
-    constexpr f32 world_size = WORLD_SIZE_IN_CELLS;
-
-    for (i32 axis_index = 0; axis_index < 3; ++axis_index)
-    {
-        if (range_result.min[axis_index] < 0.0f)
-        {
-            range_result.min[axis_index] = 0.0f;
-        }
-
-        if (range_result.max[axis_index] > world_size)
-        {
-            range_result.max[axis_index] = world_size;
-        }
-    }
-    
-    return range_result;
 }
 
-static irange3 
-get_grid_overlap_from_range(const range3& bounds)
+static ibounds3 
+get_grid_overlap_of_ibounds(const bounds3& bounds)
 {
-    irange3 range_result = {
+    return {
         {
-            static_cast<i32>(floorf(bounds.min.x)),
-            static_cast<i32>(floorf(bounds.min.y)),
-            static_cast<i32>(floorf(bounds.min.z)),
+            std::max(0, static_cast<i32>(floorf(bounds.min.x))),
+            std::max(0, static_cast<i32>(floorf(bounds.min.y))),
+            std::max(0, static_cast<i32>(floorf(bounds.min.z))),
         },
         {
-            static_cast<i32>(ceilf(bounds.max.x)) - 1,
-            static_cast<i32>(ceilf(bounds.max.y)) - 1,
-            static_cast<i32>(ceilf(bounds.max.z)) - 1,
+            std::min(static_cast<i32>(ceilf(bounds.max.x)) - 1, WORLD_SIZE_IN_CELLS - 1),
+            std::min(static_cast<i32>(ceilf(bounds.max.y)) - 1, WORLD_SIZE_IN_CELLS - 1),
+            std::min(static_cast<i32>(ceilf(bounds.max.z)) - 1, WORLD_SIZE_IN_CELLS - 1),
         },
-    }; 
-
-    if (range_result.min.x < 0) range_result.min.x = 0;
-    if (range_result.min.y < 0) range_result.min.y = 0;
-    if (range_result.min.z < 0) range_result.min.z = 0;
-
-    if (range_result.max.x >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) range_result.max.x = WORLD_SIZE_IN_CELLS - 1;
-    if (range_result.max.y >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) range_result.max.y = WORLD_SIZE_IN_CELLS - 1;
-    if (range_result.max.z >= static_cast<i32>(WORLD_SIZE_IN_CELLS)) range_result.max.z = WORLD_SIZE_IN_CELLS - 1;
-    
-    return range_result;
+    };
 }
 
-static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time, World& world)
+static void resolve_axis_collisions(Actor& actor, axis axis, const f32 step_delta_time, World& world)
 {
     if (actor.velocity[static_cast<size_t>(axis)] == 0.0f)
     {
         return;
     }
 
-    range3 actor_bounds = get_range(actor.box_collider, actor.position);
+    bounds3 actor_bounds = get_box_collider_bounds(actor.box_collider, actor.position);
 
-    range3 swept_bounds;
-
-    for (i32 axis_index = 0; axis_index < 3; ++axis_index)
+    bounds3 swept_bounds;
+    
+    for (i32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
         swept_bounds.min[axis_index] = fminf(
             actor_bounds.min[axis_index],
@@ -89,9 +64,9 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
         );
     }
 
-    const irange3 grid_overlap_bounds = get_grid_overlap_from_range(swept_bounds);
+    const ibounds3 grid_overlap_bounds = get_grid_overlap_of_ibounds(swept_bounds);
 
-    const size_t axis_index = static_cast<size_t>(axis);
+    const i32 axis_index = static_cast<size_t>(axis);
 
     const f32 actor_min_prev = actor_bounds.min[axis_index];
     const f32 actor_max_prev = actor_bounds.max[axis_index];
@@ -99,27 +74,22 @@ static void resolve_axis_collisions(Actor& actor, axis axis, f32 step_delta_time
     const f32 actor_min_next = actor_min_prev + step_delta_time * actor.velocity[axis_index];
     const f32 actor_max_next = actor_max_prev + step_delta_time * actor.velocity[axis_index];
 
-    const i32 axis_s = (axis_index + 1) % 3;
-    const i32 axis_t = (axis_index + 2) % 3;
+    const i32 axis_s = (axis_index + 1) % AXIS_COUNT;
+    const i32 axis_t = (axis_index + 2) % AXIS_COUNT;
 
     b32 found = false;
     f32 best = actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY;
 
-    for (
-        i32 z = grid_overlap_bounds.min[static_cast<size_t>(axis::z)]; 
-        z <= grid_overlap_bounds.max[static_cast<size_t>(axis::z)]; 
-        ++z
-    ) {
-        for (
-            i32 y = grid_overlap_bounds.min[static_cast<size_t>(axis::y)]; 
-            y <= grid_overlap_bounds.max[static_cast<size_t>(axis::y)]; 
-            ++y
-        ) {
-            for (
-                i32 x = grid_overlap_bounds.min[static_cast<size_t>(axis::x)]; 
-                x <= grid_overlap_bounds.max[static_cast<size_t>(axis::x)]; 
-                ++x
-            ) {
+    constexpr i32 axis_z_index = static_cast<i32>(axis::z);
+    constexpr i32 axis_y_index = static_cast<i32>(axis::y);
+    constexpr i32 axis_x_index = static_cast<i32>(axis::x);
+    
+    for (i32 z = grid_overlap_bounds.min[axis_z_index]; z <= grid_overlap_bounds.max[axis_z_index]; ++z) 
+    {
+        for (i32 y = grid_overlap_bounds.min[axis_y_index]; y <= grid_overlap_bounds.max[axis_y_index]; ++y) 
+        {
+            for (i32 x = grid_overlap_bounds.min[axis_x_index]; x <= grid_overlap_bounds.max[axis_x_index]; ++x) 
+            {
                 const ivec3 cell_coordinate = {x, y, z};
 
                 const Cell* cell = world_get_cell(world, x, y, z);

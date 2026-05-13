@@ -36,7 +36,7 @@ struct Area
     AreaID area_id;
     i32 floor_number;
 
-    irange2 range;
+    ibounds2 range;
 
     i32 edge_id_count;
     EdgeID edge_id_array[AREA_EDGE_MAX];
@@ -44,7 +44,7 @@ struct Area
 
 struct AreaOverlap
 {
-    irange2 range;
+    ibounds2 range;
     Direction direction;
 };
 

@@ -1,18 +1,23 @@
 #pragma once
 
-#include <algorithm>
 #include <vector>
 
+#include "core/macros.h"
 #include "core/types.h"
 
 constexpr f32 EPSILON = 1e-5f;
 
+#define FOR_LIST_AXIS(DO)                                   \
+    DO(x)                                                   \
+    DO(y)                                                   \
+    DO(z)                                                   \
+
 enum class axis
 {
-    x, 
-    y, 
-    z,
+    FOR_LIST_AXIS(DEFINE_ENUM_VARIANTS)
 };
+
+constexpr i32 AXIS_COUNT = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
 
 struct vec2
 {
@@ -138,29 +143,33 @@ struct mat4
 };
 
 // TODO: Make consistent with other ranges
-struct irange2
+struct ibounds2
 {
     ivec2 min;
     ivec2 max;
 };
 
-struct irange3
+struct ibounds3
 {
     ivec3 min;
     ivec3 max;
 };
 
-struct range2
+struct bounds2
 {
     vec2 min;
     vec2 max;
 };
 
-struct range3
+struct bounds3
 {
     vec3 min;
     vec3 max;
 };
+
+constexpr vec3 UNIT_X = {1.0f, 0.0f, 0.0f};
+constexpr vec3 UNIT_Y = {0.0f, 1.0f, 0.0f};
+constexpr vec3 UNIT_Z = {0.0f, 0.0f, 1.0f};
 
 constexpr i32 
 min_i32(i32 a, i32 b)
@@ -223,10 +232,6 @@ mat4_diagonal(const f32 scalar)
     };
 }
 
-constexpr vec3 UNIT_X = {1.0f, 0.0f, 0.0f};
-constexpr vec3 UNIT_Y = {0.0f, 1.0f, 0.0f};
-constexpr vec3 UNIT_Z = {0.0f, 0.0f, 1.0f};
-
 vec2 operator+(const vec2& a, const vec2& b);
 vec3 operator+(const vec3& a, const vec3& b);
 ivec2 operator+(const ivec2& a, const ivec2& b);
@@ -272,10 +277,10 @@ vec3 get_forward(const vec3& rotation);
 vec3 get_right(const vec3& rotation);
 vec3 get_up(const vec3& rotation);
 
-ivec2 irange2_position(const irange2& a);
-ivec2 irange2_size(const irange2& a);
+ivec2 ibounds2_position(const ibounds2& a);
+ivec2 ibounds2_size(const ibounds2& a);
 
-b32 irange2_overlaps(const irange2& a, const irange2& b);
-irange2 irange2_intersection(const irange2& a, const irange2& b);
+b32 ibounds2_overlaps(const ibounds2& a, const ibounds2& b);
+ibounds2 ibounds2_intersection(const ibounds2& a, const ibounds2& b);
 
-std::vector<irange2> irange2_subtract(const irange2& a, const irange2& b);
+std::vector<ibounds2> ibounds2_subtract(const ibounds2& a, const ibounds2& b);
