@@ -66,7 +66,7 @@ static void resolve_axis_collisions(Actor& actor, axis axis, const f32 step_delt
 
     const ibounds3 grid_overlap_bounds = get_grid_overlap_of_ibounds(swept_bounds);
 
-    const i32 axis_index = static_cast<size_t>(axis);
+    const i32 axis_index = static_cast<i32>(axis);
 
     const f32 actor_min_prev = actor_bounds.min[axis_index];
     const f32 actor_max_prev = actor_bounds.max[axis_index];
@@ -168,7 +168,7 @@ static void resolve_axis_collisions(Actor& actor, axis axis, const f32 step_delt
     }
     else
     {
-        actor.position.elements[axis_index] += step_delta_time * actor.velocity.elements[axis_index];
+        actor.position[axis_index] += step_delta_time * actor.velocity[axis_index];
     }
 }
 
@@ -181,26 +181,22 @@ integrate(Actor& actor, World& world)
     {
         constexpr i32 axis_index = static_cast<i32>(axis::z);
         
-        if (actor.velocity.elements[static_cast<size_t>(axis::z)] <= 0.0f)
+        f32 dz;
+        
+        if (actor.velocity[axis_index] <= 0.0f)
         {
-            const f32 dz = world.delta_time * FALLING_GRAVITY_MODIFIER * world.gravity.elements[axis_index];
-            
-            actor.velocity.elements[axis_index] = std::clamp(
-                actor.velocity.elements[axis_index] + dz, 
-                -MAX_VELOCITY, 
-                MAX_VELOCITY
-            );
+            dz = world.delta_time * FALLING_GRAVITY_MODIFIER * world.gravity[axis_index];
         }
         else
         {
-            const f32 dz = world.delta_time * RISING_GRAVITY_MODIFIER * world.gravity.elements[axis_index];
-            
-            actor.velocity.elements[axis_index] = std::clamp(
-                actor.velocity.elements[axis_index] + dz,
-                -MAX_VELOCITY,
-                MAX_VELOCITY
-            );
+            dz = world.delta_time * RISING_GRAVITY_MODIFIER * world.gravity[axis_index];
         }
+        
+        actor.velocity[axis_index] = std::clamp(
+            actor.velocity[axis_index] + dz, 
+            -MAX_VELOCITY, 
+            MAX_VELOCITY
+        );
     }
 
     if (actor.box_collider.collision_enabled)
@@ -247,6 +243,5 @@ physics_update_actor(Actor& actor, World& world)
     case MovementType::debug: 
         integrate(actor, world);
         break;
-    default: break;
     }
 }

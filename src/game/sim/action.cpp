@@ -3,15 +3,15 @@
 #include "core/log.h"
 #include "game/sim/actor.h"
 
-static void apply_move_action(Actor& judge, Action& action)
+static void apply_move_action(Actor& judge, const Action& action)
 {
-    vec3 velocity_forward = vec3_broadcast(0.0f);
-    vec3 velocity_right = vec3_broadcast(0.0f);
-    vec3 velocity_up = vec3_broadcast(0.0f);
-
     const vec3 judge_forward = get_forward(judge.rotation);
     const vec3 judge_right = get_right(judge.rotation);
 
+    vec3 velocity_forward;
+    vec3 velocity_right;
+    vec3 velocity_up;
+    
     switch (judge.movement_type)
     {
     case MovementType::ground:
@@ -45,7 +45,7 @@ static void apply_move_action(Actor& judge, Action& action)
     }
 }
 
-static void apply_rotate_action(Actor& judge, Action& action)
+static void apply_rotate_action(Actor& judge, const Action& action)
 {
     judge.rotation.z -= CAMERA_SENSITIVITY_X * action.action_value.x;
     judge.rotation.x -= CAMERA_SENSITIVITY_Y * action.action_value.y;
@@ -94,7 +94,7 @@ static void apply_debug_mode_action(Actor& judge)
     }
 }
 
-static void apply_action(Actor& judge, Action& action)
+static void apply_action(Actor& judge, const Action& action)
 {
     switch (action.type)
     {
@@ -110,7 +110,6 @@ static void apply_action(Actor& judge, Action& action)
     case ActionType::debug_mode: 
         apply_debug_mode_action(judge);
         break;
-    default: break;
     }
 }
 
@@ -128,7 +127,7 @@ static b32 action_pop(ActionQueue& action_queue, Action* out_action)
     return true;
 }
 
-void action_add(ActionQueue& action_queue, Action& action)
+void action_add(ActionQueue& action_queue, const Action& action)
 {
     const i32 tail_index_next = (action_queue.tail_index + 1) % ACTION_QUEUE_CAPACITY;
 
