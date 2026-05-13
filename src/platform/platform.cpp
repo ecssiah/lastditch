@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-static void init_glfw(Platform& platform, const char* window_title)
+static void init_glfw(Platform& platform)
 {
     const int glfw_result = glfwInit();
 
@@ -20,7 +20,7 @@ static void init_glfw(Platform& platform, const char* window_title)
     platform.window.height = WINDOW_HEIGHT;
     platform.window.aspect_ratio = WINDOW_ASPECT_RATIO;
 
-    platform.window.glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, window_title, nullptr, nullptr);
+    platform.window.glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Last Ditch", nullptr, nullptr);
 
     assert(platform.window.glfw_window != nullptr);
 
@@ -179,7 +179,7 @@ b32 platform_button_is_released(Platform& platform, Button button)
     );
 }
 
-void platform_init(Platform& platform, const char* window_title)
+void platform_init(Platform& platform)
 {
     platform.active = true;
 
@@ -188,7 +188,7 @@ void platform_init(Platform& platform, const char* window_title)
 
     platform.delta_time = 0.0;
 
-    init_glfw(platform, window_title);
+    init_glfw(platform);
     init_buttons(platform);
     init_mouse(platform);
 }

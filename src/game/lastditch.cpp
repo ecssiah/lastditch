@@ -10,7 +10,7 @@ static Sim sim;
 
 int main()
 {
-    platform_init(platform, "Last Ditch");
+    platform_init(platform);
     shell_init(shell);
 
     sim_init(sim);
@@ -21,11 +21,11 @@ int main()
     while (platform.active)
     {
         platform_begin_frame(platform);
+        
         shell_update(platform, sim);
-
         sim_update(sim);
-
         shell_present(shell, sim);
+        
         platform_end_frame(platform);
     }
 
