@@ -33,9 +33,9 @@ enum class MovementType
 constexpr i32 MOVEMENT_TYPE_COUNT = FOR_LIST_MOVEMENT_TYPE(DEFINE_ENUM_COUNT);
 
 #define FOR_LIST_ACTOR_TYPE(DO)                                                \
-  DO(none)                                                                     \
-  DO(judge)                                                                    \
-  DO(agent)
+    DO(none)                                                                     \
+    DO(judge)                                                                    \
+    DO(agent)
 
 enum ActorType
 {

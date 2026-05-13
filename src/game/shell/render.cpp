@@ -877,18 +877,34 @@ update_debug_render(Render& render, const Sim& sim)
 
     DebugGpuData debug_gpu_data = {};
     
-    for (i32 debug_line_index = 0; debug_line_index < sim.debug.line_count; ++debug_line_index)
+    for (i32 debug_line_index = 0; debug_line_index < sim.debug.line_vector.size(); ++debug_line_index)
     {
-        const DebugLine& debug_line = sim.debug.line_array[debug_line_index];
+        const DebugLine& debug_line = sim.debug.line_vector[debug_line_index];
 
         const DebugVertex debug_vertex_a = {
-            {debug_line.position_a.x, debug_line.position_a.y, debug_line.position_a.z},
-            {debug_line.color.x, debug_line.color.y, debug_line.color.z},
+            {
+                debug_line.position_a.x, 
+                debug_line.position_a.y, 
+                debug_line.position_a.z
+            },
+            {
+                debug_line.color.x, 
+                debug_line.color.y, 
+                debug_line.color.z
+            },
         };
 
         const DebugVertex debug_vertex_b = {
-            {debug_line.position_b.x, debug_line.position_b.y, debug_line.position_b.z},
-            {debug_line.color.x, debug_line.color.y, debug_line.color.z},
+            {
+                debug_line.position_b.x, 
+                debug_line.position_b.y, 
+                debug_line.position_b.z
+            },
+            {
+                debug_line.color.x, 
+                debug_line.color.y, 
+                debug_line.color.z
+            },
         };
 
         debug_gpu_data.debug_vertex_vector.push_back(debug_vertex_a);

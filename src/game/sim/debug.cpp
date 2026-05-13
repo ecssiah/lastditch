@@ -2,59 +2,46 @@
 
 #include <cstdlib>
 
-void debug_draw_line(Debug& debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 r, f32 g, f32 b)
+void debug_add_line(Debug& debug, f32 ax, f32 ay, f32 az, f32 bx, f32 by, f32 bz, f32 r, f32 g, f32 b)
 {
-    if (debug.line_count >= debug.line_capacity)
-    {
-        return;
-    }
-
-    DebugLine& debug_line = debug.line_array[debug.line_count++];
-
-    debug_line.position_a.x = ax;
-    debug_line.position_a.y = ay;
-    debug_line.position_a.z = az;
-
-    debug_line.position_b.x = bx;
-    debug_line.position_b.y = by;
-    debug_line.position_b.z = bz;
-
-    debug_line.color.x = r;
-    debug_line.color.y = g;
-    debug_line.color.z = b;
+    DebugLine debug_line = {
+        .position_a = { ax, ay, az },
+        .position_b = { bx, by, bz },
+        .color = { r, g, b },
+    };
+    
+    debug.line_vector.push_back(debug_line);
 }
 
-void debug_draw_box(Debug& debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f32 max_y, f32 max_z, f32 r, f32 g, f32 b)
+void debug_add_box(Debug& debug, f32 min_x, f32 min_y, f32 min_z, f32 max_x, f32 max_y, f32 max_z, f32 r, f32 g, f32 b)
 {
-    debug_draw_line(debug, min_x, min_y, min_z, max_x, min_y, min_z, r, g, b);
-    debug_draw_line(debug, max_x, min_y, min_z, max_x, max_y, min_z, r, g, b);
-    debug_draw_line(debug, max_x, max_y, min_z, min_x, max_y, min_z, r, g, b);
-    debug_draw_line(debug, min_x, max_y, min_z, min_x, min_y, min_z, r, g, b);
+    debug_add_line(debug, min_x, min_y, min_z, max_x, min_y, min_z, r, g, b);
+    debug_add_line(debug, max_x, min_y, min_z, max_x, max_y, min_z, r, g, b);
+    debug_add_line(debug, max_x, max_y, min_z, min_x, max_y, min_z, r, g, b);
+    debug_add_line(debug, min_x, max_y, min_z, min_x, min_y, min_z, r, g, b);
 
-    debug_draw_line(debug, min_x, min_y, max_z, max_x, min_y, max_z, r, g, b);
-    debug_draw_line(debug, max_x, min_y, max_z, max_x, max_y, max_z, r, g, b);
-    debug_draw_line(debug, max_x, max_y, max_z, min_x, max_y, max_z, r, g, b);
-    debug_draw_line(debug, min_x, max_y, max_z, min_x, min_y, max_z, r, g, b);
+    debug_add_line(debug, min_x, min_y, max_z, max_x, min_y, max_z, r, g, b);
+    debug_add_line(debug, max_x, min_y, max_z, max_x, max_y, max_z, r, g, b);
+    debug_add_line(debug, max_x, max_y, max_z, min_x, max_y, max_z, r, g, b);
+    debug_add_line(debug, min_x, max_y, max_z, min_x, min_y, max_z, r, g, b);
 
-    debug_draw_line(debug, min_x, min_y, min_z, min_x, min_y, max_z, r, g, b);
-    debug_draw_line(debug, max_x, min_y, min_z, max_x, min_y, max_z, r, g, b);
-    debug_draw_line(debug, max_x, max_y, min_z, max_x, max_y, max_z, r, g, b);
-    debug_draw_line(debug, min_x, max_y, min_z, min_x, max_y, max_z, r, g, b);
+    debug_add_line(debug, min_x, min_y, min_z, min_x, min_y, max_z, r, g, b);
+    debug_add_line(debug, max_x, min_y, min_z, max_x, min_y, max_z, r, g, b);
+    debug_add_line(debug, max_x, max_y, min_z, max_x, max_y, max_z, r, g, b);
+    debug_add_line(debug, min_x, max_y, min_z, min_x, max_y, max_z, r, g, b);
 }
 
 void debug_reset(Debug& debug)
 {
-    debug.line_count = 0;
+    debug.line_vector.clear();
 }
 
 void debug_init(Debug& debug)
 {
-    debug.line_count = 0;
-    debug.line_capacity = DEBUG_LINE_MAX;
-    debug.line_array = static_cast<DebugLine*>(malloc(debug.line_capacity * sizeof(DebugLine)));
+
 }
 
 void debug_close(Debug& debug)
 {
-    free(debug.line_array);
+
 }

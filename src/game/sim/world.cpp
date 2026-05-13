@@ -2022,7 +2022,7 @@ draw_debug_info(Debug& debug, World& world)
         const PoolID area_id = area_pool.active_array[pool_id];
         const Area& area = area_pool.area_array[area_id];
 
-        debug_draw_box(
+        debug_add_box(
             debug,
             area.range.min.x, area.range.min.y, area.floor_number * FLOOR_SIZE_Z,
             area.range.max.x, area.range.max.y, area.floor_number * FLOOR_SIZE_Z + 2.0f,
@@ -2042,7 +2042,7 @@ draw_debug_info(Debug& debug, World& world)
                 static_cast<i32>(area.floor_number * FLOOR_SIZE_Z + 1),
             };
 
-            debug_draw_box(
+            debug_add_box(
                 debug,
                 door_position.x, door_position.y, door_position.z,
                 door_position.x + 1, door_position.y + 1, door_position.z + 1,

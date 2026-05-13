@@ -51,7 +51,7 @@ struct Search
 
 struct Path
 {
-    u32 count;
+    i32 count;
 
     NodeID* node_id_array;
 };

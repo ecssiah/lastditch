@@ -84,9 +84,10 @@ static void update_time(Platform& platform)
 {
     platform.time_current = glfwGetTime();
 
-    platform.delta_time = (platform.time_previous > 0.0)
-                               ? static_cast<f32>(platform.time_current - platform.time_previous)
-                               : 0.0f;
+    platform.delta_time = 
+        platform.time_previous > 0.0
+           ? static_cast<f32>(platform.time_current - platform.time_previous)
+           : 0.0f;
 
     platform.time_previous = platform.time_current;
 }
@@ -124,8 +125,7 @@ static void update_buttons(Platform& platform)
             continue;
         }
 
-        input.button_array_current[button_index] = glfwGetMouseButton(platform.window.glfw_window, glfw_button_index) ==
-            GLFW_PRESS;
+        input.button_array_current[button_index] = glfwGetMouseButton(platform.window.glfw_window, glfw_button_index) == GLFW_PRESS;
     }
 }
 
@@ -152,31 +152,29 @@ static void update_pointer(Platform& platform)
     }
 }
 
-b32 platform_button_is_down(Platform& platform, Button button)
+b32 platform_button_is_down(const Platform& platform, Button button)
 {
     const i32 button_index = static_cast<i32>(button);
     
     return platform.input.button_array_current[button_index];
 }
 
-b32 platform_button_is_pressed(Platform& platform, Button button)
+b32 platform_button_is_pressed(const Platform& platform, Button button)
 {
     const i32 button_index = static_cast<i32>(button);
     
-    return (
+    return 
         platform.input.button_array_current[button_index] &&
-        !platform.input.button_array_previous[button_index]
-    );
+        !platform.input.button_array_previous[button_index];
 }
 
-b32 platform_button_is_released(Platform& platform, Button button)
+b32 platform_button_is_released(const Platform& platform, Button button)
 {
     const i32 button_index = static_cast<i32>(button);
     
-    return (
+    return 
         !platform.input.button_array_current[button_index] &&
-        platform.input.button_array_previous[button_index]
-    );
+        platform.input.button_array_previous[button_index];
 }
 
 void platform_init(Platform& platform)

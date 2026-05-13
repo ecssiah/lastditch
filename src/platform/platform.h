@@ -75,9 +75,9 @@ struct Platform
     Input input;
 };
 
-b32 platform_button_is_down(Platform& platform, Button key);
-b32 platform_button_is_pressed(Platform& platform, Button key);
-b32 platform_button_is_released(Platform& platform, Button key);
+b32 platform_button_is_down(const Platform& platform, Button key);
+b32 platform_button_is_pressed(const Platform& platform, Button key);
+b32 platform_button_is_released(const Platform& platform, Button key);
 
 void platform_init(Platform& platform);
 void platform_begin_frame(Platform& platform);

@@ -26,8 +26,8 @@ struct ActionQueue
 {
     Action action_array[ACTION_QUEUE_CAPACITY];
 
-    u32 head_index;
-    u32 tail_index;
+    i32 head_index;
+    i32 tail_index;
 };
 
 void action_add(ActionQueue& action_queue, Action& action);

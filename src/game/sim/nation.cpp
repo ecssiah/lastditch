@@ -1,7 +1,5 @@
 #include "game/sim/nation.h"
 
-#include <cstring>
-
 #include "game/sim/world.h"
 
 const char* NATION_TYPE_STRING[NATION_TYPE_COUNT] =
