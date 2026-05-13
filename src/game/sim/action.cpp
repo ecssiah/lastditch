@@ -1,6 +1,5 @@
 #include "game/sim/action.h"
 
-#include "world.h"
 #include "core/log.h"
 #include "game/sim/actor.h"
 
@@ -16,34 +15,33 @@ static void apply_move_action(Actor& judge, Action& action)
     switch (judge.movement_type)
     {
     case MovementType::ground:
-        {
-            const vec3 judge_forward_xy = {
-                judge_forward.x,
-                judge_forward.y,
-                0.0f
-            };
+    {
+        const vec3 judge_forward_xy = {
+            judge_forward.x,
+            judge_forward.y,
+            0.0f
+        };
 
-            velocity_right = action.action_value.x * judge_right;
-            velocity_forward = action.action_value.y * judge_forward_xy;
-            
-            vec3 move_velocity = judge.speed * normalize(velocity_right + velocity_forward);
-    
-            judge.velocity.x = move_velocity.x;
-            judge.velocity.y = move_velocity.y;
-
-            break;
-        }
-    case MovementType::debug:
-        {
-            velocity_right = action.action_value.x * judge_right;
-            velocity_forward = action.action_value.y * judge_forward;
-            velocity_up = action.action_value.z * UNIT_Z;
+        velocity_right = action.action_value.x * judge_right;
+        velocity_forward = action.action_value.y * judge_forward_xy;
         
-            judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
+        const vec3 move_velocity = judge.speed * normalize(velocity_right + velocity_forward);
 
-            break;
-        }
-    default: break;
+        judge.velocity.x = move_velocity.x;
+        judge.velocity.y = move_velocity.y;
+
+        break;
+    }
+    case MovementType::debug:
+    {
+        velocity_right = action.action_value.x * judge_right;
+        velocity_forward = action.action_value.y * judge_forward;
+        velocity_up = action.action_value.z * UNIT_Z;
+    
+        judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
+
+        break;
+    }
     }
 }
 
@@ -76,24 +74,23 @@ static void apply_debug_mode_action(Actor& judge)
     switch (judge.movement_type)
     {
     case MovementType::ground:
-        {
-            judge.movement_type = MovementType::debug;
-            judge.speed = JUDGE_DEFAULT_DEBUG_SPEED;
+    {
+        judge.movement_type = MovementType::debug;
+        judge.speed = JUDGE_DEFAULT_DEBUG_SPEED;
 
-            judge.box_collider.collision_enabled = false;
+        judge.box_collider.collision_enabled = false;
 
-            break;
-        }
+        break;
+    }
     case MovementType::debug:
-        {
-            judge.movement_type = MovementType::ground;
-            judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
+    {
+        judge.movement_type = MovementType::ground;
+        judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
 
-            judge.box_collider.collision_enabled = true;
+        judge.box_collider.collision_enabled = true;
 
-            break;
-        }
-    default: break;
+        break;
+    }
     }
 }
 

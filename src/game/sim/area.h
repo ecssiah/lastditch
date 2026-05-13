@@ -63,28 +63,28 @@ struct AreaEdge
 
 struct AreaPool
 {
-    u32 floor_number;
+    i32 floor_number;
 
-    u32 free_count;
+    i32 free_count;
     AreaID free_array[AREA_POOL_MAX];
 
-    u32 active_count;
+    i32 active_count;
     AreaID active_array[AREA_POOL_MAX];
 
-    u32 active_lookup[AREA_POOL_MAX];
+    i32 active_lookup[AREA_POOL_MAX];
 
     Area area_array[AREA_POOL_MAX];
 };
 
 struct EdgePool
 {
-    u32 free_count;
+    i32 free_count;
     EdgeID free_array[EDGE_POOL_MAX];
 
-    u32 active_count;
+    i32 active_count;
     EdgeID active_array[EDGE_POOL_MAX];
 
-    u32 active_lookup[EDGE_POOL_MAX];
+    i32 active_lookup[EDGE_POOL_MAX];
 
     AreaEdge edge_array[EDGE_POOL_MAX];
 };

@@ -140,8 +140,8 @@ struct mat4
 // TODO: Make consistent with other ranges
 struct irange2
 {
-    ivec2 position;
-    ivec2 size;
+    ivec2 min;
+    ivec2 max;
 };
 
 struct irange3
@@ -272,8 +272,8 @@ vec3 get_forward(const vec3& rotation);
 vec3 get_right(const vec3& rotation);
 vec3 get_up(const vec3& rotation);
 
-ivec2 irange2_max(const irange2& a);
-ivec2 irange2_min(const irange2& a);
+ivec2 irange2_position(const irange2& a);
+ivec2 irange2_size(const irange2& a);
 
 b32 irange2_overlaps(const irange2& a, const irange2& b);
 irange2 irange2_intersection(const irange2& a, const irange2& b);

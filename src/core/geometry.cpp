@@ -368,64 +368,42 @@ get_up(const vec3& rotation)
     return normalize(up);
 }
 
-
-ivec2
-irange2_max(const irange2& a)
-{
-    return {
-        a.position.x + a.size.x,
-        a.position.y + a.size.y,
-    };
-}
-
 ivec2 
-irange2_min(const irange2& a)
+irange2_size(const irange2& a)
 {
     return {
-        a.position.x,
-        a.position.y,
+        a.max.x - a.min.x,
+        a.max.y - a.min.y,
     };
 }
 
 b32 
 irange2_overlaps(const irange2& a, const irange2& b)
 {
-    const ivec2 left_min = irange2_min(a);
-    const ivec2 left_max = irange2_max(a);
-
-    const ivec2 right_min = irange2_min(b);
-    const ivec2 right_max = irange2_max(b);
-
     return !(
-        left_max.x <= right_min.x ||
-        right_max.x <= left_min.x ||
-        left_max.y <= right_min.y ||
-        right_max.y <= left_min.y
+        a.max.x <= b.min.x ||
+        b.max.x <= a.min.x ||
+        a.max.y <= b.min.y ||
+        b.max.y <= a.min.y
     );
 }
 
 irange2 
 irange2_intersection(const irange2& a, const irange2& b)
 {
-    const ivec2 left_min = irange2_min(a);
-    const ivec2 left_max = irange2_max(a);
-
-    const ivec2 right_min = irange2_min(b);
-    const ivec2 right_max = irange2_max(b);
-
     const ivec2 o_min = {
-        max_i32(left_min.x, right_min.x),
-        max_i32(left_min.y, right_min.y)
+        max_i32(a.min.x, b.min.x),
+        max_i32(a.min.y, b.min.y)
     };
 
     const ivec2 o_max = {
-        min_i32(left_max.x, right_max.x),
-        min_i32(left_max.y, right_max.y)
+        min_i32(a.max.x, b.max.x),
+        min_i32(a.max.y, b.max.y)
     };
 
     return {
         {o_min.x, o_min.y},
-        {o_max.x - o_min.x, o_max.y - o_min.y},
+        {o_max.x, o_max.y},
     };
 }
 
@@ -434,9 +412,6 @@ irange2_subtract(const irange2& a, const irange2& b)
 {
     std::vector<irange2> range_vector = std::vector<irange2>();
 
-    const ivec2 left_min = irange2_min(a);
-    const ivec2 left_max = irange2_max(a);
-
     if (!irange2_overlaps(a, b))
     {
         return range_vector;
@@ -444,38 +419,35 @@ irange2_subtract(const irange2& a, const irange2& b)
 
     const irange2 intersection = irange2_intersection(a, b);
 
-    const ivec2 intersection_min = irange2_min(intersection);
-    const ivec2 intersection_max = irange2_max(intersection);
-
-    if (intersection_min.x > left_min.x)
+    if (intersection.min.x > a.min.x)
     {
         range_vector.push_back({
-            .position = {left_min.x, left_min.y},
-            .size = {intersection_min.x - left_min.x, left_max.y - left_min.y}
+            .min = {a.min.x, a.min.y},
+            .max = {intersection.min.x, a.max.y},
         });
     }
 
-    if (intersection_max.x < left_max.x)
+    if (intersection.max.x < a.max.x)
     {
         range_vector.push_back({
-            .position = {intersection_max.x, left_min.y},
-            .size = {left_max.x - intersection_max.x, left_max.y - left_min.y}
+            .min = {intersection.max.x, a.min.y},
+            .max = {a.max.x, a.max.y}
         });
     }
 
-    if (intersection_min.y > left_min.y)
+    if (intersection.min.y > a.min.y)
     {
         range_vector.push_back({
-            .position = {intersection_min.x, left_min.y},
-            .size = {intersection_max.x - intersection_min.x, intersection_min.y - left_min.y}
+            .min = {intersection.min.x, a.min.y},
+            .max = {intersection.max.x, intersection.min.y}
         });
     }
 
-    if (intersection_max.y < left_max.y)
+    if (intersection.max.y < a.max.y)
     {
         range_vector.push_back({
-            .position = {intersection_min.x, intersection_max.y},
-            .size = {intersection_max.x - intersection_min.x, left_max.y - intersection_max.y}
+            .min = {intersection.min.x, intersection.max.y},
+            .max = {intersection.max.x, a.max.y}
         });
     }
 

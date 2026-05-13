@@ -264,5 +264,5 @@ u32 world_get_content_level(i32 z);
 void world_construct_area(World& world, const Area* area);
 
 void world_init(World& world, Debug& debug);
-void UNIT_Zdate(World& world, Population& population);
+void world_update(World& world, Population& population);
 void world_close(World& world);
