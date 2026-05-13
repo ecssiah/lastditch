@@ -651,7 +651,7 @@ static void init_debug_render(Shell& shell)
         debug_render->u_projection_location, 
         1,
         GL_FALSE,
-        (f32*)shell.render.viewpoint.projection_matrix[0]
+        shell.render.viewpoint.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -703,7 +703,7 @@ static void init_voxel_render(Shell& shell, Sim& sim)
         voxel_render->u_projection_location, 
         1, 
         GL_FALSE,
-        (f32*)shell.render.viewpoint.projection_matrix[0]
+        shell.render.viewpoint.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -781,7 +781,7 @@ static void init_model_render(Shell& shell, Sim& sim)
         shell.render.model_render.u_projection_location, 
         1, 
         GL_FALSE,
-        (f32*)shell.render.viewpoint.projection_matrix[0]
+        shell.render.viewpoint.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -828,7 +828,7 @@ static void update_debug_render(Render* render, Sim& sim)
         render->debug_render.u_view_location, 
         1, 
         GL_FALSE, 
-        (f32*)render->viewpoint.view_matrix[0]
+        render->viewpoint.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
@@ -861,7 +861,7 @@ static void update_debug_render(Render* render, Sim& sim)
         render->debug_render.u_model_location, 
         1, 
         GL_FALSE, 
-        (f32*)model_matrix[0]
+        model_matrix[0]
     );
 
     glBindVertexArray(debug_gpu_data.vao_id);
@@ -881,7 +881,7 @@ static void update_voxel_render(Render* render)
         render->voxel_render.u_view_location, 
         1, 
         GL_FALSE, 
-        (f32*)render->viewpoint.view_matrix[0]
+        render->viewpoint.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
@@ -907,7 +907,7 @@ static void update_voxel_render(Render* render)
             render->voxel_render.u_model_location, 
             1, 
             GL_FALSE, 
-            (f32*)model_matrix[0]
+            model_matrix[0]
         );
 
         glBindVertexArray(voxel_gpu_data->vao_id);
@@ -928,7 +928,7 @@ static void update_model_render(Render* render, Sim& sim)
         render->voxel_render.u_view_location, 
         1, 
         GL_FALSE, 
-        (f32*)render->viewpoint.view_matrix[0]
+        render->viewpoint.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
@@ -955,7 +955,7 @@ static void update_model_render(Render* render, Sim& sim)
             render->model_render.u_model_location, 
             1, 
             GL_FALSE, 
-            (f32*)model_matrix[0]
+            model_matrix[0]
         );
 
         glUniform1i(render->model_render.u_texture_layer_location, model_gpu_data->texture_layer);

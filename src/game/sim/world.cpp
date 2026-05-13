@@ -2012,7 +2012,7 @@ place_content(World& world, i32 floor_number)
 static void 
 draw_debug_info(Debug& debug, World& world)
 {
-    constexpr i32 debug_floor_number = TOWER_FLOOR_COUNT;
+    constexpr i32 debug_floor_number = TOWER_FLOOR_COUNT - 1;
 
     const EdgePool& edge_pool = world.edge_pool;
     const AreaPool& area_pool = world.area_pool_array[debug_floor_number];

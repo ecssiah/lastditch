@@ -269,6 +269,7 @@ orthographic_matrix(const f32 left, const f32 right, const f32 bottom, const f32
     result[3][0] = -(right + left) / (right - left);
     result[3][1] = -(top + bottom) / (top - bottom);
     result[3][2] = -(far + near) / (far - near);
+    result[3][3] = 1.0f;
     
     return result;
 }
