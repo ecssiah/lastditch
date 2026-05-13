@@ -93,7 +93,7 @@ operator*(const f32 scalar, const vec3& a)
     };
 }
 
-ivec2 operator*(i32 scalar, const ivec2& a)
+ivec2 operator*(const i32 scalar, const ivec2& a)
 {
     return {
         a.x * scalar,
@@ -101,12 +101,29 @@ ivec2 operator*(i32 scalar, const ivec2& a)
     };
 }
 
-ivec3 operator*(i32 scalar, const ivec3& a)
+ivec3 operator*(const i32 scalar, const ivec3& a)
 {
     return {
         a.x * scalar,
         a.y * scalar,
         a.z * scalar
+    };
+}
+
+vec2 to_vec2(const ivec2& a)
+{
+    return {
+        static_cast<f32>(a.x),
+        static_cast<f32>(a.y)
+    };
+}
+
+vec3 to_vec3(const ivec3& a)
+{
+    return {
+        static_cast<f32>(a.x),
+        static_cast<f32>(a.y),
+        static_cast<f32>(a.z)
     };
 }
 

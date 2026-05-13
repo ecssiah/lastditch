@@ -9,7 +9,8 @@ const char* ACTOR_TYPE_STRING[ACTOR_TYPE_COUNT] =
     FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_STRINGS)
 };
 
-i32 actor_type_index_from_string(const std::string& actor_type_string)
+i32 
+actor_type_index_from_string(const std::string& actor_type_string)
 {
     for (i32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
     {
@@ -22,7 +23,8 @@ i32 actor_type_index_from_string(const std::string& actor_type_string)
     return -1;
 }
 
-void actor_add(ActorPool& actor_pool, Actor& actor)
+void 
+actor_add(ActorPool& actor_pool, Actor& actor)
 {
     const ActorID actor_id = actor_pool.free_array[--actor_pool.free_count];
 
@@ -34,7 +36,8 @@ void actor_add(ActorPool& actor_pool, Actor& actor)
     assert(actor_pool.free_count + actor_pool.active_count == ACTOR_MAX);
 }
 
-// void actor_control(World *world, Actor *actor)
+// void 
+// actor_control(World *world, Actor *actor)
 // {
 //     switch (actor->actor_control.control_type)
 //     {

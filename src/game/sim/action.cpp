@@ -3,7 +3,8 @@
 #include "core/log.h"
 #include "game/sim/actor.h"
 
-static void apply_move_action(Actor& judge, const Action& action)
+static void 
+apply_move_action(Actor& judge, const Action& action)
 {
     const vec3 judge_forward = get_forward(judge.rotation);
     const vec3 judge_right = get_right(judge.rotation);
@@ -45,7 +46,8 @@ static void apply_move_action(Actor& judge, const Action& action)
     }
 }
 
-static void apply_rotate_action(Actor& judge, const Action& action)
+static void 
+apply_rotate_action(Actor& judge, const Action& action)
 {
     judge.rotation.z -= CAMERA_SENSITIVITY_X * action.action_value.x;
     judge.rotation.x -= CAMERA_SENSITIVITY_Y * action.action_value.y;
@@ -61,7 +63,8 @@ static void apply_rotate_action(Actor& judge, const Action& action)
     }
 }
 
-static void apply_jump_action(Actor& judge)
+static void 
+apply_jump_action(Actor& judge)
 {
     if (judge.is_grounded)
     {
@@ -69,7 +72,8 @@ static void apply_jump_action(Actor& judge)
     }
 }
 
-static void apply_debug_mode_action(Actor& judge)
+static void 
+apply_debug_mode_action(Actor& judge)
 {
     switch (judge.movement_type)
     {
@@ -94,7 +98,8 @@ static void apply_debug_mode_action(Actor& judge)
     }
 }
 
-static void apply_action(Actor& judge, const Action& action)
+static void 
+apply_action(Actor& judge, const Action& action)
 {
     switch (action.type)
     {
@@ -113,21 +118,23 @@ static void apply_action(Actor& judge, const Action& action)
     }
 }
 
-static b32 action_pop(ActionQueue& action_queue, Action* out_action)
+static Action*
+action_pop(ActionQueue& action_queue)
 {
     if (action_queue.tail_index == action_queue.head_index)
     {
-        return false;
+        return nullptr;
     }
 
-    *out_action = action_queue.action_array[action_queue.head_index];
+    Action* out_action = &action_queue.action_array[action_queue.head_index];
 
     action_queue.head_index = (action_queue.head_index + 1) % ACTION_QUEUE_CAPACITY;
 
-    return true;
+    return out_action;
 }
 
-void action_add(ActionQueue& action_queue, const Action& action)
+void 
+action_add(ActionQueue& action_queue, const Action& action)
 {
     const i32 tail_index_next = (action_queue.tail_index + 1) % ACTION_QUEUE_CAPACITY;
 
@@ -143,13 +150,13 @@ void action_add(ActionQueue& action_queue, const Action& action)
     action_queue.tail_index = tail_index_next;
 }
 
-void action_apply_queue(ActionQueue& action_queue, Actor& judge)
+void 
+action_apply_queue(ActionQueue& action_queue, Actor& judge)
 {
     while (action_queue.head_index != action_queue.tail_index)
     {
-        Action action;
-        action_pop(action_queue, &action);
+        const Action* action = action_pop(action_queue);
 
-        apply_action(judge, action);
+        apply_action(judge, *action);
     }
 }

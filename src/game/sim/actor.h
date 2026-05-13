@@ -67,7 +67,7 @@ struct Actor
     BoxCollider box_collider;
 
     i32 act_id_count;
-    ActID act_id_array[ACTOR_ACT_MAX];
+    std::array<ActID, ACTOR_ACT_MAX> act_id_array;
 };
 
 struct ActorPool

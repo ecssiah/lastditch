@@ -19,7 +19,8 @@ static const char* LOG_LEVEL_TO_STRING[5] =
     "FATAL"
 };
 
-void log_init()
+void 
+log_init()
 {
     auto directory_name = "log/";
 
@@ -33,7 +34,8 @@ void log_init()
     LOG_INFO("\n\nLOG INIT\n");
 }
 
-void log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...)
+void 
+log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...)
 {
     if (!LD_LOG_FILE)
     {
@@ -135,7 +137,8 @@ void log_message(LogLevel log_level, const char* file, int line, const char* fmt
     }
 }
 
-void log_close()
+void 
+log_close()
 {
     LOG_INFO("\n\nLOG CLOSE\n");
 

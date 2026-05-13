@@ -59,7 +59,11 @@ init_agents(Population& population, Work& work)
                 static_cast<f32>(nation.home_coordinate.z) + 4,
             };
 
-            const vec3 rotation = {0.0f, 0.0f, static_cast<f32>(rand() % 360)};
+            const vec3 rotation = {
+                0.0f, 
+                0.0f, 
+                static_cast<f32>(rand() % 360)
+            };
 
             Actor agent = {
                 .actor_type = ActorType::agent,
@@ -79,7 +83,7 @@ init_agents(Population& population, Work& work)
 
             actor_add(population.actor_pool, agent);
 
-            ActState act_state = {
+            const ActState act_state = {
                 .wander = {
                     .tick = rand() % 500,
                     .tick_limit = 500,

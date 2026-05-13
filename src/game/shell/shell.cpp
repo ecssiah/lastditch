@@ -6,7 +6,8 @@
 #include "game/shell/screen.h"
 #include "platform/platform.h"
 
-static void queue_move_action(Platform& platform, Sim& sim)
+static void 
+queue_move_action(Platform& platform, Sim& sim)
 {
     Action move_action = {
         .type = ActionType::move,
@@ -48,9 +49,10 @@ static void queue_move_action(Platform& platform, Sim& sim)
     action_add(sim.action_queue, move_action);
 }
 
-static void queue_rotate_action(Platform& platform, Sim& sim)
+static void 
+queue_rotate_action(Platform& platform, Sim& sim)
 {
-    Action rotate_action = {
+    const Action rotate_action = {
         .type = ActionType::rotate,
         .action_value = {
             static_cast<f32>(platform.input.pointer_delta_x),
@@ -62,9 +64,10 @@ static void queue_rotate_action(Platform& platform, Sim& sim)
     action_add(sim.action_queue, rotate_action);
 }
 
-static void queue_jump_action(Sim& sim)
+static void 
+queue_jump_action(Sim& sim)
 {
-    Action jump_action = {
+    const Action jump_action = {
         .type = ActionType::jump,
         .action_value = vec3_broadcast(1.0f),
     };
@@ -72,9 +75,10 @@ static void queue_jump_action(Sim& sim)
     action_add(sim.action_queue, jump_action);
 }
 
-static void queue_debug_mode_action(Sim& sim)
+static void 
+queue_debug_mode_action(Sim& sim)
 {
-    Action debug_action = {
+    const Action debug_action = {
         .type = ActionType::debug_mode,
         .action_value = vec3_broadcast( 1.0f),
     };
@@ -82,14 +86,16 @@ static void queue_debug_mode_action(Sim& sim)
     action_add(sim.action_queue, debug_action);
 }
 
-void shell_init(Shell& shell)
+void 
+shell_init(Shell& shell)
 {
     log_init();
 
     shell.active = true;
 }
 
-void shell_update(Platform& platform, Sim& sim)
+void 
+shell_update(Platform& platform, Sim& sim)
 {
     sim.world.delta_time = platform.delta_time;
 
@@ -111,13 +117,15 @@ void shell_update(Platform& platform, Sim& sim)
     }
 }
 
-void shell_present(Shell& shell, Sim& sim)
+void 
+shell_present(Shell& shell, Sim& sim)
 {
     render_update(shell, sim);
     screen_update(shell, sim);
 }
 
-void shell_close()
+void 
+shell_close()
 {
     log_close();
 }

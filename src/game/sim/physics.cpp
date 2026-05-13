@@ -40,7 +40,8 @@ get_grid_overlap_of_ibounds(const bounds3& bounds)
     };
 }
 
-static void resolve_axis_collisions(Actor& actor, axis axis, const f32 step_delta_time, World& world)
+static void 
+resolve_axis_collisions(Actor& actor, axis axis, const f32 step_delta_time, World& world)
 {
     if (actor.velocity[static_cast<size_t>(axis)] == 0.0f)
     {
@@ -104,17 +105,13 @@ static void resolve_axis_collisions(Actor& actor, axis axis, const f32 step_delt
                     continue;
                 }
 
-                if (
-                    actor_bounds.max[axis_s] <= cell_coordinate[axis_s] ||
-                    actor_bounds.min[axis_s] >= cell_coordinate[axis_s] + 1.0f
-                ) {
+                if (actor_bounds.max[axis_s] <= cell_coordinate[axis_s] || actor_bounds.min[axis_s] >= cell_coordinate[axis_s] + 1.0f) 
+                {
                     continue;
                 }
 
-                if (
-                    actor_bounds.max[axis_t] <= cell_coordinate[axis_t] ||
-                    actor_bounds.min[axis_t] >= cell_coordinate[axis_t] + 1.0f
-                ) {
+                if (actor_bounds.max[axis_t] <= cell_coordinate[axis_t] || actor_bounds.min[axis_t] >= cell_coordinate[axis_t] + 1.0f) 
+                {
                     continue;
                 }
 
@@ -122,11 +119,8 @@ static void resolve_axis_collisions(Actor& actor, axis axis, const f32 step_delt
                 {
                     const f32 block_min = cell_coordinate[axis_index];
 
-                    if (
-                        block_min >= actor_max_prev &&
-                        block_min <= actor_max_next &&
-                        block_min < best
-                    ) {
+                    if (block_min >= actor_max_prev && block_min <= actor_max_next && block_min < best) 
+                    {
                         best = block_min;
                         found = true;
                     }
@@ -135,11 +129,8 @@ static void resolve_axis_collisions(Actor& actor, axis axis, const f32 step_delt
                 {
                     const f32 block_max = cell_coordinate[axis_index] + 1.0f;
 
-                    if (
-                        block_max <= actor_min_prev &&
-                        block_max >= actor_min_next &&
-                        block_max > best
-                    ) {
+                    if (block_max <= actor_min_prev && block_max >= actor_min_next && block_max > best) 
+                    {
                         best = block_max;
                         found = true;
                     }
@@ -210,6 +201,7 @@ integrate(Actor& actor, World& world)
         const f32 max_move = fmaxf(move.x, fmaxf(move.y, move.z));
 
         i32 step_count = static_cast<i32>(ceilf(max_move));
+        
         if (step_count < 1)
         {
             step_count = 1;

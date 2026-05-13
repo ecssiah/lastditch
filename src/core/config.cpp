@@ -6,7 +6,8 @@
 #include "core/log.h"
 #include "core/types.h"
 
-static void strip_newline(std::string& line)
+static void 
+strip_newline(std::string& line)
 {
     while (!line.empty() && (line.back() == '\n' || line.back() == '\r'))
     {
@@ -14,7 +15,8 @@ static void strip_newline(std::string& line)
     }
 }
 
-static b32 parse_line(ConfigEntry& config_entry, std::string& line)
+static b32 
+parse_line(ConfigEntry& config_entry, std::string& line)
 {
     strip_newline(line);
 
@@ -38,7 +40,8 @@ static b32 parse_line(ConfigEntry& config_entry, std::string& line)
     return true;
 }
 
-ConfigData config_load(const std::string& config_path)
+ConfigData 
+config_load(const std::string& config_path)
 {
     ConfigData config_data = {};
 
@@ -61,7 +64,8 @@ ConfigData config_load(const std::string& config_path)
     return config_data;
 }
 
-void config_destroy(ConfigData& config_data)
+void 
+config_destroy(ConfigData& config_data)
 {
 
 }

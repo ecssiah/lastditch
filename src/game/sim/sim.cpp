@@ -1,8 +1,5 @@
 #include "game/sim/sim.h"
 
-#include <cstring>
-#include <ctime>
-
 #include "game/sim/debug.h"
 #include "game/sim/navigation.h"
 #include "game/sim/population.h"

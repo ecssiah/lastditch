@@ -246,6 +246,9 @@ vec3 operator*(f32 scalar, const vec3& a);
 ivec2 operator*(i32 scalar, const ivec2& a);
 ivec3 operator*(i32 scalar, const ivec3& a);
 
+vec2 to_vec2(const ivec2& a);
+vec3 to_vec3(const ivec3& a);
+
 f32 length(const vec3& a);
 f32 length(const vec2& a);
 

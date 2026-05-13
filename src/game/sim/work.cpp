@@ -46,7 +46,7 @@ seek_run(Sim& sim, Act& act, f32 delta_time)
 }
 
 ActID 
-work_add_act(Work& work, Actor& actor, ActType act_type, ActState act_state)
+work_add_act(Work& work, Actor& actor, const ActType act_type, const ActState act_state)
 {
     ActPool& act_pool = work.act_pool;
 
@@ -87,7 +87,7 @@ work_init(Work& work)
 }
 
 void 
-work_update(Work& work, Sim& sim, f32 delta_time)
+work_update(Work& work, Sim& sim, const f32 delta_time)
 {
     ActPool& act_pool = work.act_pool;
 

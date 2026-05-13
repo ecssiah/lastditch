@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/geometry.h"
 #include "core/macros.h"
 #include "core/types.h"
 
@@ -19,9 +20,9 @@ enum class Direction : u8
 constexpr i32 DIRECTION_COUNT = 0 FOR_LIST_DIRECTION(DEFINE_ENUM_COUNT);
 
 extern const char* DIRECTION_STRING[DIRECTION_COUNT];
-extern const f32 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT][3];
+extern const vec3 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT];
 
-Direction direction_opposite(const Direction* direction);
+Direction direction_opposite(const Direction& direction);
 
 constexpr Direction
 direction_from_mask(const u32 mask)

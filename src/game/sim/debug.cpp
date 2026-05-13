@@ -1,10 +1,9 @@
 #include "debug.h"
 
-#include <cstdlib>
-
-void debug_add_line(Debug& debug, const vec3& a, const vec3& b, const vec3& color)
+void 
+debug_add_line(Debug& debug, const vec3& a, const vec3& b, const vec3& color)
 {
-    DebugLine debug_line = {
+    const DebugLine debug_line = {
         .position_a = a,
         .position_b = b,
         .color = color,
@@ -13,7 +12,8 @@ void debug_add_line(Debug& debug, const vec3& a, const vec3& b, const vec3& colo
     debug.line_vector.push_back(debug_line);
 }
 
-void debug_add_box(Debug& debug, const vec3& min, const vec3& max, const vec3& color)
+void 
+debug_add_box(Debug& debug, const vec3& min, const vec3& max, const vec3& color)
 {
     const vec3 v000 = {min.x, min.y, min.z};
     const vec3 v100 = {max.x, min.y, min.z};
@@ -41,17 +41,20 @@ void debug_add_box(Debug& debug, const vec3& min, const vec3& max, const vec3& c
     debug_add_line(debug, v010, v011, color);
 }
 
-void debug_reset(Debug& debug)
+void 
+debug_reset(Debug& debug)
 {
     debug.line_vector.clear();
 }
 
-void debug_init(Debug& debug)
+void 
+debug_init(Debug& debug)
 {
 
 }
 
-void debug_close(Debug& debug)
+void 
+debug_close(Debug& debug)
 {
 
 }

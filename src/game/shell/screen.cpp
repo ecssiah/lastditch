@@ -9,7 +9,8 @@
 #include "game/sim/world.h"
 #include "game/shell/render.h"
 
-static void load_textures(Screen& screen, const std::string& textures_path)
+static void 
+load_textures(Screen& screen, const std::string& textures_path)
 {
     const std::string font_path = std::format("{}/null_terminator.png", textures_path);
 
@@ -74,7 +75,8 @@ static void load_textures(Screen& screen, const std::string& textures_path)
     stbi_image_free(pixel_data_array);
 }
 
-static void draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
+static void 
+draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
 {
     constexpr f32 scale = 2.0f;
 
@@ -146,7 +148,8 @@ static void draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 }
 
-void screen_init(Shell& shell, const Platform& platform)
+void 
+screen_init(Shell& shell, const Platform& platform)
 {
     Screen& screen = shell.screen;
 
@@ -224,7 +227,8 @@ void screen_init(Shell& shell, const Platform& platform)
     load_textures(screen, "assets/textures/font");
 }
 
-static void draw_debug_info(Shell& shell, Sim& sim)
+static void 
+draw_debug_info(Shell& shell, Sim& sim)
 {
     const Actor& judge = sim.population.actor_pool.actor_array[sim.population.judge_id];
 
@@ -316,7 +320,8 @@ static void draw_debug_info(Shell& shell, Sim& sim)
     draw_text(shell, movement_type_text, 20, 120);
 }
 
-void screen_update(Shell& shell, Sim& sim)
+void 
+screen_update(Shell& shell, Sim& sim)
 {
     const Screen& screen = shell.screen;
 
