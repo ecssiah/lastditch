@@ -58,26 +58,12 @@ target_sources(
     PRIVATE
     external/glad/src/gl.c
     external/stb/src/stb_image.c
-    src/core/config.h
-    src/core/config.cc
-    src/core/geometry.h
-    src/core/geometry.cc
-    src/core/log.h
-    src/core/log.cc
-    src/core/macros.h
-    src/core/types.h
-    src/app/app.h
-    src/app/app.cc
-    src/app/render.cc
-    src/app/render.h
-    src/app/screen.cc
-    src/app/screen.h
-    src/app/viewpoint.cc
-    src/app/viewpoint.h
-    src/app/actor.cc
-    src/app/actor.h
     src/app/action.cc
     src/app/action.h
+    src/app/actor.cc
+    src/app/actor.h
+    src/app/app.h
+    src/app/app.cc
     src/app/area.cc
     src/app/area.h
     src/app/debug.cc
@@ -92,10 +78,24 @@ target_sources(
     src/app/physics.h
     src/app/population.cc
     src/app/population.h
+    src/app/render.cc
+    src/app/render.h
+    src/app/screen.cc
+    src/app/screen.h
+    src/app/viewpoint.cc
+    src/app/viewpoint.h
     src/app/work.cc
     src/app/work.h
     src/app/world.cc
     src/app/world.h
+    src/core/config.h
+    src/core/config.cc
+    src/core/geometry.h
+    src/core/geometry.cc
+    src/core/log.h
+    src/core/log.cc
+    src/core/macros.h
+    src/core/types.h
     src/platform/input.cc
     src/platform/input.h
     src/platform/platform.cc
