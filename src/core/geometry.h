@@ -5,21 +5,22 @@
 #include "core/macros.h"
 #include "core/types.h"
 
-constexpr f32 EPSILON = 1e-5f;
+constexpr f32 epsilon = 1e-5f;
+constexpr f32 epsilon_squared = 1e-10f;
 
 #define FOR_LIST_AXIS(DO)                                   \
     DO(x)                                                   \
     DO(y)                                                   \
     DO(z)                                                   \
 
-enum class axis : u8
+enum class Axis : u8
 {
     FOR_LIST_AXIS(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr i32 AXIS_COUNT = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
+constexpr i32 axis_count = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
 
-struct vec2
+struct Vec2
 {
     union
     {
@@ -45,7 +46,7 @@ struct vec2
     }
 };
 
-struct vec3
+struct Vec3
 {
     union
     {
@@ -72,7 +73,7 @@ struct vec3
     }
 };
 
-struct ivec2
+struct IVec2
 {
     union
     {
@@ -98,7 +99,7 @@ struct ivec2
     }
 };
 
-struct ivec3
+struct IVec3
 {
     union
     {
@@ -125,7 +126,7 @@ struct ivec3
     }
 };
 
-struct mat4
+struct Mat4
 {
     f32 elements[4][4];
         
@@ -142,42 +143,42 @@ struct mat4
     }
 };
 
-struct ibounds2
+struct IBounds2
 {
-    ivec2 min;
-    ivec2 max;
+    IVec2 min;
+    IVec2 max;
 };
 
-struct ibounds3
+struct IBounds3
 {
-    ivec3 min;
-    ivec3 max;
+    IVec3 min;
+    IVec3 max;
 };
 
-struct bounds2
+struct Bounds2
 {
-    vec2 min;
-    vec2 max;
+    Vec2 min;
+    Vec2 max;
 };
 
-struct bounds3
+struct Bounds3
 {
-    vec3 min;
-    vec3 max;
+    Vec3 min;
+    Vec3 max;
 };
 
-constexpr vec3 UNIT_X = {1.0f, 0.0f, 0.0f};
-constexpr vec3 UNIT_Y = {0.0f, 1.0f, 0.0f};
-constexpr vec3 UNIT_Z = {0.0f, 0.0f, 1.0f};
+constexpr Vec3 unit_x = {1.0f, 0.0f, 0.0f};
+constexpr Vec3 unit_y = {0.0f, 1.0f, 0.0f};
+constexpr Vec3 unit_z = {0.0f, 0.0f, 1.0f};
 
 constexpr i32 
-min_i32(i32 a, i32 b)
+min_i32(const i32 a, const i32 b)
 {
     return a < b ? a : b;
 }
 
 constexpr i32 
-max_i32(i32 a, i32 b)
+max_i32(const i32 a, const i32 b)
 {
     return a > b ? a : b;
 }
@@ -194,31 +195,31 @@ to_degrees(const f32 radians)
     return radians * 57.295779513082323f;
 }
 
-constexpr vec2 
+constexpr Vec2 
 vec2_broadcast(const f32 scalar)
 {
     return {scalar, scalar};
 }
 
-constexpr vec3 
+constexpr Vec3 
 vec3_broadcast(const f32 scalar)
 {
     return {scalar, scalar, scalar};
 }
 
-constexpr ivec2 
+constexpr IVec2 
 ivec2_broadcast(const i32 scalar)
 {
     return {scalar, scalar};
 }
 
-constexpr ivec3 
+constexpr IVec3 
 ivec3_broadcast(const i32 scalar)
 {
     return {scalar, scalar, scalar};
 }
 
-constexpr mat4
+constexpr Mat4
 mat4_diagonal(const f32 scalar)
 {
     return {
@@ -231,58 +232,58 @@ mat4_diagonal(const f32 scalar)
     };
 }
 
-vec2 operator+(const vec2& a, const vec2& b);
-vec3 operator+(const vec3& a, const vec3& b);
-ivec2 operator+(const ivec2& a, const ivec2& b);
-ivec3 operator+(const ivec3& a, const ivec3& b);
+Vec2 operator+(const Vec2& a, const Vec2& b);
+Vec3 operator+(const Vec3& a, const Vec3& b);
+IVec2 operator+(const IVec2& a, const IVec2& b);
+IVec3 operator+(const IVec3& a, const IVec3& b);
 
-vec2 operator-(const vec2& a, const vec2& b);
-vec3 operator-(const vec3& a, const vec3& b);
-ivec2 operator-(const ivec2& a, const ivec2& b);
-ivec3 operator-(const ivec3& a, const ivec3& b);
+Vec2 operator-(const Vec2& a, const Vec2& b);
+Vec3 operator-(const Vec3& a, const Vec3& b);
+IVec2 operator-(const IVec2& a, const IVec2& b);
+IVec3 operator-(const IVec3& a, const IVec3& b);
 
-vec2 operator*(f32 scalar, const vec2& a);
-vec3 operator*(f32 scalar, const vec3& a);
-ivec2 operator*(i32 scalar, const ivec2& a);
-ivec3 operator*(i32 scalar, const ivec3& a);
+Vec2 operator*(f32 scalar, const Vec2& a);
+Vec3 operator*(f32 scalar, const Vec3& a);
+IVec2 operator*(i32 scalar, const IVec2& a);
+IVec3 operator*(i32 scalar, const IVec3& a);
 
-vec2 to_vec2(const ivec2& a);
-vec3 to_vec3(const ivec3& a);
+Vec2 to_vec2(const IVec2& a);
+Vec3 to_vec3(const IVec3& a);
 
-f32 length(const vec3& a);
-f32 length(const vec2& a);
+f32 length(const Vec3& a);
+f32 length(const Vec2& a);
 
-f32 length_squared(const vec3& a);
-f32 length_squared(const vec2& a);
+f32 length_squared(const Vec3& a);
+f32 length_squared(const Vec2& a);
 
-vec2 normalize(const vec2& a);
-vec3 normalize(const vec3& a);
+Vec2 normalize(const Vec2& a);
+Vec3 normalize(const Vec3& a);
 
-f32 dot(const vec2& a, const vec2& b);
-f32 dot(const vec3& a, const vec3& b);
+f32 dot(const Vec2& a, const Vec2& b);
+f32 dot(const Vec3& a, const Vec3& b);
 
-vec3 cross(const vec3& a, const vec3& b);
+Vec3 cross(const Vec3& a, const Vec3& b);
 
-mat4 operator*(const mat4& a, const mat4& b);
+Mat4 operator*(const Mat4& a, const Mat4& b);
 
-mat4 mat4_translate(const mat4& a, const vec3& translation);
-mat4 mat4_rotate(const mat4& a, const vec3& axis, f32 angle);
+Mat4 mat4_translate(const Mat4& a, const Vec3& translation);
+Mat4 mat4_rotate(const Mat4& a, const Vec3& axis, f32 angle);
 
-mat4 orthographic_matrix(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far);
-mat4 projection_matrix(f32 fovy, f32 aspect, f32 near, f32 far);
+Mat4 orthographic_matrix(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far);
+Mat4 projection_matrix(f32 fovy, f32 aspect, f32 near, f32 far);
 
-mat4 look_at(vec3 position, vec3 target, vec3 up);
+Mat4 look_at(Vec3 position, Vec3 target, Vec3 up);
 
 f32 interpolate_to(f32 current, f32 target, f32 speed, f32 delta_time);
 
-vec3 get_forward(const vec3& rotation);
-vec3 get_right(const vec3& rotation);
-vec3 get_up(const vec3& rotation);
+Vec3 get_forward(const Vec3& rotation);
+Vec3 get_right(const Vec3& rotation);
+Vec3 get_up(const Vec3& rotation);
 
-ivec2 ibounds2_position(const ibounds2& a);
-ivec2 ibounds2_size(const ibounds2& a);
+IVec2 ibounds2_position(const IBounds2& a);
+IVec2 ibounds2_size(const IBounds2& a);
 
-b32 ibounds2_overlaps(const ibounds2& a, const ibounds2& b);
-ibounds2 ibounds2_intersection(const ibounds2& a, const ibounds2& b);
+b32 ibounds2_overlaps(const IBounds2& a, const IBounds2& b);
+IBounds2 ibounds2_intersection(const IBounds2& a, const IBounds2& b);
 
-std::vector<ibounds2> ibounds2_subtract(const ibounds2& a, const ibounds2& b);
+std::vector<IBounds2> ibounds2_subtract(const IBounds2& a, const IBounds2& b);

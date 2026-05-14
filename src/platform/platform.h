@@ -1,66 +1,8 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-
-#include "core/macros.h"
 #include "core/types.h"
-
-constexpr i32 WINDOW_WIDTH = 1024;
-constexpr i32 WINDOW_HEIGHT = 768;
-
-constexpr f32 WINDOW_ASPECT_RATIO = static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT);
-
-#define FOR_LIST_BUTTON(DO)                                                    \
-  DO(none)                                                                     \
-  DO(a)                                                                        \
-  DO(d)                                                                        \
-  DO(e)                                                                        \
-  DO(escape)                                                                   \
-  DO(mouse_1)                                                                  \
-  DO(mouse_2)                                                                  \
-  DO(mouse_3)                                                                  \
-  DO(tab)                                                                      \
-  DO(s)                                                                        \
-  DO(space)                                                                    \
-  DO(w)                                                                        \
-  DO(q)
-
-enum class Button : u8
-{
-    FOR_LIST_BUTTON(DEFINE_ENUM_VARIANTS)
-};
-
-constexpr i32 BUTTON_COUNT = FOR_LIST_BUTTON(DEFINE_ENUM_COUNT);
-
-struct Input
-{
-    Button glfw_keymap[GLFW_KEY_LAST + 1];
-    Button glfw_buttonmap[GLFW_MOUSE_BUTTON_LAST + 1];
-
-    bool button_array_current[BUTTON_COUNT];
-    bool button_array_previous[BUTTON_COUNT];
-
-    f64 pointer_current_x;
-    f64 pointer_current_y;
-
-    f64 pointer_previous_x;
-    f64 pointer_previous_y;
-
-    f64 pointer_delta_x;
-    f64 pointer_delta_y;
-
-    b32 ignore_delta;
-};
-
-struct Window
-{
-    i32 width;
-    i32 height;
-
-    f32 aspect_ratio;
-
-    GLFWwindow* glfw_window;
-};
+#include "platform/input.h"
+#include "platform/window.h"
 
 struct Platform
 {
@@ -74,10 +16,6 @@ struct Platform
     Window window;
     Input input;
 };
-
-b32 platform_button_is_down(const Platform& platform, Button key);
-b32 platform_button_is_pressed(const Platform& platform, Button key);
-b32 platform_button_is_released(const Platform& platform, Button key);
 
 void platform_init(Platform& platform);
 void platform_begin_frame(Platform& platform);

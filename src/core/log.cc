@@ -6,29 +6,35 @@
 #include <string.h>
 #include <time.h>
 
-static FILE* LD_LOG_FILE;
-static char LD_LOG_BASE_PATH[256];
-static char LD_CURRENT_DAY_STRING[11];
+static FILE* ld_log_file;
+static char ld_log_base_path[256];
+static char ld_current_day_string[11];
 
-static const char* LOG_LEVEL_TO_STRING[5] =
+constexpr const char*
+log_level_to_string(const LogLevel level)
 {
-    "TRACE",
-    "INFO",
-    "WARN",
-    "ERROR",
-    "FATAL"
-};
+    switch (level)
+    {
+        case LogLevel::Trace:  return "TRACE";
+        case LogLevel::Info:   return "INFO";
+        case LogLevel::Warn:   return "WARN";
+        case LogLevel::Error:  return "ERROR";
+        case LogLevel::Fatal:  return "FATAL";
+    }
+
+    return "UNKNOWN";
+}
 
 void 
 log_init()
 {
     auto directory_name = "log/";
 
-    strncpy(LD_LOG_BASE_PATH, directory_name, sizeof(LD_LOG_BASE_PATH) - 1);
+    strncpy(ld_log_base_path, directory_name, sizeof(ld_log_base_path) - 1);
 
-    if (!LD_LOG_FILE)
+    if (!ld_log_file)
     {
-        LD_LOG_FILE = stderr;
+        ld_log_file = stderr;
     }
 
     LOG_INFO("\n\nLOG INIT\n");
@@ -37,9 +43,9 @@ log_init()
 void 
 log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...)
 {
-    if (!LD_LOG_FILE)
+    if (!ld_log_file)
     {
-        LD_LOG_FILE = stderr;
+        ld_log_file = stderr;
     }
 
     const time_t now = time(NULL);
@@ -49,22 +55,22 @@ log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...
     char file_timestamp[11];
     strftime(file_timestamp, sizeof(file_timestamp), "%Y_%m_%d", &tm_info);
 
-    if (LD_LOG_BASE_PATH[0] != '\0' && strcmp(file_timestamp, LD_CURRENT_DAY_STRING) != 0)
+    if (ld_log_base_path[0] != '\0' && strcmp(file_timestamp, ld_current_day_string) != 0)
     {
-        if (LD_LOG_FILE && LD_LOG_FILE != stderr)
+        if (ld_log_file && ld_log_file != stderr)
         {
-            fclose(LD_LOG_FILE);
+            fclose(ld_log_file);
         }
 
-        strncpy(LD_CURRENT_DAY_STRING, file_timestamp, sizeof(LD_CURRENT_DAY_STRING) - 1);
+        strncpy(ld_current_day_string, file_timestamp, sizeof(ld_current_day_string) - 1);
 
         char path[512];
-        snprintf(path, sizeof(path), "%sengine_%s.log", LD_LOG_BASE_PATH, file_timestamp);
+        snprintf(path, sizeof(path), "%sengine_%s.log", ld_log_base_path, file_timestamp);
 
-        LD_LOG_FILE = fopen(path, "a");
-        if (!LD_LOG_FILE)
+        ld_log_file = fopen(path, "a");
+        if (!ld_log_file)
         {
-            LD_LOG_FILE = stderr;
+            ld_log_file = stderr;
         }
     }
 
@@ -83,18 +89,18 @@ log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...
         stderr,
         "[%s] [%s] (%s:%d) ",
         timestamp,
-        LOG_LEVEL_TO_STRING[static_cast<size_t>(log_level)],
+        log_level_to_string(log_level),
         filename,
         line
     );
 
-    if (LD_LOG_FILE && LD_LOG_FILE != stderr)
+    if (ld_log_file && ld_log_file != stderr)
     {
         fprintf(
-            LD_LOG_FILE,
+            ld_log_file,
             "[%s] [%s] (%s:%d) ",
             timestamp,
-            LOG_LEVEL_TO_STRING[static_cast<size_t>(log_level)],
+            log_level_to_string(log_level),
             filename,
             line
         );
@@ -108,9 +114,9 @@ log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...
 
     vfprintf(stderr, fmt, args);
 
-    if (LD_LOG_FILE && LD_LOG_FILE != stderr)
+    if (ld_log_file && ld_log_file != stderr)
     {
-        vfprintf(LD_LOG_FILE, fmt, args_copy);
+        vfprintf(ld_log_file, fmt, args_copy);
     }
 
     va_end(args_copy);
@@ -118,19 +124,19 @@ log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...
 
     fprintf(stderr, "\n");
 
-    if (LD_LOG_FILE && LD_LOG_FILE != stderr)
+    if (ld_log_file && ld_log_file != stderr)
     {
-        fprintf(LD_LOG_FILE, "\n");
-        fflush(LD_LOG_FILE);
+        fprintf(ld_log_file, "\n");
+        fflush(ld_log_file);
     }
 
-    if (log_level == LogLevel::fatal)
+    if (log_level == LogLevel::Fatal)
     {
         fflush(stderr);
 
-        if (LD_LOG_FILE && LD_LOG_FILE != stderr)
+        if (ld_log_file && ld_log_file != stderr)
         {
-            fflush(LD_LOG_FILE);
+            fflush(ld_log_file);
         }
 
         exit(EXIT_FAILURE);
@@ -142,8 +148,8 @@ log_close()
 {
     LOG_INFO("\n\nLOG CLOSE\n");
 
-    if (LD_LOG_FILE && LD_LOG_FILE != stderr)
+    if (ld_log_file && ld_log_file != stderr)
     {
-        fclose(LD_LOG_FILE);
+        fclose(ld_log_file);
     }
 }

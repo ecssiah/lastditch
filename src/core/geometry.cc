@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-vec2
-operator+(const vec2& a, const vec2& b)
+Vec2
+operator+(const Vec2& a, const Vec2& b)
 {
     return {
         a.x + b.x,
@@ -11,25 +11,8 @@ operator+(const vec2& a, const vec2& b)
     };
 }
 
-vec3 
-operator+(const vec3& a, const vec3& b)
-{
-    return {
-        a.x + b.x,
-        a.y + b.y,
-        a.z + b.z
-    };
-}
-
-ivec2 operator+(const ivec2& a, const ivec2& b)
-{
-    return {
-        a.x + b.x,
-        a.y + b.y,
-    };
-}
-
-ivec3 operator+(const ivec3& a, const ivec3& b)
+Vec3 
+operator+(const Vec3& a, const Vec3& b)
 {
     return {
         a.x + b.x,
@@ -38,8 +21,25 @@ ivec3 operator+(const ivec3& a, const ivec3& b)
     };
 }
 
-vec2 
-operator-(const vec2& a, const vec2& b)
+IVec2 operator+(const IVec2& a, const IVec2& b)
+{
+    return {
+        a.x + b.x,
+        a.y + b.y,
+    };
+}
+
+IVec3 operator+(const IVec3& a, const IVec3& b)
+{
+    return {
+        a.x + b.x,
+        a.y + b.y,
+        a.z + b.z
+    };
+}
+
+Vec2 
+operator-(const Vec2& a, const Vec2& b)
 {
     return {
         a.x - b.x,
@@ -47,8 +47,8 @@ operator-(const vec2& a, const vec2& b)
     };
 }
 
-vec3 
-operator-(const vec3& a, const vec3& b)
+Vec3 
+operator-(const Vec3& a, const Vec3& b)
 {
     return {
         a.x - b.x,
@@ -57,7 +57,7 @@ operator-(const vec3& a, const vec3& b)
     };
 }
 
-ivec2 operator-(const ivec2& a, const ivec2& b)
+IVec2 operator-(const IVec2& a, const IVec2& b)
 {
     return {
         a.x - b.x,
@@ -65,7 +65,7 @@ ivec2 operator-(const ivec2& a, const ivec2& b)
     };
 }
 
-ivec3 operator-(const ivec3& a, const ivec3& b)
+IVec3 operator-(const IVec3& a, const IVec3& b)
 {
     return {
         a.x - b.x,
@@ -74,8 +74,8 @@ ivec3 operator-(const ivec3& a, const ivec3& b)
     };
 }
 
-vec2
-operator*(const f32 scalar, const vec2& a)
+Vec2
+operator*(const f32 scalar, const Vec2& a)
 {
     return {
         scalar * a.x,
@@ -83,8 +83,8 @@ operator*(const f32 scalar, const vec2& a)
     };
 }
 
-vec3
-operator*(const f32 scalar, const vec3& a)
+Vec3
+operator*(const f32 scalar, const Vec3& a)
 {
     return {
         scalar * a.x,
@@ -93,7 +93,7 @@ operator*(const f32 scalar, const vec3& a)
     };
 }
 
-ivec2 operator*(const i32 scalar, const ivec2& a)
+IVec2 operator*(const i32 scalar, const IVec2& a)
 {
     return {
         a.x * scalar,
@@ -101,7 +101,7 @@ ivec2 operator*(const i32 scalar, const ivec2& a)
     };
 }
 
-ivec3 operator*(const i32 scalar, const ivec3& a)
+IVec3 operator*(const i32 scalar, const IVec3& a)
 {
     return {
         a.x * scalar,
@@ -110,7 +110,7 @@ ivec3 operator*(const i32 scalar, const ivec3& a)
     };
 }
 
-vec2 to_vec2(const ivec2& a)
+Vec2 to_vec2(const IVec2& a)
 {
     return {
         static_cast<f32>(a.x),
@@ -118,7 +118,7 @@ vec2 to_vec2(const ivec2& a)
     };
 }
 
-vec3 to_vec3(const ivec3& a)
+Vec3 to_vec3(const IVec3& a)
 {
     return {
         static_cast<f32>(a.x),
@@ -128,35 +128,35 @@ vec3 to_vec3(const ivec3& a)
 }
 
 f32 
-length(const vec2& a)
+length(const Vec2& a)
 {
     return sqrt(a.x * a.x + a.y * a.y);
 }
 
 f32 
-length(const vec3& a)
+length(const Vec3& a)
 {
     return sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
 }
 
 f32
-length_squared(const vec2& a)
+length_squared(const Vec2& a)
 {
     return a.x * a.x + a.y * a.y;
 }
 
 f32
-length_squared(const vec3& a)
+length_squared(const Vec3& a)
 {
     return a.x * a.x + a.y * a.y + a.z * a.z;
 }
 
-vec2
-normalize(const vec2& a)
+Vec2
+normalize(const Vec2& a)
 {
     const f32 a_length_squared = length_squared(a);
     
-    if (a_length_squared < EPSILON)
+    if (a_length_squared < epsilon_squared)
     {
         return {0.0f, 0.0f};
     }
@@ -169,12 +169,12 @@ normalize(const vec2& a)
     };
 }
 
-vec3 
-normalize(const vec3& a)
+Vec3 
+normalize(const Vec3& a)
 {
     const f32 a_length_squared = length_squared(a);
     
-    if (a_length_squared < EPSILON)
+    if (a_length_squared < epsilon_squared)
     {
         return { 0.0f, 0.0f, 0.0f };
     }
@@ -189,19 +189,19 @@ normalize(const vec3& a)
 }
 
 f32 
-dot(const vec2& a, const vec2& b)
+dot(const Vec2& a, const Vec2& b)
 {
     return a.x * b.x + a.y * b.y;
 }
 
 f32 
-dot(const vec3& a, const vec3& b)
+dot(const Vec3& a, const Vec3& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-vec3 
-cross(const vec3& a, const vec3& b)
+Vec3 
+cross(const Vec3& a, const Vec3& b)
 {
     return {
         a.y * b.z - a.z * b.y,
@@ -210,11 +210,11 @@ cross(const vec3& a, const vec3& b)
     };
 }
 
-mat4
+Mat4
 
-operator*(const mat4& a, const mat4& b)
+operator*(const Mat4& a, const Mat4& b)
 {
-    mat4 result = {};
+    Mat4 result = {};
 
     for (i32 column = 0; column < 4; ++column)
     {
@@ -230,10 +230,10 @@ operator*(const mat4& a, const mat4& b)
     return result;
 }
 
-mat4 
-mat4_translate(const mat4& a, const vec3& translation)
+Mat4 
+mat4_translate(const Mat4& a, const Vec3& translation)
 {
-    mat4 translation_matrix = {};
+    Mat4 translation_matrix = {};
 
     translation_matrix[0][0] = 1.0f;
     translation_matrix[1][1] = 1.0f;
@@ -246,16 +246,16 @@ mat4_translate(const mat4& a, const vec3& translation)
     return a * translation_matrix;
 }
 
-mat4
-mat4_rotate(const mat4& a, const vec3& axis, f32 angle)
+Mat4
+mat4_rotate(const Mat4& a, const Vec3& axis, f32 angle)
 {
-    const vec3 n = normalize(axis);
+    const Vec3 n = normalize(axis);
 
     const f32 c = cosf(angle);
     const f32 s = sinf(angle);
     const f32 t = 1.0f - c;
 
-    mat4 rotation = {};
+    Mat4 rotation = {};
 
     rotation[0][0] = c + n.x * n.x * t;
     rotation[0][1] = n.x * n.y * t + n.z * s;
@@ -274,10 +274,10 @@ mat4_rotate(const mat4& a, const vec3& axis, f32 angle)
     return a * rotation;
 }
 
-mat4 
+Mat4 
 orthographic_matrix(const f32 left, const f32 right, const f32 bottom, const f32 top, const f32 near, const f32 far)
 {
-    mat4 result = {};
+    Mat4 result = {};
     result[0][0] = 2.0f / (right - left);
     result[1][1] = 2.0f / (top - bottom);
     result[2][2] = -2.0f / (far - near);
@@ -289,12 +289,12 @@ orthographic_matrix(const f32 left, const f32 right, const f32 bottom, const f32
     return result;
 }
 
-mat4
+Mat4
 projection_matrix(const f32 fovy, const f32 aspect, const f32 near, const f32 far)
 {
     const f32 tan_half_fovy = tan(fovy / 2.0f);
     
-    mat4 result = {};
+    Mat4 result = {};
     result[0][0] = 1.0f / (aspect * tan_half_fovy);
     result[1][1] = 1.0f / (tan_half_fovy);
     result[2][2] = -(far + near) / (far - near);
@@ -304,14 +304,14 @@ projection_matrix(const f32 fovy, const f32 aspect, const f32 near, const f32 fa
     return result;
 }
 
-mat4 
-look_at(const vec3 position, const vec3 target, const vec3 up)
+Mat4 
+look_at(const Vec3 position, const Vec3 target, const Vec3 up)
 {
-    const vec3 forward = normalize(target - position);
-    const vec3 right = normalize(cross(forward, up));
-    const vec3 camera_up = cross(right, forward);
+    const Vec3 forward = normalize(target - position);
+    const Vec3 right = normalize(cross(forward, up));
+    const Vec3 camera_up = cross(right, forward);
 
-    mat4 result = {};
+    Mat4 result = {};
 
     result[0][0] = right.x;
     result[1][0] = right.y;
@@ -340,7 +340,7 @@ interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 d
     const f32 alpha = 1.0f - expf(-speed * delta_time);
     f32 delta = target - current;
 
-    if (fabsf(delta) > EPSILON)
+    if (fabsf(delta) > epsilon)
     {
         delta = fmodf(delta + 180.0f, 360.0f) - 180.0f;
 
@@ -350,13 +350,13 @@ interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 d
     return target;
 }
 
-vec3 
-get_forward(const vec3& rotation)
+Vec3 
+get_forward(const Vec3& rotation)
 {
     const f32 rotation_x = to_radians(rotation.x);
     const f32 rotation_z = to_radians(rotation.z);
 
-    const vec3 forward = {
+    const Vec3 forward = {
         cosf(rotation_x) * cosf(rotation_z),
         cosf(rotation_x) * sinf(rotation_z),
         sinf(rotation_x),
@@ -365,27 +365,27 @@ get_forward(const vec3& rotation)
     return normalize(forward);
 }
 
-vec3 
-get_right(const vec3& rotation)
+Vec3 
+get_right(const Vec3& rotation)
 {
-    const vec3 forward = get_forward(rotation);
-    const vec3 right = cross(forward, UNIT_Z);
+    const Vec3 forward = get_forward(rotation);
+    const Vec3 right = cross(forward, unit_z);
 
     return normalize(right);
 }
 
-vec3 
-get_up(const vec3& rotation)
+Vec3 
+get_up(const Vec3& rotation)
 {
-    const vec3 forward = get_forward(rotation);
-    const vec3 right = get_right(rotation);
-    const vec3 up = cross(forward, right);
+    const Vec3 forward = get_forward(rotation);
+    const Vec3 right = get_right(rotation);
+    const Vec3 up = cross(forward, right);
 
     return normalize(up);
 }
 
-ivec2 
-ibounds2_size(const ibounds2& a)
+IVec2 
+ibounds2_size(const IBounds2& a)
 {
     return {
         a.max.x - a.min.x,
@@ -394,7 +394,7 @@ ibounds2_size(const ibounds2& a)
 }
 
 b32 
-ibounds2_overlaps(const ibounds2& a, const ibounds2& b)
+ibounds2_overlaps(const IBounds2& a, const IBounds2& b)
 {
     return !(
         a.max.x <= b.min.x ||
@@ -404,15 +404,15 @@ ibounds2_overlaps(const ibounds2& a, const ibounds2& b)
     );
 }
 
-ibounds2 
-ibounds2_intersection(const ibounds2& a, const ibounds2& b)
+IBounds2 
+ibounds2_intersection(const IBounds2& a, const IBounds2& b)
 {
-    const ivec2 o_min = {
+    const IVec2 o_min = {
         max_i32(a.min.x, b.min.x),
         max_i32(a.min.y, b.min.y)
     };
 
-    const ivec2 o_max = {
+    const IVec2 o_max = {
         min_i32(a.max.x, b.max.x),
         min_i32(a.max.y, b.max.y)
     };
@@ -423,17 +423,17 @@ ibounds2_intersection(const ibounds2& a, const ibounds2& b)
     };
 }
 
-std::vector<ibounds2> 
-ibounds2_subtract(const ibounds2& a, const ibounds2& b)
+std::vector<IBounds2> 
+ibounds2_subtract(const IBounds2& a, const IBounds2& b)
 {
-    std::vector<ibounds2> bounds_vector = std::vector<ibounds2>();
+    std::vector<IBounds2> bounds_vector = std::vector<IBounds2>();
 
     if (!ibounds2_overlaps(a, b))
     {
         return bounds_vector;
     }
 
-    const ibounds2 intersection = ibounds2_intersection(a, b);
+    const IBounds2 intersection = ibounds2_intersection(a, b);
 
     if (intersection.min.x > a.min.x)
     {

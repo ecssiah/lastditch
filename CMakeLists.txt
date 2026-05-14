@@ -25,7 +25,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4)
 
 add_executable(
     lastditch
-    src/game/lastditch.cc
+    src/lastditch.cc
 )
 
 target_include_directories(
@@ -66,41 +66,44 @@ target_sources(
     src/core/log.cc
     src/core/macros.h
     src/core/types.h
-    src/game/shell/render.cc
-    src/game/shell/render.h
-    src/game/shell/screen.cc
-    src/game/shell/screen.h
-    src/game/shell/shell.cc
-    src/game/shell/shell.h
-    src/game/shell/viewpoint.cc
-    src/game/shell/viewpoint.h
-    src/game/sim/actor.cc
-    src/game/sim/actor.h
-    src/game/sim/action.cc
-    src/game/sim/action.h
-    src/game/sim/area.cc
-    src/game/sim/area.h
-    src/game/sim/debug.cc
-    src/game/sim/debug.h
-    src/game/sim/direction.cc
-    src/game/sim/direction.h
-    src/game/sim/ids.h
-    src/game/sim/nation.cc
-    src/game/sim/nation.h
-    src/game/sim/navigation.cc
-    src/game/sim/navigation.h
-    src/game/sim/physics.cc
-    src/game/sim/physics.h
-    src/game/sim/population.cc
-    src/game/sim/population.h
-    src/game/sim/work.cc
-    src/game/sim/work.h
-    src/game/sim/sim.cc
-    src/game/sim/sim.h
-    src/game/sim/world.cc
-    src/game/sim/world.h
+    src/app/render.cc
+    src/app/render.h
+    src/app/screen.cc
+    src/app/screen.h
+    src/app/shell.cc
+    src/app/shell.h
+    src/app/viewpoint.cc
+    src/app/viewpoint.h
+    src/app/actor.cc
+    src/app/actor.h
+    src/app/action.cc
+    src/app/action.h
+    src/app/area.cc
+    src/app/area.h
+    src/app/debug.cc
+    src/app/debug.h
+    src/app/direction.cc
+    src/app/direction.h
+    src/app/nation.cc
+    src/app/nation.h
+    src/app/navigation.cc
+    src/app/navigation.h
+    src/app/physics.cc
+    src/app/physics.h
+    src/app/population.cc
+    src/app/population.h
+    src/app/work.cc
+    src/app/work.h
+    src/app/sim.cc
+    src/app/sim.h
+    src/app/world.cc
+    src/app/world.h
+    src/platform/input.cc
+    src/platform/input.h
     src/platform/platform.cc
     src/platform/platform.h
+    src/platform/window.cc
+    src/platform/window.h        
 )
 
 target_compile_definitions(

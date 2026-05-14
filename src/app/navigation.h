@@ -1,0 +1,66 @@
+#pragma once
+
+#include "core/geometry.h"
+#include "core/types.h"
+
+enum class NodeType : u8
+{
+    open,
+    closed,
+    unvisited,
+};
+
+struct NodeRecord
+{
+    i32 node_id;
+    i32 parent_id;
+
+    NodeType node_type;
+
+    i32 g_cost;
+    i32 f_cost;
+};
+
+struct Edge
+{
+    i32 to_node_id;
+    i32 cost;
+};
+
+struct EdgeList
+{
+    i32 count;
+
+    Edge* edge_array;
+};
+
+struct Graph
+{
+    i32 node_count;
+
+    NodeRecord* node_record_array;
+
+    EdgeList* edge_list_array;
+};
+
+struct Search
+{
+    NodeRecord* node_record_array;
+};
+
+struct Path
+{
+    i32 count;
+
+    i32* node_id_array;
+};
+
+struct Navigation
+{
+    Graph graph;
+};
+
+u32 heuristic(const Vec3& a, const Vec3& b);
+
+void navigation_init(Navigation& navigation);
+void navigation_update(Navigation& navigation);
