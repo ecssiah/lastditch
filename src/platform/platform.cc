@@ -2,7 +2,8 @@
 
 #include <cassert>
 
-static void init_glfw(Platform& platform)
+static void 
+init_glfw(Platform& platform)
 {
     const int glfw_result = glfwInit();
 
@@ -29,7 +30,8 @@ static void init_glfw(Platform& platform)
     glfwSetInputMode(platform.window.glfw_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-static void init_buttons(Platform& platform)
+static void 
+init_buttons(Platform& platform)
 {
     Input& input = platform.input;
 
@@ -64,7 +66,8 @@ static void init_buttons(Platform& platform)
     input.glfw_buttonmap[GLFW_MOUSE_BUTTON_MIDDLE] = Button::mouse_3;
 }
 
-static void init_mouse(Platform& platform)
+static void 
+init_mouse(Platform& platform)
 {
     Input& input = platform.input;
 
@@ -80,7 +83,8 @@ static void init_mouse(Platform& platform)
     input.ignore_delta = true;
 }
 
-static void update_time(Platform& platform)
+static void 
+update_time(Platform& platform)
 {
     platform.time_current = glfwGetTime();
 
@@ -92,7 +96,8 @@ static void update_time(Platform& platform)
     platform.time_previous = platform.time_current;
 }
 
-static void update_buttons(Platform& platform)
+static void 
+update_buttons(Platform& platform)
 {
     Input& input = platform.input;
 
@@ -129,7 +134,8 @@ static void update_buttons(Platform& platform)
     }
 }
 
-static void update_pointer(Platform& platform)
+static void 
+update_pointer(Platform& platform)
 {
     Input& input = platform.input;
 
@@ -152,14 +158,16 @@ static void update_pointer(Platform& platform)
     }
 }
 
-b32 platform_button_is_down(const Platform& platform, Button button)
+b32 
+platform_button_is_down(const Platform& platform, Button button)
 {
     const i32 button_index = static_cast<i32>(button);
     
     return platform.input.button_array_current[button_index];
 }
 
-b32 platform_button_is_pressed(const Platform& platform, Button button)
+b32 
+platform_button_is_pressed(const Platform& platform, Button button)
 {
     const i32 button_index = static_cast<i32>(button);
     
@@ -168,7 +176,8 @@ b32 platform_button_is_pressed(const Platform& platform, Button button)
         !platform.input.button_array_previous[button_index];
 }
 
-b32 platform_button_is_released(const Platform& platform, Button button)
+b32 
+platform_button_is_released(const Platform& platform, Button button)
 {
     const i32 button_index = static_cast<i32>(button);
     
@@ -177,7 +186,8 @@ b32 platform_button_is_released(const Platform& platform, Button button)
         platform.input.button_array_previous[button_index];
 }
 
-void platform_init(Platform& platform)
+void 
+platform_init(Platform& platform)
 {
     platform.active = true;
 
@@ -191,7 +201,8 @@ void platform_init(Platform& platform)
     init_mouse(platform);
 }
 
-void platform_begin_frame(Platform& platform)
+void 
+platform_begin_frame(Platform& platform)
 {
     glfwPollEvents();
 
@@ -200,7 +211,8 @@ void platform_begin_frame(Platform& platform)
     update_pointer(platform);
 }
 
-void platform_end_frame(Platform& platform)
+void 
+platform_end_frame(Platform& platform)
 {
     if (platform_button_is_pressed(platform, Button::escape))
     {
@@ -212,7 +224,8 @@ void platform_end_frame(Platform& platform)
     glfwSwapBuffers(platform.window.glfw_window);
 }
 
-void platform_close()
+void 
+platform_close()
 {
     glfwTerminate();
 }

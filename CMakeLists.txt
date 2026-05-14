@@ -25,7 +25,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4)
 
 add_executable(
     lastditch
-    src/game/lastditch.cpp
+    src/game/lastditch.cc
 )
 
 target_include_directories(
@@ -59,47 +59,47 @@ target_sources(
     external/glad/src/glad.c
     external/stb/src/stb_image.c
     src/core/config.h
-    src/core/config.cpp
+    src/core/config.cc
     src/core/geometry.h
-    src/core/geometry.cpp
+    src/core/geometry.cc
     src/core/log.h
-    src/core/log.cpp
+    src/core/log.cc
     src/core/macros.h
     src/core/types.h
-    src/game/shell/render.cpp
+    src/game/shell/render.cc
     src/game/shell/render.h
-    src/game/shell/screen.cpp
+    src/game/shell/screen.cc
     src/game/shell/screen.h
-    src/game/shell/shell.cpp
+    src/game/shell/shell.cc
     src/game/shell/shell.h
-    src/game/shell/viewpoint.cpp
+    src/game/shell/viewpoint.cc
     src/game/shell/viewpoint.h
-    src/game/sim/actor.cpp
+    src/game/sim/actor.cc
     src/game/sim/actor.h
-    src/game/sim/action.cpp
+    src/game/sim/action.cc
     src/game/sim/action.h
-    src/game/sim/area.cpp
+    src/game/sim/area.cc
     src/game/sim/area.h
-    src/game/sim/debug.cpp
+    src/game/sim/debug.cc
     src/game/sim/debug.h
-    src/game/sim/direction.cpp
+    src/game/sim/direction.cc
     src/game/sim/direction.h
     src/game/sim/ids.h
-    src/game/sim/nation.cpp
+    src/game/sim/nation.cc
     src/game/sim/nation.h
-    src/game/sim/navigation.cpp
+    src/game/sim/navigation.cc
     src/game/sim/navigation.h
-    src/game/sim/physics.cpp
+    src/game/sim/physics.cc
     src/game/sim/physics.h
-    src/game/sim/population.cpp
+    src/game/sim/population.cc
     src/game/sim/population.h
-    src/game/sim/work.cpp
+    src/game/sim/work.cc
     src/game/sim/work.h
-    src/game/sim/sim.cpp
+    src/game/sim/sim.cc
     src/game/sim/sim.h
-    src/game/sim/world.cpp
+    src/game/sim/world.cc
     src/game/sim/world.h
-    src/platform/platform.cpp
+    src/platform/platform.cc
     src/platform/platform.h
 )
 

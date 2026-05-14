@@ -8,7 +8,8 @@ static Platform platform;
 static Shell shell;
 static Sim sim;
 
-int main()
+int 
+main()
 {
     platform_init(platform);
     shell_init(shell);

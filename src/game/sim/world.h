@@ -250,7 +250,6 @@ i32 world_block_type_index_from_string(const std::string& block_type_string);
 u8 world_get_direction_mask(const World& world, i32 x, i32 y, i32 z);
 
 Cell* world_get_cell(World& world, i32 x, i32 y, i32 z);
-
 Cell* world_get_free_cell(World& world, i32 x, i32 y, i32 z);
 
 void world_set_block_type(World& world, i32 x, i32 y, i32 z, BlockType block_type);
