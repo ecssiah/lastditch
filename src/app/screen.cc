@@ -89,7 +89,7 @@ draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
     i32 vertex_count = 0;
     u64 vertex_max = text.length() * 6;
 
-    TextVertex text_vertex_array[vertex_max];
+    std::vector<TextVertex> text_vertex_array = std::vector<TextVertex>(vertex_max);
 
     f32 cursor_x = x;
 
@@ -141,7 +141,7 @@ draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
     glBufferData(
         GL_ARRAY_BUFFER, 
         static_cast<GLsizeiptr>(vertex_count * sizeof(TextVertex)),
-        text_vertex_array, 
+        text_vertex_array.data(), 
         GL_DYNAMIC_DRAW
     );
 

@@ -204,7 +204,7 @@ load_block_texture_directory(Shell& shell)
 
     assert(voxel_render.block_config_data.entry_vector.size() <= block_type_count);
 
-    for (i32 layer_index = 0; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
+    for (size_t layer_index = 0; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
     {
         const ConfigEntry& config_entry = voxel_render.block_config_data.entry_vector[layer_index];
 
@@ -248,7 +248,7 @@ load_actor_texture_directory(Shell& shell)
 
     assert(model_render.actor_config_data.entry_vector.size() <= nation_type_count);
 
-    for (i32 layer_index = 0; layer_index < model_render.actor_config_data.entry_vector.size(); ++layer_index)
+    for (size_t layer_index = 0; layer_index < model_render.actor_config_data.entry_vector.size(); ++layer_index)
     {
         const ConfigEntry& config_entry = model_render.actor_config_data.entry_vector[layer_index];
 
@@ -488,10 +488,8 @@ convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
         }
     };
     
-    for (i32 quad_index = 0; quad_index < sector_mesh.sector_quad_vector.size(); ++quad_index)
+    for (const SectorQuad& sector_quad : sector_mesh.sector_quad_vector)
     {
-        const SectorQuad& sector_quad = sector_mesh.sector_quad_vector[quad_index];
-
         emit_sector_face(sector_quad, voxel_gpu_data);
     }
     
@@ -729,19 +727,15 @@ init_voxel_render(Shell& shell, const Sim& sim)
         generate_sector_mesh(shell.render.voxel_render, sim, sector_index);
     }
 
-    for (i32 sector_mesh_index = 0; sector_mesh_index < voxel_render.sector_mesh_vector.size(); ++sector_mesh_index)
+    for (const SectorMesh& sector_mesh : voxel_render.sector_mesh_vector)
     {
-        SectorMesh& sector_mesh = voxel_render.sector_mesh_vector[sector_mesh_index];
-
         VoxelGpuData voxel_gpu_data = convert_sector_mesh_to_voxel_gpu_data(sector_mesh);
 
         voxel_render.voxel_gpu_data_vector.push_back(voxel_gpu_data);
     }
 
-    for (i32 voxel_gpu_data_index = 0; voxel_gpu_data_index < voxel_render.voxel_gpu_data_vector.size(); ++voxel_gpu_data_index)
+    for (VoxelGpuData& voxel_gpu_data : voxel_render.voxel_gpu_data_vector)
     {
-        VoxelGpuData& voxel_gpu_data = voxel_render.voxel_gpu_data_vector[voxel_gpu_data_index];
-
         upload_voxel_gpu_data(voxel_gpu_data);
     }
 }
@@ -839,10 +833,8 @@ update_debug_render(Render& render, const Sim& sim)
 
     DebugGpuData debug_gpu_data = {};
     
-    for (i32 debug_line_index = 0; debug_line_index < sim.debug.line_vector.size(); ++debug_line_index)
+    for (const DebugLine& debug_line : sim.debug.line_vector)
     {
-        const DebugLine& debug_line = sim.debug.line_vector[debug_line_index];
-
         const DebugVertex debug_vertex_a = {
             {
                 debug_line.position_a.x, 
@@ -912,10 +904,8 @@ update_voxel_render(Render& render)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, render.voxel_render.texture_array_id);
 
-    for (i32 voxel_gpu_data_index = 0; voxel_gpu_data_index < render.voxel_render.voxel_gpu_data_vector.size(); ++voxel_gpu_data_index) 
+    for (const VoxelGpuData& voxel_gpu_data : render.voxel_render.voxel_gpu_data_vector)
     {
-        const VoxelGpuData& voxel_gpu_data = render.voxel_render.voxel_gpu_data_vector[voxel_gpu_data_index];
-
         Mat4 model_matrix = mat4_diagonal(1.0f);
         model_matrix = mat4_translate(model_matrix, voxel_gpu_data.position);
 

@@ -405,9 +405,9 @@ world_cell_coordinate_to_local_index(const i32 x, const i32 y, const i32 z)
     const IVec3 local_coordinate = world_cell_coordinate_to_local_coordinate(x, y, z);
 
     const i32 local_index =
-        local_coordinate.x << (0 * sector_size_in_cells_log2) +
-        local_coordinate.y << (1 * sector_size_in_cells_log2) +
-        local_coordinate.z << (2 * sector_size_in_cells_log2);
+        (local_coordinate.x << (0 * sector_size_in_cells_log2)) +
+        (local_coordinate.y << (1 * sector_size_in_cells_log2)) +
+        (local_coordinate.z << (2 * sector_size_in_cells_log2));
 
     return local_index;
 }
@@ -673,12 +673,12 @@ place_area(World& world, Area& in_area)
         {
             const std::vector<IBounds2> bounds_vector = ibounds2_subtract(area_test.bounds, in_area.bounds);
 
-            for (i32 bounds_index = 0; bounds_index < bounds_vector.size(); ++bounds_index)
+            for (const IBounds2 bounds : bounds_vector)
             {
                 Area new_area = {
                     .area_type = area_test.area_type,
                     .floor_number = area_test.floor_number,
-                    .bounds = bounds_vector[bounds_index],
+                    .bounds = bounds,
                 };
 
                 area_add(area_pool, new_area);

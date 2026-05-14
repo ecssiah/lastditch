@@ -118,8 +118,7 @@ target_compile_options(
     PRIVATE
     -Wall
     -Wextra
-    -Wshadow
-    -Wconversion
+    -Wno-missing-braces
 )
 
 add_custom_command(
