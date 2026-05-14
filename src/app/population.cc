@@ -33,7 +33,7 @@ init_judge(Population& population)
 
     LOG_INFO(
         "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)", 
-        NATION_TYPE_STRING[static_cast<u8>(judge.nation_type)],
+        nation_type_string_array[static_cast<u8>(judge.nation_type)],
         population.judge_id,
         judge.position.x, 
         judge.position.y, 
@@ -94,7 +94,7 @@ init_agents(Population& population, Work& work)
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",
-                NATION_TYPE_STRING[nation_type_index],
+                nation_type_string_array[nation_type_index],
                 agent.actor_id,
                 agent.position.x, 
                 agent.position.y, 

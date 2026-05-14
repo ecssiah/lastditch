@@ -4,11 +4,11 @@
 #include "core/macros.h"
 #include "core/types.h"
 
-#define FOR_LIST_NATION_TYPE(DO)                                               \
-  DO(Wolf)                                                                     \
-  DO(Eagle)                                                                    \
-  DO(Lion)                                                                     \
-  DO(Bear)
+#define FOR_LIST_NATION_TYPE(DO)                                                \
+    DO(Wolf)                                                                    \
+    DO(Eagle)                                                                   \
+    DO(Lion)                                                                    \
+    DO(Bear)                                                                    \
 
 enum class NationType : u8
 {
@@ -17,7 +17,7 @@ enum class NationType : u8
     
 constexpr i32 nation_type_count = FOR_LIST_NATION_TYPE(DEFINE_ENUM_COUNT);
 
-extern const char* NATION_TYPE_STRING[nation_type_count];
+extern const char* nation_type_string_array[nation_type_count];
 
 struct Nation
 {

@@ -18,9 +18,9 @@ struct SeekState
     IVec3 target_position;
 };
 
-#define FOR_LIST_ACT_TYPE(DO)                                                    \
-    DO(wander)                                                                   \
-    DO(seek)
+#define FOR_LIST_ACT_TYPE(DO)                                                       \
+    DO(wander)                                                                      \
+    DO(seek)                                                                        \
 
 enum ActType
 {
