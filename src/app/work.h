@@ -1,12 +1,11 @@
 #pragma once
 
-#include "population.h"
 #include "core/types.h"
 #include "app/actor.h"
 
 constexpr i32 act_max_count = 1 << 12;
 
-struct Sim;
+struct Population;
 
 struct WanderState
 {

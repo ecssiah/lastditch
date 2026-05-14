@@ -6,6 +6,7 @@
 #include "app/area.h"
 #include "app/direction.h"
 #include "app/debug.h"
+#include "app/navigation.h"
 
 constexpr f32 cell_size = 1.0f;
 
@@ -218,6 +219,8 @@ struct World
 
     AreaPool area_pool_array[floor_count];
     EdgePool edge_pool;
+    
+    Navigation navigation;
 };
 
 b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);

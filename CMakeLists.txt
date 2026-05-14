@@ -92,7 +92,6 @@ target_sources(
     src/app/physics.h
     src/app/population.cc
     src/app/population.h
-    src/app/state.h
     src/app/work.cc
     src/app/work.h
     src/app/world.cc

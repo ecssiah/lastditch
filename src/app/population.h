@@ -2,9 +2,7 @@
 
 #include "app/actor.h"
 #include "app/nation.h"
-
-struct World;
-struct Work;
+#include "app/work.h"
 
 constexpr i32 agent_initial_count = 12;
 
@@ -15,6 +13,8 @@ struct Population
     i32 judge_id;
 
     ActorPool actor_pool;
+    
+    Work work;
 };
 
 void population_init(Population& population, Work& work);
