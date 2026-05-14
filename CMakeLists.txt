@@ -56,7 +56,7 @@ endif ()
 target_sources(
     lastditch
     PRIVATE
-    external/glad/src/glad.c
+    external/glad/src/gl.c
     external/stb/src/stb_image.c
     src/core/config.h
     src/core/config.cc

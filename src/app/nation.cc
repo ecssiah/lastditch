@@ -1,5 +1,7 @@
 #include "app/nation.h"
 
+#include <cassert>
+
 #include "app/world.h"
 
 const char* NATION_TYPE_STRING[nation_type_count] =
@@ -17,6 +19,6 @@ nation_type_index_from_string(const std::string& nation_type_string)
             return nation_type_index;
         }
     }
-
+    
     return -1;
 }

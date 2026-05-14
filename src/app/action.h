@@ -9,10 +9,10 @@ struct Actor;
 
 enum class ActionType : u8
 {
-    move,
-    rotate,
-    jump,
-    debug_mode,
+    Move,
+    Rotate,
+    Jump,
+    DebugMode,
 };
 
 struct Action

@@ -103,16 +103,16 @@ apply_action(Actor& judge, const Action& action)
 {
     switch (action.type)
     {
-    case ActionType::move: 
+    case ActionType::Move: 
         apply_move_action(judge, action);
         break;
-    case ActionType::rotate: 
+    case ActionType::Rotate: 
         apply_rotate_action(judge, action);
         break;
-    case ActionType::jump: 
+    case ActionType::Jump: 
         apply_jump_action(judge);
         break;
-    case ActionType::debug_mode: 
+    case ActionType::DebugMode: 
         apply_debug_mode_action(judge);
         break;
     }

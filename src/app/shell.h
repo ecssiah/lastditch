@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include "core/config.h"
 #include "app/sim.h"
@@ -145,7 +145,7 @@ struct ModelRender
 
     ConfigData actor_config_data;
 
-    u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
+    u8 actor_type_layer_array[actor_type_count];
 
     std::vector<ModelGpuData> model_gpu_data_vector;
 };

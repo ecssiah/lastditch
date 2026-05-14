@@ -1,4 +1,4 @@
-#include "app/Area.h"
+#include "app/area.h"
 
 void 
 area_add(AreaPool& area_pool, Area& area)
@@ -23,7 +23,7 @@ area_remove(AreaPool& area_pool, const i32 area_id)
     area_pool.active_array[pool_id] = area_id_last;
 
     area_pool.active_lookup[area_id_last] = pool_id;
-    area_pool.active_lookup[area_id] = UINT32_MAX;
+    area_pool.active_lookup[area_id] = std::numeric_limits<u32>::max();
 
     area_pool.free_array[area_pool.free_count++] = area_id;
 }
@@ -52,7 +52,7 @@ area_remove_edge(EdgePool& edge_pool, const i32 edge_id)
     edge_pool.active_array[pool_id] = edge_id_last;
     edge_pool.active_lookup[edge_id_last] = pool_id;
 
-    edge_pool.active_lookup[edge_id] = UINT32_MAX;
+    edge_pool.active_lookup[edge_id] = std::numeric_limits<u32>::max();
 
     edge_pool.free_array[edge_pool.free_count++] = edge_id;
 }

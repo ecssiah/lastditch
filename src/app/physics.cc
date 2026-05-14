@@ -93,7 +93,7 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
             {
                 const IVec3 cell_coordinate = {x, y, z};
 
-                const cell* cell = world_get_cell(world, x, y, z);
+                const Cell* cell = world_get_cell(world, x, y, z);
 
                 if (!cell)
                 {

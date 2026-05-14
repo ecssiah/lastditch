@@ -1,3 +1,6 @@
+#include <glad/gl.h>
+#include <GLFW/glfw3.h>
+
 #include "app/render.h"
 #include "app/screen.h"
 #include "app/shell.h"

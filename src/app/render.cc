@@ -2,70 +2,70 @@
 
 #include <cassert>
 #include <fstream>
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <stb_image.h>
 
-#include "core/types.h"
-#include "core/config.h"
-#include "core/log.h"
-#include "app/Debug.h"
+#include "app/debug.h"
 #include "app/population.h"
-#include "app/world.h"
 #include "app/shell.h"
 #include "app/viewpoint.h"
+#include "app/world.h"
+#include "core/config.h"
+#include "core/log.h"
+#include "core/types.h"
 
-const IVec3 voxel_vertex_array[DIRECTION_COUNT][vertex_count_per_face] =
+const IVec3 voxel_vertex_array[direction_count][vertex_count_per_face] =
 {
-    // +X
+    // +X Face
     {
         {1, 0, 0}, {1, 1, 0}, {1, 1, 1},
         {1, 0, 0}, {1, 1, 1}, {1, 0, 1},
     },
-    // -X
+    // -X Face
     {
         {0, 1, 0}, {0, 0, 0}, {0, 0, 1},
         {0, 1, 0}, {0, 0, 1}, {0, 1, 1},
     },
-    // +Y
+    // +Y Face
     {
         {1, 1, 0}, {0, 1, 0}, {0, 1, 1},
         {1, 1, 0}, {0, 1, 1}, {1, 1, 1},
     },
-    // -Y
+    // -Y Face
     {
         {0, 0, 0}, {1, 0, 0}, {1, 0, 1},
         {0, 0, 0}, {1, 0, 1}, {0, 0, 1},
     },
-    // +Z
+    // +Z Face
     {
         {0, 0, 1}, {1, 0, 1}, {1, 1, 1},
         {0, 0, 1}, {1, 1, 1}, {0, 1, 1},
     },
-    // -Z
+    // -Z Face
     {
         {0, 1, 0}, {1, 1, 0}, {1, 0, 0},
         {0, 1, 0}, {1, 0, 0}, {0, 0, 0},
     },
 };
 
-const Vec3 voxel_uv_projection_array[2 * DIRECTION_COUNT] =
+const Vec3 voxel_uv_projection_array[2 * direction_count] =
 {
-    // +X
+    // +X Face
     {+0, +1, +0},
     {+0, +0, +1},
-    // -X
+    // -X Face
     {+0, -1, +0},
     {+0, +0, +1},
-    // +Y
+    // +Y Face
     {-1, +0, +0},
     {+0, +0, +1},
-    // -Y
+    // -Y Face
     {+1, +0, +0},
     {+0, +0, +1},
-    // +Z
+    // +Z Face
     {+1, +0, +0},
     {+0, +1, +0},
-    // -Z
+    // -Z Face
     {+1, +0, +0},
     {+0, -1, +0},
 };
@@ -75,12 +75,12 @@ get_gl_error_string(GLenum err)
 {
     switch (err)
     {
-        case GL_INVALID_ENUM: return "GL_INVALID_ENUM";
-        case GL_INVALID_VALUE: return "GL_INVALID_VALUE";
-        case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION";
-        case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
-        case GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION";
-        default: return "UNKNOWN_ERROR";
+        case GL_INVALID_ENUM:                   return "GL_INVALID_ENUM";
+        case GL_INVALID_VALUE:                  return "GL_INVALID_VALUE";
+        case GL_INVALID_OPERATION:              return "GL_INVALID_OPERATION";
+        case GL_OUT_OF_MEMORY:                  return "GL_OUT_OF_MEMORY";
+        case GL_INVALID_FRAMEBUFFER_OPERATION:  return "GL_INVALID_FRAMEBUFFER_OPERATION";
+        default:                                return "UNKNOWN_ERROR";
     }
 }
 
@@ -117,7 +117,7 @@ upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
             GL_FLOAT,
             GLFW_FALSE,
             sizeof(DebugVertex),
-            (void*)offsetof(DebugVertex, a_position)
+            reinterpret_cast<void*>(offsetof(DebugVertex, a_position))
         );
 
         glVertexAttribPointer(
@@ -126,7 +126,7 @@ upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
             GL_FLOAT,
             GL_FALSE,
             sizeof(DebugVertex),
-            (void*)offsetof(DebugVertex, a_color)
+            reinterpret_cast<void*>(offsetof(DebugVertex, a_color))
         );
 
         glEnableVertexAttribArray(0);
@@ -149,7 +149,7 @@ upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
 }
 
 static void 
-load_texture_array_layer(const char* texture_path, const GLint layer_index)
+load_texture_array_layer(const std::string& texture_path, const GLint layer_index)
 {
     int width;
     int height;
@@ -157,7 +157,7 @@ load_texture_array_layer(const char* texture_path, const GLint layer_index)
 
     stbi_set_flip_vertically_on_load(true);
 
-    const unsigned char* pixel_data_array = stbi_load(texture_path, &width, &height, &channels, 4);
+    const unsigned char* pixel_data_array = stbi_load(texture_path.c_str(), &width, &height, &channels, 4);
 
     assert(pixel_data_array);
 
@@ -178,14 +178,12 @@ load_texture_array_layer(const char* texture_path, const GLint layer_index)
         pixel_data_array
     );
 
-    LOG_INFO("Loaded texture: %s", texture_path);
+    LOG_INFO("Loaded texture: %s", texture_path.c_str());
 }
 
 static void 
 load_block_texture_directory(Shell& shell)
 {
-    const char* block_texture_directory = "assets/textures/block";
-
     VoxelRender& voxel_render = shell.render.voxel_render;
 
     glGenTextures(1, &voxel_render.texture_array_id);
@@ -210,15 +208,17 @@ load_block_texture_directory(Shell& shell)
     {
         const ConfigEntry& config_entry = voxel_render.block_config_data.entry_vector[layer_index];
 
-        char texture_path[256];
-
-        snprintf(texture_path, sizeof(texture_path), "%s/%s", block_texture_directory, config_entry.value.c_str());
-
         const i32 block_type_index = world_block_type_index_from_string(config_entry.key);
 
         assert(block_type_index >= 0);
         assert(block_type_index < block_type_count);
 
+        std::string texture_path =
+            std::format(
+                "assets/textures/block/{}",
+                config_entry.value
+            );
+        
         voxel_render.block_type_layer_array[block_type_index] = layer_index;
 
         load_texture_array_layer(texture_path, layer_index);
@@ -228,8 +228,6 @@ load_block_texture_directory(Shell& shell)
 static void 
 load_actor_texture_directory(Shell& shell)
 {
-    const char* actor_texture_directory = "assets/textures/model";
-
     ModelRender& model_render = shell.render.model_render;
 
     glGenTextures(1, &model_render.texture_array_id);
@@ -254,16 +252,18 @@ load_actor_texture_directory(Shell& shell)
     {
         const ConfigEntry& config_entry = model_render.actor_config_data.entry_vector[layer_index];
 
-        char texture_path[256];
-
-        snprintf(texture_path, sizeof(texture_path), "%s/%s", actor_texture_directory, config_entry.value.c_str());
-
         const i32 nation_type_index = nation_type_index_from_string(config_entry.key);
 
         assert(nation_type_index >= 0);
         assert(nation_type_index < nation_type_count);
-
+        
         model_render.actor_type_layer_array[nation_type_index] = layer_index;
+        
+        std::string texture_path =
+            std::format(
+                "assets/textures/model/{}",
+                config_entry.value
+            );
 
         load_texture_array_layer(texture_path, layer_index);
     }
@@ -415,7 +415,7 @@ generate_sector_mesh(VoxelRender& voxel_render, const Sim& sim, const i32 sector
             for (i32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + sector_size_in_cells; ++cell_x) 
             {
                 const i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
-                const cell* cell = &sim.world.cell_array[cell_index];
+                const Cell* cell = &sim.world.cell_array[cell_index];
 
                 if (cell->block_type == BlockType::None)
                 {
@@ -452,8 +452,8 @@ emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
 {
     for (i32 vertex_index = 0; vertex_index < vertex_count_per_face; ++vertex_index)
     {
-        const i32 direction_index = static_cast<u8>(sector_quad.direction);
-        const i32 block_type_index = static_cast<u8>(sector_quad.block_type);
+        const i32 direction_index = static_cast<i32>(sector_quad.direction);
+        const i32 block_type_index = static_cast<i32>(sector_quad.block_type);
         
         const IVec3 vertex_position = sector_quad.local_coordinate + voxel_vertex_array[direction_index][vertex_index];
         
@@ -605,7 +605,7 @@ upload_model_gpu_data(ModelGpuData& model_gpu_data)
 static void 
 init_glad(const Platform& platform)
 {
-    const i32 glad_load_gl_result = gladLoadGL();
+    const i32 glad_load_gl_result = gladLoadGL(glfwGetProcAddress);
 
     assert(glad_load_gl_result != 0);
 
@@ -694,14 +694,14 @@ init_voxel_render(Shell& shell, const Sim& sim)
 
     voxel_render.u_normal_table_location = glGetUniformLocation(voxel_render.program_id, "u_normal_table");
 
-    glUniform3fv(voxel_render.u_normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
+    glUniform3fv(voxel_render.u_normal_table_location, direction_count, &direction_normal_array[0][0]);
 
     voxel_render.u_uv_projection_table_location = glGetUniformLocation(
         voxel_render.program_id,
         "u_uv_projection_table"
     );
 
-    glUniform3fv(voxel_render.u_uv_projection_table_location, DIRECTION_COUNT * 2, &voxel_uv_projection_array[0][0]);
+    glUniform3fv(voxel_render.u_uv_projection_table_location, direction_count * 2, &voxel_uv_projection_array[0][0]);
 
     voxel_render.u_projection_location = glGetUniformLocation(voxel_render.program_id, "u_projection_matrix");
     voxel_render.u_view_location = glGetUniformLocation(voxel_render.program_id, "u_view_matrix");

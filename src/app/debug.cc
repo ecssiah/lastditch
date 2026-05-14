@@ -1,4 +1,4 @@
-#include "Debug.h"
+#include "debug.h"
 
 void 
 debug_add_line(Debug& debug, const Vec3& a, const Vec3& b, const Vec3& color)

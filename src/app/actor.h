@@ -1,9 +1,9 @@
 #pragma once
 
-#include "core/geometry.h"
-#include "core/types.h"
 #include "app/nation.h"
 #include "app/physics.h"
+#include "core/geometry.h"
+#include "core/types.h"
 
 constexpr i32 actor_max = 256;
 
@@ -41,9 +41,9 @@ enum ActorType
     FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr i32 ACTOR_TYPE_COUNT = FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_COUNT);
+constexpr i32 actor_type_count = FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_COUNT);
 
-extern const char* actor_type_string_array[ACTOR_TYPE_COUNT];
+extern const char* actor_type_string_array[actor_type_count];
 
 struct Actor
 {

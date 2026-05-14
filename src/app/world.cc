@@ -4,8 +4,8 @@
 #include <cstdlib>
 
 #include "core/types.h"
-#include "app/Area.h"
-#include "app/Debug.h"
+#include "app/area.h"
+#include "app/debug.h"
 #include "app/direction.h"
 #include "app/population.h"
 
@@ -21,127 +21,127 @@ const char* section_type_string_array[section_count] =
 
 const IVec2 section_origin_array[section_count] =
 {
-    // SECTION_CT                              
+    // Center                              
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size,
         tower_border + tower_outer_hall_size + tower_quadrant_size,
     },
-    // SECTION_C1
+    // Center1
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
         tower_border + tower_outer_hall_size + tower_quadrant_size,
     },
-    // SECTION_C2
+    // Center2
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size,
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_C3
+    // Center3
     {
         tower_border + tower_outer_hall_size,
         tower_border + tower_outer_hall_size + tower_quadrant_size,
     },
-    // SECTION_C4
+    // Center4
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size,
         tower_border + tower_outer_hall_size,
     },
-    // Section::Quadrant1
+    // Quadrant1
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_Q2
+    // Quadrant2
     {
         tower_border + tower_outer_hall_size,
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_Q3
+    // Quadrant3
     {
         tower_border + tower_outer_hall_size,
         tower_border + tower_outer_hall_size,
     },
-    // SECTION_Q4
+    // Quadrant4
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
         tower_border + tower_outer_hall_size,
     },
-    // SECTION_E1
+    // East1
     {
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
         tower_border + tower_outer_hall_size,
     },
-    // SECTION_E2
+    // East2
     {
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
         tower_border + tower_outer_hall_size + tower_quadrant_size,
     },
-    // SECTION_E3
+    // East3
     {
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_NE
+    // NorthEast
     {
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_N1
+    // North1
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_N2
+    // North2
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size,
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_N3
+    // North3
     {
         tower_border + tower_outer_hall_size,
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_NW
+    // NorthWest
     {
         tower_border,
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_W1
+    // West1
     {
         tower_border,
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
     },
-    // SECTION_W2
+    // West2
     {
         tower_border,
         tower_border + tower_outer_hall_size + tower_quadrant_size,
     },
-    // SECTION_W3
+    // West3
     {
         tower_border,
         tower_border + tower_outer_hall_size,
     },
-    // SECTION_SW
+    // SouthWest
     {
         tower_border,
         tower_border,
     },
-    // SECTION_S1
+    // South1
     {
         tower_border + tower_outer_hall_size,
         tower_border,
     },
-    // SECTION_S2
+    // South2
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size,
         tower_border,
     },
-    // SECTION_S3
+    // South3
     {
         tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
         tower_border,
     },
-    // SECTION_SE
+    // SouthEast
     {
         tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
         tower_border,
@@ -150,127 +150,127 @@ const IVec2 section_origin_array[section_count] =
 
 const IVec2 section_size_array[section_count] =
 {
-    // SECTION_CT                              
+    // Center                             
     {
         tower_center_hall_size,
         tower_center_hall_size,
     },
-    // SECTION_C1
+    // Center1
     {
         tower_quadrant_size,
         tower_center_hall_size,
     },
-    // SECTION_C2
+    // Center2
     {
         tower_center_hall_size,
         tower_quadrant_size,
     },
-    // SECTION_C3
+    // Center3
     {
         tower_quadrant_size,
         tower_center_hall_size,
     },
-    // SECTION_C4
+    // Center4
     {
         tower_center_hall_size,
         tower_quadrant_size,
     },
-    // Section::Quadrant1
+    // Quadrant1
     {
         tower_quadrant_size,
         tower_quadrant_size,
     },
-    // SECTION_Q2
+    // Quadrant2
     {
         tower_quadrant_size,
         tower_quadrant_size,
     },
-    // SECTION_Q3
+    // Quadrant3
     {
         tower_quadrant_size,
         tower_quadrant_size,
     },
-    // SECTION_Q4
+    // Quadrant4
     {
         tower_quadrant_size,
         tower_quadrant_size,
     },
-    // SECTION_E1
+    // East1
     {
         tower_outer_hall_size,
         tower_quadrant_size,
     },
-    // SECTION_E2
+    // East2
     {
         tower_outer_hall_size,
         tower_center_hall_size,
     },
-    // SECTION_E3
+    // East3
     {
         tower_outer_hall_size,
         tower_quadrant_size,
     },
-    // SECTION_NE
+    // NorthEast
     {
         tower_outer_hall_size,
         tower_outer_hall_size,
     },
-    // SECTION_N1
+    // North1
     {
         tower_quadrant_size,
         tower_outer_hall_size,
     },
-    // SECTION_N2
+    // North2
     {
         tower_center_hall_size,
         tower_outer_hall_size,
     },
-    // SECTION_N3
+    // North3
     {
         tower_quadrant_size,
         tower_outer_hall_size,
     },
-    // SECTION_NW
+    // NorthWest
     {
         tower_outer_hall_size,
         tower_outer_hall_size,
     },
-    // SECTION_W1
+    // West1
     {
         tower_outer_hall_size,
         tower_quadrant_size,
     },
-    // SECTION_W2
+    // West2
     {
         tower_outer_hall_size,
         tower_center_hall_size,
     },
-    // SECTION_W3
+    // West3
     {
         tower_outer_hall_size,
         tower_quadrant_size,
     },
-    // SECTION_SW
+    // SouthWest
     {
         tower_outer_hall_size,
         tower_outer_hall_size,
     },
-    // SECTION_S1
+    // South1
     {
         tower_quadrant_size,
         tower_outer_hall_size,
     },
-    // SECTION_S2
+    // South2
     {
         tower_center_hall_size,
         tower_outer_hall_size,
     },
-    // SECTION_S3
+    // South3
     {
         tower_quadrant_size,
         tower_outer_hall_size,
     },
-    // SECTION_SE
+    // SouthEast
     {
         tower_outer_hall_size,
         tower_outer_hall_size,
@@ -437,12 +437,12 @@ world_get_stride(const Direction direction)
 {
     switch (direction)
     {
-    case Direction::east:   return +world_stride_x;
-    case Direction::west:   return -world_stride_x;
-    case Direction::north:  return +world_stride_y;
-    case Direction::south:  return -world_stride_y;
-    case Direction::up:     return +world_stride_z;
-    case Direction::down:   return -world_stride_z;
+    case Direction::East:   return +world_stride_x;
+    case Direction::West:   return -world_stride_x;
+    case Direction::North:  return +world_stride_y;
+    case Direction::South:  return -world_stride_y;
+    case Direction::Up:     return +world_stride_z;
+    case Direction::Down:   return -world_stride_z;
     }
 }
 
@@ -476,7 +476,7 @@ world_is_solid(const World& world, const i32 x, const i32 y, const i32 z)
 
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
 
-    const cell* cell = &world.cell_array[cell_index];
+    const Cell* cell = &world.cell_array[cell_index];
 
     return cell->block_type != BlockType::None;
 }
@@ -484,14 +484,14 @@ world_is_solid(const World& world, const i32 x, const i32 y, const i32 z)
 b32 
 world_is_clear(const World& world, const i32 x, const i32 y, const i32 z, const u8 direction_mask)
 {
-    for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    for (i32 direction_index = 0; direction_index < direction_count; ++direction_index)
     {
         if (direction_mask & (1 << direction_index))
         {
             const IVec3 neighbor_position = {
-                x + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
-                y + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][1]),
-                z + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
+                x + static_cast<i32>(direction_normal_array[direction_index][0]),
+                y + static_cast<i32>(direction_normal_array[direction_index][1]),
+                z + static_cast<i32>(direction_normal_array[direction_index][2]),
             };
 
             if (world_is_solid(world, neighbor_position.x, neighbor_position.y, neighbor_position.z))
@@ -511,12 +511,12 @@ world_get_direction_mask(const World& world, const i32 x, const i32 y, const i32
 
     const i32 cell_index = world_cell_coordinate_to_index(x, y, z);
 
-    for (i32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    for (i32 direction_index = 0; direction_index < direction_count; ++direction_index)
     {
         const IVec3 neighbor_position = {
-            x + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
-            y + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][1]),
-            z + static_cast<i32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
+            x + static_cast<i32>(direction_normal_array[direction_index][0]),
+            y + static_cast<i32>(direction_normal_array[direction_index][1]),
+            z + static_cast<i32>(direction_normal_array[direction_index][2]),
         };
 
         const b32 valid_neighbor = world_cell_coordinate_is_valid(neighbor_position.x, neighbor_position.y, neighbor_position.z);
@@ -539,7 +539,7 @@ world_get_direction_mask(const World& world, const i32 x, const i32 y, const i32
     return direction_mask;
 }
 
-cell*
+Cell*
 world_get_cell(World& world, const i32 x, const i32 y, const i32 z)
 {
     if (!world_cell_coordinate_is_valid(x, y, z))
@@ -555,7 +555,7 @@ world_get_cell(World& world, const i32 x, const i32 y, const i32 z)
 void 
 world_set_block_type(World& world, const i32 x, const i32 y, const i32 z, const BlockType block_type)
 {
-    cell* cell = world_get_cell(world, x, y, z);
+    Cell* cell = world_get_cell(world, x, y, z);
 
     if (cell)
     {
@@ -879,7 +879,7 @@ layout_roof_areas(World& world)
         for (i32 area_x = tower_border; area_x < tower_size + tower_border; area_x += roof_area_size)
         {
             Area roof_area = {
-                .area_type = AreaType::open,
+                .area_type = AreaType::Open,
                 .floor_number = tower_floor_count,
                 .bounds = {
                     {area_x, area_y},
@@ -898,7 +898,7 @@ layout_elevator_areas(World& world)
     for (i32 floor_number = 0; floor_number < tower_floor_count + 1; ++floor_number)
     {
         Area elevator_shaft = {
-            .area_type = AreaType::elevator,
+            .area_type = AreaType::Elevator,
             .floor_number = floor_number,
             .bounds = {
                 {
@@ -923,75 +923,51 @@ layout_tower_areas(World& world)
     {
         AreaPool& area_pool = world.area_pool_array[floor_number];
 
-        const IVec2 q1_origin = section_origin_array[static_cast<u8>(Section::Quadrant1)];
-        const IVec2 q1_size = section_size_array[static_cast<u8>(Section::Quadrant1)];
+        const IVec2 quadrant1_origin = section_origin_array[static_cast<u8>(Section::Quadrant1)];
+        const IVec2 quadrant1_size = section_size_array[static_cast<u8>(Section::Quadrant1)];
         
         Area area_quadrant_1 = {
-            .area_type = AreaType::room,
+            .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = {
-                {
-                    q1_origin.x, 
-                    q1_origin.y
-                },
-                {
-                    q1_origin.x + q1_size.x,
-                    q1_origin.y + q1_size.y,
-                },
+                quadrant1_origin,
+                quadrant1_origin + quadrant1_size,
             },
         };
         
-        const IVec2 q2_origin = section_origin_array[static_cast<u8>(Section::Quadrant2)];  
-        const IVec2 q2_size = section_size_array[static_cast<u8>(Section::Quadrant2)];
+        const IVec2 quadrant2_origin = section_origin_array[static_cast<u8>(Section::Quadrant2)];  
+        const IVec2 quadrant2_size = section_size_array[static_cast<u8>(Section::Quadrant2)];
 
         Area area_quadrant_2 = {
-            .area_type = AreaType::room,
+            .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = {
-                {
-                    q2_origin.x,
-                    q2_origin.y,
-                },
-                {
-                    q2_origin.x + q2_size.x,
-                    q2_origin.y + q2_size.y,
-                },
+                quadrant2_origin,
+                quadrant2_origin + quadrant2_size,
             },
         };
         
-        const IVec2 q3_origin = section_origin_array[static_cast<u8>(Section::Quadrant3)];  
-        const IVec2 q3_size = section_size_array[static_cast<u8>(Section::Quadrant3)];
+        const IVec2 quadrant3_origin = section_origin_array[static_cast<u8>(Section::Quadrant3)];  
+        const IVec2 quadrant3_size = section_size_array[static_cast<u8>(Section::Quadrant3)];
 
         Area area_quadrant_3 = {
-            .area_type = AreaType::room,
+            .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = {
-                {
-                    q3_origin.x,
-                    q3_origin.y,
-                },
-                {
-                    q3_origin.x + q3_size.x,
-                    q3_origin.y + q3_size.y,
-                },
+                quadrant3_origin,
+                quadrant3_origin + quadrant3_size,
             },
         };
         
-        const IVec2 q4_origin = section_origin_array[static_cast<u8>(Section::Quadrant4)];  
-        const IVec2 q4_size = section_size_array[static_cast<u8>(Section::Quadrant4)];
+        const IVec2 quadrant4_origin = section_origin_array[static_cast<u8>(Section::Quadrant4)];  
+        const IVec2 quadrant4_size = section_size_array[static_cast<u8>(Section::Quadrant4)];
 
         Area area_quadrant_4 = {
-            .area_type = AreaType::room,
+            .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = {
-                {
-                    q4_origin.x,
-                    q4_origin.y,
-                },
-                {
-                    q4_origin.x + q4_size.x,
-                    q4_origin.y + q4_size.y,
-                },
+                quadrant4_origin,
+                quadrant4_origin + quadrant4_size,
             },
         };
 
@@ -1001,9 +977,9 @@ layout_tower_areas(World& world)
         area_add(area_pool, area_quadrant_4);
 
         i32 area_id_removal_count = 0;
-        i32 area_indices_to_remove[4 << AREA_EXPANSION_ITERATION_COUNT];
+        i32 area_indices_to_remove[4 << area_expansion_iteration_count];
 
-        for (i32 iteration = 0; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
+        for (i32 iteration = 0; iteration < area_expansion_iteration_count; ++iteration)
         {
             i32 pool_index = 0;
             const i32 initial_count = area_pool.active_count;
@@ -1022,7 +998,7 @@ layout_tower_areas(World& world)
 
                 const i32 axis_split_value = static_cast<size_t>(axis_split);
 
-                if (area_size[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
+                if (area_size[axis_split_value] >= area_expansion_size_min)
                 {
                     const i32 split_size = area_size[axis_split_value] / 2 + (-2 + (rand() % 5));
 
@@ -1069,11 +1045,11 @@ layout_tower_areas(World& world)
             const IVec2 section_size = section_size_array[section_index];
 
             Area section_area = {
-                .area_type = AreaType::open,
+                .area_type = AreaType::Open,
                 .floor_number = floor_number,
                 .bounds = {
-                    {section_origin.x, section_origin.y},
-                    {section_origin.x + section_size.x, section_origin.y + section_size.y},
+                    section_origin,
+                    section_origin + section_size,
                 },
             };
 
@@ -1504,7 +1480,7 @@ layout_test_area(World& world)
     };
 
     Area test_room1 = {
-        .area_type = AreaType::wireframe,
+        .area_type = AreaType::Wireframe,
         .floor_number = tower_floor_count,
         .bounds = {
             {test_area_position.x, test_area_position.y},
@@ -1513,7 +1489,7 @@ layout_test_area(World& world)
     };
 
     Area test_room2 = {
-        .area_type = AreaType::wireframe,
+        .area_type = AreaType::Wireframe,
         .floor_number = tower_floor_count,
         .bounds = {
             {test_area_position.x + 10, test_area_position.y + 10},
@@ -1533,7 +1509,7 @@ get_area_overlap(const Area& a, const Area& b)
             {0, 0},
             {0, 0},
         },
-        .direction = Direction::east,
+        .direction = Direction::East,
     };
 
     if (a.bounds.max.x == b.bounds.min.x)
@@ -1543,7 +1519,7 @@ get_area_overlap(const Area& a, const Area& b)
 
         if (overlap_y_min < overlap_y_max)
         {
-            area_overlap.direction = Direction::east;
+            area_overlap.direction = Direction::East;
 
             area_overlap.bounds.min.x = a.bounds.max.x;
             area_overlap.bounds.min.y = overlap_y_min;
@@ -1559,7 +1535,7 @@ get_area_overlap(const Area& a, const Area& b)
 
         if (overlap_y_min < overlap_y_max)
         {
-            area_overlap.direction = Direction::west;
+            area_overlap.direction = Direction::West;
 
             area_overlap.bounds.min.x = a.bounds.min.x;
             area_overlap.bounds.min.y = overlap_y_min;
@@ -1575,7 +1551,7 @@ get_area_overlap(const Area& a, const Area& b)
 
         if (overlap_x_min < overlap_x_max)
         {
-            area_overlap.direction = Direction::north;
+            area_overlap.direction = Direction::North;
 
             area_overlap.bounds.min.x = overlap_x_min;
             area_overlap.bounds.min.y = a.bounds.max.y;
@@ -1591,7 +1567,7 @@ get_area_overlap(const Area& a, const Area& b)
 
         if (overlap_x_min < overlap_x_max)
         {
-            area_overlap.direction = Direction::south;
+            area_overlap.direction = Direction::South;
 
             area_overlap.bounds.min.x = overlap_x_min;
             area_overlap.bounds.min.y = a.bounds.min.y;
@@ -1629,7 +1605,7 @@ calculate_area_edges(World& world, i32 floor_number)
             if (area_overlap_size.x > 0 && area_overlap_size.y > 0)
             {
                 AreaEdge area_edge = {
-                    .edge_id = INT32_MAX,
+                    .edge_id = std::numeric_limits<i32>::max(),
                     .area_a_id = area_id_left,
                     .area_b_id = area_id_right,
                     .area_a_direction = area_overlap.direction,
@@ -1642,8 +1618,8 @@ calculate_area_edges(World& world, i32 floor_number)
                 area_left.edge_id_array[area_left.edge_id_count++] = area_edge.edge_id;
                 area_right.edge_id_array[area_right.edge_id_count++] = area_edge.edge_id;
 
-                assert(area_left.edge_id_count < AREA_EDGE_MAX);
-                assert(area_right.edge_id_count < AREA_EDGE_MAX);
+                assert(area_left.edge_id_count < area_edge_max);
+                assert(area_right.edge_id_count < area_edge_max);
             }
         }
     }
@@ -1667,12 +1643,12 @@ init_area_pool_array(World& world)
 
         area_pool.floor_number = floor_number;
         area_pool.active_count = 0;
-        area_pool.free_count = AREA_POOL_MAX;
+        area_pool.free_count = area_pool_max;
 
-        for (i32 pool_id = 0; pool_id < AREA_POOL_MAX; ++pool_id)
+        for (i32 pool_id = 0; pool_id < area_pool_max; ++pool_id)
         {
             area_pool.free_array[pool_id] = pool_id;
-            area_pool.active_lookup[pool_id] = UINT32_MAX;
+            area_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();
         }
     }
 }
@@ -1683,12 +1659,12 @@ init_edge_pool(World& world)
     EdgePool& edge_pool = world.edge_pool;
 
     edge_pool.active_count = 0;
-    edge_pool.free_count = EDGE_POOL_MAX;
+    edge_pool.free_count = edge_pool_max;
 
-    for (i32 pool_id = 0; pool_id < EDGE_POOL_MAX; ++pool_id)
+    for (i32 pool_id = 0; pool_id < edge_pool_max; ++pool_id)
     {
         edge_pool.free_array[pool_id] = pool_id;
-        edge_pool.active_lookup[pool_id] = UINT32_MAX;
+        edge_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();
     }
 }
 
@@ -1697,7 +1673,7 @@ calculate_world_direction_mask(World& world)
 {
     for (i32 cell_index = 0; cell_index < world_volume_in_cells; ++cell_index)
     {
-        cell& cell = world.cell_array[cell_index];
+        Cell& cell = world.cell_array[cell_index];
 
         const IVec3 cell_coordinate = world_cell_index_to_coordinate(cell_index);
 
@@ -1727,7 +1703,7 @@ construct_doors(World& world, const Area& area)
         
         const IVec2 area_overlap_size = ibounds2_size(area_edge->area_overlap.bounds);
 
-        if (area_overlap_size.x >= DOOR_MINIMUM_EDGE_SIZE)
+        if (area_overlap_size.x >= door_minimum_edge_size)
         {
             const IVec3 door_position = {
                 area_edge->area_overlap.bounds.min.x + area_overlap_size.x / 2,
@@ -1737,7 +1713,7 @@ construct_doors(World& world, const Area& area)
 
             constexpr IVec3 door_frame_size = {3, 1, 3};
 
-            if (edge_direction == Direction::north)
+            if (edge_direction == Direction::North)
             {
                 world_set_block_type_cube(
                     world,
@@ -1753,7 +1729,7 @@ construct_doors(World& world, const Area& area)
                     BlockType::None
                 );
             }
-            else if (edge_direction == Direction::south)
+            else if (edge_direction == Direction::South)
             {
                 world_set_block_type_cube(
                     world,
@@ -1770,7 +1746,7 @@ construct_doors(World& world, const Area& area)
                 );
             }
         }
-        else if (area_overlap_size.y >= DOOR_MINIMUM_EDGE_SIZE)
+        else if (area_overlap_size.y >= door_minimum_edge_size)
         {
             const IVec3 door_position = {
                 area_edge->area_overlap.bounds.min.x,
@@ -1780,7 +1756,7 @@ construct_doors(World& world, const Area& area)
 
             constexpr IVec3 door_frame_size = {1, 3, 3};
 
-            if (edge_direction == Direction::east)
+            if (edge_direction == Direction::East)
             {
                 world_set_block_type_cube(
                     world,
@@ -1796,7 +1772,7 @@ construct_doors(World& world, const Area& area)
                     BlockType::None
                 );
             }
-            else if (edge_direction == Direction::west)
+            else if (edge_direction == Direction::West)
             {
                 world_set_block_type_cube(
                     world,
@@ -1897,13 +1873,13 @@ construct_areas(World& world, i32 floor_number)
 
         switch (area.area_type)
         {
-        case AreaType::room: 
+        case AreaType::Room: 
             construct_room(world, area);
             break;
-        case AreaType::elevator: 
+        case AreaType::Elevator: 
             construct_elevator(world, area);
             break;
-        case AreaType::wireframe: 
+        case AreaType::Wireframe: 
             construct_wireframe(world, area);
             break;
         default: break;
@@ -1921,7 +1897,7 @@ place_content(World& world, i32 floor_number)
         const i32 area_id = area_pool.active_array[pool_id];
         const Area& area = area_pool.area_array[area_id];
 
-        if (area.area_type != AreaType::room)
+        if (area.area_type != AreaType::Room)
         {
             continue;
         }

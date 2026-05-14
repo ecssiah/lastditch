@@ -1,11 +1,11 @@
 #include "app/direction.h"
 
-const char* DIRECTION_STRING[DIRECTION_COUNT] =
+const char* direction_string_array[direction_count] =
 {
     FOR_LIST_DIRECTION(DEFINE_ENUM_STRINGS)
 };
 
-const Vec3 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT] =
+const Vec3 direction_normal_array[direction_count] =
 {
     {+1.0f, +0.0f, +0.0f},
     {-1.0f, +0.0f, +0.0f},
@@ -20,11 +20,11 @@ direction_opposite(const Direction& direction)
 {
     switch (direction)
     {
-    case Direction::east:   return Direction::west;
-    case Direction::west:   return Direction::east;
-    case Direction::north:  return Direction::south;
-    case Direction::south:  return Direction::north;
-    case Direction::up:     return Direction::down;
-    case Direction::down:   return Direction::up;
+    case Direction::East:   return Direction::West;
+    case Direction::West:   return Direction::East;
+    case Direction::North:  return Direction::South;
+    case Direction::South:  return Direction::North;
+    case Direction::Up:     return Direction::Down;
+    case Direction::Down:   return Direction::Up;
     }
 }

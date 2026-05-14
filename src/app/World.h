@@ -191,7 +191,7 @@ extern const BlockType area_content_array_level_3[];
 
 extern const BlockTypeList area_content_master_list[tower_floor_count];
 
-struct cell
+struct Cell
 {
     i32 cell_index;
 
@@ -214,7 +214,7 @@ struct World
 
     Vec3 gravity;
 
-    std::array<cell, world_volume_in_cells> cell_array;
+    std::array<Cell, world_volume_in_cells> cell_array;
 
     AreaPool area_pool_array[floor_count];
     EdgePool edge_pool;
@@ -249,8 +249,8 @@ i32 world_block_type_index_from_string(const std::string& block_type_string);
 
 u8 world_get_direction_mask(const World& world, i32 x, i32 y, i32 z);
 
-cell* world_get_cell(World& world, i32 x, i32 y, i32 z);
-cell* world_get_free_cell(World& world, i32 x, i32 y, i32 z);
+Cell* world_get_cell(World& world, i32 x, i32 y, i32 z);
+Cell* world_get_free_cell(World& world, i32 x, i32 y, i32 z);
 
 void world_set_block_type(World& world, i32 x, i32 y, i32 z, BlockType block_type);
 void world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);

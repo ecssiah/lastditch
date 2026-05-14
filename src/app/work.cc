@@ -81,7 +81,7 @@ work_init(Work& work)
     for (i32 pool_id = 0; pool_id < act_max_count; ++pool_id)
     {
         act_pool.free_array[pool_id] = pool_id;
-        act_pool.active_lookup[pool_id] = UINT32_MAX;
+        act_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();
     }
 }
 

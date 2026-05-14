@@ -10,7 +10,7 @@ static void
 queue_move_action(const Platform& platform, Sim& sim)
 {
     Action move_action = {
-        .type = ActionType::move,
+        .type = ActionType::Move,
         .action_value = vec3_broadcast(0.0f),
     };
 
@@ -53,7 +53,7 @@ static void
 queue_rotate_action(const Platform& platform, Sim& sim)
 {
     const Action rotate_action = {
-        .type = ActionType::rotate,
+        .type = ActionType::Rotate,
         .action_value = {
             static_cast<f32>(platform.input.pointer_delta_x),
             static_cast<f32>(platform.input.pointer_delta_y),
@@ -68,7 +68,7 @@ static void
 queue_jump_action(Sim& sim)
 {
     const Action jump_action = {
-        .type = ActionType::jump,
+        .type = ActionType::Jump,
         .action_value = vec3_broadcast(1.0f),
     };
 
@@ -79,7 +79,7 @@ static void
 queue_debug_mode_action(Sim& sim)
 {
     const Action debug_action = {
-        .type = ActionType::debug_mode,
+        .type = ActionType::DebugMode,
         .action_value = vec3_broadcast( 1.0f),
     };
 

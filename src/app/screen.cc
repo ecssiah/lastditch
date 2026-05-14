@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <format>
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <stb_image.h>
 
 #include "core/log.h"

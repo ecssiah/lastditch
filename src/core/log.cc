@@ -1,14 +1,15 @@
 #include "log.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstdarg>
+#include <fstream>
+#include <filesystem>
+#include <string>
 
-static FILE* ld_log_file;
-static char ld_log_base_path[256];
-static char ld_current_day_string[11];
+static std::ofstream            ld_log_file;
+static std::filesystem::path    ld_log_directory;
+static std::string              ld_current_day_string;
 
 constexpr const char*
 log_level_to_string(const LogLevel level)
@@ -28,14 +29,9 @@ log_level_to_string(const LogLevel level)
 void 
 log_init()
 {
-    auto directory_name = "log/";
+    ld_log_directory = "logs";
 
-    strncpy(ld_log_base_path, directory_name, sizeof(ld_log_base_path) - 1);
-
-    if (!ld_log_file)
-    {
-        ld_log_file = stderr;
-    }
+    std::filesystem::create_directories(ld_log_directory);
 
     LOG_INFO("\n\nLOG INIT\n");
 }
@@ -43,35 +39,30 @@ log_init()
 void 
 log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...)
 {
-    if (!ld_log_file)
-    {
-        ld_log_file = stderr;
-    }
 
     const time_t now = time(NULL);
     tm tm_info;
     localtime_r(&now, &tm_info);
 
-    char file_timestamp[11];
-    strftime(file_timestamp, sizeof(file_timestamp), "%Y_%m_%d", &tm_info);
+    char file_timestamp_buffer[11];
+    strftime(file_timestamp_buffer, sizeof(file_timestamp_buffer), "%Y_%m_%d", &tm_info);
 
-    if (ld_log_base_path[0] != '\0' && strcmp(file_timestamp, ld_current_day_string) != 0)
+    const std::string file_timestamp = file_timestamp_buffer;
+
+    if (file_timestamp != ld_current_day_string)
     {
-        if (ld_log_file && ld_log_file != stderr)
+        if (ld_log_file.is_open())
         {
-            fclose(ld_log_file);
+            ld_log_file.close();
         }
 
-        strncpy(ld_current_day_string, file_timestamp, sizeof(ld_current_day_string) - 1);
+        ld_current_day_string = file_timestamp;
 
-        char path[512];
-        snprintf(path, sizeof(path), "%sengine_%s.log", ld_log_base_path, file_timestamp);
+        const auto path =
+            ld_log_directory /
+            ("engine_" + file_timestamp + ".log");
 
-        ld_log_file = fopen(path, "a");
-        if (!ld_log_file)
-        {
-            ld_log_file = stderr;
-        }
+        ld_log_file.open(path, std::ios::app);
     }
 
     const char* filename = file;
@@ -84,26 +75,26 @@ log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...
 
     char timestamp[32];
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &tm_info);
+    FILE* console_stream =
+        log_level >= LogLevel::Warn
+        ? stderr
+        : stdout;
 
     fprintf(
-        stderr,
+        console_stream,
         "[%s] [%s] (%s:%d) ",
         timestamp,
         log_level_to_string(log_level),
         filename,
         line
     );
-
-    if (ld_log_file && ld_log_file != stderr)
+    
+    if (ld_log_file.is_open())
     {
-        fprintf(
-            ld_log_file,
-            "[%s] [%s] (%s:%d) ",
-            timestamp,
-            log_level_to_string(log_level),
-            filename,
-            line
-        );
+        ld_log_file
+            << "[" << timestamp << "] "
+            << "[" << log_level_to_string(log_level) << "] "
+            << "(" << filename << ":" << line << ") ";
     }
 
     va_list args;
@@ -112,33 +103,33 @@ log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...
     va_list args_copy;
     va_copy(args_copy, args);
 
-    vfprintf(stderr, fmt, args);
-
-    if (ld_log_file && ld_log_file != stderr)
+    vfprintf(console_stream, fmt, args);
+    if (ld_log_file.is_open())
     {
-        vfprintf(ld_log_file, fmt, args_copy);
+        char file_message_buffer[4096];
+
+        vsnprintf(file_message_buffer, sizeof(file_message_buffer), fmt, args_copy);
+
+        ld_log_file << file_message_buffer;
     }
 
     va_end(args_copy);
     va_end(args);
 
-    fprintf(stderr, "\n");
-
-    if (ld_log_file && ld_log_file != stderr)
+    fprintf(console_stream, "\n");
+    if (ld_log_file.is_open())
     {
-        fprintf(ld_log_file, "\n");
-        fflush(ld_log_file);
+        ld_log_file << "\n";
+        ld_log_file.flush();
     }
 
     if (log_level == LogLevel::Fatal)
     {
-        fflush(stderr);
-
-        if (ld_log_file && ld_log_file != stderr)
+        fflush(console_stream);
+        if (ld_log_file.is_open())
         {
-            fflush(ld_log_file);
+            ld_log_file.flush();
         }
-
         exit(EXIT_FAILURE);
     }
 }
@@ -147,9 +138,8 @@ void
 log_close()
 {
     LOG_INFO("\n\nLOG CLOSE\n");
-
-    if (ld_log_file && ld_log_file != stderr)
+    if (ld_log_file.is_open())
     {
-        fclose(ld_log_file);
+        ld_log_file.close();
     }
 }
