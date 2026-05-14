@@ -167,6 +167,6 @@ population_init(Population& population, Work& work)
 }
 
 void 
-population_close()
+population_quit()
 {
 }

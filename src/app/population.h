@@ -18,4 +18,4 @@ struct Population
 };
 
 void population_init(Population& population, Work& work);
-void population_close();
+void population_quit();

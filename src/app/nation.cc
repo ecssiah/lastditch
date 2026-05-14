@@ -1,7 +1,5 @@
 #include "app/nation.h"
 
-#include <cassert>
-
 #include "app/world.h"
 
 const char* NATION_TYPE_STRING[nation_type_count] =

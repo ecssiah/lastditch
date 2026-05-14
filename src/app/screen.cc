@@ -5,6 +5,7 @@
 #include <glad/gl.h>
 #include <stb_image.h>
 
+#include "actor.h"
 #include "core/log.h"
 #include "app/world.h"
 #include "app/render.h"
@@ -76,7 +77,7 @@ load_textures(Screen& screen, const std::string& textures_path)
 }
 
 static void 
-draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
+draw_text(const Screen& screen, const std::string& text, f32 x, f32 y)
 {
     constexpr f32 scale = 2.0f;
 
@@ -136,7 +137,7 @@ draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
         cursor_x += char_width;
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, shell.screen.vbo_id);
+    glBindBuffer(GL_ARRAY_BUFFER, screen.vbo_id);
     
     glBufferData(
         GL_ARRAY_BUFFER, 
@@ -149,10 +150,8 @@ draw_text(const Shell& shell, const std::string& text, f32 x, f32 y)
 }
 
 void 
-screen_init(Shell& shell, const Platform& platform)
+screen_init(Screen& screen, const Platform& platform)
 {
-    Screen& screen = shell.screen;
-
     const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
     const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
 
@@ -228,9 +227,9 @@ screen_init(Shell& shell, const Platform& platform)
 }
 
 static void 
-draw_debug_info(Shell& shell, Sim& sim)
+draw_debug_info(Screen& screen, const Population& population)
 {
-    const Actor& judge = sim.population.actor_pool.actor_array[sim.population.judge_id];
+    const Actor& judge = population.actor_pool.actor_array[population.judge_id];
 
     const IVec3 cell_coordinate = world_position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
     const IVec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
@@ -312,19 +311,17 @@ draw_debug_info(Shell& shell, Sim& sim)
         break;
     }
 
-    draw_text(shell, position_text, 20, 20);
-    draw_text(shell, velocity_text, 20, 40);
-    draw_text(shell, cell_coordinate_text, 20, 60);
-    draw_text(shell, sector_coordinate_text, 20, 80);
-    draw_text(shell, floor_text, 20, 100);
-    draw_text(shell, movement_type_text, 20, 120);
+    draw_text(screen, position_text, 20, 20);
+    draw_text(screen, velocity_text, 20, 40);
+    draw_text(screen, cell_coordinate_text, 20, 60);
+    draw_text(screen, sector_coordinate_text, 20, 80);
+    draw_text(screen, floor_text, 20, 100);
+    draw_text(screen, movement_type_text, 20, 120);
 }
 
 void 
-screen_update(Shell& shell, Sim& sim)
+screen_update(Screen& screen, const Population& population)
 {
-    const Screen& screen = shell.screen;
-
     glUseProgram(screen.program_id);
 
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -340,7 +337,7 @@ screen_update(Shell& shell, Sim& sim)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, screen.font_texture_id);
 
-    draw_debug_info(shell, sim);
+    draw_debug_info(screen, population);
 
     glBindVertexArray(0);
 }

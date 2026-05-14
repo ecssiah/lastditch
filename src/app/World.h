@@ -262,4 +262,4 @@ void world_construct_area(World& world, const Area* area);
 
 void world_init(World& world, Debug& debug);
 void world_update(World& world, Population& population);
-void world_close(World& world);
+void world_quit(World& world);

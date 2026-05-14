@@ -135,7 +135,7 @@ log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...
 }
 
 void 
-log_close()
+log_quit()
 {
     LOG_INFO("\n\nLOG CLOSE\n");
     if (ld_log_file.is_open())

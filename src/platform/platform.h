@@ -20,4 +20,4 @@ struct Platform
 void platform_init(Platform& platform);
 void platform_begin_frame(Platform& platform);
 void platform_end_frame(Platform& platform);
-void platform_close();
+void platform_quit();

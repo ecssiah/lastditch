@@ -1,5 +1,6 @@
 #pragma once
 
+#include "population.h"
 #include "core/types.h"
 #include "app/actor.h"
 
@@ -61,10 +62,10 @@ struct Work
     ActPool act_pool;
 };
 
-void wander_run(Sim& sim, Act& act, f32 delta_time);
-void seek_run(Sim& sim, Act& act, f32 delta_time);
+void wander_run(Population& population, Act& act, f32 delta_time);
+void seek_run(Population& population, Act& act, f32 delta_time);
 
 i32 work_add_act(Work& work, Actor& actor, ActType act_type, ActState act_state);
 
 void work_init(Work& work);
-void work_update(Work& work, Sim& sim, f32 delta_time);
+void work_update(Population& population, Work& work, f32 delta_time);

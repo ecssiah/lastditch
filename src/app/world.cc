@@ -2059,7 +2059,7 @@ world_update(World& world, Population& population)
 }
 
 void 
-world_close(World& world)
+world_quit(World& world)
 {
     
 }

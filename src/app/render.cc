@@ -7,7 +7,6 @@
 
 #include "app/debug.h"
 #include "app/population.h"
-#include "app/shell.h"
 #include "app/viewpoint.h"
 #include "app/world.h"
 #include "core/config.h"
@@ -182,10 +181,8 @@ load_texture_array_layer(const std::string& texture_path, const GLint layer_inde
 }
 
 static void 
-load_block_texture_directory(Shell& shell)
+load_block_texture_directory(VoxelRender& voxel_render)
 {
-    VoxelRender& voxel_render = shell.render.voxel_render;
-
     glGenTextures(1, &voxel_render.texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
 
@@ -226,10 +223,8 @@ load_block_texture_directory(Shell& shell)
 }
 
 static void 
-load_actor_texture_directory(Shell& shell)
+load_actor_texture_directory(ModelRender& model_render)
 {
-    ModelRender& model_render = shell.render.model_render;
-
     glGenTextures(1, &model_render.texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
 
@@ -394,7 +389,7 @@ load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
 }
 
 static void 
-generate_sector_mesh(VoxelRender& voxel_render, const Sim& sim, const i32 sector_index)
+generate_sector_mesh(VoxelRender& voxel_render, const World& world, const i32 sector_index)
 {
     SectorMesh sector_mesh = {
         .sector_index = sector_index,
@@ -415,7 +410,7 @@ generate_sector_mesh(VoxelRender& voxel_render, const Sim& sim, const i32 sector
             for (i32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + sector_size_in_cells; ++cell_x) 
             {
                 const i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
-                const Cell* cell = &sim.world.cell_array[cell_index];
+                const Cell* cell = &world.cell_array[cell_index];
 
                 if (cell->block_type == BlockType::None)
                 {
@@ -615,15 +610,15 @@ init_glad(const Platform& platform)
 }
 
 static void 
-init_viewpoint(Render& render)
+init_viewpoint(Viewpoint& viewpoint)
 {
-    render.viewpoint.position = vec3_broadcast(0.0f);
-    render.viewpoint.rotation = vec3_broadcast(0.0f);
+    viewpoint.position = vec3_broadcast(0.0f);
+    viewpoint.rotation = vec3_broadcast(0.0f);
     
-    render.viewpoint.projection_matrix = mat4_diagonal(1.0f);
-    render.viewpoint.view_matrix = mat4_diagonal(1.0f);
+    viewpoint.projection_matrix = mat4_diagonal(1.0f);
+    viewpoint.view_matrix = mat4_diagonal(1.0f);
     
-    render.viewpoint.projection_matrix = projection_matrix(
+    viewpoint.projection_matrix = projection_matrix(
         to_radians(60.0f),
         window_aspect_ratio,
         0.1f,
@@ -632,10 +627,8 @@ init_viewpoint(Render& render)
 }
 
 static void 
-init_debug_render(Shell& shell)
+init_debug_render(DebugRender& debug_render, Viewpoint& viewpoint)
 {
-    DebugRender& debug_render = shell.render.debug_render;
-
     const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
     const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
 
@@ -656,7 +649,7 @@ init_debug_render(Shell& shell)
         debug_render.u_projection_location, 
         1,
         GL_FALSE,
-        shell.render.viewpoint.projection_matrix[0]
+        viewpoint.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -664,10 +657,8 @@ init_debug_render(Shell& shell)
 }
 
 static void 
-init_voxel_render(Shell& shell, const Sim& sim)
+init_voxel_render(VoxelRender& voxel_render, Viewpoint& viewpoint, const World& world)
 {
-    VoxelRender& voxel_render = shell.render.voxel_render;
-
     const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
     const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
@@ -709,7 +700,7 @@ init_voxel_render(Shell& shell, const Sim& sim)
         voxel_render.u_projection_location, 
         1, 
         GL_FALSE,
-        shell.render.viewpoint.projection_matrix[0]
+        viewpoint.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -717,14 +708,14 @@ init_voxel_render(Shell& shell, const Sim& sim)
 
     voxel_render.block_config_data = config_load("config/block.ini");
 
-    load_block_texture_directory(shell);
+    load_block_texture_directory(voxel_render);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
 
     for (i32 sector_index = 0; sector_index < world_area_in_sectors; ++sector_index)
     {
-        generate_sector_mesh(shell.render.voxel_render, sim, sector_index);
+        generate_sector_mesh(voxel_render, world, sector_index);
     }
 
     for (const SectorMesh& sector_mesh : voxel_render.sector_mesh_vector)
@@ -741,10 +732,8 @@ init_voxel_render(Shell& shell, const Sim& sim)
 }
 
 static void 
-init_model_render(Shell& shell, const Sim& sim)
+init_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Population& population)
 {
-    ModelRender& model_render = shell.render.model_render;
-
     const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
     const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
 
@@ -763,7 +752,7 @@ init_model_render(Shell& shell, const Sim& sim)
 
     model_render.actor_config_data = config_load("config/actor.ini");
 
-    load_actor_texture_directory(shell);
+    load_actor_texture_directory(model_render);
 
     glUseProgram(model_render.program_id);
 
@@ -778,10 +767,10 @@ init_model_render(Shell& shell, const Sim& sim)
     model_render.u_model_location = glGetUniformLocation(model_render.program_id, "u_model_matrix");
 
     glUniformMatrix4fv(
-        shell.render.model_render.u_projection_location, 
+        model_render.u_projection_location, 
         1, 
         GL_FALSE,
-        shell.render.viewpoint.projection_matrix[0]
+        viewpoint.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -789,10 +778,10 @@ init_model_render(Shell& shell, const Sim& sim)
     
     model_render.model_gpu_data_vector.resize(actor_max);
 
-    for (i32 pool_id = 0; pool_id < sim.population.actor_pool.active_count; ++pool_id)
+    for (i32 pool_id = 0; pool_id < population.actor_pool.active_count; ++pool_id)
     {
-        const i32 actor_id = sim.population.actor_pool.active_array[pool_id];
-        const Actor& actor = sim.population.actor_pool.actor_array[actor_id];
+        const i32 actor_id = population.actor_pool.active_array[pool_id];
+        const Actor& actor = population.actor_pool.actor_array[actor_id];
 
         const ModelGpuData model_gpu_data = load_model_gpu_data(model_render, actor);
 
@@ -803,37 +792,37 @@ init_model_render(Shell& shell, const Sim& sim)
 }
 
 static void 
-update_viewpoint(Render& render, const Sim& sim)
+update_viewpoint(Viewpoint& viewpoint, const Population& population)
 {
-    const Actor& judge = sim.population.actor_pool.actor_array[sim.population.judge_id];
+    const Actor& judge = population.actor_pool.actor_array[population.judge_id];
 
     constexpr Vec3 judge_eye_offset = {0.0f, 0.0f, 0.7f};
 
     const Vec3 judge_eye_position = judge.position + judge_eye_offset;
     
-    render.viewpoint.position = judge_eye_position;
-    render.viewpoint.rotation = judge.rotation;
+    viewpoint.position = judge_eye_position;
+    viewpoint.rotation = judge.rotation;
 }
 
 static void 
-update_debug_render(Render& render, const Sim& sim)
+update_debug_render(DebugRender& debug_render, Viewpoint& viewpoint, const Debug& debug)
 {
-    glUseProgram(render.debug_render.program_id);
+    glUseProgram(debug_render.program_id);
 
-    render.viewpoint.view_matrix = viewpoint_get_view_matrix(render.viewpoint);
+    viewpoint.view_matrix = viewpoint_get_view_matrix(viewpoint);
 
     glUniformMatrix4fv(
-        render.debug_render.u_view_location, 
+        debug_render.u_view_location, 
         1, 
         GL_FALSE, 
-        render.viewpoint.view_matrix[0]
+        viewpoint.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
 
     DebugGpuData debug_gpu_data = {};
     
-    for (const DebugLine& debug_line : sim.debug.line_vector)
+    for (const DebugLine& debug_line : debug.line_vector)
     {
         const DebugVertex debug_vertex_a = {
             {
@@ -870,7 +859,7 @@ update_debug_render(Render& render, const Sim& sim)
     Mat4 model_matrix = mat4_diagonal(1.0f);
 
     glUniformMatrix4fv(
-        render.debug_render.u_model_location, 
+        debug_render.u_model_location, 
         1, 
         GL_FALSE, 
         model_matrix[0]
@@ -882,17 +871,17 @@ update_debug_render(Render& render, const Sim& sim)
 }
 
 static void 
-update_voxel_render(Render& render)
+update_voxel_render(const VoxelRender& voxel_render, Viewpoint& viewpoint)
 {
-    glUseProgram(render.voxel_render.program_id);
+    glUseProgram(voxel_render.program_id);
 
-    render.viewpoint.view_matrix = viewpoint_get_view_matrix(render.viewpoint);
+    viewpoint.view_matrix = viewpoint_get_view_matrix(viewpoint);
 
     glUniformMatrix4fv(
-        render.voxel_render.u_view_location, 
+        voxel_render.u_view_location, 
         1, 
         GL_FALSE, 
-        render.viewpoint.view_matrix[0]
+        viewpoint.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
@@ -902,15 +891,15 @@ update_voxel_render(Render& render)
     glFrontFace(GL_CCW);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, render.voxel_render.texture_array_id);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
 
-    for (const VoxelGpuData& voxel_gpu_data : render.voxel_render.voxel_gpu_data_vector)
+    for (const VoxelGpuData& voxel_gpu_data : voxel_render.voxel_gpu_data_vector)
     {
         Mat4 model_matrix = mat4_diagonal(1.0f);
         model_matrix = mat4_translate(model_matrix, voxel_gpu_data.position);
 
         glUniformMatrix4fv(
-            render.voxel_render.u_model_location, 
+            voxel_render.u_model_location, 
             1, 
             GL_FALSE, 
             model_matrix[0]
@@ -923,17 +912,17 @@ update_voxel_render(Render& render)
 }
 
 static void 
-update_model_render(Render& render, const Sim& sim)
+update_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Population& population)
 {
-    glUseProgram(render.model_render.program_id);
+    glUseProgram(model_render.program_id);
 
-    render.viewpoint.view_matrix = viewpoint_get_view_matrix(render.viewpoint);
+    viewpoint.view_matrix = viewpoint_get_view_matrix(viewpoint);
 
     glUniformMatrix4fv(
-        render.voxel_render.u_view_location, 
+        model_render.u_view_location, 
         1, 
         GL_FALSE, 
-        render.viewpoint.view_matrix[0]
+        viewpoint.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
@@ -943,27 +932,27 @@ update_model_render(Render& render, const Sim& sim)
     glFrontFace(GL_CCW);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, render.model_render.texture_array_id);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
 
-    for (i32 pool_id = 0; pool_id < sim.population.actor_pool.active_count; ++pool_id)
+    for (i32 pool_id = 0; pool_id < population.actor_pool.active_count; ++pool_id)
     {
-        const i32 actor_id = sim.population.actor_pool.active_array[pool_id];
-        const Actor& actor = sim.population.actor_pool.actor_array[actor_id];
+        const i32 actor_id = population.actor_pool.active_array[pool_id];
+        const Actor& actor = population.actor_pool.actor_array[actor_id];
 
-        const ModelGpuData& model_gpu_data = render.model_render.model_gpu_data_vector[actor_id];
+        const ModelGpuData& model_gpu_data = model_render.model_gpu_data_vector[actor_id];
 
         Mat4 model_matrix = mat4_diagonal(1.0f);
         model_matrix = mat4_translate(model_matrix, actor.position);
         model_matrix = mat4_rotate(model_matrix, unit_z, to_radians(actor.rotation.z));
 
         glUniformMatrix4fv(
-            render.model_render.u_model_location, 
+            model_render.u_model_location, 
             1, 
             GL_FALSE, 
             model_matrix[0]
         );
 
-        glUniform1i(render.model_render.u_texture_layer_location, model_gpu_data.texture_layer);
+        glUniform1i(model_render.u_texture_layer_location, model_gpu_data.texture_layer);
 
         glBindVertexArray(model_gpu_data.vao_id);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model_gpu_data.model_vertex_vector.size()));
@@ -972,28 +961,28 @@ update_model_render(Render& render, const Sim& sim)
 }
 
 void 
-render_init(Shell& shell, const Platform& platform, const Sim& sim)
+render_init(Render& render, const Platform& platform, const Population& population, const World& world)
 {
     init_glad(platform);
 
-    init_viewpoint(shell.render);
+    init_viewpoint(render.viewpoint);
 
-    init_debug_render(shell);
-    init_voxel_render(shell, sim);
-    init_model_render(shell, sim);
+    init_debug_render(render.debug_render, render.viewpoint);
+    init_voxel_render(render.voxel_render, render.viewpoint, world);
+    init_model_render(render.model_render, render.viewpoint, population);
 }
 
 void 
-render_update(Shell& shell, const Sim& sim)
+render_update(Render& render, const Population& population, const Debug& debug)
 {
     glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    update_viewpoint(shell.render, sim);
+    update_viewpoint(render.viewpoint, population);
 
-    update_debug_render(shell.render, sim);
-    update_voxel_render(shell.render);
-    update_model_render(shell.render, sim);
+    update_debug_render(render.debug_render, render.viewpoint, debug);
+    update_voxel_render(render.voxel_render, render.viewpoint);
+    update_model_render(render.model_render, render.viewpoint, population);
 }
 
 GLuint 

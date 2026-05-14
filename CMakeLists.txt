@@ -66,12 +66,12 @@ target_sources(
     src/core/log.cc
     src/core/macros.h
     src/core/types.h
+    src/app/app.h
+    src/app/app.cc
     src/app/render.cc
     src/app/render.h
     src/app/screen.cc
     src/app/screen.h
-    src/app/shell.cc
-    src/app/shell.h
     src/app/viewpoint.cc
     src/app/viewpoint.h
     src/app/actor.cc
@@ -92,10 +92,9 @@ target_sources(
     src/app/physics.h
     src/app/population.cc
     src/app/population.h
+    src/app/state.h
     src/app/work.cc
     src/app/work.h
-    src/app/sim.cc
-    src/app/sim.h
     src/app/world.cc
     src/app/world.h
     src/platform/input.cc

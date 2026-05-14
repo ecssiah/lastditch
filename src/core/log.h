@@ -20,4 +20,4 @@ enum class LogLevel : u8
 void log_message(LogLevel log_level, const char* log_file, int line, const char* fmt, ...);
 
 void log_init();
-void log_close();
+void log_quit();

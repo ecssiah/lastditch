@@ -1,14 +1,16 @@
 #pragma once
 
 #include "core/types.h"
-#include "app/action.h"
 #include "app/debug.h"
+#include "app/action.h"
+#include "app/work.h"
 #include "app/navigation.h"
 #include "app/population.h"
-#include "app/work.h"
 #include "app/world.h"
+#include "app/screen.h"
+#include "app/render.h"
 
-struct Sim
+struct State
 {
     b32 active;
     b32 evolving;
@@ -18,14 +20,12 @@ struct Sim
     Debug debug;
 
     ActionQueue action_queue;
+    
     Work work;
-
     Navigation navigation;
-
     World world;
     Population population;
+    
+    Screen screen;
+    Render render;
 };
-
-void sim_init(Sim& sim);
-void sim_update(Sim& sim);
-void sim_close(Sim& sim);

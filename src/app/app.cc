@@ -1,13 +1,9 @@
-#include "app/shell.h"
+#include "app.h"
 
 #include "core/log.h"
-#include "app/action.h"
-#include "app/render.h"
-#include "app/screen.h"
-#include "platform/platform.h"
 
 static void 
-queue_move_action(const Platform& platform, Sim& sim)
+queue_move_action(const Platform& platform, State& state)
 {
     Action move_action = {
         .type = ActionType::Move,
@@ -46,11 +42,11 @@ queue_move_action(const Platform& platform, Sim& sim)
         move_action.action_value.z -= 1.0f;
     }
 
-    action_add(sim.action_queue, move_action);
+    action_add(state.action_queue, move_action);
 }
 
 static void 
-queue_rotate_action(const Platform& platform, Sim& sim)
+queue_rotate_action(const Platform& platform, State& state)
 {
     const Action rotate_action = {
         .type = ActionType::Rotate,
@@ -61,71 +57,98 @@ queue_rotate_action(const Platform& platform, Sim& sim)
         },
     };
 
-    action_add(sim.action_queue, rotate_action);
+    action_add(state.action_queue, rotate_action);
 }
 
 static void 
-queue_jump_action(Sim& sim)
+queue_jump_action(State& state)
 {
     const Action jump_action = {
         .type = ActionType::Jump,
         .action_value = vec3_broadcast(1.0f),
     };
 
-    action_add(sim.action_queue, jump_action);
+    action_add(state.action_queue, jump_action);
 }
 
 static void 
-queue_debug_mode_action(Sim& sim)
+queue_debug_mode_action(State& state)
 {
     const Action debug_action = {
         .type = ActionType::DebugMode,
         .action_value = vec3_broadcast( 1.0f),
     };
 
-    action_add(sim.action_queue, debug_action);
+    action_add(state.action_queue, debug_action);
 }
 
-void 
-shell_init(Shell& shell)
+void
+app_init(State& state, Platform& platform)
 {
     log_init();
+    
+    state.active = true;
+    state.evolving = true;
 
-    shell.active = true;
+    constexpr b32 random_seed = false;
+
+    state.seed = false ? static_cast<u32>(time(NULL)) : 813;
+
+    srand(state.seed);
+
+    debug_init(state.debug);
+
+    work_init(state.work);
+    navigation_init(state.navigation);
+
+    world_init(state.world, state.debug);
+    population_init(state.population, state.work);
+
+    render_init(state.render, platform, state.population, state.world);
+    screen_init(state.screen, platform);
 }
 
-void 
-shell_update(const Platform& platform, Sim& sim)
+void
+app_update(State& state, Platform& platform)
 {
-    sim.world.delta_time = platform.delta_time;
+    const i32 judge_id = state.population.judge_id;
+    Actor& judge = state.population.actor_pool.actor_array[judge_id];
 
-    queue_move_action(platform, sim);
+    action_apply_queue(state.action_queue, judge);
+
+    work_update(state.population, state.work, platform.delta_time);
+    world_update(state.world, state.population);
+
+    state.world.delta_time = platform.delta_time;
+
+    queue_move_action(platform, state);
 
     if (fabs(platform.input.pointer_delta_x) > 1e-12f || fabs(platform.input.pointer_delta_y) > 1e-12f)
     {
-        queue_rotate_action(platform, sim);
+        queue_rotate_action(platform, state);
     }
 
     if (input_button_is_pressed(platform.input, Button::Space))
     {
-        queue_jump_action(sim);
+        queue_jump_action(state);
     }
 
     if (input_button_is_released(platform.input, Button::Tab))
     {
-        queue_debug_mode_action(sim);
+        queue_debug_mode_action(state);
     }
+    
+    render_update(state.render, state.population, state.debug);
+    screen_update(state.screen, state.population);
 }
 
-void 
-shell_present(Shell& shell, Sim& sim)
+void
+app_quit(State& state)
 {
-    render_update(shell, sim);
-    screen_update(shell, sim);
-}
+    debug_close(state.debug);
 
-void 
-shell_close()
-{
-    log_close();
+    population_quit();
+    world_quit(state.world);
+    
+    log_quit();
 }

@@ -83,7 +83,7 @@ platform_end_frame(Platform& platform)
 }
 
 void 
-platform_close()
+platform_quit()
 {
     glfwTerminate();
 }

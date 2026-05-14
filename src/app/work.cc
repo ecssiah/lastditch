@@ -1,12 +1,12 @@
 #include "app/work.h"
 
 #include "app/actor.h"
-#include "app/sim.h"
+#include "app/population.h"
 
 void 
-wander_run(Sim& sim, Act& act, const f32 delta_time)
+wander_run(Population& population, Act& act, const f32 delta_time)
 {
-    Actor& actor = sim.population.actor_pool.actor_array[act.actor_id];
+    Actor& actor = population.actor_pool.actor_array[act.actor_id];
 
     WanderState& wander_state = act.act_state.wander;
 
@@ -40,7 +40,7 @@ wander_run(Sim& sim, Act& act, const f32 delta_time)
 }
 
 void 
-seek_run(Sim& sim, Act& act, f32 delta_time)
+seek_run(Population& population, Act& act, f32 delta_time)
 {
 }
 
@@ -86,7 +86,7 @@ work_init(Work& work)
 }
 
 void 
-work_update(Work& work, Sim& sim, const f32 delta_time)
+work_update(Population& population, Work& work, const f32 delta_time)
 {
     ActPool& act_pool = work.act_pool;
 
@@ -98,10 +98,10 @@ work_update(Work& work, Sim& sim, const f32 delta_time)
         switch (act.act_type)
         {
         case ActType::wander: 
-            wander_run(sim, act, delta_time);
+            wander_run(population, act, delta_time);
             break;
         case ActType::seek: 
-            seek_run(sim, act, delta_time);
+            seek_run(population, act, delta_time);
             break;
         default: break;
         }
