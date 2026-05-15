@@ -54,7 +54,7 @@ debug_init(Debug& debug)
 }
 
 void 
-debug_close(Debug& debug)
+debug_quit(Debug& debug)
 {
 
 }

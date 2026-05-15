@@ -4,11 +4,11 @@
 #include "app/population.h"
 
 void 
-wander_run(Population& population, Act& act, const f32 delta_time)
+execute_wander(Population& population, Task& act, const f32 delta_time)
 {
     Actor& actor = population.actor_pool.actor_array[act.actor_id];
 
-    WanderState& wander_state = act.act_state.wander;
+    WanderState& wander_state = act.task_state.wander;
 
     if (wander_state.tick < wander_state.tick_limit)
     {
@@ -40,29 +40,29 @@ wander_run(Population& population, Act& act, const f32 delta_time)
 }
 
 void 
-seek_run(Population& population, Act& act, f32 delta_time)
+execute_seek(Population& population, Task& act, f32 delta_time)
 {
 }
 
 i32 
-work_add_act(Work& work, Actor& actor, const ActType act_type, const ActState act_state)
+work_add_task(Work& work, Actor& actor, const TaskType task_type, const TaskState task_state)
 {
-    ActPool& act_pool = work.act_pool;
+    TaskPool& act_pool = work.act_pool;
 
     const i32 act_id = act_pool.free_array[--act_pool.free_count];
 
-    Act& act = act_pool.act_array[act_id];
+    Task& act = act_pool.task_array[act_id];
 
     act.actor_id = actor.actor_id;
-    act.act_type = act_type;
-    act.act_state = act_state;
+    act.task_type = task_type;
+    act.task_state = task_state;
 
     act_pool.active_array[act_pool.active_count] = act_id;
     act_pool.active_lookup[act_id] = act_pool.active_count;
 
     act_pool.active_count++;
 
-    if (actor.act_id_count < actor_act_max_count)
+    if (actor.act_id_count < actor_task_max_count)
     {
         actor.act_id_array[actor.act_id_count++] = act_id;
     }
@@ -73,12 +73,12 @@ work_add_act(Work& work, Actor& actor, const ActType act_type, const ActState ac
 void 
 work_init(Work& work)
 {
-    ActPool& act_pool = work.act_pool;
+    TaskPool& act_pool = work.act_pool;
 
     act_pool.active_count = 0;
-    act_pool.free_count = act_max_count;
+    act_pool.free_count = task_max_count;
 
-    for (i32 pool_id = 0; pool_id < act_max_count; ++pool_id)
+    for (i32 pool_id = 0; pool_id < task_max_count; ++pool_id)
     {
         act_pool.free_array[pool_id] = pool_id;
         act_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();
@@ -88,20 +88,20 @@ work_init(Work& work)
 void 
 work_update(Population& population, Work& work, const f32 delta_time)
 {
-    ActPool& act_pool = work.act_pool;
+    TaskPool& act_pool = work.act_pool;
 
     for (i32 pool_id = 0; pool_id < act_pool.active_count; ++pool_id)
     {
         const i32 act_id = act_pool.active_array[pool_id];
-        Act& act = act_pool.act_array[act_id];
+        Task& act = act_pool.task_array[act_id];
 
-        switch (act.act_type)
+        switch (act.task_type)
         {
-        case ActType::wander: 
-            wander_run(population, act, delta_time);
+        case TaskType::wander: 
+            execute_wander(population, act, delta_time);
             break;
-        case ActType::seek: 
-            seek_run(population, act, delta_time);
+        case TaskType::seek: 
+            execute_seek(population, act, delta_time);
             break;
         default: break;
         }

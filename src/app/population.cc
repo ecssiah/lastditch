@@ -83,14 +83,14 @@ init_agents(Population& population, Work& work)
 
             actor_add(population.actor_pool, agent);
 
-            const ActState act_state = {
+            const TaskState act_state = {
                 .wander = {
                     .tick = rand() % 500,
                     .tick_limit = 500,
                 }
             };
 
-            work_add_act(work, agent, ActType::wander, act_state);
+            work_add_task(work, agent, TaskType::wander, act_state);
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",

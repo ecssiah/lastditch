@@ -2,10 +2,14 @@
 
 #include "core/geometry.h"
 #include "core/types.h"
+#include "platform/platform.h"
 
 constexpr i32 action_queue_capacity = 1u << 6;
+constexpr i32 action_max_per_frame = 256;
 
 struct Actor;
+struct State;
+struct Platform;
 
 enum class ActionType : u8
 {
@@ -24,11 +28,14 @@ struct Action
 
 struct ActionQueue
 {
-    Action action_array[action_queue_capacity];
+    std::array<Action, action_queue_capacity> action_array;
 
-    i32 head_index;
-    i32 tail_index;
+    i32 count;
+    i32 current_index;
 };
 
 void action_add(ActionQueue& action_queue, const Action& action);
 void action_apply_queue(ActionQueue& action_queue, Actor& judge);
+void action_queue_actions(State& state, const Platform& platform);
+
+void action_update(State& state, const Platform& platform);

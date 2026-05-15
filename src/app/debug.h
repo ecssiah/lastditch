@@ -23,4 +23,4 @@ void debug_add_box(Debug& debug, const Vec3& min, const Vec3& max, const Vec3& c
 
 void debug_reset(Debug& debug);
 void debug_init(Debug& debug);
-void debug_close(Debug& debug);
+void debug_quit(Debug& debug);

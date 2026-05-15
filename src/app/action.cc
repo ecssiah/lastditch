@@ -1,7 +1,90 @@
 #include "app/action.h"
 
 #include "core/log.h"
+#include "app/app.h"
 #include "app/actor.h"
+#include "platform/input.h"
+#include "platform/platform.h"
+
+static void 
+queue_move_action(const Platform& platform, State& state)
+{
+    Action move_action = {
+        .type = ActionType::Move,
+        .action_value = vec3_broadcast(0.0f),
+    };
+
+    if (input_button_is_down(platform.input, Button::A))
+    {
+        move_action.action_value.x -= 1.0f;
+    }
+
+    if (input_button_is_down(platform.input, Button::D))
+    {
+        move_action.action_value.x += 1.0f;
+    }
+
+    if (input_button_is_down(platform.input, Button::W))
+    {
+        move_action.action_value.y += 1.0f;
+    }
+
+    if (input_button_is_down(platform.input, Button::S))
+    {
+        move_action.action_value.y -= 1.0f;
+    }
+
+    move_action.action_value = normalize(move_action.action_value);
+
+    if (input_button_is_down(platform.input, Button::E))
+    {
+        move_action.action_value.z += 1.0f;
+    }
+
+    if (input_button_is_down(platform.input, Button::Q))
+    {
+        move_action.action_value.z -= 1.0f;
+    }
+
+    action_add(state.action_queue, move_action);
+}
+
+static void 
+queue_rotate_action(const Platform& platform, State& state)
+{
+    const Action rotate_action = {
+        .type = ActionType::Rotate,
+        .action_value = {
+            static_cast<f32>(platform.input.pointer_delta_x),
+            static_cast<f32>(platform.input.pointer_delta_y),
+            0.0f,
+        },
+    };
+
+    action_add(state.action_queue, rotate_action);
+}
+
+static void 
+queue_jump_action(State& state)
+{
+    constexpr Action jump_action = {
+        .type = ActionType::Jump,
+        .action_value = vec3_broadcast(1.0f),
+    };
+
+    action_add(state.action_queue, jump_action);
+}
+
+static void 
+queue_debug_mode_action(State& state)
+{
+    constexpr Action debug_action = {
+        .type = ActionType::DebugMode,
+        .action_value = vec3_broadcast(1.0f),
+    };
+
+    action_add(state.action_queue, debug_action);
+}
 
 static void 
 apply_move_action(Actor& judge, const Action& action)
@@ -118,45 +201,64 @@ apply_action(Actor& judge, const Action& action)
     }
 }
 
-static Action*
-action_pop(ActionQueue& action_queue)
-{
-    if (action_queue.tail_index == action_queue.head_index)
-    {
-        return nullptr;
-    }
-
-    Action* out_action = &action_queue.action_array[action_queue.head_index];
-
-    action_queue.head_index = (action_queue.head_index + 1) % action_queue_capacity;
-
-    return out_action;
-}
-
 void 
 action_add(ActionQueue& action_queue, const Action& action)
 {
-    const i32 tail_index_next = (action_queue.tail_index + 1) % action_queue_capacity;
-
-    if (tail_index_next == action_queue.head_index)
+    if (action_queue.current_index < action_queue_capacity)
+    {
+        action_queue.action_array[action_queue.count++] = action;
+    }
+    else
     {
         LOG_WARN("ActionQueue is full");
-
-        return;
     }
-
-    action_queue.action_array[action_queue.tail_index] = action;
-
-    action_queue.tail_index = tail_index_next;
 }
 
 void 
 action_apply_queue(ActionQueue& action_queue, Actor& judge)
 {
-    while (action_queue.head_index != action_queue.tail_index)
+    i32 actions_applied = 0;
+    
+    while (action_queue.current_index < action_queue.count && actions_applied < action_max_per_frame)
     {
-        const Action* action = action_pop(action_queue);
-
-        apply_action(judge, *action);
+        apply_action(judge, action_queue.action_array[action_queue.current_index]);
+        
+        action_queue.current_index++;
+        actions_applied++;
     }
+
+    if (action_queue.current_index >= action_queue.count)
+    {
+        action_queue.count = 0;
+        action_queue.current_index = 0;
+    }
+}
+
+void action_queue_actions(State& state, const Platform& platform)
+{
+    queue_move_action(platform, state);
+
+    if (fabs(platform.input.pointer_delta_x) > epsilon || fabs(platform.input.pointer_delta_y) > epsilon)
+    {
+        queue_rotate_action(platform, state);
+    }
+
+    if (input_button_is_pressed(platform.input, Button::Space))
+    {
+        queue_jump_action(state);
+    }
+
+    if (input_button_is_released(platform.input, Button::Tab))
+    {
+        queue_debug_mode_action(state);
+    }
+}
+
+void action_update(State& state, const Platform& platform)
+{
+    const i32 judge_id = state.population.judge_id;
+    Actor& judge = state.population.actor_pool.actor_array[judge_id];
+    
+    action_queue_actions(state, platform);
+    action_apply_queue(state.action_queue, judge);
 }

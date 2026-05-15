@@ -175,10 +175,8 @@ screen_init(Screen& screen, const Platform& platform)
     glfwGetFramebufferSize(platform.window.glfw_window, &framebuffer_width, &framebuffer_height);
 
     const Mat4 shell_projection_matrix = orthographic_matrix(
-        0.0f, 
-        framebuffer_width, 
-        framebuffer_height, 
-        0.0f, 
+        {0.0f, 0.0f}, 
+        {static_cast<f32>(framebuffer_width), static_cast<f32>(framebuffer_height)}, 
         -1.0f, 
         1.0f
     );

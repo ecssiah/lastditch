@@ -10,6 +10,3 @@ struct Viewpoint
     Mat4 projection_matrix;
     Mat4 view_matrix;
 };
-
-Mat4 viewpoint_get_view_matrix(const Viewpoint& viewpoint);
-

@@ -82,7 +82,7 @@ target_sources(
     src/app/render.h
     src/app/screen.cc
     src/app/screen.h
-    src/app/viewpoint.cc
+    src/app/state.h
     src/app/viewpoint.h
     src/app/work.cc
     src/app/work.h

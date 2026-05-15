@@ -18,7 +18,7 @@ constexpr f32 camera_sensitivity_x = 0.22f;
 constexpr f32 camera_sensitivity_y = 0.22f;
 constexpr f32 camera_pitch_limit = 89.0f;
 
-constexpr i32 actor_act_max_count = 128;
+constexpr i32 actor_task_max_count = 128;
 
 #define FOR_LIST_MOVEMENT_TYPE(DO)                                             \
     DO(Ground)                                                                 \
@@ -66,7 +66,7 @@ struct Actor
     BoxCollider box_collider;
 
     i32 act_id_count;
-    std::array<i32, actor_act_max_count> act_id_array;
+    std::array<i32, actor_task_max_count> act_id_array;
 };
 
 struct ActorPool

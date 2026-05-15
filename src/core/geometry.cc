@@ -275,14 +275,22 @@ mat4_rotate(const Mat4& a, const Vec3& axis, f32 angle)
 }
 
 Mat4 
-orthographic_matrix(const f32 left, const f32 right, const f32 bottom, const f32 top, const f32 near, const f32 far)
+view_matrix(const Vec3& position, const Vec3& rotation)
+{
+    const Vec3 forward = get_forward(rotation);
+    const Vec3 center = position + forward;
+
+    return look_at(position, center, unit_z);
+}
+
+Mat4 orthographic_matrix(const Vec2& min, const Vec2& max, const f32 near, const f32 far)
 {
     Mat4 result = {};
-    result[0][0] = 2.0f / (right - left);
-    result[1][1] = 2.0f / (top - bottom);
+    result[0][0] = 2.0f / (max.x - min.x);
+    result[1][1] = -2.0f / (max.y - min.y);
     result[2][2] = -2.0f / (far - near);
-    result[3][0] = -(right + left) / (right - left);
-    result[3][1] = -(top + bottom) / (top - bottom);
+    result[3][0] = -(max.x + min.x) / (max.x - min.x);
+    result[3][1] = (max.y + min.y) / (max.y - min.y);
     result[3][2] = -(far + near) / (far - near);
     result[3][3] = 1.0f;
     
