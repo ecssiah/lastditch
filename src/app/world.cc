@@ -9,312 +9,6 @@
 #include "app/direction.h"
 #include "app/population.h"
 
-const char* block_type_string_array[block_type_count] =
-{
-    FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_STRINGS)
-};
-
-const char* section_type_string_array[section_count] =
-{
-    FOR_LIST_SECTION(DEFINE_ENUM_STRINGS)
-};
-
-const IVec2 section_origin_array[section_count] =
-{
-    // Center                              
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-    },
-    // Center1
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-    },
-    // Center2
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-    },
-    // Center3
-    {
-        tower_border + tower_outer_hall_size,
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-    },
-    // Center4
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-        tower_border + tower_outer_hall_size,
-    },
-    // Quadrant1
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-    },
-    // Quadrant2
-    {
-        tower_border + tower_outer_hall_size,
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-    },
-    // Quadrant3
-    {
-        tower_border + tower_outer_hall_size,
-        tower_border + tower_outer_hall_size,
-    },
-    // Quadrant4
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-        tower_border + tower_outer_hall_size,
-    },
-    // East1
-    {
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-        tower_border + tower_outer_hall_size,
-    },
-    // East2
-    {
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-    },
-    // East3
-    {
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-    },
-    // NorthEast
-    {
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-    },
-    // North1
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-    },
-    // North2
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-    },
-    // North3
-    {
-        tower_border + tower_outer_hall_size,
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-    },
-    // NorthWest
-    {
-        tower_border,
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-    },
-    // West1
-    {
-        tower_border,
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-    },
-    // West2
-    {
-        tower_border,
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-    },
-    // West3
-    {
-        tower_border,
-        tower_border + tower_outer_hall_size,
-    },
-    // SouthWest
-    {
-        tower_border,
-        tower_border,
-    },
-    // South1
-    {
-        tower_border + tower_outer_hall_size,
-        tower_border,
-    },
-    // South2
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size,
-        tower_border,
-    },
-    // South3
-    {
-        tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-        tower_border,
-    },
-    // SouthEast
-    {
-        tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-        tower_border,
-    },
-};
-
-const IVec2 section_size_array[section_count] =
-{
-    // Center                             
-    {
-        tower_center_hall_size,
-        tower_center_hall_size,
-    },
-    // Center1
-    {
-        tower_quadrant_size,
-        tower_center_hall_size,
-    },
-    // Center2
-    {
-        tower_center_hall_size,
-        tower_quadrant_size,
-    },
-    // Center3
-    {
-        tower_quadrant_size,
-        tower_center_hall_size,
-    },
-    // Center4
-    {
-        tower_center_hall_size,
-        tower_quadrant_size,
-    },
-    // Quadrant1
-    {
-        tower_quadrant_size,
-        tower_quadrant_size,
-    },
-    // Quadrant2
-    {
-        tower_quadrant_size,
-        tower_quadrant_size,
-    },
-    // Quadrant3
-    {
-        tower_quadrant_size,
-        tower_quadrant_size,
-    },
-    // Quadrant4
-    {
-        tower_quadrant_size,
-        tower_quadrant_size,
-    },
-    // East1
-    {
-        tower_outer_hall_size,
-        tower_quadrant_size,
-    },
-    // East2
-    {
-        tower_outer_hall_size,
-        tower_center_hall_size,
-    },
-    // East3
-    {
-        tower_outer_hall_size,
-        tower_quadrant_size,
-    },
-    // NorthEast
-    {
-        tower_outer_hall_size,
-        tower_outer_hall_size,
-    },
-    // North1
-    {
-        tower_quadrant_size,
-        tower_outer_hall_size,
-    },
-    // North2
-    {
-        tower_center_hall_size,
-        tower_outer_hall_size,
-    },
-    // North3
-    {
-        tower_quadrant_size,
-        tower_outer_hall_size,
-    },
-    // NorthWest
-    {
-        tower_outer_hall_size,
-        tower_outer_hall_size,
-    },
-    // West1
-    {
-        tower_outer_hall_size,
-        tower_quadrant_size,
-    },
-    // West2
-    {
-        tower_outer_hall_size,
-        tower_center_hall_size,
-    },
-    // West3
-    {
-        tower_outer_hall_size,
-        tower_quadrant_size,
-    },
-    // SouthWest
-    {
-        tower_outer_hall_size,
-        tower_outer_hall_size,
-    },
-    // South1
-    {
-        tower_quadrant_size,
-        tower_outer_hall_size,
-    },
-    // South2
-    {
-        tower_center_hall_size,
-        tower_outer_hall_size,
-    },
-    // South3
-    {
-        tower_quadrant_size,
-        tower_outer_hall_size,
-    },
-    // SouthEast
-    {
-        tower_outer_hall_size,
-        tower_outer_hall_size,
-    },
-};
-
-const BlockType area_content_array_level_0[] =
-{
-
-};
-
-const BlockType area_content_array_level_1[] =
-{
-    BlockType::Server1,
-    BlockType::Server2,
-    BlockType::Server3,
-};
-
-const BlockType area_content_array_level_2[] =
-{
-    BlockType::Server1,
-    BlockType::Server2,
-    BlockType::Server3,
-    BlockType::Server4,
-    BlockType::Server5
-};
-
-const BlockType area_content_array_level_3[] =
-{
-    BlockType::Server3,
-    BlockType::Server4,
-    BlockType::Server5,
-    BlockType::Server6,
-    BlockType::Server7,
-};
-
-const BlockTypeList area_content_master_list[] =
-{
-    {area_content_array_level_0, 0},
-    {area_content_array_level_1, 3},
-    {area_content_array_level_2, 5},
-    {area_content_array_level_3, 5},
-};
-
 b32 
 world_cell_coordinate_is_valid(const i32 x, const i32 y, const i32 z)
 {
@@ -582,19 +276,6 @@ world_set_block_type_cube(World& world, const i32 x, const i32 y, const i32 z, c
             }
         }
     }
-}
-
-i32 
-world_get_content_level(const i32 z)
-{
-    if (z >= roof_z)
-    {
-        return 0;
-    }
-    const i32 floor_number = z / floor_size_z;
-    const i32 content_level = (tower_floor_count - 1 - floor_number) / 2 + 1;
-
-    return content_level;
 }
 
 void 
@@ -1066,6 +747,23 @@ setup_wolf_territory(World& world)
         world_center_i32 - temple_size_x / 2,
         roof_z,
     };
+    
+    Area temple_area = {
+        .area_type = AreaType::Open,
+        .floor_number = roof_floor_number,
+        .bounds = {
+            .min = {
+                temple_origin.x, 
+                temple_origin.y, 
+            },
+            .max = {
+                temple_origin.x + temple_size_y,
+                temple_origin.y + temple_size_x,
+            },
+        }
+    };
+    
+    place_area(world, temple_area);
 
     world_set_block_type_cube(
         world,
@@ -1132,6 +830,23 @@ setup_wolf_territory(World& world)
         roof_z,
     };
 
+    Area platform_area = {
+        .area_type = AreaType::Open,
+        .floor_number = roof_floor_number,
+        .bounds = {
+            .min = {
+                platform_origin.x, 
+                platform_origin.y, 
+            },
+            .max = {
+                platform_origin.x + platform_size_y,
+                platform_origin.y + platform_size_x,
+            },
+        }
+    };
+    
+    place_area(world, platform_area);
+    
     world_set_block_type_cube(
         world,
         platform_origin.x, platform_origin.y, platform_origin.z,
@@ -1169,6 +884,23 @@ setup_eagle_territory(World& world)
         world_center_i32 - temple_size_x / 2,
         roof_z,
     };
+    
+    Area temple_area = {
+        .area_type = AreaType::Open,
+        .floor_number = roof_floor_number,
+        .bounds = {
+            .min = {
+                temple_origin.x, 
+                temple_origin.y, 
+            },
+            .max = {
+                temple_origin.x + temple_size_y,
+                temple_origin.y + temple_size_x,
+            },
+        }
+    };
+    
+    place_area(world, temple_area);
 
     world_set_block_type_cube(
         world,
@@ -1234,6 +966,23 @@ setup_eagle_territory(World& world)
         world_center_i32 - platform_size_x / 2,
         roof_z,
     };
+    
+    Area platform_area = {
+        .area_type = AreaType::Open,
+        .floor_number = roof_floor_number,
+        .bounds = {
+            .min = {
+                platform_origin.x, 
+                platform_origin.y, 
+            },
+            .max = {
+                platform_origin.x + platform_size_y,
+                platform_origin.y + platform_size_x,
+            },
+        }
+    };
+    
+    place_area(world, platform_area);
 
     world_set_block_type_cube(
         world,
@@ -1272,6 +1021,23 @@ setup_bear_territory(World& world)
         tower_border + temple_border_offset,
         roof_z,
     };
+    
+    Area temple_area = {
+        .area_type = AreaType::Open,
+        .floor_number = roof_floor_number,
+        .bounds = {
+            .min = {
+                temple_origin.x, 
+                temple_origin.y, 
+            },
+            .max = {
+                temple_origin.x + temple_size_x,
+                temple_origin.y + temple_size_y,
+            },
+        }
+    };
+    
+    place_area(world, temple_area);
 
     world_set_block_type_cube(
         world,
@@ -1337,6 +1103,23 @@ setup_bear_territory(World& world)
         tower_border + tower_size,
         roof_z,
     };
+    
+    Area platform_area = {
+        .area_type = AreaType::Open,
+        .floor_number = roof_floor_number,
+        .bounds = {
+            .min = {
+                platform_origin.x, 
+                platform_origin.y, 
+            },
+            .max = {
+                platform_origin.x + platform_size_x,
+                platform_origin.y + platform_size_y,
+            },
+        }
+    };
+    
+    place_area(world, platform_area);
 
     world_set_block_type_cube(
         world,
@@ -1375,6 +1158,23 @@ setup_lion_territory(World& world)
         tower_size - temple_border_offset,
         roof_z,
     };
+    
+    Area temple_area = {
+        .area_type = AreaType::Open,
+        .floor_number = roof_floor_number,
+        .bounds = {
+            .min = {
+                temple_origin.x, 
+                temple_origin.y, 
+            },
+            .max = {
+                temple_origin.x + temple_size_x,
+                temple_origin.y + temple_size_y,
+            },
+        }
+    };
+    
+    place_area(world, temple_area);
 
     world_set_block_type_cube(
         world,
@@ -1440,6 +1240,23 @@ setup_lion_territory(World& world)
         tower_border - platform_size_y,
         roof_z,
     };
+    
+    Area platform_area = {
+        .area_type = AreaType::Open,
+        .floor_number = roof_floor_number,
+        .bounds = {
+            .min = {
+                platform_origin.x, 
+                platform_origin.y, 
+            },
+            .max = {
+                platform_origin.x + platform_size_x,
+                platform_origin.y + platform_size_y,
+            },
+        }
+    };
+    
+    place_area(world, platform_area);
 
     world_set_block_type_cube(
         world,
@@ -1792,6 +1609,57 @@ construct_doors(World& world, const Area& area)
     }
 }
 
+static i32 
+get_content_level(const i32 z)
+{
+    if (z >= roof_z)
+    {
+        return 0;
+    }
+    
+    const i32 floor_number = z / floor_size_z;
+    const i32 content_level = (tower_floor_count - 1 - floor_number) / 2 + 1;
+
+    return content_level;
+}
+
+static std::vector<BlockType>
+get_content_block_type_vector(const i32 content_level)
+{
+    if (content_level == 0)
+    {
+        return {};
+    }
+    else if (content_level == 1)
+    {
+        return {
+            BlockType::Server1,
+            BlockType::Server2,
+            BlockType::Server3,
+        };
+    }
+    else if (content_level == 2)
+    {
+        return {
+            BlockType::Server1,
+            BlockType::Server2,
+            BlockType::Server3,
+            BlockType::Server4,
+            BlockType::Server5
+        };
+    }
+    else if (content_level == 3)
+    {
+        return {
+            BlockType::Server3,
+            BlockType::Server4,
+            BlockType::Server5,
+            BlockType::Server6,
+            BlockType::Server7,
+        };
+    }
+}
+
 static void 
 construct_room(World& world, const Area& area)
 {
@@ -1902,15 +1770,15 @@ place_content(World& world, i32 floor_number)
             continue;
         }
 
-        const i32 content_level = world_get_content_level(floor_number * floor_size_z);
+        const i32 content_level = get_content_level(floor_number * floor_size_z);
 
         if (content_level == 0)
         {
             continue;
         }
 
-        const BlockTypeList* content_block_type_list = &area_content_master_list[content_level];
-
+        const std::vector<BlockType> content_block_type_vector = get_content_block_type_vector(content_level);
+        
         const IVec2 area_bounds_size = ibounds2_size(area.bounds);
         
         const i32 stack_count = area_bounds_size.x * area_bounds_size.y / 14;
@@ -1924,8 +1792,8 @@ place_content(World& world, i32 floor_number)
 
             const i32 stack_size_z = rand() % (floor_size_z - 6);
 
-            const i32 block_type_index = rand() % content_block_type_list->count;
-            const BlockType content_block_type = content_block_type_list->block_type_array[block_type_index];
+            const i32 block_type_index = rand() % content_block_type_vector.size();
+            const BlockType content_block_type = content_block_type_vector[block_type_index];
 
             world_set_block_type_cube(
                 world,
@@ -1943,8 +1811,6 @@ draw_debug_info(Debug& debug, const World& world)
     constexpr Vec3 red = {1.0f, 0.0f, 0.0f};
     constexpr Vec3 green = {0.0f, 1.0f, 0.0f};
     
-    constexpr i32 debug_floor_number = tower_floor_count - 1;
-
     const EdgePool& edge_pool = world.edge_pool;
     const AreaPool& area_pool = world.area_pool_array[debug_floor_number];
 
@@ -2020,6 +1886,11 @@ world_init(World& world, Debug& debug)
     layout_elevator_areas(world);
     layout_test_area(world);
 
+    setup_eagle_territory(world);
+    setup_wolf_territory(world);
+    setup_bear_territory(world);
+    setup_lion_territory(world);
+    
     for (i32 floor_number = 0; floor_number < floor_count; ++floor_number)
     {
         calculate_area_edges(world, floor_number);
@@ -2028,11 +1899,6 @@ world_init(World& world, Debug& debug)
 
         place_content(world, floor_number);
     }
-
-    setup_eagle_territory(world);
-    setup_wolf_territory(world);
-    setup_bear_territory(world);
-    setup_lion_territory(world);
 
     calculate_world_direction_mask(world);
 

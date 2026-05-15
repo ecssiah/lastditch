@@ -3,6 +3,7 @@
 #include "core/types.h"
 #include "app/action.h"
 #include "app/debug.h"
+#include "app/navigation.h"
 #include "app/population.h"
 #include "app/world.h"
 #include "app/screen.h"
