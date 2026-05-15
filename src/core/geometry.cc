@@ -265,7 +265,7 @@ mat4_translate(const Mat4& a, const Vec3& translation)
 }
 
 Mat4
-mat4_rotate(const Mat4& a, const Vec3& axis, f32 angle)
+mat4_rotate(const Mat4& a, f32 angle, const Vec3& axis)
 {
     const Vec3 n = vec3_normalize(axis);
 

@@ -943,7 +943,7 @@ update_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Popul
 
         Mat4 model_matrix = mat4_diagonal(1.0f);
         model_matrix = mat4_translate(model_matrix, actor.position);
-        model_matrix = mat4_rotate(model_matrix, unit_z, to_radians(actor.rotation.z));
+        model_matrix = mat4_rotate(model_matrix, to_radians(actor.rotation.z), unit_z);
 
         glUniformMatrix4fv(
             model_render.u_model_location, 

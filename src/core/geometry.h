@@ -294,7 +294,7 @@ Vec3 vec3_cross(const Vec3& a, const Vec3& b);
 Mat4 operator*(const Mat4& a, const Mat4& b);
 
 Mat4 mat4_translate(const Mat4& a, const Vec3& translation);
-Mat4 mat4_rotate(const Mat4& a, const Vec3& axis, f32 angle);
+Mat4 mat4_rotate(const Mat4& a, f32 angle, const Vec3& axis);
 
 Mat4 view_matrix(const Vec3& position, const Vec3& rotation);
 Mat4 orthographic_matrix(const Vec2& min, const Vec2& max, f32 near, f32 far);
