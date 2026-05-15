@@ -4,9 +4,8 @@
 
 #include "core/types.h"
 #include "app/area.h"
-#include "app/direction.h"
 #include "app/debug.h"
-#include "app/navigation.h"
+#include "app/direction.h"
 
 constexpr f32 cell_size = 1.0f;
 
@@ -71,64 +70,64 @@ constexpr f32 gravity_default = -90.0f;
 
 struct Population;
 
-#define FOR_LIST_BLOCK_TYPE(DO)                                                 \
-  DO(None)                                                                      \
-  DO(CardinalEast)                                                              \
-  DO(CardinalWest)                                                              \
-  DO(CardinalNorth)                                                             \
-  DO(CardinalSouth)                                                             \
-  DO(WolfFlag)                                                                  \
-  DO(EagleFlag)                                                                 \
-  DO(LionFlag)                                                                  \
-  DO(BearFlag)                                                                  \
-  DO(WolfStone)                                                                 \
-  DO(EagleStone)                                                                \
-  DO(LionStone)                                                                 \
-  DO(BearStone)                                                                 \
-  DO(WolfSymbol)                                                                \
-  DO(EagleSymbol)                                                               \
-  DO(LionSymbol)                                                                \
-  DO(BearSymbol)                                                                \
-  DO(Carved1)                                                                   \
-  DO(Carved2)                                                                   \
-  DO(Carved3)                                                                   \
-  DO(Carved4)                                                                   \
-  DO(Caution1)                                                                  \
-  DO(Caution2)                                                                  \
-  DO(Caution3)                                                                  \
-  DO(Caution4)                                                                  \
-  DO(Engraved1)                                                                 \
-  DO(Engraved2)                                                                 \
-  DO(Engraved3)                                                                 \
-  DO(Engraved4)                                                                 \
-  DO(Metal1)                                                                    \
-  DO(Metal2)                                                                    \
-  DO(Metal3)                                                                    \
-  DO(Metal4)                                                                    \
-  DO(Metal5)                                                                    \
-  DO(Ornate1)                                                                   \
-  DO(Ornate2)                                                                   \
-  DO(Ornate3)                                                                   \
-  DO(Ornate4)                                                                   \
-  DO(Panel1)                                                                    \
-  DO(Panel2)                                                                    \
-  DO(Panel3)                                                                    \
-  DO(Panel4)                                                                    \
-  DO(Server1)                                                                   \
-  DO(Server2)                                                                   \
-  DO(Server3)                                                                   \
-  DO(Server4)                                                                   \
-  DO(Server5)                                                                   \
-  DO(Server6)                                                                   \
-  DO(Server7)                                                                   \
-  DO(Smooth1)                                                                   \
-  DO(Smooth2)                                                                   \
-  DO(Smooth3)                                                                   \
-  DO(Smooth4)                                                                   \
-  DO(Vent1)                                                                     \
-  DO(Vent2)                                                                     \
-  DO(Vent3)                                                                     \
-  DO(Vent4)                                                                     \
+#define FOR_LIST_BLOCK_TYPE(DO)                                                             \
+    DO(None)                                                                                \
+    DO(CardinalEast)                                                                        \
+    DO(CardinalWest)                                                                        \
+    DO(CardinalNorth)                                                                       \
+    DO(CardinalSouth)                                                                       \
+    DO(WolfFlag)                                                                            \
+    DO(EagleFlag)                                                                           \
+    DO(LionFlag)                                                                            \
+    DO(BearFlag)                                                                            \
+    DO(WolfStone)                                                                           \
+    DO(EagleStone)                                                                          \
+    DO(LionStone)                                                                           \
+    DO(BearStone)                                                                           \
+    DO(WolfSymbol)                                                                          \
+    DO(EagleSymbol)                                                                         \
+    DO(LionSymbol)                                                                          \
+    DO(BearSymbol)                                                                          \
+    DO(Carved1)                                                                             \
+    DO(Carved2)                                                                             \
+    DO(Carved3)                                                                             \
+    DO(Carved4)                                                                             \
+    DO(Caution1)                                                                            \
+    DO(Caution2)                                                                            \
+    DO(Caution3)                                                                            \
+    DO(Caution4)                                                                            \
+    DO(Engraved1)                                                                           \
+    DO(Engraved2)                                                                           \
+    DO(Engraved3)                                                                           \
+    DO(Engraved4)                                                                           \
+    DO(Metal1)                                                                              \
+    DO(Metal2)                                                                              \
+    DO(Metal3)                                                                              \
+    DO(Metal4)                                                                              \
+    DO(Metal5)                                                                              \
+    DO(Ornate1)                                                                             \
+    DO(Ornate2)                                                                             \
+    DO(Ornate3)                                                                             \
+    DO(Ornate4)                                                                             \
+    DO(Panel1)                                                                              \
+    DO(Panel2)                                                                              \
+    DO(Panel3)                                                                              \
+    DO(Panel4)                                                                              \
+    DO(Server1)                                                                             \
+    DO(Server2)                                                                             \
+    DO(Server3)                                                                             \
+    DO(Server4)                                                                             \
+    DO(Server5)                                                                             \
+    DO(Server6)                                                                             \
+    DO(Server7)                                                                             \
+    DO(Smooth1)                                                                             \
+    DO(Smooth2)                                                                             \
+    DO(Smooth3)                                                                             \
+    DO(Smooth4)                                                                             \
+    DO(Vent1)                                                                               \
+    DO(Vent2)                                                                               \
+    DO(Vent3)                                                                               \
+    DO(Vent4)                                                                               \
 
 enum class BlockType : u8
 {
@@ -137,7 +136,11 @@ enum class BlockType : u8
 
 constexpr i32 block_type_count = FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT);
 
-extern const char* block_type_string_array[block_type_count];
+inline constexpr std::array<const char*, block_type_count>
+block_type_string_array =
+{
+    FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_STRINGS)
+};
 
 struct BlockTypeList
 {
@@ -146,32 +149,32 @@ struct BlockTypeList
     i32 count;
 };
 
-#define FOR_LIST_SECTION(DO)                                                   \
-  DO(Center)                                                                       \
-  DO(CenterHall1)                                                                       \
-  DO(CenterHall2)                                                                       \
-  DO(CenterHall3)                                                                       \
-  DO(CenterHall4)                                                                       \
-  DO(Quadrant1)                                                                       \
-  DO(Quadrant2)                                                                       \
-  DO(Quadrant3)                                                                       \
-  DO(Quadrant4)                                                                       \
-  DO(East1)                                                                       \
-  DO(East2)                                                                       \
-  DO(East3)                                                                       \
-  DO(NorthEast)                                                                       \
-  DO(North1)                                                                       \
-  DO(North2)                                                                       \
-  DO(North3)                                                                       \
-  DO(NorthWest)                                                                       \
-  DO(West1)                                                                       \
-  DO(West2)                                                                       \
-  DO(West3)                                                                       \
-  DO(SouthWest)                                                                       \
-  DO(South1)                                                                       \
-  DO(South2)                                                                       \
-  DO(South3)                                                                       \
-  DO(SouthEast)
+#define FOR_LIST_SECTION(DO)                                                                \
+    DO(Center)                                                                              \
+    DO(CenterHall1)                                                                         \
+    DO(CenterHall2)                                                                         \
+    DO(CenterHall3)                                                                         \
+    DO(CenterHall4)                                                                         \
+    DO(Quadrant1)                                                                           \
+    DO(Quadrant2)                                                                           \
+    DO(Quadrant3)                                                                           \
+    DO(Quadrant4)                                                                           \
+    DO(East1)                                                                               \
+    DO(East2)                                                                               \
+    DO(East3)                                                                               \
+    DO(NorthEast)                                                                           \
+    DO(North1)                                                                              \
+    DO(North2)                                                                              \
+    DO(North3)                                                                              \
+    DO(NorthWest)                                                                           \
+    DO(West1)                                                                               \
+    DO(West2)                                                                               \
+    DO(West3)                                                                               \
+    DO(SouthWest)                                                                           \
+    DO(South1)                                                                              \
+    DO(South2)                                                                              \
+    DO(South3)                                                                              \
+    DO(SouthEast)                                                                           \
 
 enum class Section : u8
 {
@@ -180,17 +183,275 @@ enum class Section : u8
 
 constexpr i32 section_count = FOR_LIST_SECTION(DEFINE_ENUM_COUNT);
 
-extern const char* section_type_string_array[section_count];
+inline constexpr std::array<const char*, section_count>
+section_string_array =
+{
+    FOR_LIST_SECTION(DEFINE_ENUM_STRINGS)
+};
 
-extern const IVec2 section_origin_array[section_count];
-extern const IVec2 section_size_array[section_count];
+inline constexpr std::array<IVec2, section_count> 
+section_origin_array =
+{
+    {
+        // Center                              
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+        },
+        // Center1
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+        },
+        // Center2
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+        },
+        // Center3
+        {
+            tower_border + tower_outer_hall_size,
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+        },
+        // Center4
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            tower_border + tower_outer_hall_size,
+        },
+        // Quadrant1
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+        },
+        // Quadrant2
+        {
+            tower_border + tower_outer_hall_size,
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+        },
+        // Quadrant3
+        {
+            tower_border + tower_outer_hall_size,
+            tower_border + tower_outer_hall_size,
+        },
+        // Quadrant4
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            tower_border + tower_outer_hall_size,
+        },
+        // East1
+        {
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            tower_border + tower_outer_hall_size,
+        },
+        // East2
+        {
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+        },
+        // East3
+        {
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+        },
+        // NorthEast
+        {
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+        },
+        // North1
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+        },
+        // North2
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+        },
+        // North3
+        {
+            tower_border + tower_outer_hall_size,
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+        },
+        // NorthWest
+        {
+            tower_border,
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+        },
+        // West1
+        {
+            tower_border,
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+        },
+        // West2
+        {
+            tower_border,
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+        },
+        // West3
+        {
+            tower_border,
+            tower_border + tower_outer_hall_size,
+        },
+        // SouthWest
+        {
+            tower_border,
+            tower_border,
+        },
+        // South1
+        {
+            tower_border + tower_outer_hall_size,
+            tower_border,
+        },
+        // South2
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            tower_border,
+        },
+        // South3
+        {
+            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            tower_border,
+        },
+        // SouthEast
+        {
+            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            tower_border,
+        },
+    }
+};
 
-extern const BlockType area_content_array_level_0[];
-extern const BlockType area_content_array_level_1[];
-extern const BlockType area_content_array_level_2[];
-extern const BlockType area_content_array_level_3[];
-
-extern const BlockTypeList area_content_master_list[tower_floor_count];
+inline constexpr std::array<IVec2, section_count> 
+section_size_array =
+{
+    {
+        // Center                             
+        {
+            tower_center_hall_size,
+            tower_center_hall_size,
+        },
+        // Center1
+        {
+            tower_quadrant_size,
+            tower_center_hall_size,
+        },
+        // Center2
+        {
+            tower_center_hall_size,
+            tower_quadrant_size,
+        },
+        // Center3
+        {
+            tower_quadrant_size,
+            tower_center_hall_size,
+        },
+        // Center4
+        {
+            tower_center_hall_size,
+            tower_quadrant_size,
+        },
+        // Quadrant1
+        {
+            tower_quadrant_size,
+            tower_quadrant_size,
+        },
+        // Quadrant2
+        {
+            tower_quadrant_size,
+            tower_quadrant_size,
+        },
+        // Quadrant3
+        {
+            tower_quadrant_size,
+            tower_quadrant_size,
+        },
+        // Quadrant4
+        {
+            tower_quadrant_size,
+            tower_quadrant_size,
+        },
+        // East1
+        {
+            tower_outer_hall_size,
+            tower_quadrant_size,
+        },
+        // East2
+        {
+            tower_outer_hall_size,
+            tower_center_hall_size,
+        },
+        // East3
+        {
+            tower_outer_hall_size,
+            tower_quadrant_size,
+        },
+        // NorthEast
+        {
+            tower_outer_hall_size,
+            tower_outer_hall_size,
+        },
+        // North1
+        {
+            tower_quadrant_size,
+            tower_outer_hall_size,
+        },
+        // North2
+        {
+            tower_center_hall_size,
+            tower_outer_hall_size,
+        },
+        // North3
+        {
+            tower_quadrant_size,
+            tower_outer_hall_size,
+        },
+        // NorthWest
+        {
+            tower_outer_hall_size,
+            tower_outer_hall_size,
+        },
+        // West1
+        {
+            tower_outer_hall_size,
+            tower_quadrant_size,
+        },
+        // West2
+        {
+            tower_outer_hall_size,
+            tower_center_hall_size,
+        },
+        // West3
+        {
+            tower_outer_hall_size,
+            tower_quadrant_size,
+        },
+        // SouthWest
+        {
+            tower_outer_hall_size,
+            tower_outer_hall_size,
+        },
+        // South1
+        {
+            tower_quadrant_size,
+            tower_outer_hall_size,
+        },
+        // South2
+        {
+            tower_center_hall_size,
+            tower_outer_hall_size,
+        },
+        // South3
+        {
+            tower_quadrant_size,
+            tower_outer_hall_size,
+        },
+        // SouthEast
+        {
+            tower_outer_hall_size,
+            tower_outer_hall_size,
+        },
+    },
+};
 
 struct Cell
 {
@@ -254,10 +515,6 @@ Cell* world_get_free_cell(World& world, i32 x, i32 y, i32 z);
 void world_set_block_type(World& world, i32 x, i32 y, i32 z, BlockType block_type);
 void world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
 void world_set_block_type_cube(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
-
-i32 world_get_content_level(i32 z);
-
-void world_construct_area(World& world, const Area* area);
 
 void world_init(World& world, Debug& debug);
 void world_update(f32 delta_time, World& world, Population& population);

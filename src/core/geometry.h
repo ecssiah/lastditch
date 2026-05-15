@@ -22,114 +22,82 @@ constexpr i32 axis_count = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
 
 struct Vec2
 {
-    union
-    {
-        struct
-        {
-            f32 x;
-            f32 y;
-        };
-
-        f32 elements[2];
-    };
+    f32 x;
+    f32 y;
 
     constexpr f32&
     operator[](const i32 index)
     {
-        return elements[index];
+        return (&x)[index];
     }
 
     constexpr const f32&
     operator[](const i32 index) const
     {
-        return elements[index];
+        return (&x)[index];
     }
 };
 
 struct Vec3
 {
-    union
-    {
-        struct
-        {
-            f32 x;
-            f32 y;
-            f32 z;
-        };
-
-        f32 elements[3];
-    };
+    f32 x;
+    f32 y;
+    f32 z;
     
     constexpr f32&
     operator[](const i32 index)
     {
-        return elements[index];
+        return (&x)[index];
     }
 
     constexpr const f32&
     operator[](const i32 index) const
     {
-        return elements[index];
+        return (&x)[index];
     }
 };
 
 struct IVec2
 {
-    union
-    {
-        struct
-        {
-            i32 x;
-            i32 y;
-        };
-
-        i32 elements[2];
-    };
+    i32 x;
+    i32 y;
     
     constexpr i32&
     operator[](const i32 index)
     {
-        return elements[index];
+        return (&x)[index];
     }
 
     constexpr const i32&
     operator[](const i32 index) const
     {
-        return elements[index];
+        return (&x)[index];
     }
 };
 
 struct IVec3
 {
-    union
-    {
-        struct
-        {
-            i32 x;
-            i32 y;
-            i32 z;
-        };
-
-        i32 elements[3];
-    };  
+    i32 x;
+    i32 y;
+    i32 z;
     
     constexpr i32&
     operator[](const i32 index)
     {
-        return elements[index];
+        return (&x)[index];
     }
 
     constexpr const i32&
     operator[](const i32 index) const
     {
-        return elements[index];
+        return (&x)[index];
     }
 };
 
 struct Mat4
 {
     f32 elements[4][4];
-        
+
     constexpr f32*
     operator[](const i32 index)
     {
