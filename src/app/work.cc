@@ -86,7 +86,7 @@ work_init(Work& work)
 }
 
 void 
-work_update(Population& population, Work& work, const f32 delta_time)
+work_update(const f32 delta_time, Population& population, Work& work)
 {
     TaskPool& act_pool = work.act_pool;
 

@@ -206,8 +206,6 @@ struct Structure
 
 struct World
 {
-    f32 delta_time;
-
     u64 tick_count;
     u64 second_count;
 
@@ -262,5 +260,5 @@ i32 world_get_content_level(i32 z);
 void world_construct_area(World& world, const Area* area);
 
 void world_init(World& world, Debug& debug);
-void world_update(World& world, Population& population);
+void world_update(f32 delta_time, World& world, Population& population);
 void world_quit(World& world);

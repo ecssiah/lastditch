@@ -67,4 +67,4 @@ void execute_seek(Population& population, Task& act, f32 delta_time);
 i32 work_add_task(Work& work, Actor& actor, TaskType task_type, TaskState task_state);
 
 void work_init(Work& work);
-void work_update(Population& population, Work& work, f32 delta_time);
+void work_update(f32 delta_time, Population& population, Work& work);

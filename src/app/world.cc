@@ -1999,8 +1999,6 @@ world_init(World& world, Debug& debug)
     assert(tower_center_hall_size % 2 == 0);
     assert(tower_center_hall_size + 2 * tower_outer_hall_size < tower_size);
 
-    world.delta_time = 0.0f;
-
     world.second_count = 0;
     world.tick_count = 0;
 
@@ -2038,14 +2036,14 @@ world_init(World& world, Debug& debug)
 
     calculate_world_direction_mask(world);
 
-    if (DEBUG_AREAS)
+    if (debug_areas)
     {
         draw_debug_info(debug, world);
     }
 }
 
 void 
-world_update(World& world, Population& population)
+world_update(const f32 delta_time, World& world, Population& population)
 {
     const ActorPool& actor_pool = population.actor_pool;
 
@@ -2054,7 +2052,7 @@ world_update(World& world, Population& population)
         const i32 actor_id = actor_pool.active_array[pool_id];
         Actor& actor = population.actor_pool.actor_array[actor_id];
 
-        physics_update_actor(actor, world);
+        physics_update_actor(delta_time, actor, world);
     }
 }
 

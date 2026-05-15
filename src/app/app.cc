@@ -33,10 +33,8 @@ app_update(State& state, const Platform& platform)
 {
     action_update(state, platform);
 
-    work_update(state.population, state.work, platform.delta_time);
-    world_update(state.world, state.population);
-
-    state.world.delta_time = platform.delta_time;
+    work_update(platform.delta_time, state.population, state.work);
+    world_update(platform.delta_time, state.world, state.population);
 
     render_update(state.render, state.population, state.debug);
     screen_update(state.screen, state.population);

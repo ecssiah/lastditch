@@ -156,7 +156,7 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
 }
 
 static void 
-integrate(Actor& actor, World& world)
+integrate(const f32 delta_time, Actor& actor, World& world)
 {
     actor.is_grounded = false;
 
@@ -168,11 +168,11 @@ integrate(Actor& actor, World& world)
         
         if (actor.velocity[axis_index] <= 0.0f)
         {
-            dz = world.delta_time * falling_gravity_modifier * world.gravity[axis_index];
+            dz = delta_time * falling_gravity_modifier * world.gravity[axis_index];
         }
         else
         {
-            dz = world.delta_time * rising_gravity_modifier * world.gravity[axis_index];
+            dz = delta_time * rising_gravity_modifier * world.gravity[axis_index];
         }
         
         actor.velocity[axis_index] = clamp_f32(
@@ -185,9 +185,9 @@ integrate(Actor& actor, World& world)
     if (actor.box_collider.collision_enabled)
     {
         const Vec3 move = {
-            fabsf(world.delta_time * actor.velocity.x),
-            fabsf(world.delta_time * actor.velocity.y),
-            fabsf(world.delta_time * actor.velocity.z),
+            fabsf(delta_time * actor.velocity.x),
+            fabsf(delta_time * actor.velocity.y),
+            fabsf(delta_time * actor.velocity.z),
         };
 
         const f32 max_move = fmaxf(move.x, fmaxf(move.y, move.z));
@@ -199,7 +199,7 @@ integrate(Actor& actor, World& world)
             step_count = 1;
         }
 
-        const f32 step_delta_time = world.delta_time / step_count;
+        const f32 step_delta_time = delta_time / step_count;
 
         for (i32 step_index = 0; step_index < step_count; ++step_index)
         {
@@ -210,22 +210,22 @@ integrate(Actor& actor, World& world)
     }
     else
     {
-        const Vec3 displacement = world.delta_time * actor.velocity;
+        const Vec3 displacement = delta_time * actor.velocity;
 
         actor.position = actor.position + displacement;
     }
 }
 
 void 
-physics_update_actor(Actor& actor, World& world)
+physics_update_actor(const f32 delta_time, Actor& actor, World& world)
 {
     switch (actor.movement_type)
     {
     case MovementType::Ground: 
-        integrate(actor, world);
+        integrate(delta_time, actor, world);
         break;
     case MovementType::Debug: 
-        integrate(actor, world);
+        integrate(delta_time, actor, world);
         break;
     }
 }

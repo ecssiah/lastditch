@@ -18,4 +18,4 @@ struct BoxCollider
     Vec3 radius;
 };
 
-void physics_update_actor(Actor& actor, World& world);
+void physics_update_actor(f32 delta_time, Actor& actor, World& world);
