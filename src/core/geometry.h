@@ -9,9 +9,9 @@ constexpr f32 epsilon = 1e-5f;
 constexpr f32 epsilon_squared = 1e-10f;
 
 #define FOR_LIST_AXIS(DO)                                   \
-    DO(x)                                                   \
-    DO(y)                                                   \
-    DO(z)                                                   \
+    DO(X)                                                   \
+    DO(Y)                                                   \
+    DO(Z)                                                   \
 
 enum class Axis : u8
 {
@@ -183,6 +183,30 @@ max_i32(const i32 a, const i32 b)
     return a > b ? a : b;
 }
 
+constexpr f32 
+min_f32(const f32 a, const f32 b)
+{
+    return a < b ? a : b;
+}
+
+constexpr f32 
+max_f32(const f32 a, const f32 b)
+{
+    return a > b ? a : b;
+}
+
+constexpr i32
+clamp_i32(const i32 a, const i32 min, const i32 max)
+{
+    return a < min ? min : a > max ? max : a;
+}
+
+constexpr f32
+clamp_f32(const f32 a, const f32 min, const f32 max)
+{
+    return a < min ? min : a > max ? max : a;
+}
+
 constexpr f32
 to_radians(const f32 degrees)
 {
@@ -247,22 +271,25 @@ Vec3 operator*(f32 scalar, const Vec3& a);
 IVec2 operator*(i32 scalar, const IVec2& a);
 IVec3 operator*(i32 scalar, const IVec3& a);
 
-Vec2 to_vec2(const IVec2& a);
-Vec3 to_vec3(const IVec3& a);
+Vec2 ivec2_to_vec2(const IVec2& a);
+Vec3 ivec3_to_vec3(const IVec3& a);
 
-f32 length(const Vec3& a);
-f32 length(const Vec2& a);
+Vec3 vec3_max(const Vec3& a, const Vec3& b);
+Vec3 vec3_min(const Vec3& a, const Vec3& b);
 
-f32 length_squared(const Vec3& a);
-f32 length_squared(const Vec2& a);
+f32 vec3_length(const Vec3& a);
+f32 vec2_length(const Vec2& a);
 
-Vec2 normalize(const Vec2& a);
-Vec3 normalize(const Vec3& a);
+f32 vec3_length_squared(const Vec3& a);
+f32 vec2_length_squared(const Vec2& a);
 
-f32 dot(const Vec2& a, const Vec2& b);
-f32 dot(const Vec3& a, const Vec3& b);
+Vec2 vec2_normalize(const Vec2& a);
+Vec3 vec3_normalize(const Vec3& a);
 
-Vec3 cross(const Vec3& a, const Vec3& b);
+f32 vec2_dot(const Vec2& a, const Vec2& b);
+f32 vec3_dot(const Vec3& a, const Vec3& b);
+
+Vec3 vec3_cross(const Vec3& a, const Vec3& b);
 
 Mat4 operator*(const Mat4& a, const Mat4& b);
 

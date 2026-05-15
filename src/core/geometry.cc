@@ -110,7 +110,7 @@ IVec3 operator*(const i32 scalar, const IVec3& a)
     };
 }
 
-Vec2 to_vec2(const IVec2& a)
+Vec2 ivec2_to_vec2(const IVec2& a)
 {
     return {
         static_cast<f32>(a.x),
@@ -118,7 +118,7 @@ Vec2 to_vec2(const IVec2& a)
     };
 }
 
-Vec3 to_vec3(const IVec3& a)
+Vec3 ivec3_to_vec3(const IVec3& a)
 {
     return {
         static_cast<f32>(a.x),
@@ -127,34 +127,52 @@ Vec3 to_vec3(const IVec3& a)
     };
 }
 
+Vec3 vec3_max(const Vec3& a, const Vec3& b)
+{
+    return {
+        a.x > b.x ? a.x : b.x,
+        a.y > b.y ? a.y : b.y,
+        a.z > b.z ? a.z : b.z,
+    };
+}
+
+Vec3 vec3_min(const Vec3& a, const Vec3& b)
+{
+    return {
+        a.x < b.x ? a.x : b.x,
+        a.y < b.y ? a.y : b.y,
+        a.z < b.z ? a.z : b.z,
+    };
+}
+
 f32 
-length(const Vec2& a)
+vec2_length(const Vec2& a)
 {
     return sqrt(a.x * a.x + a.y * a.y);
 }
 
 f32 
-length(const Vec3& a)
+vec3_length(const Vec3& a)
 {
     return sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
 }
 
 f32
-length_squared(const Vec2& a)
+vec2_length_squared(const Vec2& a)
 {
     return a.x * a.x + a.y * a.y;
 }
 
 f32
-length_squared(const Vec3& a)
+vec3_length_squared(const Vec3& a)
 {
     return a.x * a.x + a.y * a.y + a.z * a.z;
 }
 
 Vec2
-normalize(const Vec2& a)
+vec2_normalize(const Vec2& a)
 {
-    const f32 a_length_squared = length_squared(a);
+    const f32 a_length_squared = vec2_length_squared(a);
     
     if (a_length_squared < epsilon_squared)
     {
@@ -170,9 +188,9 @@ normalize(const Vec2& a)
 }
 
 Vec3 
-normalize(const Vec3& a)
+vec3_normalize(const Vec3& a)
 {
-    const f32 a_length_squared = length_squared(a);
+    const f32 a_length_squared = vec3_length_squared(a);
     
     if (a_length_squared < epsilon_squared)
     {
@@ -189,19 +207,19 @@ normalize(const Vec3& a)
 }
 
 f32 
-dot(const Vec2& a, const Vec2& b)
+vec2_dot(const Vec2& a, const Vec2& b)
 {
     return a.x * b.x + a.y * b.y;
 }
 
 f32 
-dot(const Vec3& a, const Vec3& b)
+vec3_dot(const Vec3& a, const Vec3& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 Vec3 
-cross(const Vec3& a, const Vec3& b)
+vec3_cross(const Vec3& a, const Vec3& b)
 {
     return {
         a.y * b.z - a.z * b.y,
@@ -249,7 +267,7 @@ mat4_translate(const Mat4& a, const Vec3& translation)
 Mat4
 mat4_rotate(const Mat4& a, const Vec3& axis, f32 angle)
 {
-    const Vec3 n = normalize(axis);
+    const Vec3 n = vec3_normalize(axis);
 
     const f32 c = cosf(angle);
     const f32 s = sinf(angle);
@@ -315,9 +333,9 @@ projection_matrix(const f32 fovy, const f32 aspect, const f32 near, const f32 fa
 Mat4 
 look_at(const Vec3 position, const Vec3 target, const Vec3 up)
 {
-    const Vec3 forward = normalize(target - position);
-    const Vec3 right = normalize(cross(forward, up));
-    const Vec3 camera_up = cross(right, forward);
+    const Vec3 forward = vec3_normalize(target - position);
+    const Vec3 right = vec3_normalize(vec3_cross(forward, up));
+    const Vec3 camera_up = vec3_cross(right, forward);
 
     Mat4 result = {};
 
@@ -333,9 +351,9 @@ look_at(const Vec3 position, const Vec3 target, const Vec3 up)
     result[1][2] = -forward.y;
     result[2][2] = -forward.z;
 
-    result[3][0] = -dot(right, position);
-    result[3][1] = -dot(camera_up, position);
-    result[3][2] = dot(forward, position);
+    result[3][0] = -vec3_dot(right, position);
+    result[3][1] = -vec3_dot(camera_up, position);
+    result[3][2] = vec3_dot(forward, position);
 
     result[3][3] = 1.0f;
 
@@ -370,16 +388,16 @@ get_forward(const Vec3& rotation)
         sinf(rotation_x),
     };
 
-    return normalize(forward);
+    return vec3_normalize(forward);
 }
 
 Vec3 
 get_right(const Vec3& rotation)
 {
     const Vec3 forward = get_forward(rotation);
-    const Vec3 right = cross(forward, unit_z);
+    const Vec3 right = vec3_cross(forward, unit_z);
 
-    return normalize(right);
+    return vec3_normalize(right);
 }
 
 Vec3 
@@ -387,9 +405,9 @@ get_up(const Vec3& rotation)
 {
     const Vec3 forward = get_forward(rotation);
     const Vec3 right = get_right(rotation);
-    const Vec3 up = cross(forward, right);
+    const Vec3 up = vec3_cross(forward, right);
 
-    return normalize(up);
+    return vec3_normalize(up);
 }
 
 IVec2 
@@ -434,7 +452,7 @@ ibounds2_intersection(const IBounds2& a, const IBounds2& b)
 std::vector<IBounds2> 
 ibounds2_subtract(const IBounds2& a, const IBounds2& b)
 {
-    std::vector<IBounds2> bounds_vector = std::vector<IBounds2>();
+    std::vector<IBounds2> bounds_vector;
 
     if (!ibounds2_overlaps(a, b))
     {

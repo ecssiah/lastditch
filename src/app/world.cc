@@ -992,9 +992,9 @@ layout_tower_areas(World& world)
                 const IVec2 area_size = ibounds2_size(area_copy.bounds);
 
                 const Axis axis_split =
-                    area_size[static_cast<size_t>(Axis::x)] > area_size[static_cast<size_t>(Axis::y)]
-                    ? Axis::x
-                    : Axis::y;
+                    area_size[static_cast<size_t>(Axis::X)] > area_size[static_cast<size_t>(Axis::Y)]
+                    ? Axis::X
+                    : Axis::Y;
 
                 const i32 axis_split_value = static_cast<size_t>(axis_split);
 
@@ -1980,8 +1980,8 @@ draw_debug_info(Debug& debug, const World& world)
                 area.floor_number * floor_size_z + 1,
             };
 
-            const Vec3 edge_debug_min = to_vec3(door_position);
-            const Vec3 edge_debug_max = to_vec3(door_position + ivec3_broadcast(1));
+            const Vec3 edge_debug_min = ivec3_to_vec3(door_position);
+            const Vec3 edge_debug_max = ivec3_to_vec3(door_position + ivec3_broadcast(1));
             
             debug_add_box(
                 debug,

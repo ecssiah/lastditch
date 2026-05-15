@@ -88,7 +88,7 @@ draw_text(const Screen& screen, const std::string& text, f32 x, f32 y)
     constexpr f32 cell_height = 1.0f / 12.0f;
 
     i32 vertex_count = 0;
-    u64 vertex_max = text.length() * 6;
+    const size_t vertex_max = text.length() * 6;
 
     std::vector<TextVertex> text_vertex_array = std::vector<TextVertex>(vertex_max);
 
@@ -282,19 +282,11 @@ draw_debug_info(Screen& screen, const Population& population)
         {
             if (floor_number < tower_floor_count)
             {
-                floor_text =
-                     std::format(
-                         "FLR T-{}",
-                         floor_number
-                     );
+                floor_text = std::format("FLR T-{}", floor_number);
             }
             else
             {
-                floor_text =
-                    std::format(
-                        "FLR R-{}",
-                        floor_number
-                    );
+                floor_text = std::format("FLR R-{}",floor_number);
             }
         }
     }

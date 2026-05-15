@@ -21,6 +21,9 @@ struct State
     World world;
     Population population;
     
+    Work work;
+    Navigation navigation;
+    
     Screen screen;
     Render render;
 };

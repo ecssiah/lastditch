@@ -34,7 +34,7 @@ queue_move_action(const Platform& platform, State& state)
         move_action.action_value.y -= 1.0f;
     }
 
-    move_action.action_value = normalize(move_action.action_value);
+    move_action.action_value = vec3_normalize(move_action.action_value);
 
     if (input_button_is_down(platform.input, Button::E))
     {
@@ -109,7 +109,7 @@ apply_move_action(Actor& judge, const Action& action)
         velocity_right = action.action_value.x * judge_right;
         velocity_forward = action.action_value.y * judge_forward_xy;
         
-        const Vec3 move_velocity = judge.speed * normalize(velocity_right + velocity_forward);
+        const Vec3 move_velocity = judge.speed * vec3_normalize(velocity_right + velocity_forward);
 
         judge.velocity.x = move_velocity.x;
         judge.velocity.y = move_velocity.y;

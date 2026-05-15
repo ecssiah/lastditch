@@ -18,11 +18,11 @@ app_init(State& state, const Platform& platform)
 
     debug_init(state.debug);
 
-    work_init(state.population.work);
-    navigation_init(state.world.navigation);
+    work_init(state.work);
+    navigation_init(state.navigation);
 
     world_init(state.world, state.debug);
-    population_init(state.population, state.population.work);
+    population_init(state.population, state.work);
 
     render_init(state.render, platform, state.population, state.world);
     screen_init(state.screen, platform);
@@ -33,7 +33,7 @@ app_update(State& state, const Platform& platform)
 {
     action_update(state, platform);
 
-    work_update(state.population, state.population.work, platform.delta_time);
+    work_update(state.population, state.work, platform.delta_time);
     world_update(state.world, state.population);
 
     state.world.delta_time = platform.delta_time;

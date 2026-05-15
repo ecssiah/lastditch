@@ -10,32 +10,24 @@ get_box_collider_bounds(const BoxCollider& box_collider, const Vec3& position)
     constexpr f32 world_size = world_size_in_cells;
     
     return {
-        {
-            std::max(0.0f, position.x - box_collider.radius.x),
-            std::max(0.0f, position.y - box_collider.radius.y),
-            std::max(0.0f, position.z - box_collider.radius.z)
-        },
-        {
-            std::min(position.x + box_collider.radius.x, world_size),
-            std::min(position.y + box_collider.radius.y, world_size),
-            std::min(position.z + box_collider.radius.z, world_size),
-        },
+        .min = vec3_max(position - box_collider.radius, vec3_broadcast(0.0f)),
+        .max = vec3_min(position + box_collider.radius, vec3_broadcast(world_size)),
     };
 }
 
 static IBounds3 
-get_grid_overlap_of_ibounds(const Bounds3& bounds)
+get_grid_overlap_of_bounds(const Bounds3& bounds)
 {
     return {
-        {
-            std::max(0, static_cast<i32>(floorf(bounds.min.x))),
-            std::max(0, static_cast<i32>(floorf(bounds.min.y))),
-            std::max(0, static_cast<i32>(floorf(bounds.min.z))),
+        .min = {
+            max_i32(static_cast<i32>(floorf(bounds.min.x)), 0),
+            max_i32(static_cast<i32>(floorf(bounds.min.y)), 0),
+            max_i32(static_cast<i32>(floorf(bounds.min.z)), 0),
         },
-        {
-            std::min(static_cast<i32>(ceilf(bounds.max.x)) - 1, world_size_in_cells - 1),
-            std::min(static_cast<i32>(ceilf(bounds.max.y)) - 1, world_size_in_cells - 1),
-            std::min(static_cast<i32>(ceilf(bounds.max.z)) - 1, world_size_in_cells - 1),
+        .max = {
+            min_i32(static_cast<i32>(ceilf(bounds.max.x)) - 1, world_size_in_cells - 1),
+            min_i32(static_cast<i32>(ceilf(bounds.max.y)) - 1, world_size_in_cells - 1),
+            min_i32(static_cast<i32>(ceilf(bounds.max.z)) - 1, world_size_in_cells - 1),
         },
     };
 }
@@ -65,7 +57,7 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
         );
     }
 
-    const IBounds3 grid_overlap_bounds = get_grid_overlap_of_ibounds(swept_bounds);
+    const IBounds3 grid_overlap_bounds = get_grid_overlap_of_bounds(swept_bounds);
 
     const i32 axis_index = static_cast<i32>(axis);
 
@@ -81,9 +73,9 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
     b32 found = false;
     f32 best = actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY;
 
-    constexpr i32 axis_z_index = static_cast<i32>(Axis::z);
-    constexpr i32 axis_y_index = static_cast<i32>(Axis::y);
-    constexpr i32 axis_x_index = static_cast<i32>(Axis::x);
+    constexpr i32 axis_z_index = static_cast<i32>(Axis::Z);
+    constexpr i32 axis_y_index = static_cast<i32>(Axis::Y);
+    constexpr i32 axis_x_index = static_cast<i32>(Axis::X);
     
     for (i32 z = grid_overlap_bounds.min[axis_z_index]; z <= grid_overlap_bounds.max[axis_z_index]; ++z) 
     {
@@ -149,7 +141,7 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
         {
             actor.position[axis_index] = best + actor.box_collider.radius[axis_index];
 
-            if (axis == Axis::z)
+            if (axis == Axis::Z)
             {
                 actor.is_grounded = true;
             }
@@ -170,7 +162,7 @@ integrate(Actor& actor, World& world)
 
     if (actor.movement_type == MovementType::Ground)
     {
-        constexpr i32 axis_index = static_cast<i32>(Axis::z);
+        constexpr i32 axis_index = static_cast<i32>(Axis::Z);
         
         f32 dz;
         
@@ -183,7 +175,7 @@ integrate(Actor& actor, World& world)
             dz = world.delta_time * rising_gravity_modifier * world.gravity[axis_index];
         }
         
-        actor.velocity[axis_index] = std::clamp(
+        actor.velocity[axis_index] = clamp_f32(
             actor.velocity[axis_index] + dz, 
             -max_velocity, 
             max_velocity
@@ -211,9 +203,9 @@ integrate(Actor& actor, World& world)
 
         for (i32 step_index = 0; step_index < step_count; ++step_index)
         {
-            resolve_axis_collisions(actor, Axis::x, step_delta_time, world);
-            resolve_axis_collisions(actor, Axis::y, step_delta_time, world);
-            resolve_axis_collisions(actor, Axis::z, step_delta_time, world);
+            resolve_axis_collisions(actor, Axis::X, step_delta_time, world);
+            resolve_axis_collisions(actor, Axis::Y, step_delta_time, world);
+            resolve_axis_collisions(actor, Axis::Z, step_delta_time, world);
         }
     }
     else

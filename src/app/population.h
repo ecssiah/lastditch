@@ -13,8 +13,6 @@ struct Population
     i32 judge_id;
 
     ActorPool actor_pool;
-    
-    Work work;
 };
 
 void population_init(Population& population, Work& work);
