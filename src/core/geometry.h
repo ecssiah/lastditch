@@ -96,18 +96,18 @@ struct IVec3
 
 struct Mat4
 {
-    f32 elements[4][4];
+    f32 entry_array[4][4];
 
     constexpr f32*
     operator[](const i32 index)
     {
-        return elements[index];
+        return entry_array[index];
     }
 
     constexpr const f32*
     operator[](const i32 index) const
     {
-        return elements[index];
+        return entry_array[index];
     }
 };
 
@@ -264,11 +264,11 @@ Mat4 operator*(const Mat4& a, const Mat4& b);
 Mat4 mat4_translate(const Mat4& a, const Vec3& translation);
 Mat4 mat4_rotate(const Mat4& a, f32 angle, const Vec3& axis);
 
-Mat4 view_matrix(const Vec3& position, const Vec3& rotation);
-Mat4 orthographic_matrix(const Vec2& min, const Vec2& max, f32 near, f32 far);
-Mat4 projection_matrix(f32 fovy, f32 aspect, f32 near, f32 far);
+Mat4 get_view_matrix(const Vec3& position, const Vec3& rotation);
+Mat4 get_orthographic_matrix(const Vec2& min, const Vec2& max, f32 near, f32 far);
+Mat4 get_projection_matrix(f32 fov_y, f32 aspect, f32 near, f32 far);
 
-Mat4 look_at(Vec3 position, Vec3 target, Vec3 up);
+Mat4 get_look_at_matrix(const Vec3& position, const Vec3& target, const Vec3& up);
 
 f32 interpolate_to(f32 current, f32 target, f32 speed, f32 delta_time);
 

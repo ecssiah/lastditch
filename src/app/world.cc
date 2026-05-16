@@ -339,9 +339,9 @@ world_set_block_type_wireframe(World& world, const i32 x, const i32 y, const i32
 }
 
 static void 
-place_area(World& world, Area& in_area)
+place_area(World& world, Area& area)
 {
-    AreaPool& area_pool = world.area_pool_array[in_area.floor_number];
+    AreaPool& area_pool = world.area_pool_array[area.floor_number];
 
     i32 pool_index = 0;
 
@@ -350,9 +350,9 @@ place_area(World& world, Area& in_area)
         const i32 area_id = area_pool.active_array[pool_index];
         Area& area_test = area_pool.area_array[area_id];
 
-        if (ibounds2_overlaps(area_test.bounds, in_area.bounds))
+        if (ibounds2_overlaps(area_test.bounds, area.bounds))
         {
-            const std::vector<IBounds2> bounds_vector = ibounds2_subtract(area_test.bounds, in_area.bounds);
+            const std::vector<IBounds2> bounds_vector = ibounds2_subtract(area_test.bounds, area.bounds);
 
             for (const IBounds2 bounds : bounds_vector)
             {
@@ -373,7 +373,7 @@ place_area(World& world, Area& in_area)
         }
     }
 
-    area_add(area_pool, in_area);
+    area_add(area_pool, area);
 }
 
 static void 
@@ -604,8 +604,8 @@ layout_tower_areas(World& world)
     {
         AreaPool& area_pool = world.area_pool_array[floor_number];
 
-        const IVec2 quadrant1_origin = section_origin_array[static_cast<u8>(Section::Quadrant1)];
-        const IVec2 quadrant1_size = section_size_array[static_cast<u8>(Section::Quadrant1)];
+        constexpr IVec2 quadrant1_origin = section_origin_array[static_cast<u8>(Section::Quadrant1)];
+        constexpr IVec2 quadrant1_size = section_size_array[static_cast<u8>(Section::Quadrant1)];
         
         Area area_quadrant_1 = {
             .area_type = AreaType::Room,
@@ -616,8 +616,8 @@ layout_tower_areas(World& world)
             },
         };
         
-        const IVec2 quadrant2_origin = section_origin_array[static_cast<u8>(Section::Quadrant2)];  
-        const IVec2 quadrant2_size = section_size_array[static_cast<u8>(Section::Quadrant2)];
+        constexpr IVec2 quadrant2_origin = section_origin_array[static_cast<u8>(Section::Quadrant2)];  
+        constexpr IVec2 quadrant2_size = section_size_array[static_cast<u8>(Section::Quadrant2)];
 
         Area area_quadrant_2 = {
             .area_type = AreaType::Room,
@@ -628,8 +628,8 @@ layout_tower_areas(World& world)
             },
         };
         
-        const IVec2 quadrant3_origin = section_origin_array[static_cast<u8>(Section::Quadrant3)];  
-        const IVec2 quadrant3_size = section_size_array[static_cast<u8>(Section::Quadrant3)];
+        constexpr IVec2 quadrant3_origin = section_origin_array[static_cast<u8>(Section::Quadrant3)];  
+        constexpr IVec2 quadrant3_size = section_size_array[static_cast<u8>(Section::Quadrant3)];
 
         Area area_quadrant_3 = {
             .area_type = AreaType::Room,
@@ -640,8 +640,8 @@ layout_tower_areas(World& world)
             },
         };
         
-        const IVec2 quadrant4_origin = section_origin_array[static_cast<u8>(Section::Quadrant4)];  
-        const IVec2 quadrant4_size = section_size_array[static_cast<u8>(Section::Quadrant4)];
+        constexpr IVec2 quadrant4_origin = section_origin_array[static_cast<u8>(Section::Quadrant4)];  
+        constexpr IVec2 quadrant4_size = section_size_array[static_cast<u8>(Section::Quadrant4)];
 
         Area area_quadrant_4 = {
             .area_type = AreaType::Room,

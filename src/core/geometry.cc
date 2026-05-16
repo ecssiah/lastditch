@@ -265,27 +265,27 @@ mat4_translate(const Mat4& a, const Vec3& translation)
 }
 
 Mat4
-mat4_rotate(const Mat4& a, f32 angle, const Vec3& axis)
+mat4_rotate(const Mat4& a, const f32 angle, const Vec3& axis)
 {
-    const Vec3 n = vec3_normalize(axis);
+    const Vec3 axis_normalized = vec3_normalize(axis);
 
-    const f32 c = cosf(angle);
-    const f32 s = sinf(angle);
-    const f32 t = 1.0f - c;
+    const f32 cos_angle = cosf(angle);
+    const f32 sin_angle = sinf(angle);
+    const f32 tan_angle = 1.0f - cos_angle;
 
     Mat4 rotation = {};
 
-    rotation[0][0] = c + n.x * n.x * t;
-    rotation[0][1] = n.x * n.y * t + n.z * s;
-    rotation[0][2] = n.x * n.z * t - n.y * s;
+    rotation[0][0] = cos_angle + axis_normalized.x * axis_normalized.x * tan_angle;
+    rotation[0][1] = axis_normalized.x * axis_normalized.y * tan_angle + axis_normalized.z * sin_angle;
+    rotation[0][2] = axis_normalized.x * axis_normalized.z * tan_angle - axis_normalized.y * sin_angle;
 
-    rotation[1][0] = n.y * n.x * t - n.z * s;
-    rotation[1][1] = c + n.y * n.y * t;
-    rotation[1][2] = n.y * n.z * t + n.x * s;
+    rotation[1][0] = axis_normalized.y * axis_normalized.x * tan_angle - axis_normalized.z * sin_angle;
+    rotation[1][1] = cos_angle + axis_normalized.y * axis_normalized.y * tan_angle;
+    rotation[1][2] = axis_normalized.y * axis_normalized.z * tan_angle + axis_normalized.x * sin_angle;
 
-    rotation[2][0] = n.z * n.x * t + n.y * s;
-    rotation[2][1] = n.z * n.y * t - n.x * s;
-    rotation[2][2] = c + n.z * n.z * t;
+    rotation[2][0] = axis_normalized.z * axis_normalized.x * tan_angle + axis_normalized.y * sin_angle;
+    rotation[2][1] = axis_normalized.z * axis_normalized.y * tan_angle - axis_normalized.x * sin_angle;
+    rotation[2][2] = cos_angle + axis_normalized.z * axis_normalized.z * tan_angle;
 
     rotation[3][3] = 1.0f;
 
@@ -293,15 +293,15 @@ mat4_rotate(const Mat4& a, f32 angle, const Vec3& axis)
 }
 
 Mat4 
-view_matrix(const Vec3& position, const Vec3& rotation)
+get_view_matrix(const Vec3& position, const Vec3& rotation)
 {
     const Vec3 forward = get_forward(rotation);
     const Vec3 center = position + forward;
 
-    return look_at(position, center, unit_z);
+    return get_look_at_matrix(position, center, unit_z);
 }
 
-Mat4 orthographic_matrix(const Vec2& min, const Vec2& max, const f32 near, const f32 far)
+Mat4 get_orthographic_matrix(const Vec2& min, const Vec2& max, const f32 near, const f32 far)
 {
     Mat4 result = {};
     result[0][0] = 2.0f / (max.x - min.x);
@@ -316,13 +316,13 @@ Mat4 orthographic_matrix(const Vec2& min, const Vec2& max, const f32 near, const
 }
 
 Mat4
-projection_matrix(const f32 fovy, const f32 aspect, const f32 near, const f32 far)
+get_projection_matrix(const f32 fov_y, const f32 aspect, const f32 near, const f32 far)
 {
-    const f32 tan_half_fovy = tan(fovy / 2.0f);
+    const f32 tan_half_fov_y = tan(fov_y / 2.0f);
     
     Mat4 result = {};
-    result[0][0] = 1.0f / (aspect * tan_half_fovy);
-    result[1][1] = 1.0f / (tan_half_fovy);
+    result[0][0] = 1.0f / (aspect * tan_half_fov_y);
+    result[1][1] = 1.0f / (tan_half_fov_y);
     result[2][2] = -(far + near) / (far - near);
     result[2][3] = -1.0f;
     result[3][2] = -(2.0f * far * near) / (far - near);
@@ -331,29 +331,29 @@ projection_matrix(const f32 fovy, const f32 aspect, const f32 near, const f32 fa
 }
 
 Mat4 
-look_at(const Vec3 position, const Vec3 target, const Vec3 up)
+get_look_at_matrix(const Vec3& position, const Vec3& target, const Vec3& up)
 {
-    const Vec3 forward = vec3_normalize(target - position);
-    const Vec3 right = vec3_normalize(vec3_cross(forward, up));
-    const Vec3 camera_up = vec3_cross(right, forward);
+    const Vec3 camera_forward = vec3_normalize(target - position);
+    const Vec3 camera_right = vec3_normalize(vec3_cross(camera_forward, up));
+    const Vec3 camera_up = vec3_cross(camera_right, camera_forward);
 
     Mat4 result = {};
 
-    result[0][0] = right.x;
-    result[1][0] = right.y;
-    result[2][0] = right.z;
+    result[0][0] = camera_right.x;
+    result[1][0] = camera_right.y;
+    result[2][0] = camera_right.z;
 
     result[0][1] = camera_up.x;
     result[1][1] = camera_up.y;
     result[2][1] = camera_up.z;
 
-    result[0][2] = -forward.x;
-    result[1][2] = -forward.y;
-    result[2][2] = -forward.z;
+    result[0][2] = -camera_forward.x;
+    result[1][2] = -camera_forward.y;
+    result[2][2] = -camera_forward.z;
 
-    result[3][0] = -vec3_dot(right, position);
+    result[3][0] = -vec3_dot(camera_right, position);
     result[3][1] = -vec3_dot(camera_up, position);
-    result[3][2] = vec3_dot(forward, position);
+    result[3][2] = vec3_dot(camera_forward, position);
 
     result[3][3] = 1.0f;
 

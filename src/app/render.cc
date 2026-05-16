@@ -618,7 +618,7 @@ init_viewpoint(Viewpoint& viewpoint)
     viewpoint.projection_matrix = mat4_diagonal(1.0f);
     viewpoint.view_matrix = mat4_diagonal(1.0f);
     
-    viewpoint.projection_matrix = projection_matrix(
+    viewpoint.projection_matrix = get_projection_matrix(
         to_radians(60.0f),
         window_aspect_ratio,
         0.1f,
@@ -809,7 +809,7 @@ update_debug_render(DebugRender& debug_render, Viewpoint& viewpoint, const Debug
 {
     glUseProgram(debug_render.program_id);
 
-    viewpoint.view_matrix = view_matrix(viewpoint.position, viewpoint.rotation);
+    viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
         debug_render.u_view_location, 
@@ -875,7 +875,7 @@ update_voxel_render(const VoxelRender& voxel_render, Viewpoint& viewpoint)
 {
     glUseProgram(voxel_render.program_id);
 
-    viewpoint.view_matrix = view_matrix(viewpoint.position, viewpoint.rotation);
+    viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
         voxel_render.u_view_location, 
@@ -916,7 +916,7 @@ update_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Popul
 {
     glUseProgram(model_render.program_id);
 
-    viewpoint.view_matrix = view_matrix(viewpoint.position, viewpoint.rotation);
+    viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
         model_render.u_view_location, 
