@@ -662,6 +662,9 @@ layout_tower_areas(World& world)
 
         for (i32 iteration = 0; iteration < area_expansion_iteration_count; ++iteration)
         {
+            constexpr i32 axis_x_value = static_cast<size_t>(Axis::X);
+            constexpr i32 axis_y_value = static_cast<size_t>(Axis::Y);
+            
             i32 pool_index = 0;
             const i32 initial_count = area_pool.active_count;
 
@@ -673,7 +676,7 @@ layout_tower_areas(World& world)
                 const IVec2 area_size = ibounds2_size(area_copy.bounds);
 
                 const Axis axis_split =
-                    area_size[static_cast<size_t>(Axis::X)] > area_size[static_cast<size_t>(Axis::Y)]
+                    area_size[axis_x_value] > area_size[axis_y_value]
                     ? Axis::X
                     : Axis::Y;
 
@@ -710,12 +713,11 @@ layout_tower_areas(World& world)
         {
             const Section section = static_cast<Section>(section_index);
             
-            const b32 quadrant_section = (
+            const b32 quadrant_section =
                 section == Section::Quadrant1 ||
                 section == Section::Quadrant2 ||
                 section == Section::Quadrant3 ||
-                section == Section::Quadrant4
-            );
+                section == Section::Quadrant4;
 
             if (quadrant_section)
             {
@@ -729,8 +731,8 @@ layout_tower_areas(World& world)
                 .area_type = AreaType::Open,
                 .floor_number = floor_number,
                 .bounds = {
-                    section_origin,
-                    section_origin + section_size,
+                    .min = section_origin,
+                    .max = section_origin + section_size,
                 },
             };
 
@@ -1525,7 +1527,7 @@ construct_doors(World& world, const Area& area)
             const IVec3 door_position = {
                 area_edge->area_overlap.bounds.min.x + area_overlap_size.x / 2,
                 area_edge->area_overlap.bounds.min.y,
-                static_cast<i32>(area.floor_number * floor_size_z + 1),
+                area.floor_number * floor_size_z + 1,
             };
 
             constexpr IVec3 door_frame_size = {3, 1, 3};
@@ -1626,11 +1628,7 @@ get_content_level(const i32 z)
 static std::vector<BlockType>
 get_content_block_type_vector(const i32 content_level)
 {
-    if (content_level == 0)
-    {
-        return {};
-    }
-    else if (content_level == 1)
+    if (content_level == 1)
     {
         return {
             BlockType::Server1,
@@ -1638,7 +1636,8 @@ get_content_block_type_vector(const i32 content_level)
             BlockType::Server3,
         };
     }
-    else if (content_level == 2)
+    
+    if (content_level == 2)
     {
         return {
             BlockType::Server1,
@@ -1648,7 +1647,8 @@ get_content_block_type_vector(const i32 content_level)
             BlockType::Server5
         };
     }
-    else if (content_level == 3)
+    
+    if (content_level == 3)
     {
         return {
             BlockType::Server3,
@@ -1658,6 +1658,8 @@ get_content_block_type_vector(const i32 content_level)
             BlockType::Server7,
         };
     }
+    
+    return {};
 }
 
 static void 
