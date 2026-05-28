@@ -1,7 +1,7 @@
 #include "app/world.h"
 
-#include <cassert>
-#include <cstdlib>
+#include <assert.h>
+#include <stdlib.h>
 
 #include "core/types.h"
 #include "app/area.h"
