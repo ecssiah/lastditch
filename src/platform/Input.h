@@ -26,7 +26,7 @@ enum class Button : u8
     FOR_LIST_BUTTON(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr i32 button_count = FOR_LIST_BUTTON(DEFINE_ENUM_COUNT);
+constexpr s32 button_count = FOR_LIST_BUTTON(DEFINE_ENUM_COUNT);
 
 struct Input
 {

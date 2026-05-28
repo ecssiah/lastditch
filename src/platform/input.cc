@@ -5,18 +5,18 @@
 static void 
 init_buttons(Input& input)
 {
-    for (i32 button_index = 0; button_index < button_count; ++button_index)
+    for (s32 button_index = 0; button_index < button_count; ++button_index)
     {
         input.button_array_current[button_index] = false;
         input.button_array_previous[button_index] = false;
     }
 
-    for (i32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
+    for (s32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
         input.glfw_keymap[glfw_key_index] = Button::None;
     }
 
-    for (i32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
+    for (s32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
         input.glfw_buttonmap[glfw_button_index] = Button::None;
     }
@@ -54,16 +54,16 @@ init_mouse(Input& input)
 static void 
 update_buttons(Input& input, const Window& window)
 {
-    for (i32 button_index = 0; button_index < button_count; ++button_index)
+    for (s32 button_index = 0; button_index < button_count; ++button_index)
     {
         input.button_array_previous[button_index] = input.button_array_current[button_index];
         input.button_array_current[button_index] = false;
     }
 
-    for (i32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
+    for (s32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
         const Button button = input.glfw_keymap[glfw_key_index];
-        const i32 button_index = static_cast<i32>(button);
+        const s32 button_index = static_cast<s32>(button);
 
         if (button == Button::None)
         {
@@ -73,10 +73,10 @@ update_buttons(Input& input, const Window& window)
         input.button_array_current[button_index] = glfwGetKey(window.glfw_window, glfw_key_index) == GLFW_PRESS;
     }
 
-    for (i32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
+    for (s32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
         const Button button = input.glfw_buttonmap[glfw_button_index];
-        const i32 button_index = static_cast<i32>(button);
+        const s32 button_index = static_cast<s32>(button);
         
         if (button == Button::None)
         {
@@ -112,7 +112,7 @@ update_pointer(Input& input, Window& window)
 b32 
 input_button_is_down(const Input& input, Button button)
 {
-    const i32 button_index = static_cast<i32>(button);
+    const s32 button_index = static_cast<s32>(button);
     
     return input.button_array_current[button_index];
 }
@@ -120,7 +120,7 @@ input_button_is_down(const Input& input, Button button)
 b32 
 input_button_is_pressed(const Input& input, Button button)
 {
-    const i32 button_index = static_cast<i32>(button);
+    const s32 button_index = static_cast<s32>(button);
     
     return input.button_array_current[button_index] && !input.button_array_previous[button_index];
 }
@@ -128,7 +128,7 @@ input_button_is_pressed(const Input& input, Button button)
 b32 
 input_button_is_released(const Input& input, Button button)
 {
-    const i32 button_index = static_cast<i32>(button);
+    const s32 button_index = static_cast<s32>(button);
     
     return !input.button_array_current[button_index] && input.button_array_previous[button_index];
 }

@@ -44,11 +44,11 @@ init_judge(Population& population)
 static void 
 init_agents(Population& population, Work& work)
 {
-    for (i32 nation_index = 0; nation_index < nation_type_count; ++nation_index)
+    for (s32 nation_index = 0; nation_index < nation_type_count; ++nation_index)
     {
-        for (i32 agent_index = 0; agent_index < agent_initial_count; ++agent_index)
+        for (s32 agent_index = 0; agent_index < agent_initial_count; ++agent_index)
         {
-            const i32 nation_type_index = rand() % nation_type_count;
+            const s32 nation_type_index = rand() % nation_type_count;
             
             const NationType nation_type = static_cast<NationType>(nation_type_index);
             const Nation& nation = population.nation_array[nation_type_index];
@@ -148,7 +148,7 @@ init_actor_pool(Population& population)
     population.actor_pool.free_count = actor_max;
     population.actor_pool.active_count = 0;
 
-    for (i32 pool_id = 0; pool_id < actor_max; ++pool_id)
+    for (s32 pool_id = 0; pool_id < actor_max; ++pool_id)
     {
         population.actor_pool.active_array[pool_id] = 0;
         population.actor_pool.free_array[pool_id] = pool_id;

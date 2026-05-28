@@ -3,10 +3,10 @@
 #include "core/types.h"
 #include "core/geometry.h"
 
-constexpr i32 debug_line_max = 1 << 13;
+constexpr s32 debug_line_max = 1 << 13;
 
 constexpr b32 debug_areas = true;
-constexpr i32 debug_floor_number = 6;
+constexpr s32 debug_floor_number = 6;
 
 struct DebugLine
 {

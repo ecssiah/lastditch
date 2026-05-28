@@ -205,7 +205,7 @@ load_block_texture_directory(VoxelRender& voxel_render)
     {
         const ConfigEntry& config_entry = voxel_render.block_config_data.entry_vector[layer_index];
 
-        const i32 block_type_index = world_block_type_index_from_string(config_entry.key);
+        const s32 block_type_index = world_block_type_index_from_string(config_entry.key);
 
         assert(block_type_index >= 0);
         assert(block_type_index < block_type_count);
@@ -247,7 +247,7 @@ load_actor_texture_directory(ModelRender& model_render)
     {
         const ConfigEntry& config_entry = model_render.actor_config_data.entry_vector[layer_index];
 
-        const i32 nation_type_index = nation_type_index_from_string(config_entry.key);
+        const s32 nation_type_index = nation_type_index_from_string(config_entry.key);
 
         assert(nation_type_index >= 0);
         assert(nation_type_index < nation_type_count);
@@ -267,7 +267,7 @@ load_actor_texture_directory(ModelRender& model_render)
 static ModelGpuData 
 load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
 {
-    const i32 nation_type_index = static_cast<i32>(actor.nation_type);
+    const s32 nation_type_index = static_cast<s32>(actor.nation_type);
     
     ModelGpuData model_gpu_data = {
         .texture_layer =  model_render.actor_type_layer_array[nation_type_index],
@@ -289,7 +289,7 @@ load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
         {
             Vec3 position;
 
-            const i32 scan_result = sscanf(
+            const s32 scan_result = sscanf(
                 line.c_str(),
                 "v %f %f %f",
                 &position.x, 
@@ -305,7 +305,7 @@ load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
         {
             Vec3 normal;
 
-            const i32 normal_scan = sscanf(
+            const s32 normal_scan = sscanf(
                 line.c_str(),
                 "vn %f %f %f",
                 &normal[0], 
@@ -321,7 +321,7 @@ load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
         {
             Vec2 uv;
 
-            const i32 uv_scan = sscanf(
+            const s32 uv_scan = sscanf(
                 line.c_str(),
                 "vt %f %f",
                 &uv[0], 
@@ -334,11 +334,11 @@ load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
         }
         else if (line.starts_with("f "))
         {
-            i32 position_index_array[3];
-            i32 normal_index_array[3];
-            i32 uv_index_array[3];
+            s32 position_index_array[3];
+            s32 normal_index_array[3];
+            s32 uv_index_array[3];
 
-            i32 scan_result = sscanf(
+            s32 scan_result = sscanf(
                 line.c_str(),
                 "f %d/%d/%d %d/%d/%d %d/%d/%d",
                 &position_index_array[0], 
@@ -354,20 +354,20 @@ load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
 
             assert(scan_result == 9);
 
-            for (i32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
+            for (s32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
             {
                 ModelVertex model_vertex = {};
 
-                const i32 position_index = position_index_array[model_vertex_index] - 1;
-                const i32 normal_index = normal_index_array[model_vertex_index] - 1;
-                const i32 uv_index = uv_index_array[model_vertex_index] - 1;
+                const s32 position_index = position_index_array[model_vertex_index] - 1;
+                const s32 normal_index = normal_index_array[model_vertex_index] - 1;
+                const s32 uv_index = uv_index_array[model_vertex_index] - 1;
 
                 assert(position_index >= 0);
-                assert(position_index < static_cast<i32>(position_vector.size()));
+                assert(position_index < static_cast<s32>(position_vector.size()));
                 assert(normal_index >= 0);
-                assert(normal_index < static_cast<i32>(normal_vector.size()));
+                assert(normal_index < static_cast<s32>(normal_vector.size()));
                 assert(uv_index >= 0);
-                assert(uv_index < static_cast<i32>(uv_vector.size()));
+                assert(uv_index < static_cast<s32>(uv_vector.size()));
 
                 model_vertex.a_position[0] = position_vector[position_index].x;
                 model_vertex.a_position[1] = position_vector[position_index].y;
@@ -389,7 +389,7 @@ load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
 }
 
 static void 
-generate_sector_mesh(VoxelRender& voxel_render, const World& world, const i32 sector_index)
+generate_sector_mesh(VoxelRender& voxel_render, const World& world, const s32 sector_index)
 {
     SectorMesh sector_mesh = {
         .sector_index = sector_index,
@@ -403,13 +403,13 @@ generate_sector_mesh(VoxelRender& voxel_render, const World& world, const i32 se
         0,
     };
 
-    for (i32 cell_z = 0; cell_z < sector_height_in_cells; ++cell_z)
+    for (s32 cell_z = 0; cell_z < sector_height_in_cells; ++cell_z)
     {
-        for (i32 cell_y = sector_cell_coordinate.y; cell_y < sector_cell_coordinate.y + sector_size_in_cells; ++cell_y) 
+        for (s32 cell_y = sector_cell_coordinate.y; cell_y < sector_cell_coordinate.y + sector_size_in_cells; ++cell_y) 
             {
-            for (i32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + sector_size_in_cells; ++cell_x) 
+            for (s32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + sector_size_in_cells; ++cell_x) 
             {
-                const i32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
+                const s32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
                 const Cell* cell = &world.cell_array[cell_index];
 
                 if (cell->block_type == BlockType::None)
@@ -445,25 +445,25 @@ generate_sector_mesh(VoxelRender& voxel_render, const World& world, const i32 se
 static void 
 emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
 {
-    for (i32 vertex_index = 0; vertex_index < vertex_count_per_face; ++vertex_index)
+    for (s32 vertex_index = 0; vertex_index < vertex_count_per_face; ++vertex_index)
     {
-        const i32 direction_index = static_cast<i32>(sector_quad.direction);
-        const i32 block_type_index = static_cast<i32>(sector_quad.block_type);
+        const s32 direction_index = static_cast<s32>(sector_quad.direction);
+        const s32 block_type_index = static_cast<s32>(sector_quad.block_type);
         
         const IVec3 vertex_position = sector_quad.local_coordinate + voxel_vertex_array[direction_index][vertex_index];
         
-        const i32 vertex_bitpacked = 
+        const s32 vertex_bitpacked = 
             (vertex_position.x & 63u) << 0u |
             (vertex_position.y & 63u) << 6u |
             (vertex_position.z & 255u) << 12u;
         
-        const i32 face_bitpacked =
+        const s32 face_bitpacked =
             (block_type_index & 255u) << 0u |
             (direction_index & 7u) << 8u;
 
         const VoxelVertex voxel_vertex = {
-            .a_vertex = static_cast<i32>(vertex_bitpacked),
-            .a_face = static_cast<i32>(face_bitpacked),
+            .a_vertex = static_cast<s32>(vertex_bitpacked),
+            .a_face = static_cast<s32>(face_bitpacked),
         };
 
         voxel_gpu_data.voxel_vertex_vector.push_back(voxel_vertex);
@@ -598,12 +598,12 @@ upload_model_gpu_data(ModelGpuData& model_gpu_data)
 static void 
 init_glad(const Platform& platform)
 {
-    const i32 glad_load_gl_result = gladLoadGL(glfwGetProcAddress);
+    const s32 glad_load_gl_result = gladLoadGL(glfwGetProcAddress);
 
     assert(glad_load_gl_result != 0);
 
-    i32 framebuffer_width;
-    i32 framebuffer_height;
+    s32 framebuffer_width;
+    s32 framebuffer_height;
     glfwGetFramebufferSize(platform.window.glfw_window, &framebuffer_width, &framebuffer_height);
 
     glViewport(0, 0, framebuffer_width, framebuffer_height);
@@ -713,7 +713,7 @@ init_voxel_render(VoxelRender& voxel_render, Viewpoint& viewpoint, const World& 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
 
-    for (i32 sector_index = 0; sector_index < world_area_in_sectors; ++sector_index)
+    for (s32 sector_index = 0; sector_index < world_area_in_sectors; ++sector_index)
     {
         generate_sector_mesh(voxel_render, world, sector_index);
     }
@@ -778,9 +778,9 @@ init_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Populat
     
     model_render.model_gpu_data_vector.resize(actor_max);
 
-    for (i32 pool_id = 0; pool_id < population.actor_pool.active_count; ++pool_id)
+    for (s32 pool_id = 0; pool_id < population.actor_pool.active_count; ++pool_id)
     {
-        const i32 actor_id = population.actor_pool.active_array[pool_id];
+        const s32 actor_id = population.actor_pool.active_array[pool_id];
         const Actor& actor = population.actor_pool.actor_array[actor_id];
 
         const ModelGpuData model_gpu_data = load_model_gpu_data(model_render, actor);
@@ -934,9 +934,9 @@ update_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Popul
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
 
-    for (i32 pool_id = 0; pool_id < population.actor_pool.active_count; ++pool_id)
+    for (s32 pool_id = 0; pool_id < population.actor_pool.active_count; ++pool_id)
     {
-        const i32 actor_id = population.actor_pool.active_array[pool_id];
+        const s32 actor_id = population.actor_pool.active_array[pool_id];
         const Actor& actor = population.actor_pool.actor_array[actor_id];
 
         const ModelGpuData& model_gpu_data = model_render.model_gpu_data_vector[actor_id];

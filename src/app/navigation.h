@@ -12,31 +12,31 @@ enum class NodeType : u8
 
 struct NodeRecord
 {
-    i32 node_id;
-    i32 parent_id;
+    s32 node_id;
+    s32 parent_id;
 
     NodeType node_type;
 
-    i32 g_cost;
-    i32 f_cost;
+    s32 g_cost;
+    s32 f_cost;
 };
 
 struct Edge
 {
-    i32 to_node_id;
-    i32 cost;
+    s32 to_node_id;
+    s32 cost;
 };
 
 struct EdgeList
 {
-    i32 count;
+    s32 count;
 
     Edge* edge_array;
 };
 
 struct Graph
 {
-    i32 node_count;
+    s32 node_count;
 
     NodeRecord* node_record_array;
 
@@ -50,9 +50,9 @@ struct Search
 
 struct Path
 {
-    i32 count;
+    s32 count;
 
-    i32* node_id_array;
+    s32* node_id_array;
 };
 
 struct Navigation

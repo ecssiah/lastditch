@@ -7,10 +7,10 @@ const char* nation_type_string_array[nation_type_count] =
     FOR_LIST_NATION_TYPE(DEFINE_ENUM_STRINGS)
 };
 
-i32 
+s32 
 nation_type_index_from_string(const std::string& nation_type_string)
 {
-    for (i32 nation_type_index = 0; nation_type_index < nation_type_count; ++nation_type_index)
+    for (s32 nation_type_index = 0; nation_type_index < nation_type_count; ++nation_type_index)
     {
         if (nation_type_string == nation_type_string_array[nation_type_index])
         {

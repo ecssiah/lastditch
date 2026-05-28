@@ -18,7 +18,7 @@ enum class Axis : u8
     FOR_LIST_AXIS(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr i32 axis_count = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
+constexpr s32 axis_count = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
 
 struct Vec2
 {
@@ -26,13 +26,13 @@ struct Vec2
     f32 y;
 
     constexpr f32&
-    operator[](const i32 index)
+    operator[](const s32 index)
     {
         return (&x)[index];
     }
 
     constexpr const f32&
-    operator[](const i32 index) const
+    operator[](const s32 index) const
     {
         return (&x)[index];
     }
@@ -45,13 +45,13 @@ struct Vec3
     f32 z;
     
     constexpr f32&
-    operator[](const i32 index)
+    operator[](const s32 index)
     {
         return (&x)[index];
     }
 
     constexpr const f32&
-    operator[](const i32 index) const
+    operator[](const s32 index) const
     {
         return (&x)[index];
     }
@@ -59,17 +59,17 @@ struct Vec3
 
 struct IVec2
 {
-    i32 x;
-    i32 y;
+    s32 x;
+    s32 y;
     
-    constexpr i32&
-    operator[](const i32 index)
+    constexpr s32&
+    operator[](const s32 index)
     {
         return (&x)[index];
     }
 
-    constexpr const i32&
-    operator[](const i32 index) const
+    constexpr const s32&
+    operator[](const s32 index) const
     {
         return (&x)[index];
     }
@@ -77,18 +77,18 @@ struct IVec2
 
 struct IVec3
 {
-    i32 x;
-    i32 y;
-    i32 z;
+    s32 x;
+    s32 y;
+    s32 z;
     
-    constexpr i32&
-    operator[](const i32 index)
+    constexpr s32&
+    operator[](const s32 index)
     {
         return (&x)[index];
     }
 
-    constexpr const i32&
-    operator[](const i32 index) const
+    constexpr const s32&
+    operator[](const s32 index) const
     {
         return (&x)[index];
     }
@@ -99,13 +99,13 @@ struct Mat4
     f32 entry_array[4][4];
 
     constexpr f32*
-    operator[](const i32 index)
+    operator[](const s32 index)
     {
         return entry_array[index];
     }
 
     constexpr const f32*
-    operator[](const i32 index) const
+    operator[](const s32 index) const
     {
         return entry_array[index];
     }
@@ -139,14 +139,14 @@ constexpr Vec3 unit_x = {1.0f, 0.0f, 0.0f};
 constexpr Vec3 unit_y = {0.0f, 1.0f, 0.0f};
 constexpr Vec3 unit_z = {0.0f, 0.0f, 1.0f};
 
-constexpr i32 
-min_i32(const i32 a, const i32 b)
+constexpr s32 
+min_s32(const s32 a, const s32 b)
 {
     return a < b ? a : b;
 }
 
-constexpr i32 
-max_i32(const i32 a, const i32 b)
+constexpr s32 
+max_s32(const s32 a, const s32 b)
 {
     return a > b ? a : b;
 }
@@ -163,8 +163,8 @@ max_f32(const f32 a, const f32 b)
     return a > b ? a : b;
 }
 
-constexpr i32
-clamp_i32(const i32 a, const i32 min, const i32 max)
+constexpr s32
+clamp_s32(const s32 a, const s32 min, const s32 max)
 {
     return a < min ? min : a > max ? max : a;
 }
@@ -200,13 +200,13 @@ vec3_broadcast(const f32 scalar)
 }
 
 constexpr IVec2 
-ivec2_broadcast(const i32 scalar)
+ivec2_broadcast(const s32 scalar)
 {
     return {scalar, scalar};
 }
 
 constexpr IVec3 
-ivec3_broadcast(const i32 scalar)
+ivec3_broadcast(const s32 scalar)
 {
     return {scalar, scalar, scalar};
 }
@@ -236,8 +236,8 @@ IVec3 operator-(const IVec3& a, const IVec3& b);
 
 Vec2 operator*(f32 scalar, const Vec2& a);
 Vec3 operator*(f32 scalar, const Vec3& a);
-IVec2 operator*(i32 scalar, const IVec2& a);
-IVec3 operator*(i32 scalar, const IVec3& a);
+IVec2 operator*(s32 scalar, const IVec2& a);
+IVec3 operator*(s32 scalar, const IVec3& a);
 
 Vec2 ivec2_to_vec2(const IVec2& a);
 Vec3 ivec3_to_vec3(const IVec3& a);

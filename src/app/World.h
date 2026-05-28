@@ -9,60 +9,60 @@
 
 constexpr f32 cell_size = 1.0f;
 
-constexpr i32 sector_size_in_cells_log2 = 5;
-constexpr i32 sector_size_in_cells = 1 << (1 * sector_size_in_cells_log2);
+constexpr s32 sector_size_in_cells_log2 = 5;
+constexpr s32 sector_size_in_cells = 1 << (1 * sector_size_in_cells_log2);
 
-constexpr i32 sector_height_in_cells_log2 = 8;
-constexpr i32 sector_height_in_cells = 1 << (1 * sector_height_in_cells_log2);
+constexpr s32 sector_height_in_cells_log2 = 8;
+constexpr s32 sector_height_in_cells = 1 << (1 * sector_height_in_cells_log2);
 
-constexpr i32 sector_area_in_cells = 1 << (2 * sector_size_in_cells_log2);
+constexpr s32 sector_area_in_cells = 1 << (2 * sector_size_in_cells_log2);
 
-constexpr i32 sector_volume_in_cells = sector_area_in_cells * sector_height_in_cells;
+constexpr s32 sector_volume_in_cells = sector_area_in_cells * sector_height_in_cells;
 
-constexpr i32 world_size_in_sectors_log2 = 3;
-constexpr i32 wold_size_in_sectors = 1 << (1 * world_size_in_sectors_log2);
-constexpr i32 world_area_in_sectors = 1 << (2 * world_size_in_sectors_log2);
+constexpr s32 world_size_in_sectors_log2 = 3;
+constexpr s32 wold_size_in_sectors = 1 << (1 * world_size_in_sectors_log2);
+constexpr s32 world_area_in_sectors = 1 << (2 * world_size_in_sectors_log2);
 
-constexpr i32 world_size_in_cells_log2 = sector_size_in_cells_log2 + world_size_in_sectors_log2;
-constexpr i32 world_size_in_cells = 1 << (1 * world_size_in_cells_log2);
-constexpr i32 world_area_in_cells = 1 << (2 * world_size_in_cells_log2);
+constexpr s32 world_size_in_cells_log2 = sector_size_in_cells_log2 + world_size_in_sectors_log2;
+constexpr s32 world_size_in_cells = 1 << (1 * world_size_in_cells_log2);
+constexpr s32 world_area_in_cells = 1 << (2 * world_size_in_cells_log2);
 
-constexpr i32 world_volume_in_cells = world_area_in_cells * sector_height_in_cells;
+constexpr s32 world_volume_in_cells = world_area_in_cells * sector_height_in_cells;
 
-constexpr i32 world_stride_x = 1;
-constexpr i32 world_stride_y = world_size_in_cells;
-constexpr i32 world_stride_z = world_area_in_cells;
+constexpr s32 world_stride_x = 1;
+constexpr s32 world_stride_y = world_size_in_cells;
+constexpr s32 world_stride_z = world_area_in_cells;
 
-constexpr i32 world_center_i32 = world_size_in_cells / 2;
+constexpr s32 world_center_s32 = world_size_in_cells / 2;
 constexpr f32 world_center_f32 = world_size_in_cells / 2.0f;
 
-constexpr i32 floor_size_z = 16;
-constexpr i32 floor_count = sector_height_in_cells / floor_size_z;
+constexpr s32 floor_size_z = 16;
+constexpr s32 floor_count = sector_height_in_cells / floor_size_z;
 
-constexpr i32 tower_border = 16;
-constexpr i32 tower_floor_count = 6;
-constexpr i32 tower_size = world_size_in_cells - 2 * tower_border;
+constexpr s32 tower_border = 16;
+constexpr s32 tower_floor_count = 6;
+constexpr s32 tower_size = world_size_in_cells - 2 * tower_border;
 
-constexpr i32 tower_center_hall_size = 24;
-constexpr i32 tower_outer_hall_size = 6;
+constexpr s32 tower_center_hall_size = 24;
+constexpr s32 tower_outer_hall_size = 6;
 
-constexpr i32 tower_quadrant_size = tower_size / 2 - tower_outer_hall_size - tower_center_hall_size / 2;
+constexpr s32 tower_quadrant_size = tower_size / 2 - tower_outer_hall_size - tower_center_hall_size / 2;
 
-constexpr i32 roof_z = tower_floor_count * floor_size_z;
-constexpr i32 roof_floor_count = floor_count - tower_floor_count;
-constexpr i32 roof_floor_number = tower_floor_count;
+constexpr s32 roof_z = tower_floor_count * floor_size_z;
+constexpr s32 roof_floor_count = floor_count - tower_floor_count;
+constexpr s32 roof_floor_number = tower_floor_count;
 
-constexpr i32 roof_center_path_size = 18;
+constexpr s32 roof_center_path_size = 18;
 
-constexpr i32 platform_size_x = 24;
-constexpr i32 platform_size_y = 16;
+constexpr s32 platform_size_x = 24;
+constexpr s32 platform_size_y = 16;
 
-constexpr i32 temple_size_x = 30;
-constexpr i32 temple_size_y = 20;
+constexpr s32 temple_size_x = 30;
+constexpr s32 temple_size_y = 20;
 
-constexpr i32 temple_border_offset = 24;
+constexpr s32 temple_border_offset = 24;
 
-constexpr i32 elevator_size = 16;
+constexpr s32 elevator_size = 16;
 
 constexpr bool place_room_content = true;
 
@@ -134,7 +134,7 @@ enum class BlockType : u8
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr i32 block_type_count = FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT);
+constexpr s32 block_type_count = FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT);
 
 inline constexpr std::array<const char*, block_type_count>
 block_type_string_array =
@@ -146,7 +146,7 @@ struct BlockTypeList
 {
     const BlockType* block_type_array;
 
-    i32 count;
+    s32 count;
 };
 
 #define FOR_LIST_SECTION(DO)                                                                \
@@ -181,7 +181,7 @@ enum class Section : u8
     FOR_LIST_SECTION(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr i32 section_count = FOR_LIST_SECTION(DEFINE_ENUM_COUNT);
+constexpr s32 section_count = FOR_LIST_SECTION(DEFINE_ENUM_COUNT);
 
 inline constexpr std::array<const char*, section_count>
 section_string_array =
@@ -455,7 +455,7 @@ section_size_array =
 
 struct Cell
 {
-    i32 cell_index;
+    s32 cell_index;
 
     BlockType block_type;
     u8 direction_mask;
@@ -480,41 +480,41 @@ struct World
     EdgePool edge_pool;
 };
 
-b32 world_cell_coordinate_is_valid(i32 x, i32 y, i32 z);
-b32 world_sector_coordinate_is_valid(i32 x, i32 y);
+b32 world_cell_coordinate_is_valid(s32 x, s32 y, s32 z);
+b32 world_sector_coordinate_is_valid(s32 x, s32 y);
 
-i32 world_sector_coordinate_to_index(IVec2 sector_coordinate);
-IVec2 world_sector_index_to_coordinate(i32 sector_index);
+s32 world_sector_coordinate_to_index(IVec2 sector_coordinate);
+IVec2 world_sector_index_to_coordinate(s32 sector_index);
 
-i32 world_cell_coordinate_to_index(i32 x, i32 y, i32 z);
-IVec3 world_cell_index_to_coordinate(i32 cell_index);
+s32 world_cell_coordinate_to_index(s32 x, s32 y, s32 z);
+IVec3 world_cell_index_to_coordinate(s32 cell_index);
 
-i32 world_cell_coordinate_to_sector_index(i32 x, i32 y);
-IVec2 world_cell_coordinate_to_sector_coordinate(i32 x, i32 y);
+s32 world_cell_coordinate_to_sector_index(s32 x, s32 y);
+IVec2 world_cell_coordinate_to_sector_coordinate(s32 x, s32 y);
 
-i32 world_cell_coordinate_to_local_index(i32 x, i32 y, i32 z);
-IVec3 world_cell_coordinate_to_local_coordinate(i32 x, i32 y, i32 z);
+s32 world_cell_coordinate_to_local_index(s32 x, s32 y, s32 z);
+IVec3 world_cell_coordinate_to_local_coordinate(s32 x, s32 y, s32 z);
 
-Vec3 world_cell_coordinate_to_position(i32 x, i32 y, i32 z);
+Vec3 world_cell_coordinate_to_position(s32 x, s32 y, s32 z);
 IVec3 world_position_to_cell_coordinate(f32 x, f32 y, f32 z);
 
-i32 world_get_stride(Direction direction);
+s32 world_get_stride(Direction direction);
 
-i32 world_get_floor(i32 z);
+s32 world_get_floor(s32 z);
 
-b32 world_is_solid(const World& world, i32 x, i32 y, i32 z);
-b32 world_is_clear(const World& world, i32 x, i32 y, i32 z, u8 direction_mask);
+b32 world_is_solid(const World& world, s32 x, s32 y, s32 z);
+b32 world_is_clear(const World& world, s32 x, s32 y, s32 z, u8 direction_mask);
 
-i32 world_block_type_index_from_string(const std::string& block_type_string);
+s32 world_block_type_index_from_string(const std::string& block_type_string);
 
-u8 world_get_direction_mask(const World& world, i32 x, i32 y, i32 z);
+u8 world_get_direction_mask(const World& world, s32 x, s32 y, s32 z);
 
-Cell* world_get_cell(World& world, i32 x, i32 y, i32 z);
-Cell* world_get_free_cell(World& world, i32 x, i32 y, i32 z);
+Cell* world_get_cell(World& world, s32 x, s32 y, s32 z);
+Cell* world_get_free_cell(World& world, s32 x, s32 y, s32 z);
 
-void world_set_block_type(World& world, i32 x, i32 y, i32 z, BlockType block_type);
-void world_set_block_type_box(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
-void world_set_block_type_cube(World& world, i32 x, i32 y, i32 z, i32 size_x, i32 size_y, i32 size_z, BlockType block_type);
+void world_set_block_type(World& world, s32 x, s32 y, s32 z, BlockType block_type);
+void world_set_block_type_box(World& world, s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+void world_set_block_type_cube(World& world, s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
 
 void world_init(World& world, Debug& debug);
 void world_update(f32 delta_time, World& world, Population& population);

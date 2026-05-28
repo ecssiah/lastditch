@@ -20,14 +20,14 @@ get_grid_overlap_of_bounds(const Bounds3& bounds)
 {
     return {
         .min = {
-            max_i32(static_cast<i32>(floorf(bounds.min.x)), 0),
-            max_i32(static_cast<i32>(floorf(bounds.min.y)), 0),
-            max_i32(static_cast<i32>(floorf(bounds.min.z)), 0),
+            max_s32(static_cast<s32>(floorf(bounds.min.x)), 0),
+            max_s32(static_cast<s32>(floorf(bounds.min.y)), 0),
+            max_s32(static_cast<s32>(floorf(bounds.min.z)), 0),
         },
         .max = {
-            min_i32(static_cast<i32>(ceilf(bounds.max.x)) - 1, world_size_in_cells - 1),
-            min_i32(static_cast<i32>(ceilf(bounds.max.y)) - 1, world_size_in_cells - 1),
-            min_i32(static_cast<i32>(ceilf(bounds.max.z)) - 1, world_size_in_cells - 1),
+            min_s32(static_cast<s32>(ceilf(bounds.max.x)) - 1, world_size_in_cells - 1),
+            min_s32(static_cast<s32>(ceilf(bounds.max.y)) - 1, world_size_in_cells - 1),
+            min_s32(static_cast<s32>(ceilf(bounds.max.z)) - 1, world_size_in_cells - 1),
         },
     };
 }
@@ -44,7 +44,7 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
 
     Bounds3 swept_bounds;
     
-    for (i32 axis_index = 0; axis_index < axis_count; ++axis_index)
+    for (s32 axis_index = 0; axis_index < axis_count; ++axis_index)
     {
         swept_bounds.min[axis_index] = fminf(
             actor_bounds.min[axis_index],
@@ -59,7 +59,7 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
 
     const IBounds3 grid_overlap_bounds = get_grid_overlap_of_bounds(swept_bounds);
 
-    const i32 axis_index = static_cast<i32>(axis);
+    const s32 axis_index = static_cast<s32>(axis);
 
     const f32 actor_min_prev = actor_bounds.min[axis_index];
     const f32 actor_max_prev = actor_bounds.max[axis_index];
@@ -67,21 +67,21 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
     const f32 actor_min_next = actor_min_prev + step_delta_time * actor.velocity[axis_index];
     const f32 actor_max_next = actor_max_prev + step_delta_time * actor.velocity[axis_index];
 
-    const i32 axis_s = (axis_index + 1) % axis_count;
-    const i32 axis_t = (axis_index + 2) % axis_count;
+    const s32 axis_s = (axis_index + 1) % axis_count;
+    const s32 axis_t = (axis_index + 2) % axis_count;
 
     b32 found = false;
     f32 best = actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY;
 
-    constexpr i32 axis_z_index = static_cast<i32>(Axis::Z);
-    constexpr i32 axis_y_index = static_cast<i32>(Axis::Y);
-    constexpr i32 axis_x_index = static_cast<i32>(Axis::X);
+    constexpr s32 axis_z_index = static_cast<s32>(Axis::Z);
+    constexpr s32 axis_y_index = static_cast<s32>(Axis::Y);
+    constexpr s32 axis_x_index = static_cast<s32>(Axis::X);
     
-    for (i32 z = grid_overlap_bounds.min[axis_z_index]; z <= grid_overlap_bounds.max[axis_z_index]; ++z) 
+    for (s32 z = grid_overlap_bounds.min[axis_z_index]; z <= grid_overlap_bounds.max[axis_z_index]; ++z) 
     {
-        for (i32 y = grid_overlap_bounds.min[axis_y_index]; y <= grid_overlap_bounds.max[axis_y_index]; ++y) 
+        for (s32 y = grid_overlap_bounds.min[axis_y_index]; y <= grid_overlap_bounds.max[axis_y_index]; ++y) 
         {
-            for (i32 x = grid_overlap_bounds.min[axis_x_index]; x <= grid_overlap_bounds.max[axis_x_index]; ++x) 
+            for (s32 x = grid_overlap_bounds.min[axis_x_index]; x <= grid_overlap_bounds.max[axis_x_index]; ++x) 
             {
                 const IVec3 cell_coordinate = {x, y, z};
 
@@ -162,7 +162,7 @@ integrate(const f32 delta_time, Actor& actor, World& world)
 
     if (actor.movement_type == MovementType::Ground)
     {
-        constexpr i32 axis_index = static_cast<i32>(Axis::Z);
+        constexpr s32 axis_index = static_cast<s32>(Axis::Z);
         
         f32 dz;
         
@@ -192,7 +192,7 @@ integrate(const f32 delta_time, Actor& actor, World& world)
 
         const f32 max_move = max_f32(move.x, max_f32(move.y, move.z));
 
-        i32 step_count = static_cast<i32>(ceilf(max_move));
+        s32 step_count = static_cast<s32>(ceilf(max_move));
         
         if (step_count < 1)
         {
@@ -201,7 +201,7 @@ integrate(const f32 delta_time, Actor& actor, World& world)
 
         const f32 step_delta_time = delta_time / step_count;
 
-        for (i32 step_index = 0; step_index < step_count; ++step_index)
+        for (s32 step_index = 0; step_index < step_count; ++step_index)
         {
             resolve_axis_collisions(actor, Axis::X, step_delta_time, world);
             resolve_axis_collisions(actor, Axis::Y, step_delta_time, world);

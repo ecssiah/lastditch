@@ -3,14 +3,14 @@
 #include "core/types.h"
 #include "app/actor.h"
 
-constexpr i32 task_max_count = 1 << 12;
+constexpr s32 task_max_count = 1 << 12;
 
 struct Population;
 
 struct WanderState
 {
-    i32 tick;
-    i32 tick_limit;
+    s32 tick;
+    s32 tick_limit;
 };
 
 struct SeekState
@@ -27,7 +27,7 @@ enum TaskType
     FOR_LIST_TASK_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr i32 task_type_count = FOR_LIST_TASK_TYPE(DEFINE_ENUM_COUNT);
+constexpr s32 task_type_count = FOR_LIST_TASK_TYPE(DEFINE_ENUM_COUNT);
 
 union TaskState
 {
@@ -37,7 +37,7 @@ union TaskState
 
 struct Task
 {
-    i32 actor_id;
+    s32 actor_id;
 
     TaskType task_type;
     TaskState task_state;
@@ -45,13 +45,13 @@ struct Task
 
 struct TaskPool
 {
-    i32 active_count;
-    std::array<i32, task_max_count> active_array;
+    s32 active_count;
+    std::array<s32, task_max_count> active_array;
 
-    std::array<i32, task_max_count> active_lookup;
+    std::array<s32, task_max_count> active_lookup;
 
-    i32 free_count;
-    std::array<i32, task_max_count> free_array;
+    s32 free_count;
+    std::array<s32, task_max_count> free_array;
 
     std::array<Task, task_max_count> task_array;
 };
@@ -64,7 +64,7 @@ struct Work
 void execute_wander(Population& population, Task& act, f32 delta_time);
 void execute_seek(Population& population, Task& act, f32 delta_time);
 
-i32 work_add_task(Work& work, Actor& actor, TaskType task_type, TaskState task_state);
+s32 work_add_task(Work& work, Actor& actor, TaskType task_type, TaskState task_state);
 
 void work_init(Work& work);
 void work_update(f32 delta_time, Population& population, Work& work);

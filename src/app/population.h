@@ -4,13 +4,13 @@
 #include "app/nation.h"
 #include "app/work.h"
 
-constexpr i32 agent_initial_count = 12;
+constexpr s32 agent_initial_count = 12;
 
 struct Population
 {
     Nation nation_array[nation_type_count];
 
-    i32 judge_id;
+    s32 judge_id;
 
     ActorPool actor_pool;
 };

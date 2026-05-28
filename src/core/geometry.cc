@@ -93,7 +93,7 @@ operator*(const f32 scalar, const Vec3& a)
     };
 }
 
-IVec2 operator*(const i32 scalar, const IVec2& a)
+IVec2 operator*(const s32 scalar, const IVec2& a)
 {
     return {
         a.x * scalar,
@@ -101,7 +101,7 @@ IVec2 operator*(const i32 scalar, const IVec2& a)
     };
 }
 
-IVec3 operator*(const i32 scalar, const IVec3& a)
+IVec3 operator*(const s32 scalar, const IVec3& a)
 {
     return {
         a.x * scalar,
@@ -234,11 +234,11 @@ operator*(const Mat4& a, const Mat4& b)
 {
     Mat4 result = {};
 
-    for (i32 column = 0; column < 4; ++column)
+    for (s32 column = 0; column < 4; ++column)
     {
-        for (i32 row = 0; row < 4; ++row)
+        for (s32 row = 0; row < 4; ++row)
         {
-            for (i32 i = 0; i < 4; ++i)
+            for (s32 i = 0; i < 4; ++i)
             {
                 result[column][row] += a[i][row] * b[column][i];
             }
@@ -434,18 +434,18 @@ IBounds2
 ibounds2_intersection(const IBounds2& a, const IBounds2& b)
 {
     const IVec2 o_min = {
-        max_i32(a.min.x, b.min.x),
-        max_i32(a.min.y, b.min.y)
+        max_s32(a.min.x, b.min.x),
+        max_s32(a.min.y, b.min.y)
     };
 
     const IVec2 o_max = {
-        min_i32(a.max.x, b.max.x),
-        min_i32(a.max.y, b.max.y)
+        min_s32(a.max.x, b.max.x),
+        min_s32(a.max.y, b.max.y)
     };
 
     return {
-        {o_min.x, o_min.y},
-        {o_max.x, o_max.y},
+        .min = {o_min.x, o_min.y},
+        .max = {o_max.x, o_max.y},
     };
 }
 

@@ -15,9 +15,9 @@ load_textures(Screen& screen, const std::string& textures_path)
 {
     const std::string font_path = std::format("{}/null_terminator.png", textures_path);
 
-    i32 width;
-    i32 height;
-    i32 channels;
+    s32 width;
+    s32 height;
+    s32 channels;
 
     stbi_set_flip_vertically_on_load(0);
 
@@ -87,7 +87,7 @@ draw_text(const Screen& screen, const std::string& text, f32 x, f32 y)
     constexpr f32 cell_width = 1.0f / 8.0f;
     constexpr f32 cell_height = 1.0f / 12.0f;
 
-    i32 vertex_count = 0;
+    s32 vertex_count = 0;
     const size_t vertex_max = text.length() * 6;
 
     std::vector<TextVertex> text_vertex_array = std::vector<TextVertex>(vertex_max);
@@ -102,10 +102,10 @@ draw_text(const Screen& screen, const std::string& text, f32 x, f32 y)
             continue;
         }
 
-        const i32 ascii_value = text_char - 32;
+        const s32 ascii_value = text_char - 32;
 
-        const i32 texture_col = ascii_value % 8;
-        const i32 texture_row = ascii_value / 8;
+        const s32 texture_col = ascii_value % 8;
+        const s32 texture_row = ascii_value / 8;
 
         const f32 u0 = texture_col * cell_width;
         const f32 v0 = texture_row * cell_height;
@@ -170,8 +170,8 @@ screen_init(Screen& screen, const Platform& platform)
 
     screen.u_projection_location = glGetUniformLocation(screen.program_id, "u_projection_matrix");
 
-    i32 framebuffer_width; 
-    i32 framebuffer_height;
+    s32 framebuffer_width; 
+    s32 framebuffer_height;
     glfwGetFramebufferSize(platform.window.glfw_window, &framebuffer_width, &framebuffer_height);
 
     const Mat4 shell_projection_matrix = get_orthographic_matrix(
@@ -276,7 +276,7 @@ draw_debug_info(Screen& screen, const Population& population)
 
     if (cell_coordinate.z >= 0)
     {
-        const i32 floor_number = world_get_floor(cell_coordinate.z);
+        const s32 floor_number = world_get_floor(cell_coordinate.z);
         
         if (floor_number < floor_count)
         {

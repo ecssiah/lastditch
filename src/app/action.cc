@@ -217,7 +217,7 @@ action_add(ActionQueue& action_queue, const Action& action)
 void 
 action_apply_queue(ActionQueue& action_queue, Actor& judge)
 {
-    i32 actions_applied = 0;
+    s32 actions_applied = 0;
     
     while (action_queue.current_index < action_queue.count && actions_applied < action_max_per_frame)
     {
@@ -256,7 +256,7 @@ void action_queue_actions(State& state, const Platform& platform)
 
 void action_update(State& state, const Platform& platform)
 {
-    const i32 judge_id = state.population.judge_id;
+    const s32 judge_id = state.population.judge_id;
     Actor& judge = state.population.actor_pool.actor_array[judge_id];
     
     action_queue_actions(state, platform);

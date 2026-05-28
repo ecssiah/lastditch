@@ -9,10 +9,10 @@ const char* actor_type_string_array[actor_type_count] =
     FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_STRINGS)
 };
 
-i32 
+s32 
 actor_type_index_from_string(const std::string& actor_type_string)
 {
-    for (i32 actor_type_index = 0; actor_type_index < actor_type_count; ++actor_type_index)
+    for (s32 actor_type_index = 0; actor_type_index < actor_type_count; ++actor_type_index)
     {
         if (actor_type_string == actor_type_string_array[actor_type_index])
         {
@@ -26,7 +26,7 @@ actor_type_index_from_string(const std::string& actor_type_string)
 void 
 actor_add(ActorPool& actor_pool, Actor& actor)
 {
-    const i32 actor_id = actor_pool.free_array[--actor_pool.free_count];
+    const s32 actor_id = actor_pool.free_array[--actor_pool.free_count];
 
     actor.actor_id = actor_id;
 
@@ -49,7 +49,7 @@ actor_add(ActorPool& actor_pool, Actor& actor)
 //         }
 //         else
 //         {
-//             const i32 direction_angle = rand() % 360;
+//             const s32 direction_angle = rand() % 360;
 
 //             const vec2 direction = {
 //                 cosf(glm_rad(direction_angle)),

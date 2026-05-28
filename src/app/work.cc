@@ -44,12 +44,12 @@ execute_seek(Population& population, Task& act, f32 delta_time)
 {
 }
 
-i32 
+s32 
 work_add_task(Work& work, Actor& actor, const TaskType task_type, const TaskState task_state)
 {
     TaskPool& act_pool = work.act_pool;
 
-    const i32 act_id = act_pool.free_array[--act_pool.free_count];
+    const s32 act_id = act_pool.free_array[--act_pool.free_count];
 
     Task& act = act_pool.task_array[act_id];
 
@@ -78,7 +78,7 @@ work_init(Work& work)
     act_pool.active_count = 0;
     act_pool.free_count = task_max_count;
 
-    for (i32 pool_id = 0; pool_id < task_max_count; ++pool_id)
+    for (s32 pool_id = 0; pool_id < task_max_count; ++pool_id)
     {
         act_pool.free_array[pool_id] = pool_id;
         act_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();
@@ -90,9 +90,9 @@ work_update(const f32 delta_time, Population& population, Work& work)
 {
     TaskPool& act_pool = work.act_pool;
 
-    for (i32 pool_id = 0; pool_id < act_pool.active_count; ++pool_id)
+    for (s32 pool_id = 0; pool_id < act_pool.active_count; ++pool_id)
     {
-        const i32 act_id = act_pool.active_array[pool_id];
+        const s32 act_id = act_pool.active_array[pool_id];
         Task& act = act_pool.task_array[act_id];
 
         switch (act.task_type)

@@ -14,19 +14,19 @@
 
 constexpr f32 clear_color[4] = { 0.1f, 0.2f, 0.3f, 1.0f };
 
-constexpr i32 block_texture_size = 64;
-constexpr i32 actor_texture_size = 128;
+constexpr s32 block_texture_size = 64;
+constexpr s32 actor_texture_size = 128;
 
-constexpr i32 face_count_per_voxel = 6;
-constexpr i32 vertex_count_per_face = 6;
+constexpr s32 face_count_per_voxel = 6;
+constexpr s32 vertex_count_per_face = 6;
 
 extern const IVec3 voxel_vertex_array[face_count_per_voxel][vertex_count_per_face];
 extern const Vec3 voxel_uv_projection_array[2 * face_count_per_voxel];
 
 struct VoxelVertex
 {
-    i32 a_vertex;
-    i32 a_face;
+    s32 a_vertex;
+    s32 a_face;
 };
 
 struct VoxelGpuData
@@ -51,7 +51,7 @@ struct ModelGpuData
     Vec3 position;
     Vec3 rotation;
 
-    i32 texture_layer;
+    s32 texture_layer;
 
     GLuint vao_id;
     GLuint vbo_id;
@@ -69,7 +69,7 @@ struct SectorQuad
 
 struct SectorMesh
 {
-    i32 sector_index;
+    s32 sector_index;
 
     std::vector<SectorQuad> sector_quad_vector;
 };
