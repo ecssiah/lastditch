@@ -166,11 +166,20 @@ integrate(const f32 delta_time, Actor& actor, World& world)
     {
         constexpr s32 axis_index = static_cast<s32>(Axis::Z);
         
-        f32 dz = 0.0f;
+        f32 dz;
         
         if (actor.velocity[axis_index] <= 0.0f)
         {
             dz = delta_time * FALLING_GRAVITY_MODIFIER * GRAVITY_CONSTANT;
+        }
+
+        if (actor.velocity[axis_index] <= 0.0f)
+        {
+            dz = delta_time * FALLING_GRAVITY_MODIFIER * GRAVITY_CONSTANT;
+        }
+        else
+        {
+            dz = delta_time * RISING_GRAVITY_MODIFIER * GRAVITY_CONSTANT;
         }
         
         actor.velocity[axis_index] = clamp_f32(

@@ -10,7 +10,6 @@
 #include "app/direction.h"
 #include "app/population.h"
 
-
 World::World()
     :
     second_count(0),

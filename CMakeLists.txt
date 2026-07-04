@@ -26,6 +26,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4)
 add_executable(
     lastditch
         src/lastditch.cpp
+        src/app/state.cpp
 )
 
 target_include_directories(
@@ -58,50 +59,52 @@ target_sources(
     PRIVATE
     external/glad/src/gl.c
     external/stb/src/stb_image.c
-        src/app/action.cpp
-        src/app/action.h
-        src/app/actor.cpp
-        src/app/actor.h
-        src/app/app.h
-        src/app/app.cpp
-        src/app/area.cpp
-        src/app/area.h
-        src/app/debug.cpp
-        src/app/debug.h
-        src/app/direction.cpp
-        src/app/direction.h
-        src/app/nation.cpp
-        src/app/nation.h
-        src/app/navigation.cpp
-        src/app/navigation.h
-        src/app/physics.cpp
-        src/app/physics.h
-        src/app/population.cpp
-        src/app/population.h
-        src/app/render.cpp
-        src/app/render.h
-        src/app/screen.cpp
-        src/app/screen.h
+    src/app/action.cpp
+    src/app/action.h
+    src/app/actor.cpp
+    src/app/actor.h
+    src/app/app.h
+    src/app/app.cpp
+    src/app/area.cpp
+    src/app/area.h
+    src/app/debug.cpp
+    src/app/debug.h
+    src/app/direction.cpp
+    src/app/direction.h
+    src/app/nation.cpp
+    src/app/nation.h
+    src/app/navigation.cpp
+    src/app/navigation.h
+    src/app/physics.cpp
+    src/app/physics.h
+    src/app/population.cpp
+    src/app/population.h
+    src/app/render.cpp
+    src/app/render.h
+    src/app/screen.cpp
+    src/app/screen.h
     src/app/state.h
     src/app/viewpoint.h
-        src/app/work.cpp
-        src/app/work.h
-        src/app/world.cpp
-        src/app/world.h
-        src/core/config.h
-        src/core/config.cpp
-        src/core/geometry.h
-        src/core/geometry.cpp
-        src/core/log.h
-        src/core/log.cpp
+    src/app/work.cpp
+    src/app/work.h
+    src/app/world.cpp
+    src/app/world.h
+    src/core/config.h
+    src/core/config.cpp
+    src/core/geometry.h
+    src/core/geometry.cpp
+    src/core/log.h
+    src/core/log.cpp
+    src/core/random.cpp
+    src/core/random.h
     src/core/macros.h
     src/core/types.h
-        src/platform/input.cpp
-        src/platform/input.h
-        src/platform/platform.cpp
-        src/platform/platform.h
-        src/platform/window.cpp
-        src/platform/window.h
+    src/platform/input.cpp
+    src/platform/input.h
+    src/platform/platform.cpp
+    src/platform/platform.h
+    src/platform/window.cpp
+    src/platform/window.h
 )
 
 target_compile_definitions(
