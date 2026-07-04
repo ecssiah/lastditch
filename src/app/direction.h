@@ -17,10 +17,10 @@ enum class Direction : u8
     FOR_LIST_DIRECTION(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 direction_count = 0 FOR_LIST_DIRECTION(DEFINE_ENUM_COUNT);
+constexpr s32 DIRECTION_COUNT = 0 FOR_LIST_DIRECTION(DEFINE_ENUM_COUNT);
 
-extern const char* direction_string_array[direction_count];
-extern const Vec3 direction_normal_array[direction_count];
+extern const char* DIRECTION_STRING_ARRAY[DIRECTION_COUNT];
+extern const Vec3 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT];
 
 Direction direction_opposite(const Direction& direction);
 

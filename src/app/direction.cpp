@@ -1,11 +1,11 @@
 #include "app/direction.h"
 
-const char* direction_string_array[direction_count] =
+const char* DIRECTION_STRING_ARRAY[DIRECTION_COUNT] =
 {
     FOR_LIST_DIRECTION(DEFINE_ENUM_STRINGS)
 };
 
-const Vec3 direction_normal_array[direction_count] =
+const Vec3 DIRECTION_NORMAL_ARRAY[DIRECTION_COUNT] =
 {
     {+1.0f, +0.0f, +0.0f},
     {-1.0f, +0.0f, +0.0f},

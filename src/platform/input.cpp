@@ -5,7 +5,7 @@
 static void 
 init_buttons(Input& input)
 {
-    for (s32 button_index = 0; button_index < button_count; ++button_index)
+    for (s32 button_index = 0; button_index < BUTTON_COUNT; ++button_index)
     {
         input.button_array_current[button_index] = false;
         input.button_array_previous[button_index] = false;
@@ -54,7 +54,7 @@ init_mouse(Input& input)
 static void 
 update_buttons(Input& input, const Window& window)
 {
-    for (s32 button_index = 0; button_index < button_count; ++button_index)
+    for (s32 button_index = 0; button_index < BUTTON_COUNT; ++button_index)
     {
         input.button_array_previous[button_index] = input.button_array_current[button_index];
         input.button_array_current[button_index] = false;

@@ -1,6 +1,7 @@
 #include "app/render.h"
 
 #include <cassert>
+#include <format>
 #include <fstream>
 #include <glad/gl.h>
 #include <stb_image.h>
@@ -13,7 +14,7 @@
 #include "core/log.h"
 #include "core/types.h"
 
-const IVec3 voxel_vertex_array[direction_count][vertex_count_per_face] =
+const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE] =
 {
     // +X Face
     {
@@ -47,7 +48,7 @@ const IVec3 voxel_vertex_array[direction_count][vertex_count_per_face] =
     },
 };
 
-const Vec3 voxel_uv_projection_array[2 * direction_count] =
+const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT] =
 {
     // +X Face
     {+0, +1, +0},
@@ -190,8 +191,8 @@ load_block_texture_directory(VoxelRender& voxel_render)
         GL_TEXTURE_2D_ARRAY,
         0,
         GL_RGBA8,
-        block_texture_size,
-        block_texture_size,
+        BLOCK_TEXTURE_SIZE,
+        BLOCK_TEXTURE_SIZE,
         block_type_count,
         0,
         GL_RGBA,
@@ -205,7 +206,7 @@ load_block_texture_directory(VoxelRender& voxel_render)
     {
         const ConfigEntry& config_entry = voxel_render.block_config_data.entry_vector[layer_index];
 
-        const s32 block_type_index = world_block_type_index_from_string(config_entry.key);
+        const s32 block_type_index = World::block_type_index_from_string(config_entry.key);
 
         assert(block_type_index >= 0);
         assert(block_type_index < block_type_count);
@@ -232,8 +233,8 @@ load_actor_texture_directory(ModelRender& model_render)
         GL_TEXTURE_2D_ARRAY,
         0,
         GL_RGBA8,
-        actor_texture_size,
-        actor_texture_size,
+        ACTOR_TEXTURE_SIZE,
+        ACTOR_TEXTURE_SIZE,
         block_type_count,
         0,
         GL_RGBA,
@@ -241,7 +242,7 @@ load_actor_texture_directory(ModelRender& model_render)
         nullptr
     );
 
-    assert(model_render.actor_config_data.entry_vector.size() <= nation_type_count);
+    assert(model_render.actor_config_data.entry_vector.size() <= NATION_TYPE_COUNT);
 
     for (size_t layer_index = 0; layer_index < model_render.actor_config_data.entry_vector.size(); ++layer_index)
     {
@@ -250,7 +251,7 @@ load_actor_texture_directory(ModelRender& model_render)
         const s32 nation_type_index = nation_type_index_from_string(config_entry.key);
 
         assert(nation_type_index >= 0);
-        assert(nation_type_index < nation_type_count);
+        assert(nation_type_index < NATION_TYPE_COUNT);
         
         model_render.actor_type_layer_array[nation_type_index] = layer_index;
         
@@ -395,29 +396,34 @@ generate_sector_mesh(VoxelRender& voxel_render, const World& world, const s32 se
         .sector_index = sector_index,
     };
 
-    const IVec2 sector_coordinate = world_sector_index_to_coordinate(sector_index);
+    const IVec2 sector_coordinate = World::sector_index_to_coordinate(sector_index);
 
     const IVec3 sector_cell_coordinate = {
-        sector_coordinate.x * sector_size_in_cells,
-        sector_coordinate.y * sector_size_in_cells,
+        sector_coordinate.x * SECTOR_SIZE_IN_CELLS,
+        sector_coordinate.y * SECTOR_SIZE_IN_CELLS,
         0,
     };
 
-    for (s32 cell_z = 0; cell_z < sector_height_in_cells; ++cell_z)
-    {
-        for (s32 cell_y = sector_cell_coordinate.y; cell_y < sector_cell_coordinate.y + sector_size_in_cells; ++cell_y) 
+    for (s32 cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
+    {		
+        for (s32 cell_y = sector_cell_coordinate.y; cell_y < sector_cell_coordinate.y + SECTOR_SIZE_IN_CELLS; ++cell_y) 
+        {
+            for (s32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + SECTOR_SIZE_IN_CELLS; ++cell_x) 
             {
-            for (s32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + sector_size_in_cells; ++cell_x) 
-            {
-                const s32 cell_index = world_cell_coordinate_to_index(cell_x, cell_y, cell_z);
-                const Cell* cell = &world.cell_array[cell_index];
-
-                if (cell->block_type == BlockType::None)
+                if (!World::cell_coordinate_is_valid(cell_x, cell_y, cell_z))
                 {
                     continue;
                 }
 
-                u8 test_direction_mask = cell->direction_mask;
+                const s32 cell_index = World::cell_coordinate_to_index(cell_x, cell_y, cell_z);
+                const Cell& cell = world.get_cell(cell_index);
+
+                if (cell.block_type == BlockType::None)
+                {
+                    continue;
+                }
+
+                u8 test_direction_mask = cell.direction_mask;
 
                 while (test_direction_mask)
                 {
@@ -425,7 +431,7 @@ generate_sector_mesh(VoxelRender& voxel_render, const World& world, const s32 se
 
                     SectorQuad sector_quad;
                     sector_quad.direction = direction;
-                    sector_quad.block_type = cell->block_type;
+                    sector_quad.block_type = cell.block_type;
 
                     sector_quad.local_coordinate.x = cell_x - sector_cell_coordinate.x;
                     sector_quad.local_coordinate.y = cell_y - sector_cell_coordinate.y;
@@ -445,12 +451,12 @@ generate_sector_mesh(VoxelRender& voxel_render, const World& world, const s32 se
 static void 
 emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
 {
-    for (s32 vertex_index = 0; vertex_index < vertex_count_per_face; ++vertex_index)
+    for (s32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
         const s32 direction_index = static_cast<s32>(sector_quad.direction);
         const s32 block_type_index = static_cast<s32>(sector_quad.block_type);
         
-        const IVec3 vertex_position = sector_quad.local_coordinate + voxel_vertex_array[direction_index][vertex_index];
+        const IVec3 vertex_position = sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][vertex_index];
         
         const s32 vertex_bitpacked = 
             (vertex_position.x & 63u) << 0u |
@@ -473,12 +479,12 @@ emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
 static VoxelGpuData 
 convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
 {
-    const IVec2 sector_coordinate = world_sector_index_to_coordinate(sector_mesh.sector_index);
+    const IVec2 sector_coordinate = World::sector_index_to_coordinate(sector_mesh.sector_index);
 
     VoxelGpuData voxel_gpu_data = {
         .position = {
-            static_cast<f32>(sector_coordinate.x) * sector_size_in_cells,
-            static_cast<f32>(sector_coordinate.y) * sector_size_in_cells,
+            static_cast<f32>(sector_coordinate.x) * SECTOR_SIZE_IN_CELLS,
+            static_cast<f32>(sector_coordinate.y) * SECTOR_SIZE_IN_CELLS,
             0.0f,
         }
     };
@@ -620,7 +626,7 @@ init_viewpoint(Viewpoint& viewpoint)
     
     viewpoint.projection_matrix = get_projection_matrix(
         to_radians(60.0f),
-        window_aspect_ratio,
+        WINDOW_ASPECT_RATIO,
         0.1f,
         1000.0f
     );
@@ -683,14 +689,14 @@ init_voxel_render(VoxelRender& voxel_render, Viewpoint& viewpoint, const World& 
 
     voxel_render.u_normal_table_location = glGetUniformLocation(voxel_render.program_id, "u_normal_table");
 
-    glUniform3fv(voxel_render.u_normal_table_location, direction_count, &direction_normal_array[0][0]);
+    glUniform3fv(voxel_render.u_normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
 
     voxel_render.u_uv_projection_table_location = glGetUniformLocation(
         voxel_render.program_id,
         "u_uv_projection_table"
     );
 
-    glUniform3fv(voxel_render.u_uv_projection_table_location, direction_count * 2, &voxel_uv_projection_array[0][0]);
+    glUniform3fv(voxel_render.u_uv_projection_table_location, DIRECTION_COUNT * 2, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
 
     voxel_render.u_projection_location = glGetUniformLocation(voxel_render.program_id, "u_projection_matrix");
     voxel_render.u_view_location = glGetUniformLocation(voxel_render.program_id, "u_view_matrix");
@@ -713,7 +719,7 @@ init_voxel_render(VoxelRender& voxel_render, Viewpoint& viewpoint, const World& 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
 
-    for (s32 sector_index = 0; sector_index < world_area_in_sectors; ++sector_index)
+    for (s32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
         generate_sector_mesh(voxel_render, world, sector_index);
     }
@@ -776,25 +782,24 @@ init_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Populat
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
     
-    model_render.model_gpu_data_vector.resize(actor_max);
+    model_render.model_gpu_data_vector.resize(ACTION_MAX);
 
-    for (s32 pool_id = 0; pool_id < population.actor_pool.active_count; ++pool_id)
-    {
-        const s32 actor_id = population.actor_pool.active_array[pool_id];
-        const Actor& actor = population.actor_pool.actor_array[actor_id];
+    population.for_each_active_actor(
+        [&model_render](const Actor& actor)
+        {
+            const ModelGpuData model_gpu_data = load_model_gpu_data(model_render, actor);
 
-        const ModelGpuData model_gpu_data = load_model_gpu_data(model_render, actor);
+            model_render.model_gpu_data_vector[actor.actor_id] = model_gpu_data;
 
-        model_render.model_gpu_data_vector[actor_id] = model_gpu_data;
-
-        upload_model_gpu_data(model_render.model_gpu_data_vector[actor_id]);
-    }
+            upload_model_gpu_data(model_render.model_gpu_data_vector[actor.actor_id]);
+        }
+    );
 }
 
 static void 
 update_viewpoint(Viewpoint& viewpoint, const Population& population)
 {
-    const Actor& judge = population.actor_pool.actor_array[population.judge_id];
+    const Actor& judge = population.get_judge();
 
     constexpr Vec3 judge_eye_offset = {0.0f, 0.0f, 0.7f};
 
@@ -934,30 +939,29 @@ update_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Popul
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
 
-    for (s32 pool_id = 0; pool_id < population.actor_pool.active_count; ++pool_id)
-    {
-        const s32 actor_id = population.actor_pool.active_array[pool_id];
-        const Actor& actor = population.actor_pool.actor_array[actor_id];
+    population.for_each_active_actor(
+        [&model_render](const Actor& actor)
+        {
+            const ModelGpuData& model_gpu_data = model_render.model_gpu_data_vector[actor.actor_id];
 
-        const ModelGpuData& model_gpu_data = model_render.model_gpu_data_vector[actor_id];
+            Mat4 model_matrix = mat4_diagonal(1.0f);
+            model_matrix = mat4_translate(model_matrix, actor.position);
+            model_matrix = mat4_rotate(model_matrix, to_radians(actor.rotation.z), unit_z);
 
-        Mat4 model_matrix = mat4_diagonal(1.0f);
-        model_matrix = mat4_translate(model_matrix, actor.position);
-        model_matrix = mat4_rotate(model_matrix, to_radians(actor.rotation.z), unit_z);
+            glUniformMatrix4fv(
+                model_render.u_model_location,
+                1,
+                GL_FALSE,
+                model_matrix[0]
+            );
 
-        glUniformMatrix4fv(
-            model_render.u_model_location, 
-            1, 
-            GL_FALSE, 
-            model_matrix[0]
-        );
+            glUniform1i(model_render.u_texture_layer_location, model_gpu_data.texture_layer);
 
-        glUniform1i(model_render.u_texture_layer_location, model_gpu_data.texture_layer);
-
-        glBindVertexArray(model_gpu_data.vao_id);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model_gpu_data.model_vertex_vector.size()));
-        glBindVertexArray(0);
-    }
+            glBindVertexArray(model_gpu_data.vao_id);
+            glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model_gpu_data.model_vertex_vector.size()));
+            glBindVertexArray(0);
+        }
+    );
 }
 
 void 
@@ -975,7 +979,7 @@ render_init(Render& render, const Platform& platform, const Population& populati
 void 
 render_update(Render& render, const Population& population, const Debug& debug)
 {
-    glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
+    glClearColor(CLEAR_COLOR[0], CLEAR_COLOR[1], CLEAR_COLOR[2], CLEAR_COLOR[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     update_viewpoint(render.viewpoint, population);

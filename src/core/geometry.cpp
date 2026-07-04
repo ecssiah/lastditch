@@ -174,7 +174,7 @@ vec2_normalize(const Vec2& a)
 {
     const f32 a_length_squared = vec2_length_squared(a);
     
-    if (a_length_squared < epsilon_squared)
+    if (a_length_squared < EPSILON_SQUARED)
     {
         return {0.0f, 0.0f};
     }
@@ -192,7 +192,7 @@ vec3_normalize(const Vec3& a)
 {
     const f32 a_length_squared = vec3_length_squared(a);
     
-    if (a_length_squared < epsilon_squared)
+    if (a_length_squared < EPSILON_SQUARED)
     {
         return { 0.0f, 0.0f, 0.0f };
     }
@@ -366,7 +366,7 @@ interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 d
     const f32 alpha = 1.0f - expf(-speed * delta_time);
     f32 delta = target - current;
 
-    if (fabsf(delta) > epsilon)
+    if (fabsf(delta) > EPSILON)
     {
         delta = fmodf(delta + 180.0f, 360.0f) - 180.0f;
 

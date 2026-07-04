@@ -1,74 +1,71 @@
 #pragma once
 
 #include <array>
-
 #include "core/types.h"
 #include "app/area.h"
 #include "app/debug.h"
 #include "app/direction.h"
 
-constexpr f32 cell_size = 1.0f;
+constexpr f32 CELL_SIZE = 1.0f;
 
-constexpr s32 sector_size_in_cells_log2 = 5;
-constexpr s32 sector_size_in_cells = 1 << (1 * sector_size_in_cells_log2);
+constexpr s32 SECTOR_SIZE_IN_CELLS_LOG2 = 5;
+constexpr s32 SECTOR_SIZE_IN_CELLS = 1 << (1 * SECTOR_SIZE_IN_CELLS_LOG2);
 
-constexpr s32 sector_height_in_cells_log2 = 8;
-constexpr s32 sector_height_in_cells = 1 << (1 * sector_height_in_cells_log2);
+constexpr s32 SECTOR_HEIGHT_IN_CELLS_LOG2 = 8;
+constexpr s32 SECTOR_HEIGHT_IN_CELLS = 1 << (1 * SECTOR_HEIGHT_IN_CELLS_LOG2);
 
-constexpr s32 sector_area_in_cells = 1 << (2 * sector_size_in_cells_log2);
+constexpr s32 SECTOR_AREA_IN_CELLS = 1 << (2 * SECTOR_SIZE_IN_CELLS_LOG2);
 
-constexpr s32 sector_volume_in_cells = sector_area_in_cells * sector_height_in_cells;
+constexpr s32 SECTOR_VOLUME_IN_CELLS = SECTOR_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS;
 
-constexpr s32 world_size_in_sectors_log2 = 3;
-constexpr s32 wold_size_in_sectors = 1 << (1 * world_size_in_sectors_log2);
-constexpr s32 world_area_in_sectors = 1 << (2 * world_size_in_sectors_log2);
+constexpr s32 WORLD_SIZE_IN_SECTORS_LOG2 = 3;
+constexpr s32 WORLD_SIZE_IN_SECTORS = 1 << (1 * WORLD_SIZE_IN_SECTORS_LOG2);
+constexpr s32 WORLD_AREA_IN_SECTORS = 1 << (2 * WORLD_SIZE_IN_SECTORS_LOG2);
 
-constexpr s32 world_size_in_cells_log2 = sector_size_in_cells_log2 + world_size_in_sectors_log2;
-constexpr s32 world_size_in_cells = 1 << (1 * world_size_in_cells_log2);
-constexpr s32 world_area_in_cells = 1 << (2 * world_size_in_cells_log2);
+constexpr s32 WORLD_SIZE_IN_CELLS_LOG2 = SECTOR_SIZE_IN_CELLS_LOG2 + WORLD_SIZE_IN_SECTORS_LOG2;
+constexpr s32 WORLD_SIZE_IN_CELLS = 1 << (1 * WORLD_SIZE_IN_CELLS_LOG2);
+constexpr s32 WORLD_AREA_IN_CELLS = 1 << (2 * WORLD_SIZE_IN_CELLS_LOG2);
 
-constexpr s32 world_volume_in_cells = world_area_in_cells * sector_height_in_cells;
+constexpr s32 WORLD_VOLUME_IN_CELLS = WORLD_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS;
 
-constexpr s32 world_stride_x = 1;
-constexpr s32 world_stride_y = world_size_in_cells;
-constexpr s32 world_stride_z = world_area_in_cells;
+constexpr s32 WORLD_STRIDE_X = 1;
+constexpr s32 WORLD_STRIDE_Y = WORLD_SIZE_IN_CELLS;
+constexpr s32 WORLD_STRIDE_Z = WORLD_AREA_IN_CELLS;
 
-constexpr s32 world_center_s32 = world_size_in_cells / 2;
-constexpr f32 world_center_f32 = world_size_in_cells / 2.0f;
+constexpr s32 WORLD_CENTER_S32 = WORLD_SIZE_IN_CELLS / 2;
+constexpr f32 WORLD_CENTER_F32 = WORLD_SIZE_IN_CELLS / 2.0f;
 
-constexpr s32 floor_size_z = 16;
-constexpr s32 floor_count = sector_height_in_cells / floor_size_z;
+constexpr s32 FLOOR_SIZE_Z = 16;
+constexpr s32 FLOOR_COUNT = SECTOR_HEIGHT_IN_CELLS / FLOOR_SIZE_Z;
 
-constexpr s32 tower_border = 16;
-constexpr s32 tower_floor_count = 6;
-constexpr s32 tower_size = world_size_in_cells - 2 * tower_border;
+constexpr s32 TOWER_BORDER = 16;
+constexpr s32 TOWER_FLOOR_COUNT = 6;
+constexpr s32 TOWER_SIZE = WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER;
 
-constexpr s32 tower_center_hall_size = 24;
-constexpr s32 tower_outer_hall_size = 6;
+constexpr s32 TOWER_CENTER_HALL_SIZE = 24;
+constexpr s32 TOWER_OUTER_HALL_SIZE = 6;
 
-constexpr s32 tower_quadrant_size = tower_size / 2 - tower_outer_hall_size - tower_center_hall_size / 2;
+constexpr s32 TOWER_QUADRANT_SIZE = TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2;
 
-constexpr s32 roof_z = tower_floor_count * floor_size_z;
-constexpr s32 roof_floor_count = floor_count - tower_floor_count;
-constexpr s32 roof_floor_number = tower_floor_count;
+constexpr s32 ROOF_Z = TOWER_FLOOR_COUNT * FLOOR_SIZE_Z;
+constexpr s32 ROOF_FLOOR_COUNT = FLOOR_COUNT - TOWER_FLOOR_COUNT;
+constexpr s32 ROOF_FLOOR_NUMBER = TOWER_FLOOR_COUNT;
 
-constexpr s32 roof_center_path_size = 18;
+constexpr s32 ROOF_CENTER_PATH_SIZE = 18;
 
-constexpr s32 platform_size_x = 24;
-constexpr s32 platform_size_y = 16;
+constexpr s32 PLATFORM_SIZE_X = 24;
+constexpr s32 PLATFORM_SIZE_Y = 16;
 
-constexpr s32 temple_size_x = 30;
-constexpr s32 temple_size_y = 20;
+constexpr s32 TEMPLE_SIZE_X = 30;
+constexpr s32 TEMPLE_SIZE_Y = 20;
 
-constexpr s32 temple_border_offset = 24;
+constexpr s32 TEMPLE_BORDER_OFFSET = 24;
 
-constexpr s32 elevator_size = 16;
+constexpr s32 ELEVATOR_SIZE = 16;
 
-constexpr bool place_room_content = true;
+constexpr bool PLACE_ROOM_CONTENT = true;
 
-constexpr f32 gravity_default = -90.0f;
-
-struct Population;
+class Population;
 
 #define FOR_LIST_BLOCK_TYPE(DO)                                                             \
     DO(None)                                                                                \
@@ -195,128 +192,128 @@ section_origin_array =
     {
         // Center                              
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
         },
         // Center1
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
         },
         // Center2
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // Center3
         {
-            tower_border + tower_outer_hall_size,
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
         },
         // Center4
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
-            tower_border + tower_outer_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
         },
         // Quadrant1
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // Quadrant2
         {
-            tower_border + tower_outer_hall_size,
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // Quadrant3
         {
-            tower_border + tower_outer_hall_size,
-            tower_border + tower_outer_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
         },
         // Quadrant4
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-            tower_border + tower_outer_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
         },
         // East1
         {
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-            tower_border + tower_outer_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
         },
         // East2
         {
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
         },
         // East3
         {
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // NorthEast
         {
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // North1
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // North2
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // North3
         {
-            tower_border + tower_outer_hall_size,
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // NorthWest
         {
-            tower_border,
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // West1
         {
-            tower_border,
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
+            TOWER_BORDER,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
         },
         // West2
         {
-            tower_border,
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
+            TOWER_BORDER,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
         },
         // West3
         {
-            tower_border,
-            tower_border + tower_outer_hall_size,
+            TOWER_BORDER,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
         },
         // SouthWest
         {
-            tower_border,
-            tower_border,
+            TOWER_BORDER,
+            TOWER_BORDER,
         },
         // South1
         {
-            tower_border + tower_outer_hall_size,
-            tower_border,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER,
         },
         // South2
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size,
-            tower_border,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER,
         },
         // South3
         {
-            tower_border + tower_outer_hall_size + tower_quadrant_size + tower_center_hall_size,
-            tower_border,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER,
         },
         // SouthEast
         {
-            tower_border + tower_outer_hall_size + 2 * tower_quadrant_size + tower_center_hall_size,
-            tower_border,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER,
         },
     }
 };
@@ -327,128 +324,128 @@ section_size_array =
     {
         // Center                             
         {
-            tower_center_hall_size,
-            tower_center_hall_size,
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_CENTER_HALL_SIZE,
         },
         // Center1
         {
-            tower_quadrant_size,
-            tower_center_hall_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_CENTER_HALL_SIZE,
         },
         // Center2
         {
-            tower_center_hall_size,
-            tower_quadrant_size,
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // Center3
         {
-            tower_quadrant_size,
-            tower_center_hall_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_CENTER_HALL_SIZE,
         },
         // Center4
         {
-            tower_center_hall_size,
-            tower_quadrant_size,
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // Quadrant1
         {
-            tower_quadrant_size,
-            tower_quadrant_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // Quadrant2
         {
-            tower_quadrant_size,
-            tower_quadrant_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // Quadrant3
         {
-            tower_quadrant_size,
-            tower_quadrant_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // Quadrant4
         {
-            tower_quadrant_size,
-            tower_quadrant_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // East1
         {
-            tower_outer_hall_size,
-            tower_quadrant_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // East2
         {
-            tower_outer_hall_size,
-            tower_center_hall_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_CENTER_HALL_SIZE,
         },
         // East3
         {
-            tower_outer_hall_size,
-            tower_quadrant_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // NorthEast
         {
-            tower_outer_hall_size,
-            tower_outer_hall_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // North1
         {
-            tower_quadrant_size,
-            tower_outer_hall_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // North2
         {
-            tower_center_hall_size,
-            tower_outer_hall_size,
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // North3
         {
-            tower_quadrant_size,
-            tower_outer_hall_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // NorthWest
         {
-            tower_outer_hall_size,
-            tower_outer_hall_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // West1
         {
-            tower_outer_hall_size,
-            tower_quadrant_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // West2
         {
-            tower_outer_hall_size,
-            tower_center_hall_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_CENTER_HALL_SIZE,
         },
         // West3
         {
-            tower_outer_hall_size,
-            tower_quadrant_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
         },
         // SouthWest
         {
-            tower_outer_hall_size,
-            tower_outer_hall_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // South1
         {
-            tower_quadrant_size,
-            tower_outer_hall_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // South2
         {
-            tower_center_hall_size,
-            tower_outer_hall_size,
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // South3
         {
-            tower_quadrant_size,
-            tower_outer_hall_size,
+            TOWER_QUADRANT_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
         // SouthEast
         {
-            tower_outer_hall_size,
-            tower_outer_hall_size,
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
         },
     },
 };
@@ -465,57 +462,115 @@ struct Structure
 {
 };
 
-struct World
+class World
 {
+public:
+
+    World();
+
+    void init(Debug& debug);
+    void update(Population& population, f32 delta_time);
+    void quit();
+
+    static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);
+    static b32 sector_coordinate_is_valid(s32 x, s32 y);
+
+    static s32 sector_coordinate_to_index(IVec2 sector_coordinate);
+    static IVec2 sector_index_to_coordinate(s32 sector_index);
+
+    static s32 cell_coordinate_to_index(s32 x, s32 y, s32 z);
+    static IVec3 cell_index_to_coordinate(s32 cell_index);
+
+    static s32 cell_coordinate_to_sector_index(s32 x, s32 y);
+    static IVec2 cell_coordinate_to_sector_coordinate(s32 x, s32 y);
+
+    static s32 cell_coordinate_to_local_index(s32 x, s32 y, s32 z);
+    static IVec3 cell_coordinate_to_local_coordinate(s32 x, s32 y, s32 z);
+
+    static Vec3 cell_coordinate_to_position(s32 x, s32 y, s32 z);
+    static IVec3 position_to_cell_coordinate(f32 x, f32 y, f32 z);
+
+    static s32 get_stride(Direction direction);
+    static s32 get_floor(s32 z);
+    static s32 block_type_index_from_string(const std::string& block_type_string);
+
+    Cell& get_cell(s32 cell_index);
+
+    [[nodiscard]]
+    const Cell& get_cell(s32 cell_index) const;
+
+    Cell& get_cell(s32 x, s32 y, s32 z);
+
+    [[nodiscard]]
+    const Cell& get_cell(s32 x, s32 y, s32 z) const;
+
+    b32 is_solid(s32 x, s32 y, s32 z);
+    b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
+
+    AreaPool& get_area_pool(s32 floor);
+
+    [[nodiscard]]
+    const AreaPool& get_area_pool(s32 floor) const;
+
+    EdgePool& get_edge_pool();
+
+    [[nodiscard]]
+    const EdgePool& get_edge_pool() const;
+
+private:
+
     u64 tick_count;
     u64 second_count;
 
     f32 time_rate;
 
-    Vec3 gravity;
+    std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array;
 
-    std::array<Cell, world_volume_in_cells> cell_array;
-
-    AreaPool area_pool_array[floor_count];
+    AreaPool area_pool_array[FLOOR_COUNT];
     EdgePool edge_pool;
+
+    void init_cell_array();
+    void init_area_pool();
+    void init_edge_pool();
+
+    void construct_doors(const Area& area);
+
+    static s32 get_content_level(s32 z);
+    static std::vector<BlockType> get_content_block_type_vector(s32 content_level);
+
+    void construct_room(const Area& area);
+    void construct_elevator(const Area& area);
+    void construct_wireframe(const Area& area);
+    void construct_areas(s32 floor_number);
+
+    void place_content(s32 floor_number);
+
+    void draw_debug_info(Debug& debug);
+
+    void calculate_world_direction_mask();
+    u8 get_direction_mask(s32 x, s32 y, s32 z);
+
+    void set_block_type(s32 x, s32 y, s32 z, BlockType block_type);
+    void set_block_type_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+    void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+    void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+
+    void place_area(Area& area);
+
+    void construct_tower();
+
+    void layout_roof_areas();
+    void layout_elevator_areas();
+    void layout_tower_areas();
+
+    void setup_wolf_territory();
+    void setup_eagle_territory();
+    void setup_bear_territory();
+    void setup_lion_territory();
+
+    void layout_test_area();
+
+    AreaOverlap get_area_overlap(const Area& a, const Area& b);
+
+    void calculate_area_edges(s32 floor_number);
 };
-
-b32 world_cell_coordinate_is_valid(s32 x, s32 y, s32 z);
-b32 world_sector_coordinate_is_valid(s32 x, s32 y);
-
-s32 world_sector_coordinate_to_index(IVec2 sector_coordinate);
-IVec2 world_sector_index_to_coordinate(s32 sector_index);
-
-s32 world_cell_coordinate_to_index(s32 x, s32 y, s32 z);
-IVec3 world_cell_index_to_coordinate(s32 cell_index);
-
-s32 world_cell_coordinate_to_sector_index(s32 x, s32 y);
-IVec2 world_cell_coordinate_to_sector_coordinate(s32 x, s32 y);
-
-s32 world_cell_coordinate_to_local_index(s32 x, s32 y, s32 z);
-IVec3 world_cell_coordinate_to_local_coordinate(s32 x, s32 y, s32 z);
-
-Vec3 world_cell_coordinate_to_position(s32 x, s32 y, s32 z);
-IVec3 world_position_to_cell_coordinate(f32 x, f32 y, f32 z);
-
-s32 world_get_stride(Direction direction);
-
-s32 world_get_floor(s32 z);
-
-b32 world_is_solid(const World& world, s32 x, s32 y, s32 z);
-b32 world_is_clear(const World& world, s32 x, s32 y, s32 z, u8 direction_mask);
-
-s32 world_block_type_index_from_string(const std::string& block_type_string);
-
-u8 world_get_direction_mask(const World& world, s32 x, s32 y, s32 z);
-
-Cell* world_get_cell(World& world, s32 x, s32 y, s32 z);
-Cell* world_get_free_cell(World& world, s32 x, s32 y, s32 z);
-
-void world_set_block_type(World& world, s32 x, s32 y, s32 z, BlockType block_type);
-void world_set_block_type_box(World& world, s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
-void world_set_block_type_cube(World& world, s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
-
-void world_init(World& world, Debug& debug);
-void world_update(f32 delta_time, World& world, Population& population);
-void world_quit(World& world);

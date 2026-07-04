@@ -3,13 +3,15 @@
 #include "core/geometry.h"
 #include "core/types.h"
 
-constexpr f32 max_velocity = 200.0f;
+constexpr f32 MAX_VELOCITY = 200.0f;
 
-constexpr f32 rising_gravity_modifier = 1.0f;
-constexpr f32 falling_gravity_modifier = 1.7f;
+constexpr f32 GRAVITY_CONSTANT = -90.0f;
+
+constexpr f32 RISING_GRAVITY_MODIFIER = 1.0f;
+constexpr f32 FALLING_GRAVITY_MODIFIER = 1.7f;
 
 struct Actor;
-struct World;
+class World;
 
 struct BoxCollider
 {

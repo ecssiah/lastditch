@@ -107,8 +107,8 @@ draw_text(const Screen& screen, const std::string& text, f32 x, f32 y)
         const s32 texture_col = ascii_value % 8;
         const s32 texture_row = ascii_value / 8;
 
-        const f32 u0 = texture_col * cell_width;
-        const f32 v0 = texture_row * cell_height;
+        const f32 u0 = static_cast<float>(texture_col) * cell_width;
+        const f32 v0 = static_cast<float>(texture_row) * cell_height;
 
         const f32 u1 = u0 + cell_width;
         const f32 v1 = v0 + cell_height;
@@ -227,10 +227,10 @@ screen_init(Screen& screen, const Platform& platform)
 static void 
 draw_debug_info(Screen& screen, const Population& population)
 {
-    const Actor& judge = population.actor_pool.actor_array[population.judge_id];
+    const Actor& judge = population.get_judge();
 
-    const IVec3 cell_coordinate = world_position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
-    const IVec2 sector_coordinate = world_cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
+    const IVec3 cell_coordinate = World::position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
+    const IVec2 sector_coordinate = World::cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
 
     const std::string position_text =
         std::format(
@@ -253,7 +253,7 @@ draw_debug_info(Screen& screen, const Population& population)
     std::string floor_text = "FLR -";
     std::string movement_type_text;
     
-    if (world_cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
+    if (World::cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
     {
         cell_coordinate_text =
             std::format(
@@ -264,7 +264,7 @@ draw_debug_info(Screen& screen, const Population& population)
             );
     }
 
-    if (world_sector_coordinate_is_valid(sector_coordinate.x, sector_coordinate.y))
+    if (World::sector_coordinate_is_valid(sector_coordinate.x, sector_coordinate.y))
     {  
         sector_coordinate_text =
             std::format(
@@ -276,11 +276,11 @@ draw_debug_info(Screen& screen, const Population& population)
 
     if (cell_coordinate.z >= 0)
     {
-        const s32 floor_number = world_get_floor(cell_coordinate.z);
+        const s32 floor_number = World::get_floor(cell_coordinate.z);
         
-        if (floor_number < floor_count)
+        if (floor_number < FLOOR_COUNT)
         {
-            if (floor_number < tower_floor_count)
+            if (floor_number < TOWER_FLOOR_COUNT)
             {
                 floor_text = std::format("FLR T-{}", floor_number);
             }

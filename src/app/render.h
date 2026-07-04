@@ -12,16 +12,16 @@
 #include "core/types.h"
 #include "platform/platform.h"
 
-constexpr f32 clear_color[4] = { 0.1f, 0.2f, 0.3f, 1.0f };
+constexpr f32 CLEAR_COLOR[4] = { 0.1f, 0.2f, 0.3f, 1.0f };
 
-constexpr s32 block_texture_size = 64;
-constexpr s32 actor_texture_size = 128;
+constexpr s32 BLOCK_TEXTURE_SIZE = 64;
+constexpr s32 ACTOR_TEXTURE_SIZE = 128;
 
-constexpr s32 face_count_per_voxel = 6;
-constexpr s32 vertex_count_per_face = 6;
+constexpr s32 FACE_COUNT_PER_VOXEL = 6;
+constexpr s32 VERTEX_COUNT_PER_FACE = 6;
 
-extern const IVec3 voxel_vertex_array[face_count_per_voxel][vertex_count_per_face];
-extern const Vec3 voxel_uv_projection_array[2 * face_count_per_voxel];
+extern const IVec3 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE];
+extern const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL];
 
 struct VoxelVertex
 {
@@ -144,7 +144,7 @@ struct ModelRender
 
     ConfigData actor_config_data;
 
-    u8 actor_type_layer_array[actor_type_count];
+    u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
 
     std::vector<ModelGpuData> model_gpu_data_vector;
 };

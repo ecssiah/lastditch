@@ -4,7 +4,7 @@
 
 #include "app/world.h"
 
-const char* actor_type_string_array[actor_type_count] =
+const char* actor_type_string_array[ACTOR_TYPE_COUNT] =
 {
     FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_STRINGS)
 };
@@ -12,7 +12,7 @@ const char* actor_type_string_array[actor_type_count] =
 s32 
 actor_type_index_from_string(const std::string& actor_type_string)
 {
-    for (s32 actor_type_index = 0; actor_type_index < actor_type_count; ++actor_type_index)
+    for (s32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
     {
         if (actor_type_string == actor_type_string_array[actor_type_index])
         {
@@ -33,7 +33,7 @@ actor_add(ActorPool& actor_pool, Actor& actor)
     actor_pool.active_array[actor_pool.active_count++] = actor_id;
     actor_pool.actor_array[actor_id] = actor;
 
-    assert(actor_pool.free_count + actor_pool.active_count == actor_max);
+    assert(actor_pool.free_count + actor_pool.active_count == ACTION_MAX);
 }
 
 // void 

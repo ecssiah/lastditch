@@ -1,5 +1,7 @@
 #include "app/physics.h"
 
+#include <cmath>
+
 #include "core/types.h"
 #include "app/actor.h"
 #include "app/world.h"
@@ -7,7 +9,7 @@
 static Bounds3 
 get_box_collider_bounds(const BoxCollider& box_collider, const Vec3& position)
 {
-    constexpr f32 world_size = world_size_in_cells;
+    constexpr f32 world_size = WORLD_SIZE_IN_CELLS;
     
     return {
         .min = vec3_max(position - box_collider.radius, vec3_broadcast(0.0f)),
@@ -25,9 +27,9 @@ get_grid_overlap_of_bounds(const Bounds3& bounds)
             max_s32(static_cast<s32>(floorf(bounds.min.z)), 0),
         },
         .max = {
-            min_s32(static_cast<s32>(ceilf(bounds.max.x)) - 1, world_size_in_cells - 1),
-            min_s32(static_cast<s32>(ceilf(bounds.max.y)) - 1, world_size_in_cells - 1),
-            min_s32(static_cast<s32>(ceilf(bounds.max.z)) - 1, world_size_in_cells - 1),
+            min_s32(static_cast<s32>(ceilf(bounds.max.x)) - 1, WORLD_SIZE_IN_CELLS - 1),
+            min_s32(static_cast<s32>(ceilf(bounds.max.y)) - 1, WORLD_SIZE_IN_CELLS - 1),
+            min_s32(static_cast<s32>(ceilf(bounds.max.z)) - 1, WORLD_SIZE_IN_CELLS - 1),
         },
     };
 }
@@ -44,7 +46,7 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
 
     Bounds3 swept_bounds;
     
-    for (s32 axis_index = 0; axis_index < axis_count; ++axis_index)
+    for (s32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
         swept_bounds.min[axis_index] = fminf(
             actor_bounds.min[axis_index],
@@ -67,8 +69,8 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
     const f32 actor_min_next = actor_min_prev + step_delta_time * actor.velocity[axis_index];
     const f32 actor_max_next = actor_max_prev + step_delta_time * actor.velocity[axis_index];
 
-    const s32 axis_s = (axis_index + 1) % axis_count;
-    const s32 axis_t = (axis_index + 2) % axis_count;
+    const s32 axis_s = (axis_index + 1) % AXIS_COUNT;
+    const s32 axis_t = (axis_index + 2) % AXIS_COUNT;
 
     b32 found = false;
     f32 best = actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY;
@@ -85,14 +87,14 @@ resolve_axis_collisions(Actor& actor, Axis axis, const f32 step_delta_time, Worl
             {
                 const IVec3 cell_coordinate = {x, y, z};
 
-                const Cell* cell = world_get_cell(world, x, y, z);
-
-                if (!cell)
+                if (!World::cell_coordinate_is_valid(x, y, z))
                 {
                     continue;
                 }
 
-                if (cell->block_type == BlockType::None)
+                const Cell& cell = world.get_cell(x, y, z);
+
+                if (cell.block_type == BlockType::None)
                 {
                     continue;
                 }
@@ -164,21 +166,17 @@ integrate(const f32 delta_time, Actor& actor, World& world)
     {
         constexpr s32 axis_index = static_cast<s32>(Axis::Z);
         
-        f32 dz;
+        f32 dz = 0.0f;
         
         if (actor.velocity[axis_index] <= 0.0f)
         {
-            dz = delta_time * falling_gravity_modifier * world.gravity[axis_index];
-        }
-        else
-        {
-            dz = delta_time * rising_gravity_modifier * world.gravity[axis_index];
+            dz = delta_time * FALLING_GRAVITY_MODIFIER * GRAVITY_CONSTANT;
         }
         
         actor.velocity[axis_index] = clamp_f32(
             actor.velocity[axis_index] + dz, 
-            -max_velocity, 
-            max_velocity
+            -MAX_VELOCITY, 
+            MAX_VELOCITY
         );
     }
 
@@ -199,7 +197,7 @@ integrate(const f32 delta_time, Actor& actor, World& world)
             step_count = 1;
         }
 
-        const f32 step_delta_time = delta_time / step_count;
+        const f32 step_delta_time = delta_time / static_cast<f32>(step_count);
 
         for (s32 step_index = 0; step_index < step_count; ++step_index)
         {
@@ -222,9 +220,7 @@ physics_update_actor(const f32 delta_time, Actor& actor, World& world)
     switch (actor.movement_type)
     {
     case MovementType::Ground: 
-        integrate(delta_time, actor, world);
-        break;
-    case MovementType::Debug: 
+    case MovementType::Debug:
         integrate(delta_time, actor, world);
         break;
     }

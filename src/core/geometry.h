@@ -5,8 +5,8 @@
 #include "core/macros.h"
 #include "core/types.h"
 
-constexpr f32 epsilon = 1e-5f;
-constexpr f32 epsilon_squared = 1e-10f;
+constexpr f32 EPSILON = 1e-5f;
+constexpr f32 EPSILON_SQUARED = 1e-10f;
 
 #define FOR_LIST_AXIS(DO)                                   \
     DO(X)                                                   \
@@ -18,7 +18,7 @@ enum class Axis : u8
     FOR_LIST_AXIS(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 axis_count = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
+constexpr s32 AXIS_COUNT = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
 
 struct Vec2
 {

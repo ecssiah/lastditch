@@ -5,20 +5,20 @@
 #include "core/geometry.h"
 #include "core/types.h"
 
-constexpr s32 actor_max = 256;
+constexpr s32 ACTION_MAX = 256;
 
-constexpr f32 agent_default_ground_speed = 1.0f;
-constexpr f32 agent_default_jump_speed = 28.0f;
+constexpr f32 AGENT_DEFAULT_GROUND_SPEED = 1.0f;
+constexpr f32 AGENT_DEFAULT_JUMP_SPEED = 28.0f;
 
-constexpr f32 judge_default_ground_speed = 12.0f;
-constexpr f32 judge_default_jump_speed = 36.0f;
-constexpr f32 judge_default_debug_speed = 32.0f;
+constexpr f32 JUDGE_DEFAULT_GROUND_SPEED = 12.0f;
+constexpr f32 JUDGE_DEFAULT_JUMP_SPEED = 36.0f;
+constexpr f32 JUDGE_DEFAULT_DEBUG_SPEED = 32.0f;
 
-constexpr f32 camera_sensitivity_x = 0.22f;
-constexpr f32 camera_sensitivity_y = 0.22f;
-constexpr f32 camera_pitch_limit = 89.0f;
+constexpr f32 CAMERA_SENSITIVITY_X = 0.22f;
+constexpr f32 CAMERA_SENSITIVITY_Y = 0.22f;
+constexpr f32 CAMERA_PITCH_LIMIT = 89.0f;
 
-constexpr s32 actor_task_max_count = 128;
+constexpr s32 ACTOR_TASK_MAX_COUNT = 128;
 
 #define FOR_LIST_MOVEMENT_TYPE(DO)                                             \
     DO(Ground)                                                                 \
@@ -41,9 +41,9 @@ enum ActorType
     FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 actor_type_count = FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_COUNT);
+constexpr s32 ACTOR_TYPE_COUNT = FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_COUNT);
 
-extern const char* actor_type_string_array[actor_type_count];
+extern const char* actor_type_string_array[ACTOR_TYPE_COUNT];
 
 struct Actor
 {
@@ -66,19 +66,19 @@ struct Actor
     BoxCollider box_collider;
 
     s32 act_id_count;
-    std::array<s32, actor_task_max_count> act_id_array;
+    std::array<s32, ACTOR_TASK_MAX_COUNT> act_id_array;
 };
 
 struct ActorPool
 {
     s32 active_count;
-    std::array<s32, actor_max> active_array;
-    std::array<s32, actor_max> active_lookup;
+    std::array<s32, ACTION_MAX> active_array;
+    std::array<s32, ACTION_MAX> active_lookup;
 
     s32 free_count;
-    std::array<s32, actor_max> free_array;
+    std::array<s32, ACTION_MAX> free_array;
 
-    std::array<Actor, actor_max> actor_array;
+    std::array<Actor, ACTION_MAX> actor_array;
 };
 
 s32 actor_type_index_from_string(const std::string& actor_type_string);

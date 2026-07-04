@@ -3,9 +3,9 @@
 #include "core/types.h"
 #include "app/actor.h"
 
-constexpr s32 task_max_count = 1 << 12;
+constexpr s32 TASK_MASK_COUNT = 1 << 12;
 
-struct Population;
+class Population;
 
 struct WanderState
 {
@@ -46,14 +46,14 @@ struct Task
 struct TaskPool
 {
     s32 active_count;
-    std::array<s32, task_max_count> active_array;
+    std::array<s32, TASK_MASK_COUNT> active_array;
 
-    std::array<s32, task_max_count> active_lookup;
+    std::array<s32, TASK_MASK_COUNT> active_lookup;
 
     s32 free_count;
-    std::array<s32, task_max_count> free_array;
+    std::array<s32, TASK_MASK_COUNT> free_array;
 
-    std::array<Task, task_max_count> task_array;
+    std::array<Task, TASK_MASK_COUNT> task_array;
 };
 
 struct Work

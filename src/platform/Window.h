@@ -4,10 +4,10 @@
 
 #include "core/types.h"
 
-constexpr s32 window_width = 1024;
-constexpr s32 window_height = 768;
+constexpr s32 WINDOW_WIDTH = 1024;
+constexpr s32 WINDOW_HEIGHT = 768;
 
-constexpr f32 window_aspect_ratio = static_cast<f32>(window_width) / static_cast<f32>(window_height);
+constexpr f32 WINDOW_ASPECT_RATIO = static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT);
 
 struct Window
 {

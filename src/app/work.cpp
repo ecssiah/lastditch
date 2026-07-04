@@ -1,12 +1,13 @@
 #include "app/work.h"
 
+#include <random>
 #include "app/actor.h"
 #include "app/population.h"
 
 void 
 execute_wander(Population& population, Task& act, const f32 delta_time)
 {
-    Actor& actor = population.actor_pool.actor_array[act.actor_id];
+    Actor& actor = population.get_actor(act.actor_id);
 
     WanderState& wander_state = act.task_state.wander;
 
@@ -16,15 +17,18 @@ execute_wander(Population& population, Task& act, const f32 delta_time)
     }
     else
     {
-        const f32 direction_angle = static_cast<f32>(rand() % 360);
+        static std::mt19937 rng(std::random_device{}());
+        static std::uniform_real_distribution<f32> angle_dist(0.0f, 360.0f);
+
+        const f32 direction_angle = angle_dist(rng);
 
         const Vec2 direction = {
             cosf(to_radians(direction_angle)),
             sinf(to_radians(direction_angle))
         };
 
-        actor.velocity.x = direction.x * agent_default_ground_speed;
-        actor.velocity.y = direction.y * agent_default_ground_speed;
+        actor.velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;
+        actor.velocity.y = direction.y * AGENT_DEFAULT_GROUND_SPEED;
 
         actor.rotation_target.z = direction_angle;
 
@@ -62,7 +66,7 @@ work_add_task(Work& work, Actor& actor, const TaskType task_type, const TaskStat
 
     act_pool.active_count++;
 
-    if (actor.act_id_count < actor_task_max_count)
+    if (actor.act_id_count < ACTOR_TASK_MAX_COUNT)
     {
         actor.act_id_array[actor.act_id_count++] = act_id;
     }
@@ -76,9 +80,9 @@ work_init(Work& work)
     TaskPool& act_pool = work.act_pool;
 
     act_pool.active_count = 0;
-    act_pool.free_count = task_max_count;
+    act_pool.free_count = TASK_MASK_COUNT;
 
-    for (s32 pool_id = 0; pool_id < task_max_count; ++pool_id)
+    for (s32 pool_id = 0; pool_id < TASK_MASK_COUNT; ++pool_id)
     {
         act_pool.free_array[pool_id] = pool_id;
         act_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();

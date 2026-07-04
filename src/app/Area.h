@@ -4,15 +4,15 @@
 #include "core/types.h"
 #include "app/direction.h"
 
-constexpr s32 area_pool_max = 1 << 12;
-constexpr s32 edge_pool_max = 1 << 12;
+constexpr s32 AREA_POOL_MAX = 1 << 12;
+constexpr s32 EDGE_POOL_MAX = 1 << 12;
 
-constexpr s32 area_edge_max = 1 << 5;
+constexpr s32 AREA_EDGE_MAX = 1 << 5;
 
-constexpr s32 area_expansion_iteration_count = 5;
-constexpr s32 area_expansion_size_min = 8;
+constexpr s32 AREA_EXPANSION_ITERATION_COUNT = 5;
+constexpr s32 AREA_EXPANSION_SIZE_MIN = 8;
 
-constexpr s32 door_minimum_edge_size = 5;
+constexpr s32 DOOR_MINIMUM_EDGE_SIZE = 5;
 
 #define FOR_LIST_AREA_TYPE(DO)                                                  \
   DO(Open)                                                                      \
@@ -38,7 +38,7 @@ struct Area
     IBounds2 bounds;
 
     s32 edge_id_count;
-    std::array<s32, area_edge_max> edge_id_array;
+    std::array<s32, AREA_EDGE_MAX> edge_id_array;
 };
 
 struct AreaOverlap
@@ -65,27 +65,27 @@ struct AreaPool
     s32 floor_number;
 
     s32 free_count;
-    std::array<s32, area_pool_max> free_array;
+    std::array<s32, AREA_POOL_MAX> free_array;
 
     s32 active_count;
-    std::array<s32, area_pool_max> active_array;
+    std::array<s32, AREA_POOL_MAX> active_array;
 
-    std::array<s32, area_pool_max> active_lookup;
+    std::array<s32, AREA_POOL_MAX> active_lookup;
 
-    std::array<Area, area_pool_max> area_array;
+    std::array<Area, AREA_POOL_MAX> area_array;
 };
 
 struct EdgePool
 {
     s32 free_count;
-    std::array<s32, edge_pool_max> free_array;
+    std::array<s32, EDGE_POOL_MAX> free_array;
 
     s32 active_count;
-    std::array<s32, edge_pool_max> active_array;
+    std::array<s32, EDGE_POOL_MAX> active_array;
 
-    std::array<s32, edge_pool_max> active_lookup;
+    std::array<s32, EDGE_POOL_MAX> active_lookup;
 
-    std::array<AreaEdge, edge_pool_max> edge_array;
+    std::array<AreaEdge, EDGE_POOL_MAX> edge_array;
 };
 
 void area_add(AreaPool& area_pool, Area& area);

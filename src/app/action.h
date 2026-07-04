@@ -4,8 +4,8 @@
 #include "core/types.h"
 #include "platform/platform.h"
 
-constexpr s32 action_queue_capacity = 1u << 6;
-constexpr s32 action_max_per_frame = 256;
+constexpr s32 ACTION_QUEUE_CAPACITY = 1u << 6;
+constexpr s32 ACTION_MAX_PER_FRAME = 256;
 
 struct Actor;
 struct State;
@@ -28,7 +28,7 @@ struct Action
 
 struct ActionQueue
 {
-    std::array<Action, action_queue_capacity> action_array;
+    std::array<Action, ACTION_QUEUE_CAPACITY> action_array;
 
     s32 count;
     s32 current_index;

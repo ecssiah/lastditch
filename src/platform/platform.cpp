@@ -17,11 +17,11 @@ init_glfw(Platform& platform)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
 #endif
 
-    platform.window.width = window_width;
-    platform.window.height = window_height;
-    platform.window.aspect_ratio = window_aspect_ratio;
+    platform.window.width = WINDOW_WIDTH;
+    platform.window.height = WINDOW_HEIGHT;
+    platform.window.aspect_ratio = WINDOW_ASPECT_RATIO;
 
-    platform.window.glfw_window = glfwCreateWindow(window_width, window_height, "Last Ditch", nullptr, nullptr);
+    platform.window.glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Last Ditch", nullptr, nullptr);
 
     assert(platform.window.glfw_window != nullptr);
 

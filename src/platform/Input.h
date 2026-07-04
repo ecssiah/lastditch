@@ -26,15 +26,15 @@ enum class Button : u8
     FOR_LIST_BUTTON(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 button_count = FOR_LIST_BUTTON(DEFINE_ENUM_COUNT);
+constexpr s32 BUTTON_COUNT = FOR_LIST_BUTTON(DEFINE_ENUM_COUNT);
 
 struct Input
 {
     Button glfw_keymap[GLFW_KEY_LAST + 1];
     Button glfw_buttonmap[GLFW_MOUSE_BUTTON_LAST + 1];
 
-    bool button_array_current[button_count];
-    bool button_array_previous[button_count];
+    bool button_array_current[BUTTON_COUNT];
+    bool button_array_previous[BUTTON_COUNT];
 
     f64 pointer_current_x;
     f64 pointer_current_y;

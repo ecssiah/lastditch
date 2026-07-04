@@ -1,5 +1,7 @@
 #include "app/action.h"
 
+#include <cmath>
+
 #include "core/log.h"
 #include "app/app.h"
 #include "app/actor.h"
@@ -132,17 +134,17 @@ apply_move_action(Actor& judge, const Action& action)
 static void 
 apply_rotate_action(Actor& judge, const Action& action)
 {
-    judge.rotation.z -= camera_sensitivity_x * action.action_value.x;
-    judge.rotation.x -= camera_sensitivity_y * action.action_value.y;
+    judge.rotation.z -= CAMERA_SENSITIVITY_X * action.action_value.x;
+    judge.rotation.x -= CAMERA_SENSITIVITY_Y * action.action_value.y;
 
-    if (judge.rotation.x > camera_pitch_limit)
+    if (judge.rotation.x > CAMERA_PITCH_LIMIT)
     {
-        judge.rotation.x = camera_pitch_limit;
+        judge.rotation.x = CAMERA_PITCH_LIMIT;
     }
 
-    if (judge.rotation.x < -camera_pitch_limit)
+    if (judge.rotation.x < -CAMERA_PITCH_LIMIT)
     {
-        judge.rotation.x = -camera_pitch_limit;
+        judge.rotation.x = -CAMERA_PITCH_LIMIT;
     }
 }
 
@@ -151,7 +153,7 @@ apply_jump_action(Actor& judge)
 {
     if (judge.is_grounded)
     {
-        judge.velocity.z = judge_default_jump_speed;
+        judge.velocity.z = JUDGE_DEFAULT_JUMP_SPEED;
     }
 }
 
@@ -163,7 +165,7 @@ apply_debug_mode_action(Actor& judge)
     case MovementType::Ground:
     {
         judge.movement_type = MovementType::Debug;
-        judge.speed = judge_default_debug_speed;
+        judge.speed = JUDGE_DEFAULT_DEBUG_SPEED;
 
         judge.box_collider.collision_enabled = false;
 
@@ -172,7 +174,7 @@ apply_debug_mode_action(Actor& judge)
     case MovementType::Debug:
     {
         judge.movement_type = MovementType::Ground;
-        judge.speed = judge_default_ground_speed;
+        judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
 
         judge.box_collider.collision_enabled = true;
 
@@ -204,7 +206,7 @@ apply_action(Actor& judge, const Action& action)
 void 
 action_add(ActionQueue& action_queue, const Action& action)
 {
-    if (action_queue.current_index < action_queue_capacity)
+    if (action_queue.current_index < ACTION_QUEUE_CAPACITY)
     {
         action_queue.action_array[action_queue.count++] = action;
     }
@@ -219,7 +221,7 @@ action_apply_queue(ActionQueue& action_queue, Actor& judge)
 {
     s32 actions_applied = 0;
     
-    while (action_queue.current_index < action_queue.count && actions_applied < action_max_per_frame)
+    while (action_queue.current_index < action_queue.count && actions_applied < ACTION_MAX_PER_FRAME)
     {
         apply_action(judge, action_queue.action_array[action_queue.current_index]);
         
@@ -238,7 +240,7 @@ void action_queue_actions(State& state, const Platform& platform)
 {
     queue_move_action(platform, state);
 
-    if (fabs(platform.input.pointer_delta_x) > epsilon || fabs(platform.input.pointer_delta_y) > epsilon)
+    if (fabs(platform.input.pointer_delta_x) > EPSILON || fabs(platform.input.pointer_delta_y) > EPSILON)
     {
         queue_rotate_action(platform, state);
     }
@@ -256,8 +258,7 @@ void action_queue_actions(State& state, const Platform& platform)
 
 void action_update(State& state, const Platform& platform)
 {
-    const s32 judge_id = state.population.judge_id;
-    Actor& judge = state.population.actor_pool.actor_array[judge_id];
+    Actor& judge = state.population.get_judge();
     
     action_queue_actions(state, platform);
     action_apply_queue(state.action_queue, judge);
