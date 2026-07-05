@@ -10,6 +10,15 @@ constexpr s32 AGENT_INITIAL_COUNT = 12;
 
 class Population
 {
+    void init_judge();
+    void init_agents(Work& work);
+    void init_nations();
+    void init_actor_pool();
+
+    std::array<Nation, NATION_TYPE_COUNT> nation_array;
+    s32 judge_id;
+    ActorPool actor_pool;
+
 public:
 
     Population();
@@ -46,16 +55,4 @@ public:
             std::invoke(std::forward<Func>(func), actor);
         }
     }
-
-private:
-
-    void init_judge();
-    void init_agents(Work& work);
-    void init_nations();
-    void init_actor_pool();
-
-    std::array<Nation, NATION_TYPE_COUNT> nation_array;
-    s32 judge_id;
-    ActorPool actor_pool;
-
 };

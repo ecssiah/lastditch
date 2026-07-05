@@ -2,8 +2,8 @@
 
 #include <cassert>
 
-static void 
-init_glfw(Platform& platform)
+void
+Platform::init_glfw()
 {
     const int glfw_result = glfwInit();
 
@@ -17,73 +17,73 @@ init_glfw(Platform& platform)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
 #endif
 
-    platform.window.width = WINDOW_WIDTH;
-    platform.window.height = WINDOW_HEIGHT;
-    platform.window.aspect_ratio = WINDOW_ASPECT_RATIO;
+    window.width = WINDOW_WIDTH;
+    window.height = WINDOW_HEIGHT;
+    window.aspect_ratio = WINDOW_ASPECT_RATIO;
 
-    platform.window.glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Last Ditch", nullptr, nullptr);
+    window.glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Last Ditch", nullptr, nullptr);
 
-    assert(platform.window.glfw_window != nullptr);
+    assert(window.glfw_window != nullptr);
 
-    glfwMakeContextCurrent(platform.window.glfw_window);
+    glfwMakeContextCurrent(window.glfw_window);
 
-    glfwSetInputMode(platform.window.glfw_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window.glfw_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-static void 
-update_time(Platform& platform)
+void
+Platform::update_time()
 {
-    platform.time_current = glfwGetTime();
+    time_current = glfwGetTime();
 
-    platform.delta_time = 
-        platform.time_previous > 0.0
-           ? static_cast<f32>(platform.time_current - platform.time_previous)
+    delta_time =
+        time_previous > 0.0
+           ? static_cast<f32>(time_current - time_previous)
            : 0.0f;
 
-    platform.time_previous = platform.time_current;
+    time_previous = time_current;
 }
 
 void 
-platform_init(Platform& platform)
+Platform::init()
 {
-    platform.active = true;
+    active = true;
 
-    platform.time_current = 0.0;
-    platform.time_previous = 0.0;
+    time_current = 0.0;
+    time_previous = 0.0;
 
-    platform.delta_time = 0.0;
+    delta_time = 0.0;
 
-    init_glfw(platform);
+    init_glfw();
     
-    window_init(platform.window);
-    input_init(platform.input);
+    window_init(window);
+    input_init(input);
 }
 
 void 
-platform_begin_frame(Platform& platform)
+Platform::begin_frame()
 {
     glfwPollEvents();
 
-    update_time(platform);
+    update_time();
 
-    input_begin_frame(platform.input, platform.window);
+    input_begin_frame(input, window);
 }
 
 void 
-platform_end_frame(Platform& platform)
+Platform::end_frame()
 {
-    if (input_button_is_pressed(platform.input, Button::Escape))
+    if (input_button_is_pressed(input, Button::Escape))
     {
-        platform.active = false;
+        active = false;
 
-        glfwSetWindowShouldClose(platform.window.glfw_window, 1);
+        glfwSetWindowShouldClose(window.glfw_window, 1);
     }
 
-    glfwSwapBuffers(platform.window.glfw_window);
+    glfwSwapBuffers(window.glfw_window);
 }
 
-void 
-platform_quit()
+void
+Platform::quit()
 {
     glfwTerminate();
 }

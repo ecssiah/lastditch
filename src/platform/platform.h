@@ -4,7 +4,7 @@
 #include "platform/input.h"
 #include "platform/window.h"
 
-struct Platform
+class Platform
 {
     b32 active;
 
@@ -13,11 +13,23 @@ struct Platform
 
     f32 delta_time;
 
+    void init_glfw();
+
+    void update_time();
+
+public:
+
     Window window;
     Input input;
+
+    void init();
+    void begin_frame();
+    void end_frame();
+    void quit();
+
+    b32 is_active() const { return active; }
+
+    f32 get_delta_time() const { return delta_time; }
 };
 
-void platform_init(Platform& platform);
-void platform_begin_frame(Platform& platform);
-void platform_end_frame(Platform& platform);
-void platform_quit();
+

@@ -3,7 +3,7 @@
 #include "core/log.h"
 
 void
-app_init(State& state, const Platform& platform)
+App::init(State& state, const Platform& platform)
 {
     log_init();
     
@@ -29,19 +29,19 @@ app_init(State& state, const Platform& platform)
 }
 
 void
-app_update(State& state, const Platform& platform)
+App::update(State& state, const Platform& platform)
 {
     action_update(state, platform);
 
-    work_update(platform.delta_time, state.population, state.work);
-    state.world.update(state.population, platform.delta_time);
+    work_update(platform.get_delta_time(), state.population, state.work);
+    state.world.update(state.population, platform.get_delta_time());
 
     render_update(state.render, state.population, state.debug);
     screen_update(state.screen, state.population);
 }
 
 void
-app_quit(State& state)
+App::quit(State& state)
 {
     debug_quit(state.debug);
 

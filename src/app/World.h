@@ -464,61 +464,6 @@ struct Structure
 
 class World
 {
-public:
-
-    World();
-
-    void init(Debug& debug);
-    void update(Population& population, f32 delta_time);
-    void quit();
-
-    static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);
-    static b32 sector_coordinate_is_valid(s32 x, s32 y);
-
-    static s32 sector_coordinate_to_index(IVec2 sector_coordinate);
-    static IVec2 sector_index_to_coordinate(s32 sector_index);
-
-    static s32 cell_coordinate_to_index(s32 x, s32 y, s32 z);
-    static IVec3 cell_index_to_coordinate(s32 cell_index);
-
-    static s32 cell_coordinate_to_sector_index(s32 x, s32 y);
-    static IVec2 cell_coordinate_to_sector_coordinate(s32 x, s32 y);
-
-    static s32 cell_coordinate_to_local_index(s32 x, s32 y, s32 z);
-    static IVec3 cell_coordinate_to_local_coordinate(s32 x, s32 y, s32 z);
-
-    static Vec3 cell_coordinate_to_position(s32 x, s32 y, s32 z);
-    static IVec3 position_to_cell_coordinate(f32 x, f32 y, f32 z);
-
-    static s32 get_stride(Direction direction);
-    static s32 get_floor(s32 z);
-    static s32 block_type_index_from_string(const std::string& block_type_string);
-
-    Cell& get_cell(s32 cell_index);
-
-    [[nodiscard]]
-    const Cell& get_cell(s32 cell_index) const;
-
-    Cell& get_cell(s32 x, s32 y, s32 z);
-
-    [[nodiscard]]
-    const Cell& get_cell(s32 x, s32 y, s32 z) const;
-
-    b32 is_solid(s32 x, s32 y, s32 z);
-    b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
-
-    AreaPool& get_area_pool(s32 floor);
-
-    [[nodiscard]]
-    const AreaPool& get_area_pool(s32 floor) const;
-
-    EdgePool& get_edge_pool();
-
-    [[nodiscard]]
-    const EdgePool& get_edge_pool() const;
-
-private:
-
     u64 tick_count;
     u64 second_count;
 
@@ -573,4 +518,57 @@ private:
     AreaOverlap get_area_overlap(const Area& a, const Area& b);
 
     void calculate_area_edges(s32 floor_number);
+
+public:
+
+    World();
+
+    void init(Debug& debug);
+    void update(Population& population, f32 delta_time);
+    void quit();
+
+    static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);
+    static b32 sector_coordinate_is_valid(s32 x, s32 y);
+
+    static s32 sector_coordinate_to_index(IVec2 sector_coordinate);
+    static IVec2 sector_index_to_coordinate(s32 sector_index);
+
+    static s32 cell_coordinate_to_index(s32 x, s32 y, s32 z);
+    static IVec3 cell_index_to_coordinate(s32 cell_index);
+
+    static s32 cell_coordinate_to_sector_index(s32 x, s32 y);
+    static IVec2 cell_coordinate_to_sector_coordinate(s32 x, s32 y);
+
+    static s32 cell_coordinate_to_local_index(s32 x, s32 y, s32 z);
+    static IVec3 cell_coordinate_to_local_coordinate(s32 x, s32 y, s32 z);
+
+    static Vec3 cell_coordinate_to_position(s32 x, s32 y, s32 z);
+    static IVec3 position_to_cell_coordinate(f32 x, f32 y, f32 z);
+
+    static s32 get_stride(Direction direction);
+    static s32 get_floor(s32 z);
+    static s32 block_type_index_from_string(const std::string& block_type_string);
+
+    Cell& get_cell(s32 cell_index);
+
+    [[nodiscard]]
+    const Cell& get_cell(s32 cell_index) const;
+
+    Cell& get_cell(s32 x, s32 y, s32 z);
+
+    [[nodiscard]]
+    const Cell& get_cell(s32 x, s32 y, s32 z) const;
+
+    b32 is_solid(s32 x, s32 y, s32 z);
+    b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
+
+    AreaPool& get_area_pool(s32 floor);
+
+    [[nodiscard]]
+    const AreaPool& get_area_pool(s32 floor) const;
+
+    EdgePool& get_edge_pool();
+
+    [[nodiscard]]
+    const EdgePool& get_edge_pool() const;
 };

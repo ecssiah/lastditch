@@ -1,22 +1,26 @@
 #include "app/app.h"
 #include "platform/platform.h"
 
-int 
+using namespace std;
+
+int
 main()
 {
-    const auto platform = std::make_unique<Platform>();
-    const auto state = std::make_unique<State>();
-    
-    platform_init(*platform);
-    app_init(*state, *platform);
+    const auto app = make_unique<App>();
 
-    while (platform->active)
+    const auto platform = make_unique<Platform>();
+    const auto state = make_unique<State>();
+
+    platform->init();
+    app->init(*state, *platform);
+
+    while (platform->is_active())
     {
-        platform_begin_frame(*platform);
-        app_update(*state, *platform);
-        platform_end_frame(*platform);
+        platform->begin_frame();
+        app->update(*state, *platform);
+        platform->end_frame();
     }
 
-    app_quit(*state);
-    platform_quit();
+    app->quit(*state);
+    platform->quit();
 }
