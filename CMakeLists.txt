@@ -93,11 +93,11 @@ target_sources(
     src/core/config.cpp
     src/core/geometry.h
     src/core/geometry.cpp
+    src/core/macros.h
     src/core/log.h
     src/core/log.cpp
     src/core/random.cpp
     src/core/random.h
-    src/core/macros.h
     src/core/types.h
     src/platform/platform.cpp
     src/platform/platform.h

@@ -141,7 +141,7 @@ Render::upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
 
     glBufferData(
         GL_ARRAY_BUFFER,
-        debug_gpu_data.debug_vertex_vector.size() * sizeof(DebugVertex),
+        static_cast<GLsizeiptr>(debug_gpu_data.debug_vertex_vector.size() * sizeof(DebugVertex)),
         debug_gpu_data.debug_vertex_vector.data(),
         GL_DYNAMIC_DRAW
     );
@@ -251,10 +251,9 @@ Render::load_actor_texture_directory()
 
         const s32 nation_type_index = nation_type_index_from_string(config_entry.key);
 
-        assert(nation_type_index >= 0);
-        assert(nation_type_index < NATION_TYPE_COUNT);
-        
-        model_render.actor_type_layer_array[nation_type_index] = layer_index;
+        assert(nation_type_index >= 0 && nation_type_index < NATION_TYPE_COUNT);
+
+        model_render.nation_type_layer_array[nation_type_index] = layer_index;
         
         string texture_path =
             format(
@@ -267,12 +266,12 @@ Render::load_actor_texture_directory()
 }
 
 ModelGpuData
-Render::load_model_gpu_data(const Actor& actor)
+Render::load_model_gpu_data(const Actor& actor) const
 {
     const s32 nation_type_index = static_cast<s32>(actor.nation_type);
     
     ModelGpuData model_gpu_data{};
-    model_gpu_data.texture_layer = model_render.actor_type_layer_array[nation_type_index];
+    model_gpu_data.texture_layer = model_render.nation_type_layer_array[nation_type_index];
 
     ifstream ifs("assets/model/actor.obj");
     
@@ -342,14 +341,14 @@ Render::load_model_gpu_data(const Actor& actor)
             s32 scan_result = sscanf(
                 line.c_str(),
                 "f %d/%d/%d %d/%d/%d %d/%d/%d",
-                &position_index_array[0], 
-                &uv_index_array[0], 
+                &position_index_array[0],
+                &uv_index_array[0],
                 &normal_index_array[0],
-                &position_index_array[1], 
-                &uv_index_array[1], 
+                &position_index_array[1],
+                &uv_index_array[1],
                 &normal_index_array[1],
-                &position_index_array[2], 
-                &uv_index_array[2], 
+                &position_index_array[2],
+                &uv_index_array[2],
                 &normal_index_array[2]
             );
 
@@ -533,7 +532,7 @@ Render::upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data)
 
     glBufferData(
         GL_ARRAY_BUFFER,
-        voxel_gpu_data.voxel_vertex_vector.size() * sizeof(VoxelVertex),
+        static_cast<GLsizeiptr>(voxel_gpu_data.voxel_vertex_vector.size() * sizeof(VoxelVertex)),
         voxel_gpu_data.voxel_vertex_vector.data(),
         GL_DYNAMIC_DRAW
     );
@@ -591,7 +590,7 @@ Render::upload_model_gpu_data(ModelGpuData& model_gpu_data)
 
     glBufferData(
         GL_ARRAY_BUFFER,
-        model_gpu_data.model_vertex_vector.size() * sizeof(ModelVertex),
+        static_cast<GLsizeiptr>(model_gpu_data.model_vertex_vector.size() * sizeof(ModelVertex)),
         model_gpu_data.model_vertex_vector.data(),
         GL_DYNAMIC_DRAW
     );

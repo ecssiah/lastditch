@@ -144,7 +144,7 @@ struct ModelRender
 
     ConfigData actor_config_data;
 
-    u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
+    u8 nation_type_layer_array[NATION_TYPE_COUNT];
 
     vector<ModelGpuData> model_gpu_data_vector;
 };
@@ -152,13 +152,13 @@ struct ModelRender
 class Render
 {
     static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
-
-    void load_texture_array_layer(const string& texture_path, GLint layer_index);
+    static void load_texture_array_layer(const string& texture_path, GLint layer_index);
 
     void load_block_texture_directory();
     void load_actor_texture_directory();
 
-    ModelGpuData load_model_gpu_data(const Actor& actor);
+    [[nodiscard]]
+    ModelGpuData load_model_gpu_data(const Actor& actor) const;
 
     static void init_glad(const Platform& platform);
 
