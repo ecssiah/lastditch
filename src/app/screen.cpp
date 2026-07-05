@@ -10,8 +10,8 @@
 #include "app/world.h"
 #include "app/render.h"
 
-static void 
-load_textures(Screen& screen, const string& textures_path)
+void
+Screen::load_textures(const string& textures_path)
 {
     const string font_path = format("{}/null_terminator.png", textures_path);
 
@@ -25,8 +25,8 @@ load_textures(Screen& screen, const string& textures_path)
 
     assert(pixel_data_array != nullptr);
 
-    glGenTextures(1, &screen.font_texture_id);
-    glBindTexture(GL_TEXTURE_2D, screen.font_texture_id);
+    glGenTextures(1, &font_texture_id);
+    glBindTexture(GL_TEXTURE_2D, font_texture_id);
 
     GLint internal_format;
     GLenum format;
@@ -76,8 +76,8 @@ load_textures(Screen& screen, const string& textures_path)
     stbi_image_free(pixel_data_array);
 }
 
-static void 
-draw_text(const Screen& screen, const string& text, f32 x, f32 y)
+void
+Screen::draw_text(const string& text, f32 x, f32 y)
 {
     constexpr f32 scale = 2.0f;
 
@@ -137,7 +137,7 @@ draw_text(const Screen& screen, const string& text, f32 x, f32 y)
         cursor_x += char_width;
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, screen.vbo_id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
     
     glBufferData(
         GL_ARRAY_BUFFER, 
@@ -150,25 +150,25 @@ draw_text(const Screen& screen, const string& text, f32 x, f32 y)
 }
 
 void 
-screen_init(Screen& screen, const Platform& platform)
+Screen::init(const Platform& platform)
 {
     const GLuint vert_shader = Render::compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
     const GLuint frag_shader = Render::compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
 
-    screen.program_id = glCreateProgram();
+    program_id = glCreateProgram();
 
-    glAttachShader(screen.program_id, vert_shader);
-    glAttachShader(screen.program_id, frag_shader);
+    glAttachShader(program_id, vert_shader);
+    glAttachShader(program_id, frag_shader);
 
-    glLinkProgram(screen.program_id);
+    glLinkProgram(program_id);
 
-    glUseProgram(screen.program_id);
+    glUseProgram(program_id);
 
-    screen.u_font_texture_sampler_location = glGetUniformLocation(screen.program_id, "u_font_texture_sampler");
+    u_font_texture_sampler_location = glGetUniformLocation(program_id, "u_font_texture_sampler");
 
-    glUniform1i(screen.u_font_texture_sampler_location, 0);
+    glUniform1i(u_font_texture_sampler_location, 0);
 
-    screen.u_projection_location = glGetUniformLocation(screen.program_id, "u_projection_matrix");
+    u_projection_location = glGetUniformLocation(program_id, "u_projection_matrix");
 
     const auto [framebuffer_width, framebuffer_height] = platform.get_framebuffer_size();
 
@@ -180,7 +180,7 @@ screen_init(Screen& screen, const Platform& platform)
     );
     
     glUniformMatrix4fv(
-        screen.u_projection_location, 
+        u_projection_location,
         1, 
         GL_FALSE, 
         shell_projection_matrix[0]
@@ -189,11 +189,11 @@ screen_init(Screen& screen, const Platform& platform)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    glGenVertexArrays(1, &screen.vao_id);
-    glGenBuffers(1, &screen.vbo_id);
+    glGenVertexArrays(1, &vao_id);
+    glGenBuffers(1, &vbo_id);
 
-    glBindVertexArray(screen.vao_id);
-    glBindBuffer(GL_ARRAY_BUFFER, screen.vbo_id);
+    glBindVertexArray(vao_id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
 
     glVertexAttribPointer(
         0,
@@ -219,11 +219,11 @@ screen_init(Screen& screen, const Platform& platform)
 
     glBindVertexArray(0);
 
-    load_textures(screen, "assets/textures/font");
+    load_textures("assets/textures/font");
 }
 
-static void 
-draw_debug_info(Screen& screen, const Population& population)
+void
+Screen::draw_debug_info(const Population& population)
 {
     const Actor& judge = population.get_judge();
 
@@ -299,18 +299,18 @@ draw_debug_info(Screen& screen, const Population& population)
         break;
     }
 
-    draw_text(screen, position_text, 20, 20);
-    draw_text(screen, velocity_text, 20, 40);
-    draw_text(screen, cell_coordinate_text, 20, 60);
-    draw_text(screen, sector_coordinate_text, 20, 80);
-    draw_text(screen, floor_text, 20, 100);
-    draw_text(screen, movement_type_text, 20, 120);
+    draw_text(position_text, 20, 20);
+    draw_text(velocity_text, 20, 40);
+    draw_text(cell_coordinate_text, 20, 60);
+    draw_text(sector_coordinate_text, 20, 80);
+    draw_text(floor_text, 20, 100);
+    draw_text(movement_type_text, 20, 120);
 }
 
 void 
-screen_update(Screen& screen, const Population& population)
+Screen::update(const Population& population)
 {
-    glUseProgram(screen.program_id);
+    glUseProgram(program_id);
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -320,12 +320,12 @@ screen_update(Screen& screen, const Population& population)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBindVertexArray(screen.vao_id);
+    glBindVertexArray(vao_id);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, screen.font_texture_id);
+    glBindTexture(GL_TEXTURE_2D, font_texture_id);
 
-    draw_debug_info(screen, population);
+    draw_debug_info(population);
 
     glBindVertexArray(0);
 }
