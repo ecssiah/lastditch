@@ -7,14 +7,10 @@
 #include <filesystem>
 #include <string>
 
-using namespace std;;
-
-static ofstream            ld_log_file;
-static filesystem::path    ld_log_directory;
-static string              ld_current_day_string;
+using namespace std;
 
 constexpr const char*
-log_level_to_string(const LogLevel level)
+Log::log_level_to_string(const LogLevel level)
 {
     switch (level)
     {
@@ -29,7 +25,7 @@ log_level_to_string(const LogLevel level)
 }
 
 void 
-log_init()
+Log::init()
 {
     ld_log_directory = "logs";
 
@@ -39,11 +35,11 @@ log_init()
 }
 
 void 
-log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...)
+Log::message(LogLevel log_level, const char* file, int line, const char* fmt, ...)
 {
 
-    const time_t now = time(NULL);
-    tm tm_info;
+    const time_t now = time(nullptr);
+    tm tm_info{};
     localtime_r(&now, &tm_info);
 
     char file_timestamp_buffer[11];
@@ -137,9 +133,10 @@ log_message(LogLevel log_level, const char* file, int line, const char* fmt, ...
 }
 
 void 
-log_quit()
+Log::quit()
 {
     LOG_INFO("\n\nLOG CLOSE\n");
+
     if (ld_log_file.is_open())
     {
         ld_log_file.close();

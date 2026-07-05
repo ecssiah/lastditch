@@ -3,8 +3,6 @@
 #include "app/state.h"
 #include "platform/platform.h"
 
-constexpr b32 USE_RANDOM_SEED = false;
-
 class App
 {
     b32 active;

@@ -72,8 +72,8 @@ const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT] =
     {+0, -1, +0},
 };
 
-static const char* 
-get_gl_error_string(GLenum err)
+const char*
+Render::get_gl_error_string(GLenum err)
 {
     switch (err)
     {
@@ -86,8 +86,8 @@ get_gl_error_string(GLenum err)
     }
 }
 
-static void 
-check_gl_error(const char* label)
+void
+Render::check_gl_error(const char* label)
 {
     GLenum err;
 
@@ -272,10 +272,9 @@ Render::load_model_gpu_data(const Actor& actor)
 {
     const s32 nation_type_index = static_cast<s32>(actor.nation_type);
     
-    ModelGpuData model_gpu_data = {
-        .texture_layer =  model_render.actor_type_layer_array[nation_type_index],
-    };
-    
+    ModelGpuData model_gpu_data{};
+    model_gpu_data.texture_layer = model_render.actor_type_layer_array[nation_type_index];
+
     ifstream ifs("assets/model/actor.obj");
     
     assert(ifs.is_open());
@@ -290,7 +289,7 @@ Render::load_model_gpu_data(const Actor& actor)
     {
         if (line.starts_with("v "))
         {
-            Vec3 position;
+            Vec3 position{};
 
             const s32 scan_result = sscanf(
                 line.c_str(),
@@ -306,7 +305,7 @@ Render::load_model_gpu_data(const Actor& actor)
         }
         else if (line.starts_with("vn "))
         {
-            Vec3 normal;
+            Vec3 normal{};
 
             const s32 normal_scan = sscanf(
                 line.c_str(),
@@ -322,7 +321,7 @@ Render::load_model_gpu_data(const Actor& actor)
         }
         else if (line.starts_with("vt "))
         {
-            Vec2 uv;
+            Vec2 uv{};
 
             const s32 uv_scan = sscanf(
                 line.c_str(),
@@ -391,12 +390,11 @@ Render::load_model_gpu_data(const Actor& actor)
     return model_gpu_data;
 }
 
-static void 
-generate_sector_mesh(VoxelRender& voxel_render, const World& world, const s32 sector_index)
+void
+Render::generate_sector_mesh(const World& world, const s32 sector_index)
 {
-    SectorMesh sector_mesh = {
-        .sector_index = sector_index,
-    };
+    SectorMesh sector_mesh{};
+    sector_mesh.sector_index = sector_index;
 
     const IVec2 sector_coordinate = World::sector_index_to_coordinate(sector_index);
 
@@ -431,7 +429,7 @@ generate_sector_mesh(VoxelRender& voxel_render, const World& world, const s32 se
                 {
                     const Direction direction = direction_from_mask(test_direction_mask);
 
-                    SectorQuad sector_quad;
+                    SectorQuad sector_quad = {};
                     sector_quad.direction = direction;
                     sector_quad.block_type = cell.block_type;
 
@@ -450,8 +448,8 @@ generate_sector_mesh(VoxelRender& voxel_render, const World& world, const s32 se
     voxel_render.sector_mesh_vector.push_back(sector_mesh);
 }
 
-static void 
-emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
+void
+Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
 {
     for (s32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
@@ -460,12 +458,12 @@ emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
         
         const IVec3 vertex_position = sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][vertex_index];
         
-        const s32 vertex_bitpacked = 
+        const u32 vertex_bitpacked =
             (vertex_position.x & 63u) << 0u |
             (vertex_position.y & 63u) << 6u |
             (vertex_position.z & 255u) << 12u;
         
-        const s32 face_bitpacked =
+        const u32 face_bitpacked =
             (block_type_index & 255u) << 0u |
             (direction_index & 7u) << 8u;
 
@@ -478,19 +476,18 @@ emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
     }
 }
 
-static VoxelGpuData 
-convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
+VoxelGpuData
+Render::convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
 {
     const IVec2 sector_coordinate = World::sector_index_to_coordinate(sector_mesh.sector_index);
 
-    VoxelGpuData voxel_gpu_data = {
-        .position = {
-            static_cast<f32>(sector_coordinate.x) * SECTOR_SIZE_IN_CELLS,
-            static_cast<f32>(sector_coordinate.y) * SECTOR_SIZE_IN_CELLS,
-            0.0f,
-        }
+    VoxelGpuData voxel_gpu_data{};
+    voxel_gpu_data.position = {
+        static_cast<f32>(sector_coordinate.x) * SECTOR_SIZE_IN_CELLS,
+        static_cast<f32>(sector_coordinate.y) * SECTOR_SIZE_IN_CELLS,
+        0.0f,
     };
-    
+
     for (const SectorQuad& sector_quad : sector_mesh.sector_quad_vector)
     {
         emit_sector_face(sector_quad, voxel_gpu_data);
@@ -499,8 +496,8 @@ convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
     return voxel_gpu_data;
 }
 
-static void 
-upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data)
+void
+Render::upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data)
 {
     if (voxel_gpu_data.vao_id == 0)
     {
@@ -545,8 +542,8 @@ upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data)
     glBindVertexArray(0);
 }
 
-static void 
-upload_model_gpu_data(ModelGpuData& model_gpu_data)
+void
+Render::upload_model_gpu_data(ModelGpuData& model_gpu_data)
 {
     if (model_gpu_data.vao_id == 0)
     {
@@ -603,8 +600,8 @@ upload_model_gpu_data(ModelGpuData& model_gpu_data)
     glBindVertexArray(0);
 }
 
-static void 
-init_glad(const Platform& platform)
+void
+Render::init_glad(const Platform& platform)
 {
     const s32 glad_load_gl_result = gladLoadGL(glfwGetProcAddress);
 
@@ -615,8 +612,8 @@ init_glad(const Platform& platform)
     glViewport(0, 0, framebuffer_width, framebuffer_height);
 }
 
-static void 
-init_viewpoint(Viewpoint& viewpoint)
+void
+Render::init_viewpoint()
 {
     viewpoint.position = vec3_broadcast(0.0f);
     viewpoint.rotation = vec3_broadcast(0.0f);
@@ -721,7 +718,7 @@ Render::init_voxel_render(const World& world)
 
     for (s32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
-        generate_sector_mesh(voxel_render, world, sector_index);
+        generate_sector_mesh(world, sector_index);
     }
 
     for (const SectorMesh& sector_mesh : voxel_render.sector_mesh_vector)
@@ -969,7 +966,7 @@ Render::init(const Platform& platform, const Population& population, const World
 {
     init_glad(platform);
 
-    init_viewpoint(viewpoint);
+    init_viewpoint();
 
     init_debug_render();
     init_voxel_render(world);

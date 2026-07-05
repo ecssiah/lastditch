@@ -10,9 +10,10 @@
 
 Population::Population()
     :
-    nation_array(),
-    judge_id(),
-    actor_pool()
+    random{POPULATION_SEED},
+    nation_array{},
+    judge_id{},
+    actor_pool{}
 {
 
 }

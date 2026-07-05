@@ -151,14 +151,20 @@ struct ModelRender
 
 class Render
 {
-    void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
-    void load_texture_array_layer(const string& texture_path, const GLint layer_index);
+    static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
+
+
+
+    void load_texture_array_layer(const string& texture_path, GLint layer_index);
 
     void load_block_texture_directory();
     void load_actor_texture_directory();
 
     ModelGpuData load_model_gpu_data(const Actor& actor);
 
+    static void init_glad(const Platform& platform);
+
+    void init_viewpoint();
     void init_debug_render();
     void init_voxel_render(const World& world);
     void init_model_render(const Population& population);
@@ -168,14 +174,24 @@ class Render
     void update_voxel_render();
     void update_model_render(const Population& population);
 
+    void generate_sector_mesh(const World& world, s32 sector_index);
+
+    static void emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data);
+    static VoxelGpuData convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh);
+    static void upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data);
+    static void upload_model_gpu_data(ModelGpuData& model_gpu_data);
+
 public:
-    Viewpoint viewpoint;
+    Viewpoint viewpoint{};
 
     DebugRender debug_render;
     VoxelRender voxel_render;
     ModelRender model_render;
 
     static GLuint compile_shader(GLenum type, const char* filepath);
+
+    static const char* get_gl_error_string(GLenum err);
+    static void check_gl_error(const char* label);
 
     void init(const Platform& platform, const Population& population, const World& world);
     void update(const Population& population, const Debug& debug);

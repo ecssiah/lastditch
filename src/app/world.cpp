@@ -2,8 +2,6 @@
 
 #include <cassert>
 #include <cmath>
-#include <utility>
-
 #include "core/types.h"
 #include "app/area.h"
 #include "app/debug.h"
@@ -14,11 +12,14 @@ using namespace std;
 
 World::World()
     :
-    second_count(0),
-    tick_count(0),
-    time_rate(1.0f)
+    random{WORLD_SEED},
+    tick_count{0},
+    second_count{0},
+    time_rate{1.0f},
+    cell_array{},
+    area_pool_array{},
+    edge_pool{}
 {
-
 }
 
 void
@@ -302,7 +303,6 @@ World::get_stride(const Direction direction)
     }
 
     assert(false);
-    unreachable();
 }
 
 s32
@@ -473,11 +473,10 @@ World::place_area(Area& area)
 
             for (const IBounds2 bounds : bounds_vector)
             {
-                Area new_area = {
-                    .area_type = area_test.area_type,
-                    .floor_number = area_test.floor_number,
-                    .bounds = bounds,
-                };
+                Area new_area{};
+                new_area.area_type = area_test.area_type;
+                new_area.floor_number = area_test.floor_number;
+                new_area.bounds = bounds;
 
                 area_add(area_pool, new_area);
             }
@@ -537,9 +536,9 @@ World::construct_tower()
             s32 north_position_z;
             s32 north_size_z;
 
-            const s32 north_offset = rand() % (FLOOR_SIZE_Z - 2);
+            const s32 north_offset = random.uniform(0, FLOOR_SIZE_Z - 2);
 
-            if (rand() % 2)
+            if (random.uniform(0, 2) == 0)
             {
                 north_position_z = cell_z + 1;
                 north_size_z = north_offset;
@@ -559,9 +558,9 @@ World::construct_tower()
             s32 south_position_z;
             s32 south_size_z;
 
-            const s32 south_offset = rand() % (FLOOR_SIZE_Z - 2);
+            const s32 south_offset = random.uniform(0, FLOOR_SIZE_Z - 2);
 
-            if (rand() % 2)
+            if (random.uniform(0, 2) == 0)
             {
                 south_position_z = cell_z + 1;
                 south_size_z = south_offset;
@@ -584,9 +583,9 @@ World::construct_tower()
             s32 east_position_z;
             s32 east_size_z;
 
-            const s32 east_offset = rand() % (FLOOR_SIZE_Z - 2);
+            const s32 east_offset = random.uniform(0, FLOOR_SIZE_Z - 2);
 
-            if (rand() % 2)
+            if (random.uniform(0, 2) == 0)
             {
                 east_position_z = cell_z + 1;
                 east_size_z = east_offset;
@@ -606,9 +605,9 @@ World::construct_tower()
             s32 west_position_z;
             s32 west_size_z;
 
-            const s32 west_offset = rand() % (FLOOR_SIZE_Z - 2);
+            const s32 west_offset = random.uniform(0, FLOOR_SIZE_Z - 2);
 
-            if (rand() % 2)
+            if (random.uniform(0, 2) == 0)
             {
                 west_position_z = cell_z + 1;
                 west_size_z = west_offset;
@@ -663,13 +662,12 @@ World::layout_roof_areas()
     {
         for (s32 area_x = TOWER_BORDER; area_x < TOWER_SIZE + TOWER_BORDER; area_x += roof_area_size)
         {
-            Area roof_area = {
-                .area_type = AreaType::Open,
-                .floor_number = TOWER_FLOOR_COUNT,
-                .bounds = {
-                    {area_x, area_y},
-                    {area_x + roof_area_size, area_y + roof_area_size},
-                },
+            Area roof_area{};
+            roof_area.area_type = AreaType::Open;
+            roof_area.floor_number = TOWER_FLOOR_COUNT;
+            roof_area.bounds = {
+                {area_x, area_y},
+                {area_x + roof_area_size, area_y + roof_area_size},
             };
 
             area_add(area_pool, roof_area);
@@ -682,18 +680,17 @@ World::layout_elevator_areas()
 {
     for (s32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT + 1; ++floor_number)
     {
-        Area elevator_shaft = {
-            .area_type = AreaType::Elevator,
-            .floor_number = floor_number,
-            .bounds = {
-                {
-                    WORLD_CENTER_S32 - ELEVATOR_SIZE / 2, 
-                    WORLD_CENTER_S32 - ELEVATOR_SIZE / 2,
-                },
-                {
-                    WORLD_CENTER_S32 - ELEVATOR_SIZE / 2 + ELEVATOR_SIZE,
-                    WORLD_CENTER_S32 - ELEVATOR_SIZE / 2 + ELEVATOR_SIZE,
-                },
+        Area elevator_shaft{};
+        elevator_shaft.area_type = AreaType::Elevator;
+        elevator_shaft.floor_number = floor_number;
+        elevator_shaft.bounds = {
+            {
+                WORLD_CENTER_S32 - ELEVATOR_SIZE / 2,
+                WORLD_CENTER_S32 - ELEVATOR_SIZE / 2,
+            },
+            {
+                WORLD_CENTER_S32 - ELEVATOR_SIZE / 2 + ELEVATOR_SIZE,
+                WORLD_CENTER_S32 - ELEVATOR_SIZE / 2 + ELEVATOR_SIZE,
             },
         };
 
@@ -711,50 +708,34 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant1_origin = section_origin_array[static_cast<u8>(Section::Quadrant1)];
         constexpr IVec2 quadrant1_size = section_size_array[static_cast<u8>(Section::Quadrant1)];
         
-        Area area_quadrant_1 = {
-            .area_type = AreaType::Room,
-            .floor_number = floor_number,
-            .bounds = {
-                quadrant1_origin,
-                quadrant1_origin + quadrant1_size,
-            },
-        };
-        
+        Area area_quadrant_1{};
+        area_quadrant_1.area_type = AreaType::Room;
+        area_quadrant_1.floor_number = floor_number;
+        area_quadrant_1.bounds = { quadrant1_origin,quadrant1_origin + quadrant1_size };
+
         constexpr IVec2 quadrant2_origin = section_origin_array[static_cast<u8>(Section::Quadrant2)];  
         constexpr IVec2 quadrant2_size = section_size_array[static_cast<u8>(Section::Quadrant2)];
 
-        Area area_quadrant_2 = {
-            .area_type = AreaType::Room,
-            .floor_number = floor_number,
-            .bounds = {
-                quadrant2_origin,
-                quadrant2_origin + quadrant2_size,
-            },
-        };
-        
+        Area area_quadrant_2{};
+        area_quadrant_2.area_type = AreaType::Room;
+        area_quadrant_2.floor_number = floor_number;
+        area_quadrant_2.bounds = { quadrant2_origin,quadrant2_origin + quadrant2_size };
+
         constexpr IVec2 quadrant3_origin = section_origin_array[static_cast<u8>(Section::Quadrant3)];  
         constexpr IVec2 quadrant3_size = section_size_array[static_cast<u8>(Section::Quadrant3)];
 
-        Area area_quadrant_3 = {
-            .area_type = AreaType::Room,
-            .floor_number = floor_number,
-            .bounds = {
-                quadrant3_origin,
-                quadrant3_origin + quadrant3_size,
-            },
-        };
-        
+        Area area_quadrant_3{};
+        area_quadrant_3.area_type = AreaType::Room,
+        area_quadrant_3.floor_number = floor_number,
+        area_quadrant_3.bounds = { quadrant3_origin,quadrant3_origin + quadrant3_size };
+
         constexpr IVec2 quadrant4_origin = section_origin_array[static_cast<u8>(Section::Quadrant4)];  
         constexpr IVec2 quadrant4_size = section_size_array[static_cast<u8>(Section::Quadrant4)];
 
-        Area area_quadrant_4 = {
-            .area_type = AreaType::Room,
-            .floor_number = floor_number,
-            .bounds = {
-                quadrant4_origin,
-                quadrant4_origin + quadrant4_size,
-            },
-        };
+        Area area_quadrant_4{};
+        area_quadrant_4.area_type = AreaType::Room;
+        area_quadrant_4.floor_number = floor_number,
+        area_quadrant_4.bounds = { quadrant4_origin,quadrant4_origin + quadrant4_size };
 
         area_add(area_pool, area_quadrant_1);
         area_add(area_pool, area_quadrant_2);
@@ -784,11 +765,12 @@ World::layout_tower_areas()
                     ? Axis::X
                     : Axis::Y;
 
-                const s32 axis_split_value = static_cast<size_t>(axis_split);
+                const s32 axis_split_value = static_cast<s32>(axis_split);
 
                 if (area_size[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
                 {
-                    const s32 split_size = area_size[axis_split_value] / 2 + (-2 + (rand() % 5));
+                    const s32 split_offset = -2 + random.uniform(0, 5);
+                    const s32 split_size = area_size[axis_split_value] / 2 + split_offset;
 
                     Area area_a = area_copy;
                     Area area_b = area_copy;
@@ -815,7 +797,7 @@ World::layout_tower_areas()
 
         for (s32 section_index = 0; section_index < section_count; ++section_index)
         {
-            const Section section = static_cast<Section>(section_index);
+            const auto section = static_cast<Section>(section_index);
             
             const b32 quadrant_section =
                 section == Section::Quadrant1 ||
@@ -831,14 +813,10 @@ World::layout_tower_areas()
             const IVec2 section_origin = section_origin_array[section_index];
             const IVec2 section_size = section_size_array[section_index];
 
-            Area section_area = {
-                .area_type = AreaType::Open,
-                .floor_number = floor_number,
-                .bounds = {
-                    .min = section_origin,
-                    .max = section_origin + section_size,
-                },
-            };
+            Area section_area{};
+            section_area.area_type = AreaType::Open;
+            section_area.floor_number = floor_number;
+            section_area.bounds = { section_origin, section_origin + section_size };
 
             area_add(area_pool, section_area);
         }
@@ -854,21 +832,14 @@ World::setup_wolf_territory()
         ROOF_Z,
     };
     
-    Area temple_area = {
-        .area_type = AreaType::Open,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
-            .min = {
-                temple_origin.x, 
-                temple_origin.y, 
-            },
-            .max = {
-                temple_origin.x + TEMPLE_SIZE_Y,
-                temple_origin.y + TEMPLE_SIZE_X,
-            },
-        }
+    Area temple_area{};
+    temple_area.area_type = AreaType::Open;
+    temple_area.floor_number = ROOF_FLOOR_NUMBER;
+    temple_area.bounds = {
+        { temple_origin.x, temple_origin.y },
+        { temple_origin.x + TEMPLE_SIZE_Y, temple_origin.y + TEMPLE_SIZE_X }
     };
-    
+
     place_area(temple_area);
 
     set_block_type_cube(
@@ -928,21 +899,14 @@ World::setup_wolf_territory()
         ROOF_Z,
     };
 
-    Area platform_area = {
-        .area_type = AreaType::Open,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
-            .min = {
-                platform_origin.x, 
-                platform_origin.y, 
-            },
-            .max = {
-                platform_origin.x + PLATFORM_SIZE_Y,
-                platform_origin.y + PLATFORM_SIZE_X,
-            },
-        }
+    Area platform_area{};
+    platform_area.area_type = AreaType::Open,
+    platform_area.floor_number = ROOF_FLOOR_NUMBER,
+    platform_area.bounds = {
+        { platform_origin.x, platform_origin.y },
+        { platform_origin.x + PLATFORM_SIZE_Y, platform_origin.y + PLATFORM_SIZE_X },
     };
-    
+
     place_area(platform_area);
     
     set_block_type_cube(
@@ -979,19 +943,12 @@ World::setup_eagle_territory()
         ROOF_Z,
     };
     
-    Area temple_area = {
-        .area_type = AreaType::Open,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
-            .min = {
-                temple_origin.x, 
-                temple_origin.y, 
-            },
-            .max = {
-                temple_origin.x + TEMPLE_SIZE_Y,
-                temple_origin.y + TEMPLE_SIZE_X,
-            },
-        }
+    Area temple_area{};
+    temple_area.area_type = AreaType::Open;
+    temple_area.floor_number = ROOF_FLOOR_NUMBER;
+    temple_area.bounds = {
+        { temple_origin.x, temple_origin.y },
+        { temple_origin.x + TEMPLE_SIZE_Y,temple_origin.y + TEMPLE_SIZE_X },
     };
     
     place_area(temple_area);
@@ -1053,21 +1010,14 @@ World::setup_eagle_territory()
         ROOF_Z,
     };
     
-    Area platform_area = {
-        .area_type = AreaType::Open,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
-            .min = {
-                platform_origin.x, 
-                platform_origin.y, 
-            },
-            .max = {
-                platform_origin.x + PLATFORM_SIZE_Y,
-                platform_origin.y + PLATFORM_SIZE_X,
-            },
-        }
+    Area platform_area{};
+    platform_area.area_type = AreaType::Open;
+    platform_area.floor_number = ROOF_FLOOR_NUMBER;
+    platform_area.bounds = {
+        { platform_origin.x, platform_origin.y },
+        { platform_origin.x + PLATFORM_SIZE_Y,platform_origin.y + PLATFORM_SIZE_X },
     };
-    
+
     place_area(platform_area);
 
     set_block_type_cube(
@@ -1104,21 +1054,14 @@ World::setup_bear_territory()
         ROOF_Z,
     };
     
-    Area temple_area = {
-        .area_type = AreaType::Open,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
-            .min = {
-                temple_origin.x, 
-                temple_origin.y, 
-            },
-            .max = {
-                temple_origin.x + TEMPLE_SIZE_X,
-                temple_origin.y + TEMPLE_SIZE_Y,
-            },
-        }
+    Area temple_area{};
+    temple_area.area_type = AreaType::Open;
+    temple_area.floor_number = ROOF_FLOOR_NUMBER;
+    temple_area.bounds = {
+        { temple_origin.x,temple_origin.y },
+        { temple_origin.x + TEMPLE_SIZE_X,temple_origin.y + TEMPLE_SIZE_Y },
     };
-    
+
     place_area(temple_area);
 
     set_block_type_cube(
@@ -1178,21 +1121,14 @@ World::setup_bear_territory()
         ROOF_Z,
     };
     
-    Area platform_area = {
-        .area_type = AreaType::Open,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
-            .min = {
-                platform_origin.x, 
-                platform_origin.y, 
-            },
-            .max = {
-                platform_origin.x + PLATFORM_SIZE_X,
-                platform_origin.y + PLATFORM_SIZE_Y,
-            },
-        }
+    Area platform_area{};
+    platform_area.area_type = AreaType::Open;
+    platform_area.floor_number = ROOF_FLOOR_NUMBER;
+    platform_area.bounds = {
+        .min = { platform_origin.x,platform_origin.y },
+        .max = { platform_origin.x + PLATFORM_SIZE_X,platform_origin.y + PLATFORM_SIZE_Y },
     };
-    
+
     place_area(platform_area);
 
     set_block_type_cube(
@@ -1229,19 +1165,12 @@ World::setup_lion_territory()
         ROOF_Z,
     };
     
-    Area temple_area = {
-        .area_type = AreaType::Open,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
-            .min = {
-                temple_origin.x, 
-                temple_origin.y, 
-            },
-            .max = {
-                temple_origin.x + TEMPLE_SIZE_X,
-                temple_origin.y + TEMPLE_SIZE_Y,
-            },
-        }
+    Area temple_area{};
+    temple_area.area_type = AreaType::Open;
+    temple_area.floor_number = ROOF_FLOOR_NUMBER;
+    temple_area.bounds = {
+        { temple_origin.x, temple_origin.y },
+        { temple_origin.x + TEMPLE_SIZE_X, temple_origin.y + TEMPLE_SIZE_Y },
     };
     
     place_area(temple_area);
@@ -1303,19 +1232,12 @@ World::setup_lion_territory()
         ROOF_Z,
     };
     
-    Area platform_area = {
-        .area_type = AreaType::Open,
-        .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
-            .min = {
-                platform_origin.x, 
-                platform_origin.y, 
-            },
-            .max = {
-                platform_origin.x + PLATFORM_SIZE_X,
-                platform_origin.y + PLATFORM_SIZE_Y,
-            },
-        }
+    Area platform_area{};
+    platform_area.area_type = AreaType::Open;
+    platform_area.floor_number = ROOF_FLOOR_NUMBER;
+    platform_area.bounds = {
+        { platform_origin.x, platform_origin.y },
+        { platform_origin.x + PLATFORM_SIZE_X,platform_origin.y + PLATFORM_SIZE_Y },
     };
     
     place_area(platform_area);
@@ -1354,22 +1276,20 @@ World::layout_test_area()
         TOWER_FLOOR_COUNT * FLOOR_SIZE_Z,
     };
 
-    Area test_room1 = {
-        .area_type = AreaType::Wireframe,
-        .floor_number = TOWER_FLOOR_COUNT,
-        .bounds = {
-            {test_area_position.x, test_area_position.y},
-            {test_area_position.x + 40, test_area_position.y + 40},
-        },
+    Area test_room1{};
+    test_room1.area_type = AreaType::Wireframe;
+    test_room1.floor_number = TOWER_FLOOR_COUNT;
+    test_room1.bounds = {
+        { test_area_position.x, test_area_position.y },
+        { test_area_position.x + 40, test_area_position.y + 40 },
     };
 
-    Area test_room2 = {
-        .area_type = AreaType::Wireframe,
-        .floor_number = TOWER_FLOOR_COUNT,
-        .bounds = {
-            {test_area_position.x + 10, test_area_position.y + 10},
-            {test_area_position.x + 10 + 20, test_area_position.y + 10 + 20},
-        },
+    Area test_room2{};
+    test_room2.area_type = AreaType::Wireframe;
+    test_room2.floor_number = TOWER_FLOOR_COUNT;
+    test_room2.bounds = {
+        { test_area_position.x + 10, test_area_position.y + 10 },
+        { test_area_position.x + 10 + 20, test_area_position.y + 10 + 20 },
     };
 
     place_area(test_room1);
@@ -1379,13 +1299,9 @@ World::layout_test_area()
 AreaOverlap
 World::get_area_overlap(const Area& a, const Area& b)
 {
-    AreaOverlap area_overlap = {
-        .bounds = {
-            {0, 0},
-            {0, 0},
-        },
-        .direction = Direction::East,
-    };
+    AreaOverlap area_overlap{};
+    area_overlap.bounds = {{0, 0}, {0, 0}};
+    area_overlap.direction = Direction::East;
 
     if (a.bounds.max.x == b.bounds.min.x)
     {
@@ -1458,7 +1374,6 @@ World::get_area_overlap(const Area& a, const Area& b)
 void
 World::calculate_area_edges(s32 floor_number)
 {
-    EdgePool& edge_pool = get_edge_pool();
     AreaPool& area_pool = get_area_pool(floor_number);
 
     for (s32 pool_id_left = 0; pool_id_left < area_pool.active_count; ++pool_id_left)
@@ -1523,7 +1438,7 @@ World::init_area_pool()
         for (s32 pool_id = 0; pool_id < AREA_POOL_MAX; ++pool_id)
         {
             area_pool.free_array[pool_id] = pool_id;
-            area_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();
+            area_pool.active_lookup[pool_id] = numeric_limits<s32>::max();
         }
     }
 }
@@ -1537,7 +1452,7 @@ World::init_edge_pool()
     for (s32 pool_id = 0; pool_id < EDGE_POOL_MAX; ++pool_id)
     {
         edge_pool.free_array[pool_id] = pool_id;
-        edge_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();
+        edge_pool.active_lookup[pool_id] = numeric_limits<s32>::max();
     }
 }
 
@@ -1826,13 +1741,13 @@ World::place_content(s32 floor_number)
         for (s32 stack_index = 0; stack_index < stack_count; ++stack_index)
         {
             const IVec2 stack_position = {
-                area.bounds.min.x + 1 + rand() % (area_bounds_size.x - 2),
-                area.bounds.min.y + 1 + rand() % (area_bounds_size.y - 2)
+                area.bounds.min.x + 1 + random.uniform(0, area_bounds_size.x - 2),
+                area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 2)
             };
 
-            const s32 stack_size_z = rand() % (FLOOR_SIZE_Z - 6);
+            const s32 stack_size_z = random.uniform(0, FLOOR_SIZE_Z - 6);
 
-            const s32 block_type_index = rand() % content_block_type_vector.size();
+            const s32 block_type_index = random.uniform(0, content_block_type_vector.size());
             const BlockType content_block_type = content_block_type_vector[block_type_index];
 
             set_block_type_cube(
@@ -1866,7 +1781,7 @@ World::draw_debug_info(Debug& debug)
         const Vec3 area_debug_max = {
             static_cast<f32>(area.bounds.max.x), 
             static_cast<f32>(area.bounds.max.y), 
-            area.floor_number * FLOOR_SIZE_Z + 2.0f
+            static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
         };
         
         debug_add_box(debug, area_debug_min, area_debug_max, red);

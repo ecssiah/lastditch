@@ -1,10 +1,13 @@
 #pragma once
 
 #include <array>
+#include "core/random.h"
 #include "core/types.h"
 #include "app/area.h"
 #include "app/debug.h"
 #include "app/direction.h"
+
+constexpr u32 WORLD_SEED = 1388;
 
 constexpr f32 CELL_SIZE = 1.0f;
 
@@ -464,6 +467,8 @@ struct Structure
 
 class World
 {
+    Random random;
+
     u64 tick_count;
     u64 second_count;
 
@@ -515,7 +520,7 @@ class World
 
     void layout_test_area();
 
-    AreaOverlap get_area_overlap(const Area& a, const Area& b);
+    static AreaOverlap get_area_overlap(const Area& a, const Area& b);
 
     void calculate_area_edges(s32 floor_number);
 

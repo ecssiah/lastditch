@@ -11,12 +11,10 @@ class Random
 
 public:
 
-    explicit Random()
-        : engine{std::random_device{}()}
+    explicit Random(u32 seed)
+        : engine{seed}
     {
     }
-
-    void seed_engine(u64 seed) { engine.seed(seed); }
 
     mt19937& get_engine() { return engine; }
 

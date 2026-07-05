@@ -6,11 +6,7 @@ App::App()
     :
     active(true)
 {
-    const u64 seed = USE_RANDOM_SEED ? static_cast<u32>(time(nullptr)) : 1388;
-
-    state.random.seed_engine(seed);
-
-    log_init();
+    Log::init();
 
     debug_init(state.debug);
 
@@ -48,7 +44,7 @@ App::quit()
     state.population.quit();
     state.world.quit();
     
-    log_quit();
+    Log::quit();
 
     platform.quit();
 }
