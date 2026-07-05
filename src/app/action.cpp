@@ -5,45 +5,44 @@
 #include "core/log.h"
 #include "app/app.h"
 #include "app/actor.h"
-#include "platform/input.h"
 #include "platform/platform.h"
 
 static void 
-queue_move_action(const Platform& platform, State& state)
+queue_move_action(Platform& platform, State& state)
 {
     Action move_action = {
         .type = ActionType::Move,
         .action_value = vec3_broadcast(0.0f),
     };
 
-    if (input_button_is_down(platform.input, Button::A))
+    if (platform.button_is_down(Button::A))
     {
         move_action.action_value.x -= 1.0f;
     }
 
-    if (input_button_is_down(platform.input, Button::D))
+    if (platform.button_is_down(Button::D))
     {
         move_action.action_value.x += 1.0f;
     }
 
-    if (input_button_is_down(platform.input, Button::W))
+    if (platform.button_is_down(Button::W))
     {
         move_action.action_value.y += 1.0f;
     }
 
-    if (input_button_is_down(platform.input, Button::S))
+    if (platform.button_is_down(Button::S))
     {
         move_action.action_value.y -= 1.0f;
     }
 
     move_action.action_value = vec3_normalize(move_action.action_value);
 
-    if (input_button_is_down(platform.input, Button::E))
+    if (platform.button_is_down(Button::E))
     {
         move_action.action_value.z += 1.0f;
     }
 
-    if (input_button_is_down(platform.input, Button::Q))
+    if (platform.button_is_down(Button::Q))
     {
         move_action.action_value.z -= 1.0f;
     }
@@ -57,8 +56,8 @@ queue_rotate_action(const Platform& platform, State& state)
     const Action rotate_action = {
         .type = ActionType::Rotate,
         .action_value = {
-            static_cast<f32>(platform.input.pointer_delta_x),
-            static_cast<f32>(platform.input.pointer_delta_y),
+            static_cast<f32>(platform.pointer_delta_x),
+            static_cast<f32>(platform.pointer_delta_y),
             0.0f,
         },
     };
@@ -236,27 +235,27 @@ action_apply_queue(ActionQueue& action_queue, Actor& judge)
     }
 }
 
-void action_queue_actions(State& state, const Platform& platform)
+void action_queue_actions(State& state, Platform& platform)
 {
     queue_move_action(platform, state);
 
-    if (fabs(platform.input.pointer_delta_x) > EPSILON || fabs(platform.input.pointer_delta_y) > EPSILON)
+    if (fabs(platform.pointer_delta_x) > EPSILON || fabs(platform.pointer_delta_y) > EPSILON)
     {
         queue_rotate_action(platform, state);
     }
 
-    if (input_button_is_pressed(platform.input, Button::Space))
+    if (platform.button_is_pressed(Button::Space))
     {
         queue_jump_action(state);
     }
 
-    if (input_button_is_released(platform.input, Button::Tab))
+    if (platform.button_is_released(Button::Tab))
     {
         queue_debug_mode_action(state);
     }
 }
 
-void action_update(State& state, const Platform& platform)
+void action_update(State& state, Platform& platform)
 {
     Actor& judge = state.population.get_judge();
     

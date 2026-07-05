@@ -3,24 +3,16 @@
 
 using namespace std;
 
+
 int
 main()
 {
     const auto app = make_unique<App>();
 
-    const auto platform = make_unique<Platform>();
-    const auto state = make_unique<State>();
-
-    platform->init();
-    app->init(*state, *platform);
-
-    while (platform->is_active())
+    while (app->is_active())
     {
-        platform->begin_frame();
-        app->update(*state, *platform);
-        platform->end_frame();
+        app->update();
     }
 
-    app->quit(*state);
-    platform->quit();
+    app->quit();
 }

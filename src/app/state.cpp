@@ -4,10 +4,7 @@
 
 State::State()
     :
-    seed(1388),
-    random(seed),
-    is_active(false),
-    is_evolving(false)
+    evolving(true)
 {
 
 }

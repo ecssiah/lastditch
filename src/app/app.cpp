@@ -2,19 +2,15 @@
 
 #include "core/log.h"
 
-void
-App::init(State& state, const Platform& platform)
+App::App()
+    :
+    active(true)
 {
+    const u64 seed = USE_RANDOM_SEED ? static_cast<u32>(time(nullptr)) : 1388;
+
+    state.random.seed_engine(seed);
+
     log_init();
-    
-    state.is_active = true;
-    state.is_evolving = true;
-
-    constexpr b32 RANDOM_SEED = false;
-
-    state.seed = false ? static_cast<u32>(time(NULL)) : 813;
-
-    srand(state.seed);
 
     debug_init(state.debug);
 
@@ -29,8 +25,10 @@ App::init(State& state, const Platform& platform)
 }
 
 void
-App::update(State& state, const Platform& platform)
+App::update()
 {
+    platform.begin_frame();
+
     action_update(state, platform);
 
     work_update(platform.get_delta_time(), state.population, state.work);
@@ -38,10 +36,12 @@ App::update(State& state, const Platform& platform)
 
     render_update(state.render, state.population, state.debug);
     screen_update(state.screen, state.population);
+
+    active = platform.end_frame();
 }
 
 void
-App::quit(State& state)
+App::quit()
 {
     debug_quit(state.debug);
 
@@ -49,4 +49,6 @@ App::quit(State& state)
     state.world.quit();
     
     log_quit();
+
+    platform.quit();
 }

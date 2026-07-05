@@ -608,9 +608,7 @@ init_glad(const Platform& platform)
 
     assert(glad_load_gl_result != 0);
 
-    s32 framebuffer_width;
-    s32 framebuffer_height;
-    glfwGetFramebufferSize(platform.window.glfw_window, &framebuffer_width, &framebuffer_height);
+    const auto [framebuffer_width, framebuffer_height] = platform.get_framebuffer_size();
 
     glViewport(0, 0, framebuffer_width, framebuffer_height);
 }

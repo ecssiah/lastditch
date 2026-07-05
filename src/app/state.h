@@ -13,13 +13,9 @@
 class State
 {
 public:
-
     State();
 
-    b32 is_active;
-    b32 is_evolving;
-
-    u64 seed;
+    b32 evolving;
 
     Random random;
 
@@ -34,7 +30,4 @@ public:
     
     Screen screen;
     Render render;
-
-private:
-
 };

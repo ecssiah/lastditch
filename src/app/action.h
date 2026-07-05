@@ -8,8 +8,8 @@ constexpr s32 ACTION_QUEUE_CAPACITY = 1u << 6;
 constexpr s32 ACTION_MAX_PER_FRAME = 256;
 
 struct Actor;
-struct State;
-struct Platform;
+class State;
+class Platform;
 
 enum class ActionType : u8
 {
@@ -38,4 +38,4 @@ void action_add(ActionQueue& action_queue, const Action& action);
 void action_apply_queue(ActionQueue& action_queue, Actor& judge);
 void action_queue_actions(State& state, const Platform& platform);
 
-void action_update(State& state, const Platform& platform);
+void action_update(State& state, Platform& platform);

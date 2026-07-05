@@ -99,8 +99,6 @@ target_sources(
     src/core/random.h
     src/core/macros.h
     src/core/types.h
-    src/platform/input.cpp
-    src/platform/input.h
     src/platform/platform.cpp
     src/platform/platform.h
     src/platform/window.cpp

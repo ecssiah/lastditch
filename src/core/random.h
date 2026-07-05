@@ -3,25 +3,23 @@
 #include <random>
 #include "types.h"
 
+using namespace std;
+
 class Random
 {
+    std::mt19937 engine;
+
 public:
 
-    explicit Random(u32 seed)
-        : engine(seed)
+    explicit Random()
+        : engine{std::random_device{}()}
     {
     }
 
-    std::mt19937& get_engine()
-    {
-        return engine;
-    }
+    void seed_engine(u64 seed) { engine.seed(seed); }
+
+    mt19937& get_engine() { return engine; }
 
     float uniform(float min, float max);
     int uniform(int min, int max);
-
-private:
-
-    std::mt19937 engine;
-
 };

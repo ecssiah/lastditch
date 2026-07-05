@@ -170,13 +170,11 @@ screen_init(Screen& screen, const Platform& platform)
 
     screen.u_projection_location = glGetUniformLocation(screen.program_id, "u_projection_matrix");
 
-    s32 framebuffer_width; 
-    s32 framebuffer_height;
-    glfwGetFramebufferSize(platform.window.glfw_window, &framebuffer_width, &framebuffer_height);
+    const auto [framebuffer_width, framebuffer_height] = platform.get_framebuffer_size();
 
     const Mat4 shell_projection_matrix = get_orthographic_matrix(
         {0.0f, 0.0f}, 
-        {static_cast<f32>(framebuffer_width), static_cast<f32>(framebuffer_height)}, 
+        {static_cast<f32>(framebuffer_width), static_cast<f32>(framebuffer_height)},
         -1.0f, 
         1.0f
     );
