@@ -20,7 +20,7 @@ App::App()
     state.world.init(state.debug);
     state.population.init(state.work);
 
-    render_init(state.render, platform, state.population, state.world);
+    state.render.init(platform, state.population, state.world);
     screen_init(state.screen, platform);
 }
 
@@ -34,7 +34,7 @@ App::update()
     work_update(platform.get_delta_time(), state.population, state.work);
     state.world.update(state.population, platform.get_delta_time());
 
-    render_update(state.render, state.population, state.debug);
+    state.render.update(state.population, state.debug);
     screen_update(state.screen, state.population);
 
     active = platform.end_frame();

@@ -28,7 +28,7 @@ struct Action
 
 struct ActionQueue
 {
-    std::array<Action, ACTION_QUEUE_CAPACITY> action_array;
+    array<Action, ACTION_QUEUE_CAPACITY> action_array;
 
     s32 count;
     s32 current_index;

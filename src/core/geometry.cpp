@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+using namespace std;
+
 Vec2
 operator+(const Vec2& a, const Vec2& b)
 {
@@ -449,7 +451,7 @@ ibounds2_intersection(const IBounds2& a, const IBounds2& b)
     };
 }
 
-std::vector<IBounds2> 
+vector<IBounds2>
 ibounds2_subtract(const IBounds2& a, const IBounds2& b)
 {
     std::vector<IBounds2> bounds_vector;

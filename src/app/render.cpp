@@ -14,6 +14,8 @@
 #include "core/log.h"
 #include "core/types.h"
 
+using namespace std;
+
 const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE] =
 {
     // +X Face
@@ -100,8 +102,8 @@ check_gl_error(const char* label)
     }
 }
 
-static void 
-upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
+void
+Render::upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
 {
     if (debug_gpu_data.vao_id == 0)
     {
@@ -148,8 +150,8 @@ upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
     glBindVertexArray(0);
 }
 
-static void 
-load_texture_array_layer(const std::string& texture_path, const GLint layer_index)
+void
+Render::load_texture_array_layer(const string& texture_path, const GLint layer_index)
 {
     int width;
     int height;
@@ -181,8 +183,8 @@ load_texture_array_layer(const std::string& texture_path, const GLint layer_inde
     LOG_INFO("Loaded texture: %s", texture_path.c_str());
 }
 
-static void 
-load_block_texture_directory(VoxelRender& voxel_render)
+void
+Render::load_block_texture_directory()
 {
     glGenTextures(1, &voxel_render.texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
@@ -211,20 +213,20 @@ load_block_texture_directory(VoxelRender& voxel_render)
         assert(block_type_index >= 0);
         assert(block_type_index < block_type_count);
 
-        std::string texture_path =
-            std::format(
+        string texture_path =
+            format(
                 "assets/textures/block/{}",
                 config_entry.value
             );
         
         voxel_render.block_type_layer_array[block_type_index] = layer_index;
 
-        load_texture_array_layer(texture_path, layer_index);
+        load_texture_array_layer(texture_path, static_cast<GLint>(layer_index));
     }
 }
 
-static void 
-load_actor_texture_directory(ModelRender& model_render)
+void
+Render::load_actor_texture_directory()
 {
     glGenTextures(1, &model_render.texture_array_id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
@@ -255,18 +257,18 @@ load_actor_texture_directory(ModelRender& model_render)
         
         model_render.actor_type_layer_array[nation_type_index] = layer_index;
         
-        std::string texture_path =
-            std::format(
+        string texture_path =
+            format(
                 "assets/textures/model/{}",
                 config_entry.value
             );
 
-        load_texture_array_layer(texture_path, layer_index);
+        load_texture_array_layer(texture_path, static_cast<GLint>(layer_index));
     }
 }
 
-static ModelGpuData 
-load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
+ModelGpuData
+Render::load_model_gpu_data(const Actor& actor)
 {
     const s32 nation_type_index = static_cast<s32>(actor.nation_type);
     
@@ -274,17 +276,17 @@ load_model_gpu_data(const ModelRender& model_render, const Actor& actor)
         .texture_layer =  model_render.actor_type_layer_array[nation_type_index],
     };
     
-    std::ifstream ifs("assets/model/actor.obj");
+    ifstream ifs("assets/model/actor.obj");
     
     assert(ifs.is_open());
     
-    std::string line;
+    string line;
 
-    std::vector<Vec3> position_vector;
-    std::vector<Vec3> normal_vector;
-    std::vector<Vec2> uv_vector;
+    vector<Vec3> position_vector;
+    vector<Vec3> normal_vector;
+    vector<Vec2> uv_vector;
     
-    while (std::getline(ifs, line))
+    while (getline(ifs, line))
     {
         if (line.starts_with("v "))
         {
@@ -630,11 +632,11 @@ init_viewpoint(Viewpoint& viewpoint)
     );
 }
 
-static void 
-init_debug_render(DebugRender& debug_render, Viewpoint& viewpoint)
+void
+Render::init_debug_render()
 {
-    const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
-    const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
+    const GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
+    const GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
 
     debug_render.program_id = glCreateProgram();
 
@@ -650,7 +652,7 @@ init_debug_render(DebugRender& debug_render, Viewpoint& viewpoint)
     debug_render.u_model_location = glGetUniformLocation(debug_render.program_id, "u_model_matrix");
 
     glUniformMatrix4fv(
-        debug_render.u_projection_location, 
+        debug_render.u_projection_location,
         1,
         GL_FALSE,
         viewpoint.projection_matrix[0]
@@ -660,11 +662,11 @@ init_debug_render(DebugRender& debug_render, Viewpoint& viewpoint)
     glDeleteShader(frag_shader);
 }
 
-static void 
-init_voxel_render(VoxelRender& voxel_render, Viewpoint& viewpoint, const World& world)
+void
+Render::init_voxel_render(const World& world)
 {
-    const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
-    const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
+    const GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
+    const GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
 
     voxel_render.program_id = glCreateProgram();
 
@@ -712,7 +714,7 @@ init_voxel_render(VoxelRender& voxel_render, Viewpoint& viewpoint, const World& 
 
     voxel_render.block_config_data = config_load("config/block.ini");
 
-    load_block_texture_directory(voxel_render);
+    load_block_texture_directory();
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
@@ -735,11 +737,11 @@ init_voxel_render(VoxelRender& voxel_render, Viewpoint& viewpoint, const World& 
     }
 }
 
-static void 
-init_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Population& population)
+void
+Render::init_model_render(const Population& population)
 {
-    const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
-    const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
+    const GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
+    const GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
 
     model_render.program_id = glCreateProgram();
 
@@ -756,7 +758,7 @@ init_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Populat
 
     model_render.actor_config_data = config_load("config/actor.ini");
 
-    load_actor_texture_directory(model_render);
+    load_actor_texture_directory();
 
     glUseProgram(model_render.program_id);
 
@@ -783,9 +785,9 @@ init_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Populat
     model_render.model_gpu_data_vector.resize(ACTION_MAX);
 
     population.for_each_active_actor(
-        [&model_render](const Actor& actor)
+        [this](const Actor& actor)
         {
-            const ModelGpuData model_gpu_data = load_model_gpu_data(model_render, actor);
+            const ModelGpuData model_gpu_data = load_model_gpu_data(actor);
 
             model_render.model_gpu_data_vector[actor.actor_id] = model_gpu_data;
 
@@ -794,8 +796,8 @@ init_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Populat
     );
 }
 
-static void 
-update_viewpoint(Viewpoint& viewpoint, const Population& population)
+void
+Render::update_viewpoint(const Population& population)
 {
     const Actor& judge = population.get_judge();
 
@@ -807,8 +809,8 @@ update_viewpoint(Viewpoint& viewpoint, const Population& population)
     viewpoint.rotation = judge.rotation;
 }
 
-static void 
-update_debug_render(DebugRender& debug_render, Viewpoint& viewpoint, const Debug& debug)
+void
+Render::update_debug_render(const Debug& debug)
 {
     glUseProgram(debug_render.program_id);
 
@@ -873,8 +875,8 @@ update_debug_render(DebugRender& debug_render, Viewpoint& viewpoint, const Debug
     glBindVertexArray(0);
 }
 
-static void 
-update_voxel_render(const VoxelRender& voxel_render, Viewpoint& viewpoint)
+void
+Render::update_voxel_render()
 {
     glUseProgram(voxel_render.program_id);
 
@@ -914,8 +916,8 @@ update_voxel_render(const VoxelRender& voxel_render, Viewpoint& viewpoint)
     }
 }
 
-static void 
-update_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Population& population)
+void
+Render::update_model_render(const Population& population)
 {
     glUseProgram(model_render.program_id);
 
@@ -938,7 +940,7 @@ update_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Popul
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
 
     population.for_each_active_actor(
-        [&model_render](const Actor& actor)
+        [this](const Actor& actor)
         {
             const ModelGpuData& model_gpu_data = model_render.model_gpu_data_vector[actor.actor_id];
 
@@ -963,38 +965,38 @@ update_model_render(ModelRender& model_render, Viewpoint& viewpoint, const Popul
 }
 
 void 
-render_init(Render& render, const Platform& platform, const Population& population, const World& world)
+Render::init(const Platform& platform, const Population& population, const World& world)
 {
     init_glad(platform);
 
-    init_viewpoint(render.viewpoint);
+    init_viewpoint(viewpoint);
 
-    init_debug_render(render.debug_render, render.viewpoint);
-    init_voxel_render(render.voxel_render, render.viewpoint, world);
-    init_model_render(render.model_render, render.viewpoint, population);
+    init_debug_render();
+    init_voxel_render(world);
+    init_model_render(population);
 }
 
 void 
-render_update(Render& render, const Population& population, const Debug& debug)
+Render::update(const Population& population, const Debug& debug)
 {
     glClearColor(CLEAR_COLOR[0], CLEAR_COLOR[1], CLEAR_COLOR[2], CLEAR_COLOR[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    update_viewpoint(render.viewpoint, population);
+    update_viewpoint(population);
 
-    update_debug_render(render.debug_render, render.viewpoint, debug);
-    update_voxel_render(render.voxel_render, render.viewpoint);
-    update_model_render(render.model_render, render.viewpoint, population);
+    update_debug_render(debug);
+    update_voxel_render();
+    update_model_render(population);
 }
 
 GLuint 
-render_compile_shader(const GLenum type, const char* filepath)
+Render::compile_shader(const GLenum type, const char* filepath)
 {
-    std::ifstream ifs(filepath);
+    ifstream ifs(filepath);
     
     assert(ifs.is_open());
     
-    const std::string source_string = std::string(
+    const string source_string = string(
         std::istreambuf_iterator(ifs),
         std::istreambuf_iterator<char>()
     );

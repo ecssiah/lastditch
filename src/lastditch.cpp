@@ -1,8 +1,4 @@
 #include "app/app.h"
-#include "platform/platform.h"
-
-using namespace std;
-
 
 int
 main()

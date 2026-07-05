@@ -1,8 +1,9 @@
 #include "app/actor.h"
 
 #include <cassert>
-
 #include "app/world.h"
+
+using namespace std;
 
 const char* actor_type_string_array[ACTOR_TYPE_COUNT] =
 {
@@ -10,7 +11,7 @@ const char* actor_type_string_array[ACTOR_TYPE_COUNT] =
 };
 
 s32 
-actor_type_index_from_string(const std::string& actor_type_string)
+actor_type_index_from_string(const string& actor_type_string)
 {
     for (s32 actor_type_index = 0; actor_type_index < ACTOR_TYPE_COUNT; ++actor_type_index)
     {

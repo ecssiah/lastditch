@@ -7,9 +7,11 @@
 #include <filesystem>
 #include <string>
 
-static std::ofstream            ld_log_file;
-static std::filesystem::path    ld_log_directory;
-static std::string              ld_current_day_string;
+using namespace std;;
+
+static ofstream            ld_log_file;
+static filesystem::path    ld_log_directory;
+static string              ld_current_day_string;
 
 constexpr const char*
 log_level_to_string(const LogLevel level)
@@ -31,7 +33,7 @@ log_init()
 {
     ld_log_directory = "logs";
 
-    std::filesystem::create_directories(ld_log_directory);
+    filesystem::create_directories(ld_log_directory);
 
     LOG_INFO("\n\nLOG INIT\n");
 }

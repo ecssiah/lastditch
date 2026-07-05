@@ -2,12 +2,13 @@
 
 #include <cassert>
 #include <fstream>
-
 #include "core/log.h"
 #include "core/types.h"
 
+using namespace std;
+
 static void 
-strip_newline(std::string& line)
+strip_newline(string& line)
 {
     while (!line.empty() && (line.back() == '\n' || line.back() == '\r'))
     {
@@ -16,7 +17,7 @@ strip_newline(std::string& line)
 }
 
 static b32 
-parse_line(ConfigEntry& config_entry, std::string& line)
+parse_line(ConfigEntry& config_entry, string& line)
 {
     strip_newline(line);
 
@@ -27,7 +28,7 @@ parse_line(ConfigEntry& config_entry, std::string& line)
 
     const size_t equal_sign_index = line.find('=');
     
-    if (equal_sign_index == std::string::npos)
+    if (equal_sign_index == string::npos)
     {
         LOG_WARN("Invalid config: %s", line.c_str());
 
@@ -41,15 +42,15 @@ parse_line(ConfigEntry& config_entry, std::string& line)
 }
 
 ConfigData 
-config_load(const std::string& config_path)
+config_load(const string& config_path)
 {
     ConfigData config_data = {};
 
-    std::ifstream ifs(config_path);
+    ifstream ifs(config_path);
     
     assert(ifs.is_open());
 
-    std::string line;
+    string line;
 
     while (getline(ifs, line))
     {

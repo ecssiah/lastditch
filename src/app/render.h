@@ -36,7 +36,7 @@ struct VoxelGpuData
     GLuint vao_id;
     GLuint vbo_id;
 
-    std::vector<VoxelVertex> voxel_vertex_vector;
+    vector<VoxelVertex> voxel_vertex_vector;
 };
 
 struct ModelVertex
@@ -56,7 +56,7 @@ struct ModelGpuData
     GLuint vao_id;
     GLuint vbo_id;
 
-    std::vector<ModelVertex> model_vertex_vector;
+    vector<ModelVertex> model_vertex_vector;
 };
 
 struct SectorQuad
@@ -71,7 +71,7 @@ struct SectorMesh
 {
     s32 sector_index;
 
-    std::vector<SectorQuad> sector_quad_vector;
+    vector<SectorQuad> sector_quad_vector;
 };
 
 struct TextVertex
@@ -91,7 +91,7 @@ struct DebugGpuData
     GLuint vao_id;
     GLuint vbo_id;
 
-    std::vector<DebugVertex> debug_vertex_vector;
+    vector<DebugVertex> debug_vertex_vector;
 };
 
 struct DebugRender
@@ -102,7 +102,7 @@ struct DebugRender
     GLint u_view_location;
     GLint u_model_location;
 
-    std::vector<DebugGpuData> debug_gpu_data_vector;
+    vector<DebugGpuData> debug_gpu_data_vector;
 };
 
 struct VoxelRender
@@ -124,8 +124,8 @@ struct VoxelRender
 
     u8 block_type_layer_array[block_type_count];
 
-    std::vector<SectorMesh> sector_mesh_vector;
-    std::vector<VoxelGpuData> voxel_gpu_data_vector;
+    vector<SectorMesh> sector_mesh_vector;
+    vector<VoxelGpuData> voxel_gpu_data_vector;
 };
 
 struct ModelRender
@@ -146,19 +146,37 @@ struct ModelRender
 
     u8 actor_type_layer_array[ACTOR_TYPE_COUNT];
 
-    std::vector<ModelGpuData> model_gpu_data_vector;
+    vector<ModelGpuData> model_gpu_data_vector;
 };
 
-struct Render
+class Render
 {
+    void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
+    void load_texture_array_layer(const string& texture_path, const GLint layer_index);
+
+    void load_block_texture_directory();
+    void load_actor_texture_directory();
+
+    ModelGpuData load_model_gpu_data(const Actor& actor);
+
+    void init_debug_render();
+    void init_voxel_render(const World& world);
+    void init_model_render(const Population& population);
+
+    void update_viewpoint(const Population& population);
+    void update_debug_render(const Debug& debug);
+    void update_voxel_render();
+    void update_model_render(const Population& population);
+
+public:
     Viewpoint viewpoint;
-    
+
     DebugRender debug_render;
     VoxelRender voxel_render;
     ModelRender model_render;
+
+    static GLuint compile_shader(GLenum type, const char* filepath);
+
+    void init(const Platform& platform, const Population& population, const World& world);
+    void update(const Population& population, const Debug& debug);
 };
-
-GLuint render_compile_shader(GLenum type, const char* filepath);
-
-void render_init(Render& render, const Platform& platform, const Population& population, const World& world);
-void render_update(Render& render, const Population& population, const Debug& debug);

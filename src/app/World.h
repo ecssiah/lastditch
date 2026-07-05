@@ -186,7 +186,7 @@ section_string_array =
     FOR_LIST_SECTION(DEFINE_ENUM_STRINGS)
 };
 
-inline constexpr std::array<IVec2, section_count> 
+inline constexpr std::array<IVec2, section_count>
 section_origin_array =
 {
     {
@@ -318,7 +318,7 @@ section_origin_array =
     }
 };
 
-inline constexpr std::array<IVec2, section_count> 
+inline constexpr std::array<IVec2, section_count>
 section_size_array =
 {
     {

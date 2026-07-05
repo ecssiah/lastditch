@@ -11,9 +11,9 @@
 #include "app/render.h"
 
 static void 
-load_textures(Screen& screen, const std::string& textures_path)
+load_textures(Screen& screen, const string& textures_path)
 {
-    const std::string font_path = std::format("{}/null_terminator.png", textures_path);
+    const string font_path = format("{}/null_terminator.png", textures_path);
 
     s32 width;
     s32 height;
@@ -77,7 +77,7 @@ load_textures(Screen& screen, const std::string& textures_path)
 }
 
 static void 
-draw_text(const Screen& screen, const std::string& text, f32 x, f32 y)
+draw_text(const Screen& screen, const string& text, f32 x, f32 y)
 {
     constexpr f32 scale = 2.0f;
 
@@ -90,7 +90,7 @@ draw_text(const Screen& screen, const std::string& text, f32 x, f32 y)
     s32 vertex_count = 0;
     const size_t vertex_max = text.length() * 6;
 
-    std::vector<TextVertex> text_vertex_array = std::vector<TextVertex>(vertex_max);
+    vector<TextVertex> text_vertex_array = vector<TextVertex>(vertex_max);
 
     f32 cursor_x = x;
 
@@ -152,8 +152,8 @@ draw_text(const Screen& screen, const std::string& text, f32 x, f32 y)
 void 
 screen_init(Screen& screen, const Platform& platform)
 {
-    const GLuint vert_shader = render_compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
-    const GLuint frag_shader = render_compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
+    const GLuint vert_shader = Render::compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
+    const GLuint frag_shader = Render::compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
 
     screen.program_id = glCreateProgram();
 
@@ -230,31 +230,31 @@ draw_debug_info(Screen& screen, const Population& population)
     const IVec3 cell_coordinate = World::position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z);
     const IVec2 sector_coordinate = World::cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y);
 
-    const std::string position_text =
-        std::format(
+    const string position_text =
+        format(
             "POS {:.1f} {:.1f} {:.1f}",
             judge.position.x,
             judge.position.y,
             judge.position.z
         );
     
-    const std::string velocity_text =
-        std::format(
+    const string velocity_text =
+        format(
         "VEL {:.1f} {:.1f} {:.1f}",
             judge.velocity.x,
             judge.velocity.y,
             judge.velocity.z
         );
     
-    std::string cell_coordinate_text = "CEL - - -";
-    std::string sector_coordinate_text = "SEC - -";
-    std::string floor_text = "FLR -";
-    std::string movement_type_text;
+    string cell_coordinate_text = "CEL - - -";
+    string sector_coordinate_text = "SEC - -";
+    string floor_text = "FLR -";
+    string movement_type_text;
     
     if (World::cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
     {
         cell_coordinate_text =
-            std::format(
+            format(
                 "CEL {} {} {}",
                 cell_coordinate.x,
                 cell_coordinate.y,
@@ -265,7 +265,7 @@ draw_debug_info(Screen& screen, const Population& population)
     if (World::sector_coordinate_is_valid(sector_coordinate.x, sector_coordinate.y))
     {  
         sector_coordinate_text =
-            std::format(
+            format(
                 "SEC {} {}",
                 sector_coordinate.x,
                 sector_coordinate.y
@@ -280,11 +280,11 @@ draw_debug_info(Screen& screen, const Population& population)
         {
             if (floor_number < TOWER_FLOOR_COUNT)
             {
-                floor_text = std::format("FLR T-{}", floor_number);
+                floor_text = format("FLR T-{}", floor_number);
             }
             else
             {
-                floor_text = std::format("FLR R-{}",floor_number);
+                floor_text = format("FLR R-{}",floor_number);
             }
         }
     }

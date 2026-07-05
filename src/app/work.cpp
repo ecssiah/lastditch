@@ -4,6 +4,8 @@
 #include "app/actor.h"
 #include "app/population.h"
 
+using namespace std;;
+
 void 
 execute_wander(Population& population, Task& act, const f32 delta_time)
 {
@@ -17,8 +19,8 @@ execute_wander(Population& population, Task& act, const f32 delta_time)
     }
     else
     {
-        static std::mt19937 rng(std::random_device{}());
-        static std::uniform_real_distribution<f32> angle_dist(0.0f, 360.0f);
+        static mt19937 rng(random_device{}());
+        static uniform_real_distribution<f32> angle_dist(0.0f, 360.0f);
 
         const f32 direction_angle = angle_dist(rng);
 
@@ -85,7 +87,7 @@ work_init(Work& work)
     for (s32 pool_id = 0; pool_id < TASK_MASK_COUNT; ++pool_id)
     {
         act_pool.free_array[pool_id] = pool_id;
-        act_pool.active_lookup[pool_id] = std::numeric_limits<u32>::max();
+        act_pool.active_lookup[pool_id] = numeric_limits<u32>::max();
     }
 }
 

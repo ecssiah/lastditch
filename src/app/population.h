@@ -27,9 +27,13 @@ public:
     void quit();
 
     Actor& get_judge();
+
+    [[nodiscard]]
     const Actor& get_judge() const;
 
     Actor& get_actor(s32 actor_id);
+
+    [[nodiscard]]
     const Actor& get_actor(s32 actor_id) const;
 
     template <typename Func>

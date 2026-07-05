@@ -10,6 +10,8 @@
 #include "app/direction.h"
 #include "app/population.h"
 
+using namespace std;
+
 World::World()
     :
     second_count(0),
@@ -300,7 +302,7 @@ World::get_stride(const Direction direction)
     }
 
     assert(false);
-    std::unreachable();
+    unreachable();
 }
 
 s32
@@ -310,7 +312,7 @@ World::get_floor(const s32 z)
 }
 
 s32
-World::block_type_index_from_string(const std::string& block_type_string)
+World::block_type_index_from_string(const string& block_type_string)
 {
     for (s32 block_type_index = 0; block_type_index < block_type_count; ++block_type_index)
     {
@@ -467,7 +469,7 @@ World::place_area(Area& area)
 
         if (ibounds2_overlaps(area_test.bounds, area.bounds))
         {
-            const std::vector<IBounds2> bounds_vector = ibounds2_subtract(area_test.bounds, area.bounds);
+            const vector<IBounds2> bounds_vector = ibounds2_subtract(area_test.bounds, area.bounds);
 
             for (const IBounds2 bounds : bounds_vector)
             {
@@ -1478,7 +1480,7 @@ World::calculate_area_edges(s32 floor_number)
             if (area_overlap_size.x > 0 && area_overlap_size.y > 0)
             {
                 AreaEdge area_edge = {
-                    .edge_id = std::numeric_limits<s32>::max(),
+                    .edge_id = numeric_limits<s32>::max(),
                     .area_a_id = area_id_left,
                     .area_b_id = area_id_right,
                     .area_a_direction = area_overlap.direction,

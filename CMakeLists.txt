@@ -25,8 +25,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4)
 
 add_executable(
     lastditch
-        src/lastditch.cpp
-        src/app/state.cpp
+    src/lastditch.cpp
 )
 
 target_include_directories(
@@ -84,6 +83,7 @@ target_sources(
     src/app/screen.cpp
     src/app/screen.h
     src/app/state.h
+    src/app/state.cpp
     src/app/viewpoint.h
     src/app/work.cpp
     src/app/work.h
