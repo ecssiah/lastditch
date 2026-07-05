@@ -536,9 +536,9 @@ World::construct_tower()
             s32 north_position_z;
             s32 north_size_z;
 
-            const s32 north_offset = random.uniform(0, FLOOR_SIZE_Z - 2);
+            const s32 north_offset = random.uniform(0, FLOOR_SIZE_Z - 3);
 
-            if (random.uniform(0, 2) == 0)
+            if (random.uniform(0, 1) == 0)
             {
                 north_position_z = cell_z + 1;
                 north_size_z = north_offset;
@@ -558,9 +558,9 @@ World::construct_tower()
             s32 south_position_z;
             s32 south_size_z;
 
-            const s32 south_offset = random.uniform(0, FLOOR_SIZE_Z - 2);
+            const s32 south_offset = random.uniform(0, FLOOR_SIZE_Z - 3);
 
-            if (random.uniform(0, 2) == 0)
+            if (random.uniform(0, 1) == 0)
             {
                 south_position_z = cell_z + 1;
                 south_size_z = south_offset;
@@ -583,9 +583,9 @@ World::construct_tower()
             s32 east_position_z;
             s32 east_size_z;
 
-            const s32 east_offset = random.uniform(0, FLOOR_SIZE_Z - 2);
+            const s32 east_offset = random.uniform(0, FLOOR_SIZE_Z - 3);
 
-            if (random.uniform(0, 2) == 0)
+            if (random.uniform(0, 1) == 0)
             {
                 east_position_z = cell_z + 1;
                 east_size_z = east_offset;
@@ -605,9 +605,9 @@ World::construct_tower()
             s32 west_position_z;
             s32 west_size_z;
 
-            const s32 west_offset = random.uniform(0, FLOOR_SIZE_Z - 2);
+            const s32 west_offset = random.uniform(0, FLOOR_SIZE_Z - 3);
 
-            if (random.uniform(0, 2) == 0)
+            if (random.uniform(0, 1) == 0)
             {
                 west_position_z = cell_z + 1;
                 west_size_z = west_offset;
@@ -1741,13 +1741,13 @@ World::place_content(s32 floor_number)
         for (s32 stack_index = 0; stack_index < stack_count; ++stack_index)
         {
             const IVec2 stack_position = {
-                area.bounds.min.x + 1 + random.uniform(0, area_bounds_size.x - 2),
-                area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 2)
+                area.bounds.min.x + 1 + random.uniform(0, area_bounds_size.x - 3),
+                area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 3)
             };
 
             const s32 stack_size_z = random.uniform(0, FLOOR_SIZE_Z - 6);
 
-            const s32 block_type_index = random.uniform(0, static_cast<s32>(content_block_type_vector.size()));
+            const s32 block_type_index = random.uniform(0, static_cast<s32>(content_block_type_vector.size()) - 1);
             const BlockType content_block_type = content_block_type_vector[block_type_index];
 
             set_block_type_cube(

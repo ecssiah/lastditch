@@ -5,7 +5,6 @@
 #include <fstream>
 #include <glad/gl.h>
 #include <stb_image.h>
-
 #include "app/debug.h"
 #include "app/population.h"
 #include "app/viewpoint.h"

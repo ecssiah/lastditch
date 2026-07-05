@@ -98,21 +98,21 @@ Population::init_agents(Work& work)
     {
         for (s32 agent_index = 0; agent_index < AGENT_INITIAL_COUNT; ++agent_index)
         {
-            const s32 nation_type_index = random.uniform(0, NATION_TYPE_COUNT);
+            const s32 nation_type_index = random.uniform(0, NATION_TYPE_COUNT - 1);
             
             const auto nation_type = static_cast<NationType>(nation_type_index);
             const Nation& nation = nation_array[nation_type_index];
 
             const Vec3 position{
-                static_cast<f32>(nation.home_coordinate.x - 6 + random.uniform(0, 12)),
-                static_cast<f32>(nation.home_coordinate.y - 6 + random.uniform(0, 12)),
+                static_cast<f32>(nation.home_coordinate.x - 6 + random.uniform(0, 11)),
+                static_cast<f32>(nation.home_coordinate.y - 6 + random.uniform(0, 11)),
                 static_cast<f32>(nation.home_coordinate.z + 4),
             };
 
             const Vec3 rotation = {
                 0.0f, 
                 0.0f, 
-                static_cast<f32>(random.uniform(0, 361))
+                static_cast<f32>(random.uniform(0, 360))
             };
 
             Actor agent{};
@@ -134,7 +134,7 @@ Population::init_agents(Work& work)
 
             TaskState act_state{};
             act_state.wander = {
-                .tick = random.uniform(0, 501),
+                .tick = random.uniform(0, 500),
                 .tick_limit = 500,
             };
 

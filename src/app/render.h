@@ -153,8 +153,6 @@ class Render
 {
     static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
 
-
-
     void load_texture_array_layer(const string& texture_path, GLint layer_index);
 
     void load_block_texture_directory();
