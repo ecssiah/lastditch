@@ -62,20 +62,19 @@ Population::get_actor(s32 actor_id) const
 void
 Population::init_judge()
 {
-    Actor judge = {
-        .actor_type = ActorType::Judge,
-        .nation_type = NationType::Lion,
-        .movement_type = MovementType::Ground,
-        .position = {WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f},
-        .rotation = {0.0f, 0.0f, 90.0f},
-        .rotation_target = {0.0f, 0.0f, 90.0f},
-        .is_grounded = false,
-        .speed = JUDGE_DEFAULT_GROUND_SPEED,
-        .velocity = {0.0f, 0.0f, 0.0f},
-        .box_collider = {
-            .collision_enabled = true,
-            .radius = {0.30f, 0.30f, 0.90f},
-        },
+    Actor judge{};
+    judge.actor_type = ActorType::Judge;
+    judge.nation_type = NationType::Lion;
+    judge.movement_type = MovementType::Ground;
+    judge.position = {WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f};
+    judge.rotation = {0.0f, 0.0f, 90.0f};
+    judge.rotation_target = {0.0f, 0.0f, 90.0f};
+    judge.is_grounded = false;
+    judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
+    judge.velocity = {0.0f, 0.0f, 0.0f};
+    judge.box_collider = {
+        .collision_enabled = true,
+        .radius = {0.30f, 0.30f, 0.90f},
     };
 
     actor_add(actor_pool, judge);
@@ -99,46 +98,44 @@ Population::init_agents(Work& work)
     {
         for (s32 agent_index = 0; agent_index < AGENT_INITIAL_COUNT; ++agent_index)
         {
-            const s32 nation_type_index = rand() % NATION_TYPE_COUNT;
+            const s32 nation_type_index = random.uniform(0, NATION_TYPE_COUNT);
             
-            const NationType nation_type = static_cast<NationType>(nation_type_index);
+            const auto nation_type = static_cast<NationType>(nation_type_index);
             const Nation& nation = nation_array[nation_type_index];
 
-            const Vec3 position = {
-                static_cast<f32>(nation.home_coordinate.x) - 6 + rand() % 12,
-                static_cast<f32>(nation.home_coordinate.y) - 6 + rand() % 12,
-                static_cast<f32>(nation.home_coordinate.z) + 4,
+            const Vec3 position{
+                static_cast<f32>(nation.home_coordinate.x - 6 + random.uniform(0, 12)),
+                static_cast<f32>(nation.home_coordinate.y - 6 + random.uniform(0, 12)),
+                static_cast<f32>(nation.home_coordinate.z + 4),
             };
 
             const Vec3 rotation = {
                 0.0f, 
                 0.0f, 
-                static_cast<f32>(rand() % 360)
+                static_cast<f32>(random.uniform(0, 361))
             };
 
-            Actor agent = {
-                .actor_type = ActorType::Agent,
-                .nation_type = nation_type,
-                .movement_type = MovementType::Ground,
-                .position = position,
-                .rotation = rotation,
-                .rotation_target = rotation,
-                .is_grounded = false,
-                .speed = AGENT_DEFAULT_GROUND_SPEED,
-                .velocity = vec3_broadcast(0.0f),
-                .box_collider = {
-                    .collision_enabled = true,
-                    .radius = {0.40f, 0.40f, 0.90f},
-                },
+            Actor agent{};
+            agent.actor_type = ActorType::Agent;
+            agent.nation_type = nation_type;
+            agent.movement_type = MovementType::Ground;
+            agent.position = position;
+            agent.rotation = rotation;
+            agent.rotation_target = rotation;
+            agent.is_grounded = false;
+            agent.speed = AGENT_DEFAULT_GROUND_SPEED;
+            agent.velocity = vec3_broadcast(0.0f);
+            agent.box_collider = {
+                .collision_enabled = true,
+                .radius = {0.40f, 0.40f, 0.90f},
             };
 
             actor_add(actor_pool, agent);
 
-            const TaskState act_state = {
-                .wander = {
-                    .tick = rand() % 500,
-                    .tick_limit = 500,
-                }
+            TaskState act_state{};
+            act_state.wander = {
+                .tick = random.uniform(0, 501),
+                .tick_limit = 500,
             };
 
             work_add_task(work, agent, TaskType::wander, act_state);

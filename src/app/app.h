@@ -16,5 +16,6 @@ public:
     void update();
     void quit();
 
+    [[nodiscard]]
     b32 is_active() const { return active; }
 };

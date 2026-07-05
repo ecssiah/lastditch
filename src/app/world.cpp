@@ -1747,7 +1747,7 @@ World::place_content(s32 floor_number)
 
             const s32 stack_size_z = random.uniform(0, FLOOR_SIZE_Z - 6);
 
-            const s32 block_type_index = random.uniform(0, content_block_type_vector.size());
+            const s32 block_type_index = random.uniform(0, static_cast<s32>(content_block_type_vector.size()));
             const BlockType content_block_type = content_block_type_vector[block_type_index];
 
             set_block_type_cube(
@@ -1762,23 +1762,22 @@ World::place_content(s32 floor_number)
 void
 World::draw_debug_info(Debug& debug)
 {
-    constexpr Vec3 red = {1.0f, 0.0f, 0.0f};
-    constexpr Vec3 green = {0.0f, 1.0f, 0.0f};
-    
     const AreaPool& area_pool = area_pool_array[DEBUG_FLOOR_NUMBER];
 
     for (s32 pool_id = 0; pool_id < area_pool.active_count; ++pool_id)
     {
+        constexpr Vec3 red{1.0f, 0.0f, 0.0f};
+
         const s32 area_id = area_pool.active_array[pool_id];
         const Area& area = area_pool.area_array[area_id];
 
-        const Vec3 area_debug_min = {
+        const Vec3 area_debug_min{
             static_cast<f32>(area.bounds.min.x), 
             static_cast<f32>(area.bounds.min.y), 
             static_cast<f32>(area.floor_number * FLOOR_SIZE_Z)
         };
         
-        const Vec3 area_debug_max = {
+        const Vec3 area_debug_max{
             static_cast<f32>(area.bounds.max.x), 
             static_cast<f32>(area.bounds.max.y), 
             static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
@@ -1788,12 +1787,14 @@ World::draw_debug_info(Debug& debug)
 
         for (s32 index = 0; index < static_cast<s32>(area.edge_id_count); ++index)
         {
+            constexpr Vec3 green{0.0f, 1.0f, 0.0f};
+
             const s32 edge_id = area.edge_id_array[index];
             const AreaEdge& area_edge = edge_pool.edge_array[edge_id];
 
             const IVec2 area_overlap_bounds_size = ibounds2_size(area_edge.area_overlap.bounds);
             
-            const IVec3 door_position = {
+            const IVec3 door_position{
                 area_edge.area_overlap.bounds.min.x + area_overlap_bounds_size.x / 2,
                 area_edge.area_overlap.bounds.min.y + area_overlap_bounds_size.y / 2,
                 area.floor_number * FLOOR_SIZE_Z + 1,
