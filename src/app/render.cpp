@@ -822,13 +822,13 @@ Render::update_debug_render(const Debug& debug)
 
     DebugGpuData debug_gpu_data = {};
     
-    for (const DebugLine& debug_line : debug.line_vector)
+    for (const DebugLine& debug_line : debug.get_debug_line_vector())
     {
         const DebugVertex debug_vertex_a = {
             {
-                debug_line.position_a.x, 
-                debug_line.position_a.y, 
-                debug_line.position_a.z
+                debug_line.a.x,
+                debug_line.a.y,
+                debug_line.a.z
             },
             {
                 debug_line.color.x, 
@@ -839,9 +839,9 @@ Render::update_debug_render(const Debug& debug)
 
         const DebugVertex debug_vertex_b = {
             {
-                debug_line.position_b.x, 
-                debug_line.position_b.y, 
-                debug_line.position_b.z
+                debug_line.b.x,
+                debug_line.b.y,
+                debug_line.b.z
             },
             {
                 debug_line.color.x, 

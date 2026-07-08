@@ -72,8 +72,6 @@ target_sources(
     src/app/direction.h
     src/app/nation.cpp
     src/app/nation.h
-    src/app/navigation.cpp
-    src/app/navigation.h
     src/app/physics.cpp
     src/app/physics.h
     src/app/population.cpp
@@ -101,8 +99,6 @@ target_sources(
     src/core/types.h
     src/platform/platform.cpp
     src/platform/platform.h
-    src/platform/window.cpp
-    src/platform/window.h
 )
 
 target_compile_definitions(

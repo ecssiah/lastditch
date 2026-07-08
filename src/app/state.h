@@ -2,7 +2,6 @@
 
 #include "app/action.h"
 #include "app/debug.h"
-#include "app/navigation.h"
 #include "app/population.h"
 #include "app/world.h"
 #include "app/screen.h"
@@ -23,8 +22,7 @@ public:
     Population population;
     
     Work work;
-    Navigation navigation;
-    
+
     Screen screen;
     Render render;
 };

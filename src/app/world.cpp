@@ -1783,7 +1783,7 @@ World::draw_debug_info(Debug& debug)
             static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
         };
         
-        debug_add_box(debug, area_debug_min, area_debug_max, red);
+        debug.add_box(area_debug_min, area_debug_max, red);
 
         for (s32 index = 0; index < static_cast<s32>(area.edge_id_count); ++index)
         {
@@ -1803,8 +1803,7 @@ World::draw_debug_info(Debug& debug)
             const Vec3 edge_debug_min = ivec3_to_vec3(door_position);
             const Vec3 edge_debug_max = ivec3_to_vec3(door_position + ivec3_broadcast(1));
             
-            debug_add_box(
-                debug,
+            debug.add_box(
                 edge_debug_min,
                 edge_debug_max,
                 green

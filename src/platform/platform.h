@@ -4,7 +4,7 @@
 
 #include "core/macros.h"
 #include "core/types.h"
-#include "platform/window.h"
+#include "GLFW/glfw3.h"
 
 using namespace std;
 

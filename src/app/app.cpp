@@ -8,10 +8,9 @@ App::App()
 {
     Log::init();
 
-    debug_init(state.debug);
+    state.debug.init();
 
     state.work.init();
-    navigation_init(state.navigation);
 
     state.world.init(state.debug);
     state.population.init(state.work);
@@ -39,7 +38,7 @@ App::update()
 void
 App::quit()
 {
-    debug_quit(state.debug);
+    state.debug.quit();
 
     state.population.quit();
     state.world.quit();
