@@ -8,24 +8,29 @@ using namespace std;;
 
 Work::Work()
     :
-    act_pool{}
+    task_pool{}
 {
-    act_pool.active_count = 0;
-    act_pool.free_count = TASK_MASK_COUNT;
+
+}
+
+void Work::init()
+{
+    task_pool.active_count = 0;
+    task_pool.free_count = TASK_MASK_COUNT;
 
     for (s32 pool_id = 0; pool_id < TASK_MASK_COUNT; ++pool_id)
     {
-        act_pool.free_array[pool_id] = pool_id;
-        act_pool.active_lookup[pool_id] = numeric_limits<s32>::max();
+        task_pool.free_array[pool_id] = pool_id;
+        task_pool.active_lookup[pool_id] = numeric_limits<s32>::max();
     }
 }
 
 void 
-Work::execute_wander(Population& population, Task& act, const f32 delta_time)
+Work::execute_wander(Population& population, Task& task, const f32 delta_time)
 {
-    Actor& actor = population.get_actor(act.actor_id);
+    Actor& actor = population.get_actor(task.actor_id);
 
-    WanderState& wander_state = act.task_state.wander;
+    WanderState& wander_state = task.task_state.wander;
 
     if (wander_state.tick < wander_state.tick_limit)
     {
@@ -60,25 +65,25 @@ Work::execute_wander(Population& population, Task& act, const f32 delta_time)
 }
 
 void
-Work::execute_seek(Population& population, Task& act, f32 delta_time)
+Work::execute_seek(Population& population, Task& task, f32 delta_time)
 {
 }
 
 s32 
 Work::add_task(Actor& actor, const TaskType task_type, const TaskState task_state)
 {
-    const s32 act_id = act_pool.free_array[--act_pool.free_count];
+    const s32 act_id = task_pool.free_array[--task_pool.free_count];
 
-    Task& act = act_pool.task_array[act_id];
+    Task& task = task_pool.task_array[act_id];
 
-    act.actor_id = actor.actor_id;
-    act.task_type = task_type;
-    act.task_state = task_state;
+    task.actor_id = actor.actor_id;
+    task.task_type = task_type;
+    task.task_state = task_state;
 
-    act_pool.active_array[act_pool.active_count] = act_id;
-    act_pool.active_lookup[act_id] = act_pool.active_count;
+    task_pool.active_array[task_pool.active_count] = act_id;
+    task_pool.active_lookup[act_id] = task_pool.active_count;
 
-    act_pool.active_count++;
+    task_pool.active_count++;
 
     if (actor.act_id_count < ACTOR_TASK_MAX_COUNT)
     {
@@ -89,26 +94,20 @@ Work::add_task(Actor& actor, const TaskType task_type, const TaskState task_stat
 }
 
 void 
-Work::init()
-{
-
-}
-
-void 
 Work::update(Population& population, const f32 delta_time)
 {
-    for (s32 pool_id = 0; pool_id < act_pool.active_count; ++pool_id)
+    for (s32 pool_id = 0; pool_id < task_pool.active_count; ++pool_id)
     {
-        const s32 act_id = act_pool.active_array[pool_id];
-        Task& act = act_pool.task_array[act_id];
+        const s32 act_id = task_pool.active_array[pool_id];
+        Task& task = task_pool.task_array[act_id];
 
-        switch (act.task_type)
+        switch (task.task_type)
         {
         case TaskType::wander: 
-            execute_wander(population, act, delta_time);
+            execute_wander(population, task, delta_time);
             break;
         case TaskType::seek: 
-            execute_seek(population, act, delta_time);
+            execute_seek(population, task, delta_time);
             break;
         default: break;
         }

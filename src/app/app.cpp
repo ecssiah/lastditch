@@ -25,7 +25,7 @@ App::update()
 {
     platform.begin_frame();
 
-    action_update(state, platform);
+    state.action.update(state, platform);
 
     state.work.update(state.population, platform.get_delta_time());
     state.world.update(state.population, platform.get_delta_time());

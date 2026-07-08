@@ -4,14 +4,14 @@
 #include "core/types.h"
 #include "platform/platform.h"
 
-constexpr s32 ACTION_QUEUE_CAPACITY = 1u << 6;
-constexpr s32 ACTION_MAX_PER_FRAME = 256;
+constexpr s32 ACT_QUEUE_CAPACITY = 1u << 6;
+constexpr s32 ACTS_MAX_PER_FRAME = 256;
 
 struct Actor;
 class State;
 class Platform;
 
-enum class ActionType : u8
+enum class ActType : u8
 {
     Move,
     Rotate,
@@ -19,23 +19,45 @@ enum class ActionType : u8
     DebugMode,
 };
 
-struct Action
+struct Act
 {
-    ActionType type;
-
-    Vec3 action_value;
+    ActType type;
+    Vec3 act_value;
 };
 
-struct ActionQueue
+struct ActQueue
 {
-    array<Action, ACTION_QUEUE_CAPACITY> action_array;
+    array<Act, ACT_QUEUE_CAPACITY> act_array;
 
     s32 count;
     s32 current_index;
 };
 
-void action_add(ActionQueue& action_queue, const Action& action);
-void action_apply_queue(ActionQueue& action_queue, Actor& judge);
-void action_queue_actions(State& state, const Platform& platform);
+class Action
+{
+public:
+    Action();
 
-void action_update(State& state, Platform& platform);
+    void update(State& state, Platform& platform);
+
+private:
+    void add_act(const Act& act);
+    void apply_queue(Actor& judge);
+
+    void queue_acts(State& state, Platform& platform);
+
+    void queue_move_act(Platform& platform, State& state);
+    void queue_rotate_act(const Platform& platform, State& state);
+    void queue_jump_act(State& state);
+    void queue_debug_mode_act(State& state);
+
+    static void apply_act(const Act& act, Actor& judge);
+
+    static void apply_move_act(const Act& act, Actor& judge);
+    static void apply_rotate_act(const Act& act, Actor& judge);
+    static void apply_jump_act(const Act& act, Actor& judge);
+    static void apply_debug_mode_act(const Act& act, Actor& judge);
+
+    ActQueue act_queue;
+};
+

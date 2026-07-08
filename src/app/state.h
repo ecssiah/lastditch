@@ -17,7 +17,7 @@ public:
     b32 evolving;
 
     Debug debug;
-    ActionQueue action_queue;
+    Action action;
     
     World world;
     Population population;

@@ -7,95 +7,102 @@
 #include "app/actor.h"
 #include "platform/platform.h"
 
-static void 
-queue_move_action(Platform& platform, State& state)
+Action::Action()
+    :
+    act_queue{}
 {
-    Action move_action = {
-        .type = ActionType::Move,
-        .action_value = vec3_broadcast(0.0f),
+
+}
+
+void
+Action::queue_move_act(Platform& platform, State& state)
+{
+    Act move_act{
+        ActType::Move,
+        vec3_broadcast(0.0f),
     };
 
     if (platform.button_is_down(Button::A))
     {
-        move_action.action_value.x -= 1.0f;
+        move_act.act_value.x -= 1.0f;
     }
 
     if (platform.button_is_down(Button::D))
     {
-        move_action.action_value.x += 1.0f;
+        move_act.act_value.x += 1.0f;
     }
 
     if (platform.button_is_down(Button::W))
     {
-        move_action.action_value.y += 1.0f;
+        move_act.act_value.y += 1.0f;
     }
 
     if (platform.button_is_down(Button::S))
     {
-        move_action.action_value.y -= 1.0f;
+        move_act.act_value.y -= 1.0f;
     }
 
-    move_action.action_value = vec3_normalize(move_action.action_value);
+    move_act.act_value = vec3_normalize(move_act.act_value);
 
     if (platform.button_is_down(Button::E))
     {
-        move_action.action_value.z += 1.0f;
+        move_act.act_value.z += 1.0f;
     }
 
     if (platform.button_is_down(Button::Q))
     {
-        move_action.action_value.z -= 1.0f;
+        move_act.act_value.z -= 1.0f;
     }
 
-    action_add(state.action_queue, move_action);
+    add_act(move_act);
 }
 
-static void 
-queue_rotate_action(const Platform& platform, State& state)
+void
+Action::queue_rotate_act(const Platform& platform, State& state)
 {
-    const Action rotate_action = {
-        .type = ActionType::Rotate,
-        .action_value = {
+    const Act rotate_act{
+        ActType::Rotate,
+        {
             static_cast<f32>(platform.pointer_delta_x),
             static_cast<f32>(platform.pointer_delta_y),
             0.0f,
         },
     };
 
-    action_add(state.action_queue, rotate_action);
+    add_act(rotate_act);
 }
 
-static void 
-queue_jump_action(State& state)
+void
+Action::queue_jump_act(State& state)
 {
-    constexpr Action jump_action = {
-        .type = ActionType::Jump,
-        .action_value = vec3_broadcast(1.0f),
+    const Act jump_act{
+        ActType::Jump,
+        vec3_broadcast(1.0f),
     };
 
-    action_add(state.action_queue, jump_action);
+    add_act(jump_act);
 }
 
-static void 
-queue_debug_mode_action(State& state)
+void
+Action::queue_debug_mode_act(State& state)
 {
-    constexpr Action debug_action = {
-        .type = ActionType::DebugMode,
-        .action_value = vec3_broadcast(1.0f),
+    const Act debug_action{
+        ActType::DebugMode,
+        vec3_broadcast(1.0f),
     };
 
-    action_add(state.action_queue, debug_action);
+    add_act(debug_action);
 }
 
-static void 
-apply_move_action(Actor& judge, const Action& action)
+void
+Action::apply_move_act(const Act& act, Actor& judge)
 {
     const Vec3 judge_forward = get_forward(judge.rotation);
     const Vec3 judge_right = get_right(judge.rotation);
 
-    Vec3 velocity_forward;
-    Vec3 velocity_right;
-    Vec3 velocity_up;
+    Vec3 velocity_forward{};
+    Vec3 velocity_right{};
+    Vec3 velocity_up{};
     
     switch (judge.movement_type)
     {
@@ -107,8 +114,8 @@ apply_move_action(Actor& judge, const Action& action)
             0.0f
         };
 
-        velocity_right = action.action_value.x * judge_right;
-        velocity_forward = action.action_value.y * judge_forward_xy;
+        velocity_right = act.act_value.x * judge_right;
+        velocity_forward = act.act_value.y * judge_forward_xy;
         
         const Vec3 move_velocity = judge.speed * vec3_normalize(velocity_right + velocity_forward);
 
@@ -119,9 +126,9 @@ apply_move_action(Actor& judge, const Action& action)
     }
     case MovementType::Debug:
     {
-        velocity_right = action.action_value.x * judge_right;
-        velocity_forward = action.action_value.y * judge_forward;
-        velocity_up = action.action_value.z * unit_z;
+        velocity_right = act.act_value.x * judge_right;
+        velocity_forward = act.act_value.y * judge_forward;
+        velocity_up = act.act_value.z * unit_z;
     
         judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
 
@@ -130,11 +137,31 @@ apply_move_action(Actor& judge, const Action& action)
     }
 }
 
-static void 
-apply_rotate_action(Actor& judge, const Action& action)
+void
+Action::apply_act(const Act& act, Actor& judge)
 {
-    judge.rotation.z -= CAMERA_SENSITIVITY_X * action.action_value.x;
-    judge.rotation.x -= CAMERA_SENSITIVITY_Y * action.action_value.y;
+    switch (act.type)
+    {
+        case ActType::Move:
+            apply_move_act(act, judge);
+            break;
+        case ActType::Rotate:
+            apply_rotate_act(act, judge);
+            break;
+        case ActType::Jump:
+            apply_jump_act(act, judge);
+            break;
+        case ActType::DebugMode:
+            apply_debug_mode_act(act, judge);
+            break;
+    }
+}
+
+void
+Action::apply_rotate_act(const Act& act, Actor& judge)
+{
+    judge.rotation.z -= CAMERA_SENSITIVITY_X * act.act_value.x;
+    judge.rotation.x -= CAMERA_SENSITIVITY_Y * act.act_value.y;
 
     if (judge.rotation.x > CAMERA_PITCH_LIMIT)
     {
@@ -147,8 +174,8 @@ apply_rotate_action(Actor& judge, const Action& action)
     }
 }
 
-static void 
-apply_jump_action(Actor& judge)
+void
+Action::apply_jump_act(const Act& act, Actor& judge)
 {
     if (judge.is_grounded)
     {
@@ -156,8 +183,8 @@ apply_jump_action(Actor& judge)
     }
 }
 
-static void 
-apply_debug_mode_action(Actor& judge)
+void
+Action::apply_debug_mode_act(const Act& act, Actor& judge)
 {
     switch (judge.movement_type)
     {
@@ -182,32 +209,12 @@ apply_debug_mode_action(Actor& judge)
     }
 }
 
-static void 
-apply_action(Actor& judge, const Action& action)
-{
-    switch (action.type)
-    {
-    case ActionType::Move: 
-        apply_move_action(judge, action);
-        break;
-    case ActionType::Rotate: 
-        apply_rotate_action(judge, action);
-        break;
-    case ActionType::Jump: 
-        apply_jump_action(judge);
-        break;
-    case ActionType::DebugMode: 
-        apply_debug_mode_action(judge);
-        break;
-    }
-}
-
 void 
-action_add(ActionQueue& action_queue, const Action& action)
+Action::add_act(const Act& act)
 {
-    if (action_queue.current_index < ACTION_QUEUE_CAPACITY)
+    if (act_queue.current_index < ACT_QUEUE_CAPACITY)
     {
-        action_queue.action_array[action_queue.count++] = action;
+        act_queue.act_array[act_queue.count++] = act;
     }
     else
     {
@@ -216,49 +223,53 @@ action_add(ActionQueue& action_queue, const Action& action)
 }
 
 void 
-action_apply_queue(ActionQueue& action_queue, Actor& judge)
+Action::apply_queue(Actor& judge)
 {
-    s32 actions_applied = 0;
+    s32 acts_applied = 0;
     
-    while (action_queue.current_index < action_queue.count && actions_applied < ACTION_MAX_PER_FRAME)
+    while (act_queue.current_index < act_queue.count && acts_applied < ACTS_MAX_PER_FRAME)
     {
-        apply_action(judge, action_queue.action_array[action_queue.current_index]);
+        const Act& act = act_queue.act_array[act_queue.current_index];
+
+        apply_act(act, judge);
         
-        action_queue.current_index++;
-        actions_applied++;
+        act_queue.current_index++;
+        acts_applied++;
     }
 
-    if (action_queue.current_index >= action_queue.count)
+    if (act_queue.current_index >= act_queue.count)
     {
-        action_queue.count = 0;
-        action_queue.current_index = 0;
+        act_queue.count = 0;
+        act_queue.current_index = 0;
     }
 }
 
-void action_queue_actions(State& state, Platform& platform)
+void
+Action::queue_acts(State& state, Platform& platform)
 {
-    queue_move_action(platform, state);
+    queue_move_act(platform, state);
 
     if (fabs(platform.pointer_delta_x) > EPSILON || fabs(platform.pointer_delta_y) > EPSILON)
     {
-        queue_rotate_action(platform, state);
+        queue_rotate_act(platform, state);
     }
 
     if (platform.button_is_pressed(Button::Space))
     {
-        queue_jump_action(state);
+        queue_jump_act(state);
     }
 
     if (platform.button_is_released(Button::Tab))
     {
-        queue_debug_mode_action(state);
+        queue_debug_mode_act(state);
     }
 }
 
-void action_update(State& state, Platform& platform)
+void
+Action::update(State& state, Platform& platform)
 {
     Actor& judge = state.population.get_judge();
     
-    action_queue_actions(state, platform);
-    action_apply_queue(state.action_queue, judge);
+    queue_acts(state, platform);
+    apply_queue(judge);
 }

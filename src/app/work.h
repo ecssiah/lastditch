@@ -70,5 +70,5 @@ private:
     static void execute_wander(Population&, Task&, f32);
     static void execute_seek(Population&, Task&, f32);
 
-    TaskPool act_pool;
+    TaskPool task_pool;
 };
