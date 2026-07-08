@@ -10,7 +10,7 @@ App::App()
 
     debug_init(state.debug);
 
-    work_init(state.work);
+    state.work.init();
     navigation_init(state.navigation);
 
     state.world.init(state.debug);
@@ -27,7 +27,7 @@ App::update()
 
     action_update(state, platform);
 
-    work_update(platform.get_delta_time(), state.population, state.work);
+    state.work.update(state.population, platform.get_delta_time());
     state.world.update(state.population, platform.get_delta_time());
 
     state.render.update(state.population, state.debug);

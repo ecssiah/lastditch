@@ -138,7 +138,7 @@ Population::init_agents(Work& work)
                 .tick_limit = 500,
             };
 
-            work_add_task(work, agent, TaskType::wander, act_state);
+            work.add_task(agent, TaskType::wander, act_state);
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",

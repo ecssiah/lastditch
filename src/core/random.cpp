@@ -1,9 +1,11 @@
 #include "random.h"
 
+using namespace std;
+
 f32
 Random::uniform(const f32 min, const f32 max)
 {
-    std::uniform_real_distribution<f32> dist(min, max);
+    uniform_real_distribution<f32> dist(min, max);
 
     return dist(get_engine());
 }
@@ -11,7 +13,7 @@ Random::uniform(const f32 min, const f32 max)
 s32
 Random::uniform(const s32 min, const s32 max)
 {
-    std::uniform_int_distribution<s32> dist(min, max);
+    uniform_int_distribution<s32> dist(min, max);
 
     return dist(get_engine());
 }

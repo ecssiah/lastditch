@@ -6,8 +6,22 @@
 
 using namespace std;;
 
+Work::Work()
+    :
+    act_pool{}
+{
+    act_pool.active_count = 0;
+    act_pool.free_count = TASK_MASK_COUNT;
+
+    for (s32 pool_id = 0; pool_id < TASK_MASK_COUNT; ++pool_id)
+    {
+        act_pool.free_array[pool_id] = pool_id;
+        act_pool.active_lookup[pool_id] = numeric_limits<s32>::max();
+    }
+}
+
 void 
-execute_wander(Population& population, Task& act, const f32 delta_time)
+Work::execute_wander(Population& population, Task& act, const f32 delta_time)
 {
     Actor& actor = population.get_actor(act.actor_id);
 
@@ -45,16 +59,14 @@ execute_wander(Population& population, Task& act, const f32 delta_time)
     );
 }
 
-void 
-execute_seek(Population& population, Task& act, f32 delta_time)
+void
+Work::execute_seek(Population& population, Task& act, f32 delta_time)
 {
 }
 
 s32 
-work_add_task(Work& work, Actor& actor, const TaskType task_type, const TaskState task_state)
+Work::add_task(Actor& actor, const TaskType task_type, const TaskState task_state)
 {
-    TaskPool& act_pool = work.act_pool;
-
     const s32 act_id = act_pool.free_array[--act_pool.free_count];
 
     Task& act = act_pool.task_array[act_id];
@@ -77,25 +89,14 @@ work_add_task(Work& work, Actor& actor, const TaskType task_type, const TaskStat
 }
 
 void 
-work_init(Work& work)
+Work::init()
 {
-    TaskPool& act_pool = work.act_pool;
 
-    act_pool.active_count = 0;
-    act_pool.free_count = TASK_MASK_COUNT;
-
-    for (s32 pool_id = 0; pool_id < TASK_MASK_COUNT; ++pool_id)
-    {
-        act_pool.free_array[pool_id] = pool_id;
-        act_pool.active_lookup[pool_id] = numeric_limits<u32>::max();
-    }
 }
 
 void 
-work_update(const f32 delta_time, Population& population, Work& work)
+Work::update(Population& population, const f32 delta_time)
 {
-    TaskPool& act_pool = work.act_pool;
-
     for (s32 pool_id = 0; pool_id < act_pool.active_count; ++pool_id)
     {
         const s32 act_id = act_pool.active_array[pool_id];

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "core/types.h"
 #include "app/actor.h"
+#include "core/types.h"
 
 constexpr s32 TASK_MASK_COUNT = 1 << 12;
 
@@ -56,15 +56,19 @@ struct TaskPool
     std::array<Task, TASK_MASK_COUNT> task_array;
 };
 
-struct Work
+class Work
 {
+public:
+    Work();
+
+    void init();
+    void update(Population&, f32);
+
+    s32 add_task(Actor&, TaskType, TaskState);
+
+private:
+    static void execute_wander(Population&, Task&, f32);
+    static void execute_seek(Population&, Task&, f32);
+
     TaskPool act_pool;
 };
-
-void execute_wander(Population& population, Task& act, f32 delta_time);
-void execute_seek(Population& population, Task& act, f32 delta_time);
-
-s32 work_add_task(Work& work, Actor& actor, TaskType task_type, TaskState task_state);
-
-void work_init(Work& work);
-void work_update(f32 delta_time, Population& population, Work& work);
