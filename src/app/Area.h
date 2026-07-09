@@ -30,62 +30,62 @@ constexpr s32 AREA_TYPE_COUNT = FOR_LIST_AREA_TYPE(DEFINE_ENUM_COUNT);
 
 struct Area
 {
-    AreaType area_type;
+    AreaType area_type {AreaType::Open};
 
-    s32 area_id;
-    s32 floor_number;
+    s32 area_id {-1};
+    s32 floor_number {0};
 
-    IBounds2 bounds;
+    IBounds2 bounds {};
 
-    s32 edge_id_count;
-    std::array<s32, AREA_EDGE_MAX> edge_id_array;
+    s32 edge_id_count {0};
+    std::array<s32, AREA_EDGE_MAX> edge_id_array {};
 };
 
 struct AreaOverlap
 {
-    IBounds2 bounds;
-    Direction direction;
+    IBounds2 bounds {};
+    Direction direction {};
 };
 
 struct AreaEdge
 {
-    s32 edge_id;
+    s32 edge_id {-1};
 
-    s32 area_a_id;
-    s32 area_b_id;
+    s32 area_a_id {-1};
+    s32 area_b_id {-1};
 
-    Direction area_a_direction;
-    Direction area_b_direction;
+    Direction area_a_direction {Direction::Down};
+    Direction area_b_direction {Direction::Down};
 
-    AreaOverlap area_overlap;
+    AreaOverlap area_overlap {};
 };
 
 struct AreaPool
 {
-    s32 floor_number;
+    s32 floor_number {0};
 
-    s32 free_count;
-    std::array<s32, AREA_POOL_MAX> free_array;
+    s32 free_count {0};
+    std::array<s32, AREA_POOL_MAX> free_array {};
 
-    s32 active_count;
-    std::array<s32, AREA_POOL_MAX> active_array;
+    s32 active_count {0};
+    std::array<s32, AREA_POOL_MAX> active_array {};
 
-    std::array<s32, AREA_POOL_MAX> active_lookup;
+    std::array<s32, AREA_POOL_MAX> active_lookup {};
 
-    std::array<Area, AREA_POOL_MAX> area_array;
+    std::array<Area, AREA_POOL_MAX> area_array {};
 };
 
 struct EdgePool
 {
-    s32 free_count;
-    std::array<s32, EDGE_POOL_MAX> free_array;
+    s32 free_count {0};
+    std::array<s32, EDGE_POOL_MAX> free_array {};
 
-    s32 active_count;
-    std::array<s32, EDGE_POOL_MAX> active_array;
+    s32 active_count {0};
+    std::array<s32, EDGE_POOL_MAX> active_array {};
 
-    std::array<s32, EDGE_POOL_MAX> active_lookup;
+    std::array<s32, EDGE_POOL_MAX> active_lookup {};
 
-    std::array<AreaEdge, EDGE_POOL_MAX> edge_array;
+    std::array<AreaEdge, EDGE_POOL_MAX> edge_array {};
 };
 
 void area_add(AreaPool& area_pool, Area& area);

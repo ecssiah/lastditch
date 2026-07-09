@@ -4,7 +4,7 @@
 #include "app/actor.h"
 #include "app/population.h"
 
-using namespace std;;
+using namespace std;
 
 Work::Work()
     :
@@ -48,17 +48,17 @@ Work::execute_wander(Population& population, Task& task, const f32 delta_time)
             sinf(to_radians(direction_angle))
         };
 
-        actor.velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;
-        actor.velocity.y = direction.y * AGENT_DEFAULT_GROUND_SPEED;
+        actor.velocity.m_x = direction.m_x * AGENT_DEFAULT_GROUND_SPEED;
+        actor.velocity.m_y = direction.m_y * AGENT_DEFAULT_GROUND_SPEED;
 
-        actor.rotation_target.z = direction_angle;
+        actor.rotation_target.m_z = direction_angle;
 
         wander_state.tick = 0;
     }
 
-    actor.rotation.z = interpolate_to(
-        actor.rotation.z,
-        actor.rotation_target.z,
+    actor.rotation.m_z = interpolate_to(
+        actor.rotation.m_z,
+        actor.rotation_target.m_z,
         5.0f,
         delta_time
     );

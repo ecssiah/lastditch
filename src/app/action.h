@@ -7,7 +7,7 @@
 constexpr s32 ACT_QUEUE_CAPACITY = 1u << 6;
 constexpr s32 ACTS_MAX_PER_FRAME = 256;
 
-struct Actor;
+class Actor;
 class State;
 class Platform;
 
@@ -19,25 +19,34 @@ enum class ActType : u8
     DebugMode,
 };
 
-struct Act
+class Act
 {
-    ActType type;
-    Vec3 act_value;
+public:
+    Act() = default;
+    explicit Act(const ActType act_type, const Vec3 act_value) : m_act_type{act_type}, m_act_value {act_value} {}
+
+    [[nodiscard]]
+    ActType get_act_type() const { return m_act_type; }
+
+    [[nodiscard]]
+    Vec3 get_act_value() const { return m_act_value; }
+
+private:
+    ActType m_act_type{};
+    Vec3 m_act_value{};
 };
 
 struct ActQueue
 {
-    array<Act, ACT_QUEUE_CAPACITY> act_array;
+    array<Act, ACT_QUEUE_CAPACITY> act_array{};
 
-    s32 count;
-    s32 current_index;
+    s32 count{};
+    s32 current_index{};
 };
 
 class Action
 {
 public:
-    Action();
-
     void update(State& state, Platform& platform);
 
 private:

@@ -1,58 +1,49 @@
 #include "app/action.h"
 
 #include <cmath>
-
 #include "core/log.h"
 #include "app/app.h"
 #include "app/actor.h"
 #include "platform/platform.h"
 
-Action::Action()
-    :
-    act_queue{}
-{
-
-}
-
 void
 Action::queue_move_act(Platform& platform, State& state)
 {
-    Act move_act{
-        ActType::Move,
-        vec3_broadcast(0.0f),
-    };
+    Vec3 act_value{};
 
     if (platform.button_is_down(Button::A))
     {
-        move_act.act_value.x -= 1.0f;
+        act_value.m_x -= 1.0f;
     }
 
     if (platform.button_is_down(Button::D))
     {
-        move_act.act_value.x += 1.0f;
+        act_value.m_x += 1.0f;
     }
 
     if (platform.button_is_down(Button::W))
     {
-        move_act.act_value.y += 1.0f;
+        act_value.m_y += 1.0f;
     }
 
     if (platform.button_is_down(Button::S))
     {
-        move_act.act_value.y -= 1.0f;
+        act_value.m_y -= 1.0f;
     }
 
-    move_act.act_value = vec3_normalize(move_act.act_value);
+    act_value = act_value.normalize();
 
     if (platform.button_is_down(Button::E))
     {
-        move_act.act_value.z += 1.0f;
+        act_value.m_z += 1.0f;
     }
 
     if (platform.button_is_down(Button::Q))
     {
-        move_act.act_value.z -= 1.0f;
+        act_value.m_z -= 1.0f;
     }
+
+    const Act move_act{ActType::Move, act_value};
 
     add_act(move_act);
 }
@@ -60,14 +51,13 @@ Action::queue_move_act(Platform& platform, State& state)
 void
 Action::queue_rotate_act(const Platform& platform, State& state)
 {
-    const Act rotate_act{
-        ActType::Rotate,
-        {
-            static_cast<f32>(platform.pointer_delta_x),
-            static_cast<f32>(platform.pointer_delta_y),
-            0.0f,
-        },
+    const Vec3 act_value{
+        static_cast<f32>(platform.pointer_delta_x),
+        static_cast<f32>(platform.pointer_delta_y),
+        0.0f,
     };
+
+    const Act rotate_act{ActType::Rotate, act_value};
 
     add_act(rotate_act);
 }
@@ -75,10 +65,7 @@ Action::queue_rotate_act(const Platform& platform, State& state)
 void
 Action::queue_jump_act(State& state)
 {
-    const Act jump_act{
-        ActType::Jump,
-        vec3_broadcast(1.0f),
-    };
+    const Act jump_act{ActType::Jump, {}};
 
     add_act(jump_act);
 }
@@ -86,10 +73,7 @@ Action::queue_jump_act(State& state)
 void
 Action::queue_debug_mode_act(State& state)
 {
-    const Act debug_action{
-        ActType::DebugMode,
-        vec3_broadcast(1.0f),
-    };
+    const Act debug_action{ActType::DebugMode, {}};
 
     add_act(debug_action);
 }
@@ -108,27 +92,27 @@ Action::apply_move_act(const Act& act, Actor& judge)
     {
     case MovementType::Ground:
     {
-        const Vec3 judge_forward_xy = {
-            judge_forward.x,
-            judge_forward.y,
+        const Vec3 judge_forward_xy{
+            judge_forward.m_x,
+            judge_forward.m_y,
             0.0f
         };
 
-        velocity_right = act.act_value.x * judge_right;
-        velocity_forward = act.act_value.y * judge_forward_xy;
+        velocity_right = act.get_act_value().m_x * judge_right;
+        velocity_forward = act.get_act_value().m_y * judge_forward_xy;
         
-        const Vec3 move_velocity = judge.speed * vec3_normalize(velocity_right + velocity_forward);
+        const Vec3 move_velocity = judge.speed * (velocity_right + velocity_forward).normalize();
 
-        judge.velocity.x = move_velocity.x;
-        judge.velocity.y = move_velocity.y;
+        judge.velocity.m_x = move_velocity.m_x;
+        judge.velocity.m_y = move_velocity.m_y;
 
         break;
     }
     case MovementType::Debug:
     {
-        velocity_right = act.act_value.x * judge_right;
-        velocity_forward = act.act_value.y * judge_forward;
-        velocity_up = act.act_value.z * unit_z;
+        velocity_right = act.get_act_value().m_x * judge_right;
+        velocity_forward = act.get_act_value().m_y * judge_forward;
+        velocity_up = act.get_act_value().m_z * Vec3::unit_z();
     
         judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
 
@@ -140,7 +124,7 @@ Action::apply_move_act(const Act& act, Actor& judge)
 void
 Action::apply_act(const Act& act, Actor& judge)
 {
-    switch (act.type)
+    switch (act.get_act_type())
     {
         case ActType::Move:
             apply_move_act(act, judge);
@@ -160,17 +144,17 @@ Action::apply_act(const Act& act, Actor& judge)
 void
 Action::apply_rotate_act(const Act& act, Actor& judge)
 {
-    judge.rotation.z -= CAMERA_SENSITIVITY_X * act.act_value.x;
-    judge.rotation.x -= CAMERA_SENSITIVITY_Y * act.act_value.y;
+    judge.rotation.m_z -= CAMERA_SENSITIVITY_X * act.get_act_value().m_x;
+    judge.rotation.m_x -= CAMERA_SENSITIVITY_Y * act.get_act_value().m_y;
 
-    if (judge.rotation.x > CAMERA_PITCH_LIMIT)
+    if (judge.rotation.m_x > CAMERA_PITCH_LIMIT)
     {
-        judge.rotation.x = CAMERA_PITCH_LIMIT;
+        judge.rotation.m_x = CAMERA_PITCH_LIMIT;
     }
 
-    if (judge.rotation.x < -CAMERA_PITCH_LIMIT)
+    if (judge.rotation.m_x < -CAMERA_PITCH_LIMIT)
     {
-        judge.rotation.x = -CAMERA_PITCH_LIMIT;
+        judge.rotation.m_x = -CAMERA_PITCH_LIMIT;
     }
 }
 
@@ -179,7 +163,7 @@ Action::apply_jump_act(const Act& act, Actor& judge)
 {
     if (judge.is_grounded)
     {
-        judge.velocity.z = JUDGE_DEFAULT_JUMP_SPEED;
+        judge.velocity.m_z = JUDGE_DEFAULT_JUMP_SPEED;
     }
 }
 

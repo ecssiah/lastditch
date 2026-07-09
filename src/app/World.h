@@ -1,11 +1,11 @@
 #pragma once
 
 #include <array>
-#include "core/random.h"
-#include "core/types.h"
 #include "app/area.h"
 #include "app/debug.h"
 #include "app/direction.h"
+#include "core/random.h"
+#include "core/types.h"
 
 constexpr u32 WORLD_SEED = 1388;
 
@@ -183,14 +183,12 @@ enum class Section : u8
 
 constexpr s32 section_count = FOR_LIST_SECTION(DEFINE_ENUM_COUNT);
 
-inline constexpr std::array<const char*, section_count>
-section_string_array =
+inline constexpr std::array<const char*, section_count> section_string_array =
 {
     FOR_LIST_SECTION(DEFINE_ENUM_STRINGS)
 };
 
-inline constexpr std::array<IVec2, section_count>
-section_origin_array =
+inline constexpr std::array<IVec2, section_count> section_origin_array =
 {
     {
         // Center                              
@@ -321,8 +319,7 @@ section_origin_array =
     }
 };
 
-inline constexpr std::array<IVec2, section_count>
-section_size_array =
+inline constexpr std::array<IVec2, section_count> section_size_array =
 {
     {
         // Center                             
@@ -456,17 +453,70 @@ section_size_array =
 struct Cell
 {
     s32 cell_index;
-
     BlockType block_type;
     u8 direction_mask;
 };
 
 struct Structure
 {
+
 };
 
 class World
 {
+public:
+    World();
+
+    void init(Debug& debug);
+    void update(Population& population, f32 delta_time);
+    void quit();
+
+    static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);
+    static b32 sector_coordinate_is_valid(s32 x, s32 y);
+
+    static s32 sector_coordinate_to_index(IVec2 sector_coordinate);
+    static IVec2 sector_index_to_coordinate(s32 sector_index);
+
+    static s32 cell_coordinate_to_index(s32 x, s32 y, s32 z);
+    static IVec3 cell_index_to_coordinate(s32 cell_index);
+
+    static s32 cell_coordinate_to_sector_index(s32 x, s32 y);
+    static IVec2 cell_coordinate_to_sector_coordinate(s32 x, s32 y);
+
+    static s32 cell_coordinate_to_local_index(s32 x, s32 y, s32 z);
+    static IVec3 cell_coordinate_to_local_coordinate(s32 x, s32 y, s32 z);
+
+    static Vec3 cell_coordinate_to_position(s32 x, s32 y, s32 z);
+    static IVec3 position_to_cell_coordinate(f32 x, f32 y, f32 z);
+
+    static s32 get_stride(Direction direction);
+    static s32 get_floor(s32 z);
+    static s32 block_type_index_from_string(const std::string& block_type_string);
+
+    Cell& get_cell(s32 cell_index);
+
+    [[nodiscard]]
+    const Cell& get_cell(s32 cell_index) const;
+
+    Cell& get_cell(s32 x, s32 y, s32 z);
+
+    [[nodiscard]]
+    const Cell& get_cell(s32 x, s32 y, s32 z) const;
+
+    b32 is_solid(s32 x, s32 y, s32 z);
+    b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
+
+    AreaPool& get_area_pool(s32 floor);
+
+    [[nodiscard]]
+    const AreaPool& get_area_pool(s32 floor) const;
+
+    EdgePool& get_edge_pool();
+
+    [[nodiscard]]
+    const EdgePool& get_edge_pool() const;
+
+private:
     Random random;
 
     u64 tick_count;
@@ -523,57 +573,4 @@ class World
     static AreaOverlap get_area_overlap(const Area& a, const Area& b);
 
     void calculate_area_edges(s32 floor_number);
-
-public:
-
-    World();
-
-    void init(Debug& debug);
-    void update(Population& population, f32 delta_time);
-    void quit();
-
-    static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);
-    static b32 sector_coordinate_is_valid(s32 x, s32 y);
-
-    static s32 sector_coordinate_to_index(IVec2 sector_coordinate);
-    static IVec2 sector_index_to_coordinate(s32 sector_index);
-
-    static s32 cell_coordinate_to_index(s32 x, s32 y, s32 z);
-    static IVec3 cell_index_to_coordinate(s32 cell_index);
-
-    static s32 cell_coordinate_to_sector_index(s32 x, s32 y);
-    static IVec2 cell_coordinate_to_sector_coordinate(s32 x, s32 y);
-
-    static s32 cell_coordinate_to_local_index(s32 x, s32 y, s32 z);
-    static IVec3 cell_coordinate_to_local_coordinate(s32 x, s32 y, s32 z);
-
-    static Vec3 cell_coordinate_to_position(s32 x, s32 y, s32 z);
-    static IVec3 position_to_cell_coordinate(f32 x, f32 y, f32 z);
-
-    static s32 get_stride(Direction direction);
-    static s32 get_floor(s32 z);
-    static s32 block_type_index_from_string(const std::string& block_type_string);
-
-    Cell& get_cell(s32 cell_index);
-
-    [[nodiscard]]
-    const Cell& get_cell(s32 cell_index) const;
-
-    Cell& get_cell(s32 x, s32 y, s32 z);
-
-    [[nodiscard]]
-    const Cell& get_cell(s32 x, s32 y, s32 z) const;
-
-    b32 is_solid(s32 x, s32 y, s32 z);
-    b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
-
-    AreaPool& get_area_pool(s32 floor);
-
-    [[nodiscard]]
-    const AreaPool& get_area_pool(s32 floor) const;
-
-    EdgePool& get_edge_pool();
-
-    [[nodiscard]]
-    const EdgePool& get_edge_pool() const;
 };

@@ -11,15 +11,15 @@ Debug::add_line(const Vec3& a, const Vec3& b, const Vec3& color)
 void 
 Debug::add_box(const Vec3& min, const Vec3& max, const Vec3& color)
 {
-    const Vec3 v000{min.x, min.y, min.z};
-    const Vec3 v100{max.x, min.y, min.z};
-    const Vec3 v010{min.x, max.y, min.z};
-    const Vec3 v110{max.x, max.y, min.z};
+    const Vec3 v000{min.m_x, min.m_y, min.m_z};
+    const Vec3 v100{max.m_x, min.m_y, min.m_z};
+    const Vec3 v010{min.m_x, max.m_y, min.m_z};
+    const Vec3 v110{max.m_x, max.m_y, min.m_z};
 
-    const Vec3 v001{min.x, min.y, max.z};
-    const Vec3 v101{max.x, min.y, max.z};
-    const Vec3 v011{min.x, max.y, max.z};
-    const Vec3 v111{max.x, max.y, max.z};
+    const Vec3 v001{min.m_x, min.m_y, max.m_z};
+    const Vec3 v101{max.m_x, min.m_y, max.m_z};
+    const Vec3 v011{min.m_x, max.m_y, max.m_z};
+    const Vec3 v111{max.m_x, max.m_y, max.m_z};
 
     add_line(v000, v100, color);
     add_line(v100, v110, color);

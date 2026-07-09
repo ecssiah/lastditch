@@ -22,7 +22,6 @@ extern const char* nation_type_string_array[NATION_TYPE_COUNT];
 struct Nation
 {
     NationType nation_type;
-
     IVec3 home_coordinate;
 };
 

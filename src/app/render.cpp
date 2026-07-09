@@ -292,9 +292,9 @@ Render::load_model_gpu_data(const Actor& actor) const
             const s32 scan_result = sscanf(
                 line.c_str(),
                 "v %f %f %f",
-                &position.x, 
-                &position.y, 
-                &position.z
+                &position.m_x,
+                &position.m_y,
+                &position.m_z
             );
 
             assert(scan_result == 3);
@@ -369,16 +369,16 @@ Render::load_model_gpu_data(const Actor& actor) const
                 assert(uv_index >= 0);
                 assert(uv_index < static_cast<s32>(uv_vector.size()));
 
-                model_vertex.a_position[0] = position_vector[position_index].x;
-                model_vertex.a_position[1] = position_vector[position_index].y;
-                model_vertex.a_position[2] = position_vector[position_index].z;
+                model_vertex.a_position[0] = position_vector[position_index].m_x;
+                model_vertex.a_position[1] = position_vector[position_index].m_y;
+                model_vertex.a_position[2] = position_vector[position_index].m_z;
 
-                model_vertex.a_normal[0] = normal_vector[normal_index].x;
-                model_vertex.a_normal[1] = normal_vector[normal_index].y;
-                model_vertex.a_normal[2] = normal_vector[normal_index].z;
+                model_vertex.a_normal[0] = normal_vector[normal_index].m_x;
+                model_vertex.a_normal[1] = normal_vector[normal_index].m_y;
+                model_vertex.a_normal[2] = normal_vector[normal_index].m_z;
 
-                model_vertex.a_uv[0] = uv_vector[uv_index].x;
-                model_vertex.a_uv[1] = uv_vector[uv_index].y;
+                model_vertex.a_uv[0] = uv_vector[uv_index].m_x;
+                model_vertex.a_uv[1] = uv_vector[uv_index].m_y;
 
                 model_gpu_data.model_vertex_vector.push_back(model_vertex);
             }
@@ -397,16 +397,16 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
     const IVec2 sector_coordinate = World::sector_index_to_coordinate(sector_index);
 
     const IVec3 sector_cell_coordinate = {
-        sector_coordinate.x * SECTOR_SIZE_IN_CELLS,
-        sector_coordinate.y * SECTOR_SIZE_IN_CELLS,
+        sector_coordinate.m_x * SECTOR_SIZE_IN_CELLS,
+        sector_coordinate.m_y * SECTOR_SIZE_IN_CELLS,
         0,
     };
 
     for (s32 cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
     {		
-        for (s32 cell_y = sector_cell_coordinate.y; cell_y < sector_cell_coordinate.y + SECTOR_SIZE_IN_CELLS; ++cell_y) 
+        for (s32 cell_y = sector_cell_coordinate.m_y; cell_y < sector_cell_coordinate.m_y + SECTOR_SIZE_IN_CELLS; ++cell_y)
         {
-            for (s32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + SECTOR_SIZE_IN_CELLS; ++cell_x) 
+            for (s32 cell_x = sector_cell_coordinate.m_x; cell_x < sector_cell_coordinate.m_x + SECTOR_SIZE_IN_CELLS; ++cell_x)
             {
                 if (!World::cell_coordinate_is_valid(cell_x, cell_y, cell_z))
                 {
@@ -425,15 +425,17 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
 
                 while (test_direction_mask)
                 {
-                    const Direction direction = direction_from_mask(test_direction_mask);
+                    const Direction direction {direction_from_mask(test_direction_mask)};
 
-                    SectorQuad sector_quad = {};
-                    sector_quad.direction = direction;
-                    sector_quad.block_type = cell.block_type;
-
-                    sector_quad.local_coordinate.x = cell_x - sector_cell_coordinate.x;
-                    sector_quad.local_coordinate.y = cell_y - sector_cell_coordinate.y;
-                    sector_quad.local_coordinate.z = cell_z;
+                    SectorQuad sector_quad {
+                        .local_coordinate = {
+                            cell_x - sector_cell_coordinate.m_x,
+                            cell_y - sector_cell_coordinate.m_y,
+                            cell_z,
+                        },
+                        .direction = direction,
+                        .block_type = cell.block_type,
+                    };
 
                     sector_mesh.sector_quad_vector.push_back(sector_quad);
 
@@ -451,21 +453,25 @@ Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_
 {
     for (s32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
     {
-        const s32 direction_index = static_cast<s32>(sector_quad.direction);
-        const s32 block_type_index = static_cast<s32>(sector_quad.block_type);
+        const s32 direction_index {static_cast<s32>(sector_quad.direction)};
+        const s32 block_type_index {static_cast<s32>(sector_quad.block_type)};
         
-        const IVec3 vertex_position = sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][vertex_index];
+        const IVec3 vertex_position {
+            sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][vertex_index]
+        };
         
-        const u32 vertex_bitpacked =
-            (vertex_position.x & 63u) << 0u |
-            (vertex_position.y & 63u) << 6u |
-            (vertex_position.z & 255u) << 12u;
-        
-        const u32 face_bitpacked =
-            (block_type_index & 255u) << 0u |
-            (direction_index & 7u) << 8u;
+        const u32 vertex_bitpacked {
+            (vertex_position.m_x & 63u) << 0u |
+            (vertex_position.m_y & 63u) << 6u |
+            (vertex_position.m_z & 255u) << 12u
+        };
 
-        const VoxelVertex voxel_vertex = {
+        const u32 face_bitpacked {
+            (block_type_index & 255u) << 0u |
+            (direction_index & 7u) << 8u
+        };
+
+        const VoxelVertex voxel_vertex {
             .a_vertex = static_cast<s32>(vertex_bitpacked),
             .a_face = static_cast<s32>(face_bitpacked),
         };
@@ -481,8 +487,8 @@ Render::convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
 
     VoxelGpuData voxel_gpu_data{};
     voxel_gpu_data.position = {
-        static_cast<f32>(sector_coordinate.x) * SECTOR_SIZE_IN_CELLS,
-        static_cast<f32>(sector_coordinate.y) * SECTOR_SIZE_IN_CELLS,
+        static_cast<f32>(sector_coordinate.m_x) * SECTOR_SIZE_IN_CELLS,
+        static_cast<f32>(sector_coordinate.m_y) * SECTOR_SIZE_IN_CELLS,
         0.0f,
     };
 
@@ -613,11 +619,11 @@ Render::init_glad(const Platform& platform)
 void
 Render::init_viewpoint()
 {
-    viewpoint.position = vec3_broadcast(0.0f);
-    viewpoint.rotation = vec3_broadcast(0.0f);
+    viewpoint.position = Vec3{0.0f};
+    viewpoint.rotation = Vec3{0.0f};
     
-    viewpoint.projection_matrix = mat4_diagonal(1.0f);
-    viewpoint.view_matrix = mat4_diagonal(1.0f);
+    viewpoint.projection_matrix = Mat4::make_diagonal(1.0f);
+    viewpoint.view_matrix = Mat4::make_diagonal(1.0f);
     
     viewpoint.projection_matrix = get_projection_matrix(
         to_radians(60.0f),
@@ -794,11 +800,10 @@ Render::init_model_render(const Population& population)
 void
 Render::update_viewpoint(const Population& population)
 {
-    const Actor& judge = population.get_judge();
+    const Actor& judge {population.get_judge()};
 
-    constexpr Vec3 judge_eye_offset = {0.0f, 0.0f, 0.7f};
-
-    const Vec3 judge_eye_position = judge.position + judge_eye_offset;
+    const Vec3 judge_eye_offset {0.0f, 0.0f, 0.7f};
+    const Vec3 judge_eye_position {judge.position + judge_eye_offset};
     
     viewpoint.position = judge_eye_position;
     viewpoint.rotation = judge.rotation;
@@ -824,29 +829,29 @@ Render::update_debug_render(const Debug& debug)
     
     for (const DebugLine& debug_line : debug.get_debug_line_vector())
     {
-        const DebugVertex debug_vertex_a = {
+        const DebugVertex debug_vertex_a {
             {
-                debug_line.a.x,
-                debug_line.a.y,
-                debug_line.a.z
+                debug_line.a.m_x,
+                debug_line.a.m_y,
+                debug_line.a.m_z
             },
             {
-                debug_line.color.x, 
-                debug_line.color.y, 
-                debug_line.color.z
+                debug_line.color.m_x,
+                debug_line.color.m_y,
+                debug_line.color.m_z
             },
         };
 
         const DebugVertex debug_vertex_b = {
             {
-                debug_line.b.x,
-                debug_line.b.y,
-                debug_line.b.z
+                debug_line.b.m_x,
+                debug_line.b.m_y,
+                debug_line.b.m_z
             },
             {
-                debug_line.color.x, 
-                debug_line.color.y, 
-                debug_line.color.z
+                debug_line.color.m_x,
+                debug_line.color.m_y,
+                debug_line.color.m_z
             },
         };
 
@@ -856,7 +861,7 @@ Render::update_debug_render(const Debug& debug)
 
     upload_debug_gpu_data(debug_gpu_data);
 
-    Mat4 model_matrix = mat4_diagonal(1.0f);
+    Mat4 model_matrix = Mat4::make_diagonal(1.0f);
 
     glUniformMatrix4fv(
         debug_render.u_model_location, 
@@ -895,8 +900,8 @@ Render::update_voxel_render()
 
     for (const VoxelGpuData& voxel_gpu_data : voxel_render.voxel_gpu_data_vector)
     {
-        Mat4 model_matrix = mat4_diagonal(1.0f);
-        model_matrix = mat4_translate(model_matrix, voxel_gpu_data.position);
+        Mat4 model_matrix = Mat4::make_diagonal(1.0f);
+        model_matrix = model_matrix.translate(voxel_gpu_data.position);
 
         glUniformMatrix4fv(
             voxel_render.u_model_location, 
@@ -937,11 +942,11 @@ Render::update_model_render(const Population& population)
     population.for_each_active_actor(
         [this](const Actor& actor)
         {
-            const ModelGpuData& model_gpu_data = model_render.model_gpu_data_vector[actor.actor_id];
+            const ModelGpuData& model_gpu_data {model_render.model_gpu_data_vector[actor.actor_id]};
 
-            Mat4 model_matrix = mat4_diagonal(1.0f);
-            model_matrix = mat4_translate(model_matrix, actor.position);
-            model_matrix = mat4_rotate(model_matrix, to_radians(actor.rotation.z), unit_z);
+            Mat4 model_matrix {Mat4::make_diagonal(1.0f)};
+            model_matrix = model_matrix.translate(actor.position);
+            model_matrix = model_matrix.rotate(to_radians(actor.rotation.m_z), Vec3::unit_z());
 
             glUniformMatrix4fv(
                 model_render.u_model_location,

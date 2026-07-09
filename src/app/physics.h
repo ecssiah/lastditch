@@ -10,7 +10,7 @@ constexpr f32 GRAVITY_CONSTANT = -90.0f;
 constexpr f32 RISING_GRAVITY_MODIFIER = 1.0f;
 constexpr f32 FALLING_GRAVITY_MODIFIER = 1.7f;
 
-struct Actor;
+class Actor;
 class World;
 
 struct BoxCollider
@@ -20,4 +20,19 @@ struct BoxCollider
     Vec3 radius;
 };
 
-void physics_update_actor(f32 delta_time, Actor& actor, World& world);
+class Physics
+{
+public:
+    Physics();
+
+    static void update_actor(World& world, Actor& actor, f32 delta_time);
+
+private:
+    static Bounds3 get_box_collider_bounds(const BoxCollider& box_collider, const Vec3& position);
+    static IBounds3 get_grid_overlap_of_bounds(const Bounds3& bounds);
+    static void resolve_axis_collisions(World& world, Actor& actor, Axis axis, f32 step_delta_time);
+    static void integrate(World& world, Actor& actor, f32 delta_time);
+
+    Vec3 gravity;
+};
+

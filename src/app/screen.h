@@ -7,6 +7,17 @@
 
 class Screen
 {
+public:
+    Screen() = default;
+
+    void init(const Platform& platform);
+    void update(const Population& population);
+
+private:
+    void load_textures(const string& textures_path);
+    void draw_text(const string& text, f32 x, f32 y);
+    void draw_debug_info(const Population& population);
+
     GLuint program_id;
 
     GLuint vao_id;
@@ -17,14 +28,6 @@ class Screen
     GLint u_font_texture_sampler_location;
 
     GLint u_projection_location;
-
-    void load_textures(const string& textures_path);
-    void draw_text(const string& text, f32 x, f32 y);
-    void draw_debug_info(const Population& population);
-
-public:
-    void init(const Platform& platform);
-    void update(const Population& population);
 };
 
 
