@@ -64,7 +64,6 @@ target_sources(
     src/app/actor.h
     src/app/app.h
     src/app/app.cpp
-    src/app/area.cpp
     src/app/area.h
     src/app/debug.cpp
     src/app/debug.h

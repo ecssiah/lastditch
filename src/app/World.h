@@ -6,6 +6,7 @@
 #include "app/debug.h"
 #include "app/direction.h"
 #include "app/physics.h"
+#include "app/pool.h"
 #include "core/random.h"
 #include "core/types.h"
 
@@ -504,11 +505,8 @@ public:
     b32 is_solid(s32 x, s32 y, s32 z);
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
-    AreaPool& get_area_pool(s32 floor);
-    [[nodiscard]] const AreaPool& get_area_pool(s32 floor) const;
-
-    EdgePool& get_edge_pool();
-    [[nodiscard]] const EdgePool& get_edge_pool() const;
+    Pool<Area, AREA_POOL_MAX>& get_area_pool(s32 floor_number);
+    Pool<AreaEdge, EDGE_POOL_MAX>& get_edge_pool();
 
     [[nodiscard]] Vec3 get_gravity() const;
 
@@ -523,11 +521,11 @@ private:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array;
 
-    AreaPool area_pool_array[FLOOR_COUNT];
-    EdgePool edge_pool;
+    std::vector<Pool<Area, AREA_POOL_MAX>> area_pool_vector;
+    Pool<AreaEdge, EDGE_POOL_MAX> edge_pool;
 
     void init_cell_array();
-    void init_area_pool();
+    void init_area_pool_vector();
     void init_edge_pool();
 
     void construct_doors(const Area& area);

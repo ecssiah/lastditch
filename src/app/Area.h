@@ -26,13 +26,13 @@ enum class AreaType : u8
     FOR_LIST_AREA_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 AREA_TYPE_COUNT = FOR_LIST_AREA_TYPE(DEFINE_ENUM_COUNT);
+constexpr s32 AREA_TYPE_COUNT {0 FOR_LIST_AREA_TYPE(DEFINE_ENUM_COUNT)};
 
 struct Area
 {
     AreaType area_type {AreaType::Open};
 
-    s32 area_id {-1};
+    s32 id {std::numeric_limits<s32>::max()};
     s32 floor_number {0};
 
     IBounds2 bounds {};
@@ -49,7 +49,7 @@ struct AreaOverlap
 
 struct AreaEdge
 {
-    s32 edge_id {-1};
+    s32 id {std::numeric_limits<s32>::max()};
 
     s32 area_a_id {-1};
     s32 area_b_id {-1};
@@ -59,37 +59,3 @@ struct AreaEdge
 
     AreaOverlap area_overlap {};
 };
-
-struct AreaPool
-{
-    s32 floor_number {0};
-
-    s32 free_count {0};
-    std::array<s32, AREA_POOL_MAX> free_array {};
-
-    s32 active_count {0};
-    std::array<s32, AREA_POOL_MAX> active_array {};
-
-    std::array<s32, AREA_POOL_MAX> active_lookup {};
-
-    std::array<Area, AREA_POOL_MAX> area_array {};
-};
-
-struct EdgePool
-{
-    s32 free_count {0};
-    std::array<s32, EDGE_POOL_MAX> free_array {};
-
-    s32 active_count {0};
-    std::array<s32, EDGE_POOL_MAX> active_array {};
-
-    std::array<s32, EDGE_POOL_MAX> active_lookup {};
-
-    std::array<AreaEdge, EDGE_POOL_MAX> edge_array {};
-};
-
-void area_add(AreaPool& area_pool, Area& area);
-void area_remove(AreaPool& area_pool, s32 area_id);
-
-void area_add_edge(EdgePool& edge_pool, AreaEdge& area_edge);
-void area_remove_edge(EdgePool& edge_pool, s32 edge_id);

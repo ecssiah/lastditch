@@ -4,13 +4,13 @@
 
 struct ConfigEntry
 {
-    std::string key;
-    std::string value;
+    std::string key {};
+    std::string value {};
 };
 
 struct ConfigData
 {
-    std::vector<ConfigEntry> entry_vector;
+    std::vector<ConfigEntry> entry_vector {};
 };
 
 ConfigData config_load(const std::string& config_path);

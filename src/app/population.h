@@ -12,14 +12,14 @@ constexpr s32 AGENT_INITIAL_COUNT {12};
 
 struct ActorPool
 {
-    s32 active_count;
-    std::array<s32, ACTION_MAX> active_array;
-    std::array<s32, ACTION_MAX> active_lookup;
+    s32 active_count {};
+    std::array<s32, ACTION_MAX> active_array {};
+    std::array<s32, ACTION_MAX> active_lookup {};
 
-    s32 free_count;
-    std::array<s32, ACTION_MAX> free_array;
+    s32 free_count {};
+    std::array<s32, ACTION_MAX> free_array {};
 
-    std::array<Actor, ACTION_MAX> actor_array;
+    std::array<Actor, ACTION_MAX> actor_array {};
 };
 
 class Population

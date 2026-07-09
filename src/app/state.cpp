@@ -2,7 +2,8 @@
 
 State::State()
     :
-    evolving(true)
+    evolving{true},
+    screen{}
 {
 
 }

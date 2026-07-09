@@ -26,7 +26,7 @@ parse_line(ConfigEntry& config_entry, string& line)
         return false;
     }
 
-    const size_t equal_sign_index = line.find('=');
+    const size_t equal_sign_index {line.find('=')};
     
     if (equal_sign_index == string::npos)
     {
@@ -44,17 +44,17 @@ parse_line(ConfigEntry& config_entry, string& line)
 ConfigData 
 config_load(const string& config_path)
 {
-    ConfigData config_data = {};
+    ConfigData config_data {};
 
-    ifstream ifs(config_path);
+    ifstream ifs {config_path};
     
     assert(ifs.is_open());
 
-    string line;
+    string line {};
 
     while (getline(ifs, line))
     {
-        ConfigEntry config_entry = {};
+        ConfigEntry config_entry {};
 
         if (parse_line(config_entry, line))
         {

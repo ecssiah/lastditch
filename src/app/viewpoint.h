@@ -4,9 +4,9 @@
 
 struct Viewpoint
 {
-    Vec3 position;
-    Vec3 rotation;
+    Vec3 position {};
+    Vec3 rotation {};
 
-    Mat4 projection_matrix;
-    Mat4 view_matrix;
+    Mat4 projection_matrix {};
+    Mat4 view_matrix {};
 };

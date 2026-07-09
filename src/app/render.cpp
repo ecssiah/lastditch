@@ -211,7 +211,7 @@ Render::load_actor_texture_directory()
     {
         const ConfigEntry& config_entry { model_render.actor_config_data.entry_vector[layer_index]};
 
-        const s32 nation_type_index {nation_type_index_from_string(config_entry.key)};
+        const s32 nation_type_index {Nation::get_type_index(config_entry.key)};
 
         assert(nation_type_index >= 0 && nation_type_index < NATION_TYPE_COUNT);
 

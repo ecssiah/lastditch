@@ -37,15 +37,14 @@ Log::init()
 void 
 Log::message(LogLevel log_level, const char* file, int line, const char* fmt, ...)
 {
-
-    const time_t now = time(nullptr);
-    tm tm_info{};
+    const time_t now {time(nullptr)};
+    tm tm_info {};
     localtime_r(&now, &tm_info);
 
-    char file_timestamp_buffer[11];
+    char file_timestamp_buffer[11] {};
     strftime(file_timestamp_buffer, sizeof(file_timestamp_buffer), "%Y_%m_%d", &tm_info);
 
-    const std::string file_timestamp = file_timestamp_buffer;
+    const std::string file_timestamp {file_timestamp_buffer};
 
     if (file_timestamp != ld_current_day_string)
     {
@@ -56,27 +55,26 @@ Log::message(LogLevel log_level, const char* file, int line, const char* fmt, ..
 
         ld_current_day_string = file_timestamp;
 
-        const auto path =
-            ld_log_directory /
-            ("engine_" + file_timestamp + ".log");
+        const auto path {
+            ld_log_directory / ("engine_" + file_timestamp + ".log")
+        };
 
         ld_log_file.open(path, std::ios::app);
     }
 
-    const char* filename = file;
-    const char* last_slash = strrchr(file, '/');
+    const char* filename {file};
+    const char* last_slash = {strrchr(file, '/')};
 
     if (last_slash)
     {
         filename = last_slash + 1;
     }
 
-    char timestamp[32];
+    char timestamp[32] {};
+
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &tm_info);
-    FILE* console_stream =
-        log_level >= LogLevel::Warn
-        ? stderr
-        : stdout;
+
+    FILE* console_stream {log_level >= LogLevel::Warn ? stderr : stdout};
 
     fprintf(
         console_stream,
@@ -95,16 +93,16 @@ Log::message(LogLevel log_level, const char* file, int line, const char* fmt, ..
             << "(" << filename << ":" << line << ") ";
     }
 
-    va_list args;
+    va_list args {};
     va_start(args, fmt);
 
-    va_list args_copy;
+    va_list args_copy {};
     va_copy(args_copy, args);
 
     vfprintf(console_stream, fmt, args);
     if (ld_log_file.is_open())
     {
-        char file_message_buffer[4096];
+        char file_message_buffer[4096] {};
 
         vsnprintf(file_message_buffer, sizeof(file_message_buffer), fmt, args_copy);
 
@@ -115,6 +113,7 @@ Log::message(LogLevel log_level, const char* file, int line, const char* fmt, ..
     va_end(args);
 
     fprintf(console_stream, "\n");
+
     if (ld_log_file.is_open())
     {
         ld_log_file << "\n";
@@ -124,10 +123,12 @@ Log::message(LogLevel log_level, const char* file, int line, const char* fmt, ..
     if (log_level == LogLevel::Fatal)
     {
         fflush(console_stream);
+
         if (ld_log_file.is_open())
         {
             ld_log_file.flush();
         }
+
         exit(EXIT_FAILURE);
     }
 }

@@ -37,23 +37,23 @@ union TaskState
 
 struct Task
 {
-    s32 actor_id;
+    s32 actor_id {};
 
-    TaskType task_type;
-    TaskState task_state;
+    TaskType task_type {};
+    TaskState task_state {};
 };
 
 struct TaskPool
 {
-    s32 active_count;
-    std::array<s32, TASK_MASK_COUNT> active_array;
+    s32 active_count {};
+    std::array<s32, TASK_MASK_COUNT> active_array {};
 
-    std::array<s32, TASK_MASK_COUNT> active_lookup;
+    std::array<s32, TASK_MASK_COUNT> active_lookup {};
 
-    s32 free_count;
-    std::array<s32, TASK_MASK_COUNT> free_array;
+    s32 free_count {};
+    std::array<s32, TASK_MASK_COUNT> free_array {};
 
-    std::array<Task, TASK_MASK_COUNT> task_array;
+    std::array<Task, TASK_MASK_COUNT> task_array {};
 };
 
 class Work
