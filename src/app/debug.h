@@ -3,10 +3,10 @@
 #include "core/types.h"
 #include "core/geometry.h"
 
-constexpr s32 DEBUG_LINE_MAX = 1 << 13;
+constexpr s32 DEBUG_LINE_MAX {1 << 13};
 
-constexpr b32 DEBUG_AREAS = true;
-constexpr s32 DEBUG_FLOOR_NUMBER = 6;
+constexpr b32 DEBUG_AREAS {true};
+constexpr s32 DEBUG_FLOOR_NUMBER {6};
 
 struct DebugLine
 {
@@ -25,7 +25,7 @@ public:
     void add_line(const Vec3& a, const Vec3& b, const Vec3& color);
     void add_box(const Vec3& min, const Vec3& max, const Vec3& color);
 
-    const std::vector<DebugLine>& get_debug_line_vector() const;
+    [[nodiscard]] const std::vector<DebugLine>& get_debug_line_vector() const;
 
 private:
     std::vector<DebugLine> line_vector;

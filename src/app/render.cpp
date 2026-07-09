@@ -914,7 +914,7 @@ Render::update_model_render(Population& population)
 
     for (const s32 id : population.get_actor_pool())
     {
-        Actor& actor = population.get_actor(id);
+        Actor& actor {population.get_actor(id)};
 
         const ModelGpuData& model_gpu_data {model_render.model_gpu_data_vector[actor.id]};
 

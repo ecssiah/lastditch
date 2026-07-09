@@ -22,9 +22,9 @@ enum class LogLevel : u8
 
 class Log
 {
-    inline static std::ofstream            ld_log_file{};
-    inline static std::filesystem::path    ld_log_directory{};
-    inline static std::string              ld_current_day_string{};
+    inline static std::ofstream            ld_log_file {};
+    inline static std::filesystem::path    ld_log_directory {};
+    inline static std::string              ld_current_day_string {};
 
     static constexpr const char* log_level_to_string(LogLevel level);
 
