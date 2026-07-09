@@ -1,72 +1,74 @@
 #pragma once
 
 #include <array>
+
 #include "app/area.h"
 #include "app/debug.h"
 #include "app/direction.h"
+#include "app/physics.h"
 #include "core/random.h"
 #include "core/types.h"
 
-constexpr u32 WORLD_SEED = 1388;
+constexpr u32 WORLD_SEED {1388};
 
-constexpr f32 CELL_SIZE = 1.0f;
+constexpr f32 CELL_SIZE {1.0f};
 
-constexpr s32 SECTOR_SIZE_IN_CELLS_LOG2 = 5;
-constexpr s32 SECTOR_SIZE_IN_CELLS = 1 << (1 * SECTOR_SIZE_IN_CELLS_LOG2);
+constexpr s32 SECTOR_SIZE_IN_CELLS_LOG2 {5};
+constexpr s32 SECTOR_SIZE_IN_CELLS {1 << (1 * SECTOR_SIZE_IN_CELLS_LOG2)};
 
-constexpr s32 SECTOR_HEIGHT_IN_CELLS_LOG2 = 8;
-constexpr s32 SECTOR_HEIGHT_IN_CELLS = 1 << (1 * SECTOR_HEIGHT_IN_CELLS_LOG2);
+constexpr s32 SECTOR_HEIGHT_IN_CELLS_LOG2 {8};
+constexpr s32 SECTOR_HEIGHT_IN_CELLS {1 << (1 * SECTOR_HEIGHT_IN_CELLS_LOG2)};
 
-constexpr s32 SECTOR_AREA_IN_CELLS = 1 << (2 * SECTOR_SIZE_IN_CELLS_LOG2);
+constexpr s32 SECTOR_AREA_IN_CELLS {1 << (2 * SECTOR_SIZE_IN_CELLS_LOG2)};
 
-constexpr s32 SECTOR_VOLUME_IN_CELLS = SECTOR_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS;
+constexpr s32 SECTOR_VOLUME_IN_CELLS {SECTOR_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS};
 
-constexpr s32 WORLD_SIZE_IN_SECTORS_LOG2 = 3;
-constexpr s32 WORLD_SIZE_IN_SECTORS = 1 << (1 * WORLD_SIZE_IN_SECTORS_LOG2);
-constexpr s32 WORLD_AREA_IN_SECTORS = 1 << (2 * WORLD_SIZE_IN_SECTORS_LOG2);
+constexpr s32 WORLD_SIZE_IN_SECTORS_LOG2 {3};
+constexpr s32 WORLD_SIZE_IN_SECTORS {1 << (1 * WORLD_SIZE_IN_SECTORS_LOG2)};
+constexpr s32 WORLD_AREA_IN_SECTORS {1 << (2 * WORLD_SIZE_IN_SECTORS_LOG2)};
 
-constexpr s32 WORLD_SIZE_IN_CELLS_LOG2 = SECTOR_SIZE_IN_CELLS_LOG2 + WORLD_SIZE_IN_SECTORS_LOG2;
-constexpr s32 WORLD_SIZE_IN_CELLS = 1 << (1 * WORLD_SIZE_IN_CELLS_LOG2);
-constexpr s32 WORLD_AREA_IN_CELLS = 1 << (2 * WORLD_SIZE_IN_CELLS_LOG2);
+constexpr s32 WORLD_SIZE_IN_CELLS_LOG2 {SECTOR_SIZE_IN_CELLS_LOG2 + WORLD_SIZE_IN_SECTORS_LOG2};
+constexpr s32 WORLD_SIZE_IN_CELLS {1 << (1 * WORLD_SIZE_IN_CELLS_LOG2)};
+constexpr s32 WORLD_AREA_IN_CELLS {1 << (2 * WORLD_SIZE_IN_CELLS_LOG2)};
 
-constexpr s32 WORLD_VOLUME_IN_CELLS = WORLD_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS;
+constexpr s32 WORLD_VOLUME_IN_CELLS {WORLD_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS};
 
-constexpr s32 WORLD_STRIDE_X = 1;
-constexpr s32 WORLD_STRIDE_Y = WORLD_SIZE_IN_CELLS;
-constexpr s32 WORLD_STRIDE_Z = WORLD_AREA_IN_CELLS;
+constexpr s32 WORLD_STRIDE_X {1};
+constexpr s32 WORLD_STRIDE_Y {WORLD_SIZE_IN_CELLS};
+constexpr s32 WORLD_STRIDE_Z {WORLD_AREA_IN_CELLS};
 
-constexpr s32 WORLD_CENTER_S32 = WORLD_SIZE_IN_CELLS / 2;
-constexpr f32 WORLD_CENTER_F32 = WORLD_SIZE_IN_CELLS / 2.0f;
+constexpr s32 WORLD_CENTER_S32 {WORLD_SIZE_IN_CELLS / 2};
+constexpr f32 WORLD_CENTER_F32 {WORLD_SIZE_IN_CELLS / 2.0f};
 
-constexpr s32 FLOOR_SIZE_Z = 16;
-constexpr s32 FLOOR_COUNT = SECTOR_HEIGHT_IN_CELLS / FLOOR_SIZE_Z;
+constexpr s32 FLOOR_SIZE_Z {16};
+constexpr s32 FLOOR_COUNT {SECTOR_HEIGHT_IN_CELLS / FLOOR_SIZE_Z};
 
-constexpr s32 TOWER_BORDER = 16;
-constexpr s32 TOWER_FLOOR_COUNT = 6;
-constexpr s32 TOWER_SIZE = WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER;
+constexpr s32 TOWER_BORDER {16};
+constexpr s32 TOWER_FLOOR_COUNT {6};
+constexpr s32 TOWER_SIZE {WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER};
 
-constexpr s32 TOWER_CENTER_HALL_SIZE = 24;
-constexpr s32 TOWER_OUTER_HALL_SIZE = 6;
+constexpr s32 TOWER_CENTER_HALL_SIZE {24};
+constexpr s32 TOWER_OUTER_HALL_SIZE {6};
 
-constexpr s32 TOWER_QUADRANT_SIZE = TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2;
+constexpr s32 TOWER_QUADRANT_SIZE {TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2};
 
-constexpr s32 ROOF_Z = TOWER_FLOOR_COUNT * FLOOR_SIZE_Z;
-constexpr s32 ROOF_FLOOR_COUNT = FLOOR_COUNT - TOWER_FLOOR_COUNT;
-constexpr s32 ROOF_FLOOR_NUMBER = TOWER_FLOOR_COUNT;
+constexpr s32 ROOF_Z {TOWER_FLOOR_COUNT * FLOOR_SIZE_Z};
+constexpr s32 ROOF_FLOOR_COUNT {FLOOR_COUNT - TOWER_FLOOR_COUNT};
+constexpr s32 ROOF_FLOOR_NUMBER {TOWER_FLOOR_COUNT};
 
-constexpr s32 ROOF_CENTER_PATH_SIZE = 18;
+constexpr s32 ROOF_CENTER_PATH_SIZE {18};
 
-constexpr s32 PLATFORM_SIZE_X = 24;
-constexpr s32 PLATFORM_SIZE_Y = 16;
+constexpr s32 PLATFORM_SIZE_X {24};
+constexpr s32 PLATFORM_SIZE_Y {16};
 
-constexpr s32 TEMPLE_SIZE_X = 30;
-constexpr s32 TEMPLE_SIZE_Y = 20;
+constexpr s32 TEMPLE_SIZE_X {30};
+constexpr s32 TEMPLE_SIZE_Y {20};
 
-constexpr s32 TEMPLE_BORDER_OFFSET = 24;
+constexpr s32 TEMPLE_BORDER_OFFSET {24};
 
-constexpr s32 ELEVATOR_SIZE = 16;
+constexpr s32 ELEVATOR_SIZE {16};
 
-constexpr bool PLACE_ROOM_CONTENT = true;
+constexpr bool PLACE_ROOM_CONTENT {true};
 
 class Population;
 
@@ -494,30 +496,25 @@ public:
     static s32 block_type_index_from_string(const std::string& block_type_string);
 
     Cell& get_cell(s32 cell_index);
-
-    [[nodiscard]]
-    const Cell& get_cell(s32 cell_index) const;
+    [[nodiscard]] const Cell& get_cell(s32 cell_index) const;
 
     Cell& get_cell(s32 x, s32 y, s32 z);
-
-    [[nodiscard]]
-    const Cell& get_cell(s32 x, s32 y, s32 z) const;
+    [[nodiscard]] const Cell& get_cell(s32 x, s32 y, s32 z) const;
 
     b32 is_solid(s32 x, s32 y, s32 z);
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
     AreaPool& get_area_pool(s32 floor);
-
-    [[nodiscard]]
-    const AreaPool& get_area_pool(s32 floor) const;
+    [[nodiscard]] const AreaPool& get_area_pool(s32 floor) const;
 
     EdgePool& get_edge_pool();
+    [[nodiscard]] const EdgePool& get_edge_pool() const;
 
-    [[nodiscard]]
-    const EdgePool& get_edge_pool() const;
+    [[nodiscard]] Vec3 get_gravity() const;
 
 private:
     Random random;
+    Physics physics;
 
     u64 tick_count;
     u64 second_count;

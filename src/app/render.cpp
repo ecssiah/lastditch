@@ -15,60 +15,22 @@
 
 using namespace std;
 
-const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE] =
-{
-    // +X Face
-    {
-        {1, 0, 0}, {1, 1, 0}, {1, 1, 1},
-        {1, 0, 0}, {1, 1, 1}, {1, 0, 1},
-    },
-    // -X Face
-    {
-        {0, 1, 0}, {0, 0, 0}, {0, 0, 1},
-        {0, 1, 0}, {0, 0, 1}, {0, 1, 1},
-    },
-    // +Y Face
-    {
-        {1, 1, 0}, {0, 1, 0}, {0, 1, 1},
-        {1, 1, 0}, {0, 1, 1}, {1, 1, 1},
-    },
-    // -Y Face
-    {
-        {0, 0, 0}, {1, 0, 0}, {1, 0, 1},
-        {0, 0, 0}, {1, 0, 1}, {0, 0, 1},
-    },
-    // +Z Face
-    {
-        {0, 0, 1}, {1, 0, 1}, {1, 1, 1},
-        {0, 0, 1}, {1, 1, 1}, {0, 1, 1},
-    },
-    // -Z Face
-    {
-        {0, 1, 0}, {1, 1, 0}, {1, 0, 0},
-        {0, 1, 0}, {1, 0, 0}, {0, 0, 0},
-    },
+const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE] {
+    {{1, 0, 0}, {1, 1, 0}, {1, 1, 1}, {1, 0, 1}},
+    {{0, 1, 0}, {0, 0, 0}, {0, 0, 1}, {0, 1, 1}},
+    {{1, 1, 0}, {0, 1, 0}, {0, 1, 1}, {1, 1, 1}},
+    {{0, 0, 0}, {1, 0, 0}, {1, 0, 1}, {0, 0, 1}},
+    {{0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}},
+    {{0, 1, 0}, {1, 1, 0}, {1, 0, 0}, {0, 0, 0}},
 };
 
-const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT] =
-{
-    // +X Face
-    {+0, +1, +0},
-    {+0, +0, +1},
-    // -X Face
-    {+0, -1, +0},
-    {+0, +0, +1},
-    // +Y Face
-    {-1, +0, +0},
-    {+0, +0, +1},
-    // -Y Face
-    {+1, +0, +0},
-    {+0, +0, +1},
-    // +Z Face
-    {+1, +0, +0},
-    {+0, +1, +0},
-    // -Z Face
-    {+1, +0, +0},
-    {+0, -1, +0},
+const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT] {
+    {+0, +1, +0},{+0, +0, +1},
+    {+0, -1, +0},{+0, +0, +1},
+    {-1, +0, +0},{+0, +0, +1},
+    {+1, +0, +0},{+0, +0, +1},
+    {+1, +0, +0},{+0, +1, +0},
+    {+1, +0, +0},{+0, -1, +0},
 };
 
 const char*
@@ -88,7 +50,7 @@ Render::get_gl_error_string(GLenum err)
 void
 Render::check_gl_error(const char* label)
 {
-    GLenum err;
+    GLenum err {};
 
     while ((err = glGetError()) != GL_NO_ERROR)
     {
@@ -158,7 +120,7 @@ Render::load_texture_array_layer(const string& texture_path, const GLint layer_i
 
     stbi_set_flip_vertically_on_load(true);
 
-    const unsigned char* pixel_data_array = stbi_load(texture_path.c_str(), &width, &height, &channels, 4);
+    const unsigned char* pixel_data_array {stbi_load(texture_path.c_str(), &width, &height, &channels, 4)};
 
     assert(pixel_data_array);
 
@@ -247,19 +209,20 @@ Render::load_actor_texture_directory()
 
     for (size_t layer_index = 0; layer_index < model_render.actor_config_data.entry_vector.size(); ++layer_index)
     {
-        const ConfigEntry& config_entry = model_render.actor_config_data.entry_vector[layer_index];
+        const ConfigEntry& config_entry { model_render.actor_config_data.entry_vector[layer_index]};
 
-        const s32 nation_type_index = nation_type_index_from_string(config_entry.key);
+        const s32 nation_type_index {nation_type_index_from_string(config_entry.key)};
 
         assert(nation_type_index >= 0 && nation_type_index < NATION_TYPE_COUNT);
 
         model_render.nation_type_layer_array[nation_type_index] = layer_index;
         
-        string texture_path =
+        string texture_path {
             format(
                 "assets/textures/model/{}",
                 config_entry.value
-            );
+            )
+        };
 
         load_texture_array_layer(texture_path, static_cast<GLint>(layer_index));
     }
@@ -268,34 +231,37 @@ Render::load_actor_texture_directory()
 ModelGpuData
 Render::load_model_gpu_data(const Actor& actor) const
 {
-    const s32 nation_type_index = static_cast<s32>(actor.nation_type);
+    const s32 nation_type_index {static_cast<s32>(actor.nation_type)};
     
-    ModelGpuData model_gpu_data{};
-    model_gpu_data.texture_layer = model_render.nation_type_layer_array[nation_type_index];
+    ModelGpuData model_gpu_data {
+        .texture_layer = model_render.nation_type_layer_array[nation_type_index],
+    };
 
-    ifstream ifs("assets/model/actor.obj");
+    ifstream ifs{"assets/model/actor.obj"};
     
     assert(ifs.is_open());
     
-    string line;
+    string line {};
 
-    vector<Vec3> position_vector;
-    vector<Vec3> normal_vector;
-    vector<Vec2> uv_vector;
+    vector<Vec3> position_vector {};
+    vector<Vec3> normal_vector {};
+    vector<Vec2> uv_vector {};
     
     while (getline(ifs, line))
     {
         if (line.starts_with("v "))
         {
-            Vec3 position{};
+            Vec3 position {};
 
-            const s32 scan_result = sscanf(
-                line.c_str(),
-                "v %f %f %f",
-                &position.x,
-                &position.y,
-                &position.z
-            );
+            const s32 scan_result {
+                sscanf(
+                    line.c_str(),
+                    "v %f %f %f",
+                    &position.x,
+                    &position.y,
+                    &position.z
+                )
+            };
 
             assert(scan_result == 3);
 
@@ -303,15 +269,17 @@ Render::load_model_gpu_data(const Actor& actor) const
         }
         else if (line.starts_with("vn "))
         {
-            Vec3 normal{};
+            Vec3 normal {};
 
-            const s32 normal_scan = sscanf(
-                line.c_str(),
-                "vn %f %f %f",
-                &normal[0], 
-                &normal[1], 
-                &normal[2]
-            );
+            const s32 normal_scan {
+                sscanf(
+                    line.c_str(),
+                    "vn %f %f %f",
+                    &normal[0],
+                    &normal[1],
+                    &normal[2]
+                )
+            };
 
             assert(normal_scan == 3);
 
@@ -319,14 +287,16 @@ Render::load_model_gpu_data(const Actor& actor) const
         }
         else if (line.starts_with("vt "))
         {
-            Vec2 uv{};
+            Vec2 uv {};
 
-            const s32 uv_scan = sscanf(
-                line.c_str(),
-                "vt %f %f",
-                &uv[0], 
-                &uv[1]
-            );
+            const s32 uv_scan {
+                sscanf(
+                    line.c_str(),
+                    "vt %f %f",
+                    &uv[0],
+                    &uv[1]
+                )
+            };
 
             assert(uv_scan == 2);
 
@@ -334,33 +304,35 @@ Render::load_model_gpu_data(const Actor& actor) const
         }
         else if (line.starts_with("f "))
         {
-            s32 position_index_array[3];
-            s32 normal_index_array[3];
-            s32 uv_index_array[3];
+            s32 position_index_array[3] {};
+            s32 normal_index_array[3] {};
+            s32 uv_index_array[3] {};
 
-            s32 scan_result = sscanf(
-                line.c_str(),
-                "f %d/%d/%d %d/%d/%d %d/%d/%d",
-                &position_index_array[0],
-                &uv_index_array[0],
-                &normal_index_array[0],
-                &position_index_array[1],
-                &uv_index_array[1],
-                &normal_index_array[1],
-                &position_index_array[2],
-                &uv_index_array[2],
-                &normal_index_array[2]
-            );
+            const s32 scan_result = {
+                sscanf(
+                    line.c_str(),
+                    "f %d/%d/%d %d/%d/%d %d/%d/%d",
+                    &position_index_array[0],
+                    &uv_index_array[0],
+                    &normal_index_array[0],
+                    &position_index_array[1],
+                    &uv_index_array[1],
+                    &normal_index_array[1],
+                    &position_index_array[2],
+                    &uv_index_array[2],
+                    &normal_index_array[2]
+                )
+            };
 
             assert(scan_result == 9);
 
             for (s32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
             {
-                ModelVertex model_vertex = {};
+                ModelVertex model_vertex {};
 
-                const s32 position_index = position_index_array[model_vertex_index] - 1;
-                const s32 normal_index = normal_index_array[model_vertex_index] - 1;
-                const s32 uv_index = uv_index_array[model_vertex_index] - 1;
+                const s32 position_index {position_index_array[model_vertex_index] - 1};
+                const s32 normal_index {normal_index_array[model_vertex_index] - 1};
+                const s32 uv_index {uv_index_array[model_vertex_index] - 1};
 
                 assert(position_index >= 0);
                 assert(position_index < static_cast<s32>(position_vector.size()));
@@ -391,12 +363,13 @@ Render::load_model_gpu_data(const Actor& actor) const
 void
 Render::generate_sector_mesh(const World& world, const s32 sector_index)
 {
-    SectorMesh sector_mesh{};
-    sector_mesh.sector_index = sector_index;
+    SectorMesh sector_mesh {
+        .sector_index = sector_index,
+    };
 
-    const IVec2 sector_coordinate = World::sector_index_to_coordinate(sector_index);
+    const IVec2 sector_coordinate {World::sector_index_to_coordinate(sector_index)};
 
-    const IVec3 sector_cell_coordinate = {
+    const IVec3 sector_cell_coordinate {
         sector_coordinate.x * SECTOR_SIZE_IN_CELLS,
         sector_coordinate.y * SECTOR_SIZE_IN_CELLS,
         0,
@@ -413,15 +386,15 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
                     continue;
                 }
 
-                const s32 cell_index = World::cell_coordinate_to_index(cell_x, cell_y, cell_z);
-                const Cell& cell = world.get_cell(cell_index);
+                const s32 cell_index {World::cell_coordinate_to_index(cell_x, cell_y, cell_z)};
+                const Cell& cell {world.get_cell(cell_index)};
 
                 if (cell.block_type == BlockType::None)
                 {
                     continue;
                 }
 
-                u8 test_direction_mask = cell.direction_mask;
+                u8 test_direction_mask {cell.direction_mask};
 
                 while (test_direction_mask)
                 {
@@ -451,13 +424,13 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
 void
 Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
 {
-    for (s32 vertex_index = 0; vertex_index < VERTEX_COUNT_PER_FACE; ++vertex_index)
+    for (s32 vertex_index = 0; vertex_index < 6; ++vertex_index)
     {
         const s32 direction_index {static_cast<s32>(sector_quad.direction)};
         const s32 block_type_index {static_cast<s32>(sector_quad.block_type)};
         
         const IVec3 vertex_position {
-            sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][vertex_index]
+            sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]]
         };
         
         const u32 vertex_bitpacked {
@@ -485,11 +458,12 @@ Render::convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
 {
     const IVec2 sector_coordinate = World::sector_index_to_coordinate(sector_mesh.sector_index);
 
-    VoxelGpuData voxel_gpu_data{};
-    voxel_gpu_data.position = {
-        static_cast<f32>(sector_coordinate.x) * SECTOR_SIZE_IN_CELLS,
-        static_cast<f32>(sector_coordinate.y) * SECTOR_SIZE_IN_CELLS,
-        0.0f,
+    VoxelGpuData voxel_gpu_data {
+        .position = {
+            static_cast<f32>(sector_coordinate.x) * SECTOR_SIZE_IN_CELLS,
+            static_cast<f32>(sector_coordinate.y) * SECTOR_SIZE_IN_CELLS,
+            0.0f,
+        }
     };
 
     for (const SectorQuad& sector_quad : sector_mesh.sector_quad_vector)
@@ -607,11 +581,11 @@ Render::upload_model_gpu_data(ModelGpuData& model_gpu_data)
 void
 Render::init_glad(const Platform& platform)
 {
-    const s32 glad_load_gl_result = gladLoadGL(glfwGetProcAddress);
+    const s32 glad_load_gl_result {gladLoadGL(glfwGetProcAddress)};
 
     assert(glad_load_gl_result != 0);
 
-    const auto [framebuffer_width, framebuffer_height] = platform.get_framebuffer_size();
+    const auto [framebuffer_width, framebuffer_height] {platform.get_framebuffer_size()};
 
     glViewport(0, 0, framebuffer_width, framebuffer_height);
 }
@@ -636,8 +610,8 @@ Render::init_viewpoint()
 void
 Render::init_debug_render()
 {
-    const GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert");
-    const GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag");
+    const GLuint vert_shader {compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert")};
+    const GLuint frag_shader {compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag")};
 
     debug_render.program_id = glCreateProgram();
 
@@ -666,8 +640,8 @@ Render::init_debug_render()
 void
 Render::init_voxel_render(const World& world)
 {
-    const GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert");
-    const GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag");
+    const GLuint vert_shader {compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert")};
+    const GLuint frag_shader {compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag")};
 
     voxel_render.program_id = glCreateProgram();
 
@@ -727,7 +701,7 @@ Render::init_voxel_render(const World& world)
 
     for (const SectorMesh& sector_mesh : voxel_render.sector_mesh_vector)
     {
-        VoxelGpuData voxel_gpu_data = convert_sector_mesh_to_voxel_gpu_data(sector_mesh);
+        VoxelGpuData voxel_gpu_data {convert_sector_mesh_to_voxel_gpu_data(sector_mesh)};
 
         voxel_render.voxel_gpu_data_vector.push_back(voxel_gpu_data);
     }
@@ -741,8 +715,8 @@ Render::init_voxel_render(const World& world)
 void
 Render::init_model_render(const Population& population)
 {
-    const GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert");
-    const GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag");
+    const GLuint vert_shader {compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert")};
+    const GLuint frag_shader {compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag")};
 
     model_render.program_id = glCreateProgram();
 
@@ -788,7 +762,7 @@ Render::init_model_render(const Population& population)
     population.for_each_active_actor(
         [this](const Actor& actor)
         {
-            const ModelGpuData model_gpu_data = load_model_gpu_data(actor);
+            const ModelGpuData model_gpu_data {load_model_gpu_data(actor)};
 
             model_render.model_gpu_data_vector[actor.actor_id] = model_gpu_data;
 
@@ -825,7 +799,7 @@ Render::update_debug_render(const Debug& debug)
 
     glEnable(GL_DEPTH_TEST);
 
-    DebugGpuData debug_gpu_data = {};
+    DebugGpuData debug_gpu_data {};
     
     for (const DebugLine& debug_line : debug.get_debug_line_vector())
     {
@@ -861,7 +835,7 @@ Render::update_debug_render(const Debug& debug)
 
     upload_debug_gpu_data(debug_gpu_data);
 
-    Mat4 model_matrix = Mat4::make_diagonal(1.0f);
+    Mat4 model_matrix {Mat4::make_diagonal(1.0f)};
 
     glUniformMatrix4fv(
         debug_render.u_model_location, 
@@ -992,28 +966,28 @@ Render::update(const Population& population, const Debug& debug)
 GLuint 
 Render::compile_shader(const GLenum type, const char* filepath)
 {
-    ifstream ifs(filepath);
+    ifstream ifs {filepath};
     
     assert(ifs.is_open());
     
-    const string source_string = string(
+    const string source_string {
         std::istreambuf_iterator(ifs),
         std::istreambuf_iterator<char>()
-    );
+    };
     
-    const char* source_ptr = source_string.c_str();
+    const char* source_ptr {source_string.c_str()};
     
-    const GLuint shader_id = glCreateShader(type);
+    const GLuint shader_id {glCreateShader(type)};
 
     glShaderSource(shader_id, 1, &source_ptr, nullptr);
     glCompileShader(shader_id);
 
-    GLint success;
+    GLint success {};
     glGetShaderiv(shader_id, GL_COMPILE_STATUS, &success);
 
     if (!success)
     {
-        GLchar info[512];
+        GLchar info[512] {};
 
         glGetShaderInfoLog(shader_id, 512, nullptr, info);
 

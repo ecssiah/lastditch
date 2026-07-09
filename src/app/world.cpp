@@ -17,9 +17,9 @@ World::World()
     second_count{0},
     time_rate{1.0f},
     cell_array{},
-    area_pool_array{},
-    edge_pool{}
+    area_pool_array{}
 {
+
 }
 
 void
@@ -369,6 +369,11 @@ const EdgePool&
 World::get_edge_pool() const
 {
     return edge_pool;
+}
+
+Vec3 World::get_gravity() const
+{
+    return physics.gravity;
 }
 
 void 

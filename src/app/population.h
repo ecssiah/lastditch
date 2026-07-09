@@ -7,8 +7,8 @@
 #include "app/work.h"
 #include "core/random.h"
 
-constexpr u32 POPULATION_SEED = 1388;
-constexpr s32 AGENT_INITIAL_COUNT = 12;
+constexpr u32 POPULATION_SEED {1388};
+constexpr s32 AGENT_INITIAL_COUNT {12};
 
 struct ActorPool
 {
