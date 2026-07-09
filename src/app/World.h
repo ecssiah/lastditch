@@ -505,8 +505,8 @@ public:
     b32 is_solid(s32 x, s32 y, s32 z);
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
-    Pool<Area, AREA_POOL_MAX>& get_area_pool(s32 floor_number);
-    Pool<AreaEdge, EDGE_POOL_MAX>& get_edge_pool();
+    AreaPool& get_area_pool(s32 floor_number);
+    EdgePool& get_edge_pool();
 
     [[nodiscard]] Vec3 get_gravity() const;
 
@@ -521,12 +521,10 @@ private:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array;
 
-    std::vector<Pool<Area, AREA_POOL_MAX>> area_pool_vector;
-    Pool<AreaEdge, EDGE_POOL_MAX> edge_pool;
+    std::vector<AreaPool> area_pool_vector;
+    EdgePool edge_pool;
 
     void init_cell_array();
-    void init_area_pool_vector();
-    void init_edge_pool();
 
     void construct_doors(const Area& area);
 

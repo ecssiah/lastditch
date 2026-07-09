@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include "core/types.h"
 #include "app/area.h"
 #include "app/debug.h"
@@ -17,8 +18,7 @@ World::World()
     second_count{0},
     time_rate{1.0f},
     cell_array{},
-    area_pool_vector{},
-    edge_pool{}
+    area_pool_vector{FLOOR_COUNT}
 {
 
 }
@@ -30,9 +30,6 @@ World::init(Debug& debug)
     static_assert(TOWER_CENTER_HALL_SIZE + 2 * TOWER_OUTER_HALL_SIZE < TOWER_SIZE);
 
     init_cell_array();
-
-    init_area_pool_vector();
-    init_edge_pool();
 
     construct_tower();
 
@@ -223,7 +220,7 @@ World::is_solid(const s32 x, const s32 y, const s32 z)
         return false;
     }
 
-    const s32 cell_index = {cell_coordinate_to_index(x, y, z)};
+    const s32 cell_index {cell_coordinate_to_index(x, y, z)};
     const Cell& cell {get_cell(cell_index)};
 
     return cell.block_type != BlockType::None;
@@ -347,13 +344,13 @@ World::get_cell(const s32 x, const s32 y, const s32 z) const
     return cell_array[cell_index];
 }
 
-Pool<Area, AREA_POOL_MAX>&
+AreaPool&
 World::get_area_pool(s32 floor_number)
 {
     return area_pool_vector[floor_number];
 }
 
-Pool<AreaEdge, EDGE_POOL_MAX>&
+EdgePool&
 World::get_edge_pool()
 {
     return edge_pool;
@@ -444,7 +441,7 @@ World::set_block_type_wireframe(const s32 x, const s32 y, const s32 z, const s32
 void
 World::place_area(Area& area)
 {
-    Pool<Area, AREA_POOL_MAX>& area_pool {get_area_pool(area.floor_number)};
+    AreaPool& area_pool {get_area_pool(area.floor_number)};
 
     s32 pool_index {0};
 
@@ -659,7 +656,7 @@ World::layout_roof_areas()
 {
     constexpr s32 roof_area_size {TOWER_SIZE / 8};
 
-    Pool<Area, AREA_POOL_MAX>& area_pool {get_area_pool(TOWER_FLOOR_COUNT)};
+    AreaPool& area_pool {get_area_pool(TOWER_FLOOR_COUNT)};
 
     for (s32 area_y = TOWER_BORDER; area_y < TOWER_SIZE + TOWER_BORDER; area_y += roof_area_size)
     {
@@ -708,7 +705,7 @@ World::layout_tower_areas()
 {
     for (s32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        Pool<Area, AREA_POOL_MAX>& area_pool {get_area_pool(floor_number)};
+        AreaPool& area_pool {get_area_pool(floor_number)};
 
         constexpr IVec2 quadrant1_origin {section_origin_array[static_cast<u8>(Section::Quadrant1)]};
         constexpr IVec2 quadrant1_size {section_size_array[static_cast<u8>(Section::Quadrant1)]};
@@ -1390,7 +1387,7 @@ World::get_area_overlap(const Area& lhs, const Area& rhs)
 void
 World::calculate_area_edges(s32 floor_number)
 {
-    Pool<Area, AREA_POOL_MAX>& area_pool {get_area_pool(floor_number)};
+    AreaPool& area_pool {get_area_pool(floor_number)};
 
     for (s32 pool_id_left = 0; pool_id_left < static_cast<s32>(area_pool.active_id_vector.size()); ++pool_id_left)
     {
@@ -1416,13 +1413,13 @@ World::calculate_area_edges(s32 floor_number)
                     .area_overlap = area_overlap,
                 };
 
-                edge_pool.add(area_edge);
+                const s32 edge_id = edge_pool.add(area_edge);
 
                 assert(area_left.edge_id_count < AREA_EDGE_MAX);
                 assert(area_right.edge_id_count < AREA_EDGE_MAX);
 
-                area_left.edge_id_array[area_left.edge_id_count++] = area_edge.id;
-                area_right.edge_id_array[area_right.edge_id_count++] = area_edge.id;
+                area_left.edge_id_array[area_left.edge_id_count++] = edge_id;
+                area_right.edge_id_array[area_right.edge_id_count++] = edge_id;
             }
         }
     }
@@ -1434,43 +1431,6 @@ World::init_cell_array()
     for (s32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
         cell_array[cell_index].cell_index = cell_index;
-    }
-}
-
-void
-World::init_area_pool_vector()
-{
-    for (s32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
-    {
-        auto& area_pool {get_area_pool(floor_number)};
-
-        area_pool.free_id_vector.clear();
-        area_pool.active_id_vector.clear();
-
-        area_pool.free_id_vector.reserve(AREA_POOL_MAX);
-        area_pool.active_id_vector.reserve(AREA_POOL_MAX);
-
-        for (s32 pool_id = 0; pool_id < AREA_POOL_MAX; ++pool_id)
-        {
-            area_pool.free_id_vector.push_back(pool_id);
-            area_pool.active_id_vector[pool_id] = numeric_limits<s32>::max();
-        }
-    }
-}
-
-void
-World::init_edge_pool()
-{
-    edge_pool.free_id_vector.clear();
-    edge_pool.active_id_vector.clear();
-
-    edge_pool.free_id_vector.reserve(EDGE_POOL_MAX);
-    edge_pool.active_id_vector.reserve(EDGE_POOL_MAX);
-
-    for (s32 pool_id = 0; pool_id < EDGE_POOL_MAX; ++pool_id)
-    {
-        edge_pool.free_id_vector.push_back(pool_id);
-        edge_pool.active_id_vector[pool_id] = numeric_limits<s32>::max();
     }
 }
 
@@ -1706,7 +1666,7 @@ World::construct_wireframe(const Area& area)
 void
 World::construct_areas(s32 floor_number)
 {
-    const Pool<Area, AREA_POOL_MAX>& area_pool {area_pool_vector[floor_number]};
+    const AreaPool& area_pool {area_pool_vector[floor_number]};
 
     for (s32 pool_id = 0; pool_id < static_cast<s32>(area_pool.active_id_vector.size()); ++pool_id)
     {
@@ -1732,7 +1692,7 @@ World::construct_areas(s32 floor_number)
 void
 World::place_content(s32 floor_number)
 {
-    const Pool<Area, AREA_POOL_MAX>& area_pool {area_pool_vector[floor_number]};
+    const AreaPool& area_pool {area_pool_vector[floor_number]};
 
     for (s32 pool_id = 0; pool_id < static_cast<s32>(area_pool.active_id_vector.size()); ++pool_id)
     {
@@ -1781,7 +1741,7 @@ World::place_content(s32 floor_number)
 void
 World::draw_debug_info(Debug& debug)
 {
-    const Pool<Area, AREA_POOL_MAX>& area_pool {area_pool_vector[DEBUG_FLOOR_NUMBER]};
+    const AreaPool& area_pool {area_pool_vector[DEBUG_FLOOR_NUMBER]};
 
     for (s32 pool_id = 0; pool_id < static_cast<s32>(area_pool.active_id_vector.size()); ++pool_id)
     {

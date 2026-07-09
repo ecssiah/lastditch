@@ -14,9 +14,9 @@
 template<typename T, std::size_t Max>
 struct Pool
 {
-    std::array<T, Max> item_array {};
     std::vector<s32> active_id_vector {};
     std::vector<s32> free_id_vector {};
+    std::array<T, Max> item_array {};
 
     Pool()
     {
@@ -29,17 +29,10 @@ struct Pool
         }
     }
 
-    [[nodiscard]] T& get(s32 id)
-    {
-        return item_array[id];
-    }
+    [[nodiscard]] T& get(s32 id) { return item_array[id]; }
+    [[nodiscard]] const T& get(s32 id) const { return item_array[id]; }
 
-    [[nodiscard]] const T& get(s32 id) const
-    {
-        return item_array[id];
-    }
-
-    void add(T value)
+    s32 add(T value)
     {
         assert(!free_id_vector.empty());
 
@@ -47,11 +40,14 @@ struct Pool
         free_id_vector.pop_back();
 
         value.id = id;
+
         item_array[id] = value;
         active_id_vector.push_back(id);
+
+        return id;
     }
 
-    void remove(s32 id)
+    void remove(const s32 id)
     {
         std::erase(active_id_vector, id);
 

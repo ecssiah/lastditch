@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pool.h"
 #include "core/geometry.h"
 #include "core/types.h"
 #include "app/direction.h"
@@ -32,7 +33,7 @@ struct Area
 {
     AreaType area_type {AreaType::Open};
 
-    s32 id {std::numeric_limits<s32>::max()};
+    s32 id {-1};
     s32 floor_number {0};
 
     IBounds2 bounds {};
@@ -59,3 +60,6 @@ struct AreaEdge
 
     AreaOverlap area_overlap {};
 };
+
+using AreaPool = Pool<Area, AREA_POOL_MAX>;
+using EdgePool = Pool<AreaEdge, EDGE_POOL_MAX>;
