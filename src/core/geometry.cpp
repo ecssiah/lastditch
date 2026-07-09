@@ -6,95 +6,95 @@ using namespace std;
 
 Vec2::Vec2()
     :
-    m_x{0.0f},
-    m_y{0.0f}
+    x{0.0f},
+    y{0.0f}
 {
 
 }
 
 Vec2::Vec2(const f32 s)
     :
-    m_x{s},
-    m_y{s}
+    x{s},
+    y{s}
 {
 
 }
 
-Vec2::Vec2(f32 x, f32 y)
+Vec2::Vec2(f32 x_, f32 y_)
     :
-    m_x{x},
-    m_y{y}
+    x{x_},
+    y{y_}
 {
 
 }
 
 Vec2::Vec2(const IVec2& ivec2)
     :
-    m_x{static_cast<f32>(ivec2.m_x)},
-    m_y{static_cast<f32>(ivec2.m_y)}
+    x{static_cast<f32>(ivec2.x)},
+    y{static_cast<f32>(ivec2.y)}
 {
 
 }
 
 Vec3::Vec3()
     :
-    m_x{0.0f},
-    m_y{0.0f},
-    m_z{0.0f}
+    x{0.0f},
+    y{0.0f},
+    z{0.0f}
 {
 
 }
 
 Vec3::Vec3(const f32 s)
     :
-    m_x{s},
-    m_y{s},
-    m_z{s}
+    x{s},
+    y{s},
+    z{s}
 {
 
 }
 
-Vec3::Vec3(const f32 x, const f32 y, const f32 z)
+Vec3::Vec3(const f32 x_, const f32 y_, const f32 z_)
     :
-    m_x(x),
-    m_y(y),
-    m_z(z)
+    x(x_),
+    y(y_),
+    z(z_)
 {
 
 }
 
 Vec3::Vec3(const IVec3& ivec3)
     :
-    m_x{static_cast<f32>(ivec3.m_x)},
-    m_y{static_cast<f32>(ivec3.m_y)},
-    m_z{static_cast<f32>(ivec3.m_z)}
+    x{static_cast<f32>(ivec3.x)},
+    y{static_cast<f32>(ivec3.y)},
+    z{static_cast<f32>(ivec3.z)}
 {
 
 }
 
 IVec3::IVec3()
     :
-    m_x{0},
-    m_y{0},
-    m_z{0}
+    x{0},
+    y{0},
+    z{0}
 {
 
 }
 
 IVec3::IVec3(const s32 s)
     :
-    m_x{s},
-    m_y{s},
-    m_z{s}
+    x{s},
+    y{s},
+    z{s}
 {
 
 }
 
-IVec3::IVec3(const s32 x, const s32 y, const s32 z)
+IVec3::IVec3(const s32 x_, const s32 y_, const s32 z_)
     :
-    m_x{x},
-    m_y{y},
-    m_z{z}
+    x{x_},
+    y{y_},
+    z{z_}
 {
 
 }
@@ -103,8 +103,8 @@ Vec2
 operator+(const Vec2& lhs, const Vec2& rhs)
 {
     return {
-        lhs.m_x + rhs.m_x,
-        lhs.m_y + rhs.m_y,
+        lhs.x + rhs.x,
+        lhs.y + rhs.y,
     };
 }
 
@@ -112,26 +112,26 @@ Vec3
 operator+(const Vec3& lhs, const Vec3& rhs)
 {
     return {
-        lhs.m_x + rhs.m_x,
-        lhs.m_y + rhs.m_y,
-        lhs.m_z + rhs.m_z
+        lhs.x + rhs.x,
+        lhs.y + rhs.y,
+        lhs.z + rhs.z
     };
 }
 
 IVec2 operator+(const IVec2& lhs, const IVec2& rhs)
 {
     return {
-        lhs.m_x + rhs.m_x,
-        lhs.m_y + rhs.m_y,
+        lhs.x + rhs.x,
+        lhs.y + rhs.y,
     };
 }
 
 IVec3 operator+(const IVec3& lhs, const IVec3& rhs)
 {
     return {
-        lhs.m_x + rhs.m_x,
-        lhs.m_y + rhs.m_y,
-        lhs.m_z + rhs.m_z
+        lhs.x + rhs.x,
+        lhs.y + rhs.y,
+        lhs.z + rhs.z
     };
 }
 
@@ -139,8 +139,8 @@ Vec2
 operator-(const Vec2& lhs, const Vec2& rhs)
 {
     return {
-        lhs.m_x - rhs.m_x,
-        lhs.m_y - rhs.m_y,
+        lhs.x - rhs.x,
+        lhs.y - rhs.y,
     };
 }
 
@@ -148,26 +148,26 @@ Vec3
 operator-(const Vec3& lhs, const Vec3& rhs)
 {
     return {
-        lhs.m_x - rhs.m_x,
-        lhs.m_y - rhs.m_y,
-        lhs.m_z - rhs.m_z
+        lhs.x - rhs.x,
+        lhs.y - rhs.y,
+        lhs.z - rhs.z
     };
 }
 
 IVec2 operator-(const IVec2& lhs, const IVec2& rhs)
 {
     return {
-        lhs.m_x - rhs.m_x,
-        lhs.m_y - rhs.m_y,
+        lhs.x - rhs.x,
+        lhs.y - rhs.y,
     };
 }
 
 IVec3 operator-(const IVec3& lhs, const IVec3& rhs)
 {
     return {
-        lhs.m_x - rhs.m_x,
-        lhs.m_y - rhs.m_y,
-        lhs.m_z - rhs.m_z
+        lhs.x - rhs.x,
+        lhs.y - rhs.y,
+        lhs.z - rhs.z
     };
 }
 
@@ -175,8 +175,8 @@ Vec2
 operator*(const f32 lhs, const Vec2& rhs)
 {
     return {
-        lhs * rhs.m_x,
-        lhs * rhs.m_y,
+        lhs * rhs.x,
+        lhs * rhs.y,
     };
 }
 
@@ -184,60 +184,60 @@ Vec3
 operator*(const f32 lhs, const Vec3& rhs)
 {
     return {
-        lhs * rhs.m_x,
-        lhs * rhs.m_y,
-        lhs * rhs.m_z,
+        lhs * rhs.x,
+        lhs * rhs.y,
+        lhs * rhs.z,
     };
 }
 
 IVec2 operator*(const s32 lhs, const IVec2& rhs)
 {
     return {
-        lhs * rhs.m_x,
-        lhs * rhs.m_y,
+        lhs * rhs.x,
+        lhs * rhs.y,
     };
 }
 
 IVec3 operator*(const s32 lhs, const IVec3& rhs)
 {
     return {
-        lhs * rhs.m_x,
-        lhs * rhs.m_y,
-        lhs * rhs.m_z,
+        lhs * rhs.x,
+        lhs * rhs.y,
+        lhs * rhs.z,
     };
 }
 
 f32 
 Vec2::get_length() const
 {
-    return sqrt(m_x * m_x + m_y * m_y);
+    return sqrt(x * x + y * y);
 }
 
 f32 
 Vec3::get_length() const
 {
-    return sqrt(m_x * m_x + m_y * m_y + m_z * m_z);
+    return sqrt(x * x + y * y + z * z);
 }
 
 f32
 Vec2::get_length_squared() const
 {
-    return m_x * m_x + m_y * m_y;
+    return x * x + y * y;
 }
 
 f32
 Vec3::get_length_squared() const
 {
-    return m_x * m_x + m_y * m_y + m_z * m_z;
+    return x * x + y * y + z * z;
 }
 
 Vec3
 max(const Vec3& lhs, const Vec3& rhs)
 {
     return {
-        lhs.m_x > rhs.m_x ? lhs.m_x : rhs.m_x,
-        lhs.m_y > rhs.m_y ? lhs.m_y : rhs.m_y,
-        lhs.m_z > rhs.m_z ? lhs.m_z : rhs.m_z,
+        lhs.x > rhs.x ? lhs.x : rhs.x,
+        lhs.y > rhs.y ? lhs.y : rhs.y,
+        lhs.z > rhs.z ? lhs.z : rhs.z,
     };
 }
 
@@ -245,31 +245,31 @@ Vec3
 min(const Vec3& lhs, const Vec3& rhs)
 {
     return {
-        lhs.m_x < rhs.m_x ? lhs.m_x : rhs.m_x,
-        lhs.m_y < rhs.m_y ? lhs.m_y : rhs.m_y,
-        lhs.m_z < rhs.m_z ? lhs.m_z : rhs.m_z,
+        lhs.x < rhs.x ? lhs.x : rhs.x,
+        lhs.y < rhs.y ? lhs.y : rhs.y,
+        lhs.z < rhs.z ? lhs.z : rhs.z,
     };
 }
 
 f32
 dot(const Vec2& lhs, const Vec2& rhs)
 {
-    return lhs.m_x * rhs.m_x + lhs.m_y * rhs.m_y;
+    return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
 f32 
 dot(const Vec3& lhs, const Vec3& rhs)
 {
-    return lhs.m_x * rhs.m_x + lhs.m_y * rhs.m_y + lhs.m_z * rhs.m_z;
+    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
 Vec3 
 cross(const Vec3& lhs, const Vec3& rhs)
 {
     return {
-        lhs.m_y * rhs.m_z - lhs.m_z * rhs.m_y,
-        lhs.m_z * rhs.m_x - lhs.m_x * rhs.m_z,
-        lhs.m_x * rhs.m_y - lhs.m_y * rhs.m_x
+        lhs.y * rhs.z - lhs.z * rhs.y,
+        lhs.z * rhs.x - lhs.x * rhs.z,
+        lhs.x * rhs.y - lhs.y * rhs.x
     };
 }
 
@@ -286,8 +286,8 @@ Vec2::normalize() const
     const f32 length {sqrt(length_squared)};
 
     return {
-        m_x / length,
-        m_y / length,
+        x / length,
+        y / length,
     };
 }
 
@@ -304,9 +304,9 @@ Vec3::normalize() const
     const f32 length {sqrt(length_squared)};
 
     return {
-        m_x / length,
-        m_y / length,
-        m_z / length
+        x / length,
+        y / length,
+        z / length
     };
 }
 
@@ -338,9 +338,9 @@ Mat4::translate(const Vec3& s) const
     translation_matrix[1][1] = 1.0f;
     translation_matrix[2][2] = 1.0f;
     translation_matrix[3][3] = 1.0f;
-    translation_matrix[3][0] = s.m_x;
-    translation_matrix[3][1] = s.m_y;
-    translation_matrix[3][2] = s.m_z;
+    translation_matrix[3][0] = s.x;
+    translation_matrix[3][1] = s.y;
+    translation_matrix[3][2] = s.z;
 
     return *this * translation_matrix;
 }
@@ -356,17 +356,17 @@ Mat4::rotate(const f32 angle, const Vec3& axis) const
 
     Mat4 rotation {};
 
-    rotation[0][0] = cos_angle + axis_normalized.m_x * axis_normalized.m_x * tan_angle;
-    rotation[0][1] = axis_normalized.m_x * axis_normalized.m_y * tan_angle + axis_normalized.m_z * sin_angle;
-    rotation[0][2] = axis_normalized.m_x * axis_normalized.m_z * tan_angle - axis_normalized.m_y * sin_angle;
+    rotation[0][0] = cos_angle + axis_normalized.x * axis_normalized.x * tan_angle;
+    rotation[0][1] = axis_normalized.x * axis_normalized.y * tan_angle + axis_normalized.z * sin_angle;
+    rotation[0][2] = axis_normalized.x * axis_normalized.z * tan_angle - axis_normalized.y * sin_angle;
 
-    rotation[1][0] = axis_normalized.m_y * axis_normalized.m_x * tan_angle - axis_normalized.m_z * sin_angle;
-    rotation[1][1] = cos_angle + axis_normalized.m_y * axis_normalized.m_y * tan_angle;
-    rotation[1][2] = axis_normalized.m_y * axis_normalized.m_z * tan_angle + axis_normalized.m_x * sin_angle;
+    rotation[1][0] = axis_normalized.y * axis_normalized.x * tan_angle - axis_normalized.z * sin_angle;
+    rotation[1][1] = cos_angle + axis_normalized.y * axis_normalized.y * tan_angle;
+    rotation[1][2] = axis_normalized.y * axis_normalized.z * tan_angle + axis_normalized.x * sin_angle;
 
-    rotation[2][0] = axis_normalized.m_z * axis_normalized.m_x * tan_angle + axis_normalized.m_y * sin_angle;
-    rotation[2][1] = axis_normalized.m_z * axis_normalized.m_y * tan_angle - axis_normalized.m_x * sin_angle;
-    rotation[2][2] = cos_angle + axis_normalized.m_z * axis_normalized.m_z * tan_angle;
+    rotation[2][0] = axis_normalized.z * axis_normalized.x * tan_angle + axis_normalized.y * sin_angle;
+    rotation[2][1] = axis_normalized.z * axis_normalized.y * tan_angle - axis_normalized.x * sin_angle;
+    rotation[2][2] = cos_angle + axis_normalized.z * axis_normalized.z * tan_angle;
 
     rotation[3][3] = 1.0f;
 
@@ -398,11 +398,11 @@ get_view_matrix(const Vec3& position, const Vec3& rotation)
 Mat4 get_orthographic_matrix(const Vec2& min, const Vec2& max, const f32 near, const f32 far)
 {
     Mat4 result {};
-    result[0][0] = 2.0f / (max.m_x - min.x());
-    result[1][1] = -2.0f / (max.m_y - min.m_y);
+    result[0][0] = 2.0f / (max.x - min.x);
+    result[1][1] = -2.0f / (max.y - min.y);
     result[2][2] = -2.0f / (far - near);
-    result[3][0] = -(max.m_x + min.x()) / (max.m_x - min.x());
-    result[3][1] = (max.m_y + min.m_y) / (max.m_y - min.m_y);
+    result[3][0] = -(max.x + min.x) / (max.x - min.x);
+    result[3][1] = (max.y + min.y) / (max.y - min.y);
     result[3][2] = -(far + near) / (far - near);
     result[3][3] = 1.0f;
     
@@ -433,17 +433,17 @@ get_look_at_matrix(const Vec3& position, const Vec3& target, const Vec3& up)
 
     Mat4 result = {};
 
-    result[0][0] = camera_right.m_x;
-    result[1][0] = camera_right.m_y;
-    result[2][0] = camera_right.m_z;
+    result[0][0] = camera_right.x;
+    result[1][0] = camera_right.y;
+    result[2][0] = camera_right.z;
 
-    result[0][1] = camera_up.m_x;
-    result[1][1] = camera_up.m_y;
-    result[2][1] = camera_up.m_z;
+    result[0][1] = camera_up.x;
+    result[1][1] = camera_up.y;
+    result[2][1] = camera_up.z;
 
-    result[0][2] = -camera_forward.m_x;
-    result[1][2] = -camera_forward.m_y;
-    result[2][2] = -camera_forward.m_z;
+    result[0][2] = -camera_forward.x;
+    result[1][2] = -camera_forward.y;
+    result[2][2] = -camera_forward.z;
 
     result[3][0] = -dot(camera_right, position);
     result[3][1] = -dot(camera_up, position);
@@ -473,10 +473,10 @@ interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 d
 Vec3 
 get_forward(const Vec3& rotation)
 {
-    const f32 rotation_x = to_radians(rotation.x());
-    const f32 rotation_z = to_radians(rotation.z());
+    const f32 rotation_x {to_radians(rotation.x)};
+    const f32 rotation_z {to_radians(rotation.z)};
 
-    const Vec3 forward = {
+    const Vec3 forward {
         cosf(rotation_x) * cosf(rotation_z),
         cosf(rotation_x) * sinf(rotation_z),
         sinf(rotation_x),
@@ -488,8 +488,8 @@ get_forward(const Vec3& rotation)
 Vec3 
 get_right(const Vec3& rotation)
 {
-    const Vec3 forward = get_forward(rotation);
-    const Vec3 right = cross(forward, Vec3::unit_z());
+    const Vec3 forward {get_forward(rotation)};
+    const Vec3 right {cross(forward, Vec3::unit_z())};
 
     return right.normalize();
 }
@@ -497,9 +497,9 @@ get_right(const Vec3& rotation)
 Vec3 
 get_up(const Vec3& rotation)
 {
-    const Vec3 forward = get_forward(rotation);
-    const Vec3 right = get_right(rotation);
-    const Vec3 up = cross(forward, right);
+    const Vec3 forward {get_forward(rotation)};
+    const Vec3 right {get_right(rotation)};
+    const Vec3 up {cross(forward, right)};
 
     return up.normalize();
 }
@@ -507,8 +507,8 @@ get_up(const Vec3& rotation)
 IVec2 IBounds2::position() const
 {
     return {
-        m_min.m_x,
-        m_min.m_y
+        min.x,
+        min.y
     };
 }
 
@@ -516,8 +516,8 @@ IVec2
 IBounds2::size() const
 {
     return {
-        m_max.m_x - m_min.m_x,
-        m_max.m_y - m_min.m_y,
+        max.x - min.x,
+        max.y - min.y,
     };
 }
 
@@ -525,10 +525,10 @@ b32
 overlaps(const IBounds2& lhs, const IBounds2& rhs)
 {
     return !(
-        lhs.m_max.m_x <= rhs.m_min.m_x ||
-        rhs.m_max.m_x <= lhs.m_min.m_x ||
-        lhs.m_max.m_y <= rhs.m_min.m_y ||
-        rhs.m_max.m_y <= lhs.m_min.m_y
+        lhs.max.x <= rhs.min.x ||
+        rhs.max.x <= lhs.min.x ||
+        lhs.max.y <= rhs.min.y ||
+        rhs.max.y <= lhs.min.y
     );
 }
 
@@ -536,62 +536,61 @@ IBounds2
 intersection(const IBounds2& lhs, const IBounds2& rhs)
 {
     const IVec2 o_min = {
-        max(lhs.m_min.m_x, rhs.m_min.m_x),
-        max(lhs.m_min.m_y, rhs.m_min.m_y)
+        max(lhs.min.x, rhs.min.x),
+        max(lhs.min.y, rhs.min.y)
     };
 
     const IVec2 o_max = {
-        min(lhs.m_max.m_x, rhs.m_max.m_x),
-        min(lhs.m_max.m_y, rhs.m_max.m_y)
+        min(lhs.max.x, rhs.max.x),
+        min(lhs.max.y, rhs.max.y)
     };
 
     return {
-        {o_min.m_x, o_min.m_y},
-        {o_max.m_x, o_max.m_y},
+        {o_min.x, o_min.y},
+        {o_max.x, o_max.y},
     };
 }
 
 vector<IBounds2>
 subtract(const IBounds2& lhs, const IBounds2& rhs)
 {
-    vector<IBounds2> bounds_vector {};
-
     if (!overlaps(lhs, rhs))
     {
-        return bounds_vector;
+        return {lhs};
     }
 
+    vector<IBounds2> bounds_vector {};
     const IBounds2 intersection_bounds {intersection(lhs, rhs)};
 
-    if (intersection_bounds.m_min.m_x > lhs.m_min.m_x)
+    if (intersection_bounds.min.x > lhs.min.x)
     {
         bounds_vector.push_back({
-            {lhs.m_min.m_x, lhs.m_min.m_y},
-            {intersection_bounds.m_min.m_x, lhs.m_min.m_y},
+            {lhs.min.x, lhs.min.y},
+            {intersection_bounds.min.x, lhs.max.y},
         });
     }
 
-    if (intersection_bounds.m_max.m_x < lhs.m_max.m_x)
+    if (intersection_bounds.max.x < lhs.max.x)
     {
         bounds_vector.push_back({
-            {intersection_bounds.m_max.m_x, lhs.m_max.m_y},
-            {lhs.m_max.m_x, lhs.m_max.m_y}
+            {intersection_bounds.max.x, lhs.min.y},
+            {lhs.max.x, lhs.max.y}
         });
     }
 
-    if (intersection_bounds.m_min.m_y > lhs.m_min.m_y)
+    if (intersection_bounds.min.y > lhs.min.y)
     {
         bounds_vector.push_back({
-            {intersection_bounds.m_min.m_x, lhs.m_min.m_y},
-            {intersection_bounds.m_max.m_x, intersection_bounds.m_min.m_y}
+            {intersection_bounds.min.x, lhs.min.y},
+            {intersection_bounds.max.x, intersection_bounds.min.y}
         });
     }
 
-    if (intersection_bounds.m_max.m_y < lhs.m_max.m_y)
+    if (intersection_bounds.max.y < lhs.max.y)
     {
         bounds_vector.push_back({
-            {intersection_bounds.m_min.m_x, intersection_bounds.m_max.m_y},
-            {intersection_bounds.m_max.m_x, lhs.m_max.m_y}
+            {intersection_bounds.min.x, intersection_bounds.max.y},
+            {intersection_bounds.max.x, lhs.max.y}
         });
     }
 

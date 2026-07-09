@@ -13,34 +13,34 @@ Action::queue_move_act(Platform& platform, State& state)
 
     if (platform.button_is_down(Button::A))
     {
-        act_value.m_x -= 1.0f;
+        act_value.x -= 1.0f;
     }
 
     if (platform.button_is_down(Button::D))
     {
-        act_value.m_x += 1.0f;
+        act_value.x += 1.0f;
     }
 
     if (platform.button_is_down(Button::W))
     {
-        act_value.m_y += 1.0f;
+        act_value.y += 1.0f;
     }
 
     if (platform.button_is_down(Button::S))
     {
-        act_value.m_y -= 1.0f;
+        act_value.y -= 1.0f;
     }
 
     act_value = act_value.normalize();
 
     if (platform.button_is_down(Button::E))
     {
-        act_value.m_z += 1.0f;
+        act_value.z += 1.0f;
     }
 
     if (platform.button_is_down(Button::Q))
     {
-        act_value.m_z -= 1.0f;
+        act_value.z -= 1.0f;
     }
 
     const Act move_act{ActType::Move, act_value};
@@ -93,26 +93,26 @@ Action::apply_move_act(const Act& act, Actor& judge)
     case MovementType::Ground:
     {
         const Vec3 judge_forward_xy{
-            judge_forward.m_x,
-            judge_forward.m_y,
+            judge_forward.x,
+            judge_forward.y,
             0.0f
         };
 
-        velocity_right = act.get_act_value().m_x * judge_right;
-        velocity_forward = act.get_act_value().m_y * judge_forward_xy;
+        velocity_right = act.get_act_value().x * judge_right;
+        velocity_forward = act.get_act_value().y * judge_forward_xy;
         
         const Vec3 move_velocity = judge.speed * (velocity_right + velocity_forward).normalize();
 
-        judge.velocity.m_x = move_velocity.m_x;
-        judge.velocity.m_y = move_velocity.m_y;
+        judge.velocity.x = move_velocity.x;
+        judge.velocity.y = move_velocity.y;
 
         break;
     }
     case MovementType::Debug:
     {
-        velocity_right = act.get_act_value().m_x * judge_right;
-        velocity_forward = act.get_act_value().m_y * judge_forward;
-        velocity_up = act.get_act_value().m_z * Vec3::unit_z();
+        velocity_right = act.get_act_value().x * judge_right;
+        velocity_forward = act.get_act_value().y * judge_forward;
+        velocity_up = act.get_act_value().z * Vec3::unit_z();
     
         judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
 
@@ -144,17 +144,17 @@ Action::apply_act(const Act& act, Actor& judge)
 void
 Action::apply_rotate_act(const Act& act, Actor& judge)
 {
-    judge.rotation.m_z -= CAMERA_SENSITIVITY_X * act.get_act_value().m_x;
-    judge.rotation.m_x -= CAMERA_SENSITIVITY_Y * act.get_act_value().m_y;
+    judge.rotation.z -= CAMERA_SENSITIVITY_X * act.get_act_value().x;
+    judge.rotation.x -= CAMERA_SENSITIVITY_Y * act.get_act_value().y;
 
-    if (judge.rotation.m_x > CAMERA_PITCH_LIMIT)
+    if (judge.rotation.x > CAMERA_PITCH_LIMIT)
     {
-        judge.rotation.m_x = CAMERA_PITCH_LIMIT;
+        judge.rotation.x = CAMERA_PITCH_LIMIT;
     }
 
-    if (judge.rotation.m_x < -CAMERA_PITCH_LIMIT)
+    if (judge.rotation.x < -CAMERA_PITCH_LIMIT)
     {
-        judge.rotation.m_x = -CAMERA_PITCH_LIMIT;
+        judge.rotation.x = -CAMERA_PITCH_LIMIT;
     }
 }
 
@@ -163,7 +163,7 @@ Action::apply_jump_act(const Act& act, Actor& judge)
 {
     if (judge.is_grounded)
     {
-        judge.velocity.m_z = JUDGE_DEFAULT_JUMP_SPEED;
+        judge.velocity.z = JUDGE_DEFAULT_JUMP_SPEED;
     }
 }
 

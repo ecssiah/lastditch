@@ -27,22 +27,19 @@ struct IVec3;
 
 struct Vec2
 {
-    f32 m_x;
-    f32 m_y;
+    f32 x;
+    f32 y;
 
     Vec2();
     Vec2(f32 x, f32 y);
     explicit Vec2(f32 scalar);
     explicit Vec2(const IVec2& ivec2);
 
-    [[nodiscard]] constexpr f32 x() const { return m_x; }
-    [[nodiscard]] constexpr f32 y() const { return m_y; }
-
     constexpr f32&
-    operator[](const s32 index) { return (&m_x)[index]; }
+    operator[](const s32 index) { return (&x)[index]; }
 
     constexpr const f32&
-    operator[](const s32 index) const { return (&m_x)[index]; }
+    operator[](const s32 index) const { return (&x)[index]; }
 
     static constexpr Vec2
     unit_x() { return {1.0f, 0.0f}; }
@@ -63,24 +60,20 @@ struct Vec2
 
 struct Vec3
 {
-    f32 m_x;
-    f32 m_y;
-    f32 m_z;
+    f32 x;
+    f32 y;
+    f32 z;
 
     Vec3();
     explicit Vec3(f32 scalar);
     Vec3(f32 x, f32 y, f32 z);
     Vec3(const IVec3& ivec3);
 
-    [[nodiscard]] constexpr f32 x() const { return m_x; }
-    [[nodiscard]] constexpr f32 y() const { return m_y; }
-    [[nodiscard]] constexpr f32 z() const { return m_z; }
-
     constexpr f32&
-    operator[](const s32 index) { return (&m_x)[index]; }
+    operator[](const s32 index) { return (&x)[index]; }
 
     constexpr const f32&
-    operator[](const s32 index) const { return (&m_x)[index]; }
+    operator[](const s32 index) const { return (&x)[index]; }
 
     static constexpr Vec3
     unit_x() { return {1.0f, 0.0f, 0.0f}; }
@@ -108,14 +101,14 @@ struct Vec3
 
 struct IVec2
 {
-    s32 m_x;
-    s32 m_y;
+    s32 x;
+    s32 y;
     
     constexpr s32&
-    operator[](const s32 index) { return (&m_x)[index]; }
+    operator[](const s32 index) { return (&x)[index]; }
 
     constexpr const s32&
-    operator[](const s32 index) const { return (&m_x)[index]; }
+    operator[](const s32 index) const { return (&x)[index]; }
 
     friend IVec2 operator+(const IVec2& lhs, const IVec2& rhs);
     friend IVec2 operator-(const IVec2& lhs, const IVec2& rhs);
@@ -124,19 +117,19 @@ struct IVec2
 
 struct IVec3
 {
-    s32 m_x;
-    s32 m_y;
-    s32 m_z;
+    s32 x;
+    s32 y;
+    s32 z;
 
     IVec3();
     explicit IVec3(s32 s);
     IVec3(s32 x, s32 y, s32 z);
     
     constexpr s32&
-    operator[](const s32 index) { return (&m_x)[index]; }
+    operator[](const s32 index) { return (&x)[index]; }
 
     constexpr const s32&
-    operator[](const s32 index) const { return (&m_x)[index]; }
+    operator[](const s32 index) const { return (&x)[index]; }
 
     friend IVec3 operator+(const IVec3& lhs, const IVec3& rhs);
     friend IVec3 operator-(const IVec3& lhs, const IVec3& rhs);
@@ -163,8 +156,8 @@ struct Mat4
 
 struct IBounds2
 {
-    IVec2 m_min;
-    IVec2 m_max;
+    IVec2 min;
+    IVec2 max;
 
     [[nodiscard]] IVec2 position() const;
     [[nodiscard]] IVec2 size() const;

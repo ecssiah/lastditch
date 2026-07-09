@@ -42,14 +42,14 @@ Physics::get_grid_overlap_of_bounds(const Bounds3& bounds)
 {
     return {
         {
-            max(static_cast<s32>(floorf(bounds.min.x())), 0),
-            max(static_cast<s32>(floorf(bounds.min.y())), 0),
-            max(static_cast<s32>(floorf(bounds.min.z())), 0),
+            max(static_cast<s32>(floorf(bounds.min.x)), 0),
+            max(static_cast<s32>(floorf(bounds.min.y)), 0),
+            max(static_cast<s32>(floorf(bounds.min.z)), 0),
         },
         {
-            min(static_cast<s32>(ceilf(bounds.max.x())) - 1, WORLD_SIZE_IN_CELLS - 1),
-            min(static_cast<s32>(ceilf(bounds.max.y())) - 1, WORLD_SIZE_IN_CELLS - 1),
-            min(static_cast<s32>(ceilf(bounds.max.z())) - 1, WORLD_SIZE_IN_CELLS - 1),
+            min(static_cast<s32>(ceilf(bounds.max.x)) - 1, WORLD_SIZE_IN_CELLS - 1),
+            min(static_cast<s32>(ceilf(bounds.max.y)) - 1, WORLD_SIZE_IN_CELLS - 1),
+            min(static_cast<s32>(ceilf(bounds.max.z)) - 1, WORLD_SIZE_IN_CELLS - 1),
         },
     };
 }
@@ -203,15 +203,15 @@ Physics::integrate(World& world, Actor& actor, const f32 delta_time)
     if (actor.box_collider.collision_enabled)
     {
         const Vec3 move = {
-            fabsf(delta_time * actor.velocity.x()),
-            fabsf(delta_time * actor.velocity.y()),
-            fabsf(delta_time * actor.velocity.z()),
+            fabsf(delta_time * actor.velocity.x),
+            fabsf(delta_time * actor.velocity.y),
+            fabsf(delta_time * actor.velocity.z),
         };
 
         const f32 max_move {
             max(
-                move.m_x,
-                max(move.m_y, move.z())
+                move.x,
+                max(move.y, move.z)
             )
         };
 

@@ -227,24 +227,24 @@ Screen::draw_debug_info(const Population& population)
 {
     const Actor& judge {population.get_judge()};
 
-    const IVec3 cell_coordinate {World::position_to_cell_coordinate(judge.position.m_x, judge.position.m_y, judge.position.m_z)};
-    const IVec2 sector_coordinate {World::cell_coordinate_to_sector_coordinate(cell_coordinate.m_x, cell_coordinate.m_y)};
+    const IVec3 cell_coordinate {World::position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z)};
+    const IVec2 sector_coordinate {World::cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y)};
 
     const string position_text {
         format(
             "POS {:.1f} {:.1f} {:.1f}",
-            judge.position.m_x,
-            judge.position.m_y,
-            judge.position.m_z
+            judge.position.x,
+            judge.position.y,
+            judge.position.z
         )
     };
     
     const string velocity_text {
         format(
         "VEL {:.1f} {:.1f} {:.1f}",
-            judge.velocity.m_x,
-            judge.velocity.m_y,
-            judge.velocity.m_z
+            judge.velocity.x,
+            judge.velocity.y,
+            judge.velocity.z
         )
     };
     
@@ -253,30 +253,30 @@ Screen::draw_debug_info(const Population& population)
     string floor_text {"FLR -"};
     string movement_type_text {};
     
-    if (World::cell_coordinate_is_valid(cell_coordinate.m_x, cell_coordinate.m_y, cell_coordinate.m_z))
+    if (World::cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
     {
         cell_coordinate_text =
             format(
                 "CEL {} {} {}",
-                cell_coordinate.m_x,
-                cell_coordinate.m_y,
-                cell_coordinate.m_z
+                cell_coordinate.x,
+                cell_coordinate.y,
+                cell_coordinate.z
             );
     }
 
-    if (World::sector_coordinate_is_valid(sector_coordinate.m_x, sector_coordinate.m_y))
+    if (World::sector_coordinate_is_valid(sector_coordinate.x, sector_coordinate.y))
     {  
         sector_coordinate_text =
             format(
                 "SEC {} {}",
-                sector_coordinate.m_x,
-                sector_coordinate.m_y
+                sector_coordinate.x,
+                sector_coordinate.y
             );
     }
 
-    if (cell_coordinate.m_z >= 0)
+    if (cell_coordinate.z >= 0)
     {
-        const s32 floor_number {World::get_floor(cell_coordinate.m_z)};
+        const s32 floor_number {World::get_floor(cell_coordinate.z)};
         
         if (floor_number < FLOOR_COUNT)
         {
