@@ -13,8 +13,7 @@ Population::Population()
     :
     random{POPULATION_SEED},
     nation_array{},
-    judge_id{},
-    actor_pool{}
+    judge_id{}
 {
 
 }
@@ -23,9 +22,6 @@ void
 Population::init(Work& work)
 {
     init_nations();
-
-    init_actor_pool();
-
     init_judge();
     init_agents(work);
 }
@@ -39,25 +35,31 @@ Population::quit()
 Actor&
 Population::get_judge()
 {
-    return actor_pool.actor_array[judge_id];
+    return actor_pool.get(judge_id);
 }
 
 const Actor&
 Population::get_judge() const
 {
-    return actor_pool.actor_array[judge_id];
+    return actor_pool.get(judge_id);
 }
 
 Actor&
 Population::get_actor(s32 actor_id)
 {
-    return actor_pool.actor_array[actor_id];
+    return actor_pool.get(actor_id);
 }
 
 const Actor&
 Population::get_actor(s32 actor_id) const
 {
-    return actor_pool.actor_array[actor_id];
+    return actor_pool.get(actor_id);
+}
+
+ActorPool&
+Population::get_actor_pool()
+{
+    return actor_pool;
 }
 
 void
@@ -77,9 +79,7 @@ Population::init_judge()
         },
     };
 
-    add_actor(judge);
-
-    judge_id = judge.actor_id;
+    judge_id = actor_pool.add(judge);
 
     LOG_INFO(
         "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)", 
@@ -109,13 +109,13 @@ Population::init_agents(Work& work)
                 static_cast<f32>(nation.home_coordinate.z + 4),
             };
 
-            const Vec3 rotation{
+            const Vec3 rotation {
                 0.0f, 
                 0.0f, 
                 static_cast<f32>(random.uniform(0, 360))
             };
 
-            Actor agent{
+            Actor agent {
                 .actor_type = ActorType::Agent,
                 .nation_type = nation_type,
                 .position = position,
@@ -128,7 +128,7 @@ Population::init_agents(Work& work)
                 },
             };
 
-            add_actor(agent);
+            agent.id = actor_pool.add(agent);
 
             const TaskState act_state{
                 .wander = {
@@ -137,12 +137,23 @@ Population::init_agents(Work& work)
                 },
             };
 
-            work.add_task(agent, TaskType::wander, act_state);
+            Task task {
+                .actor_id = agent.id,
+                .task_type = TaskType::wander,
+                .task_state = act_state,
+            };
+
+            task.id = work.get_task_pool().add(task);
+
+            if (agent.act_id_count < ACTOR_TASK_MAX_COUNT)
+            {
+                agent.act_id_array[agent.act_id_count++] = task.id;
+            }
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",
                 nation_type_string_array[nation_type_index],
-                agent.actor_id,
+                agent.id,
                 agent.position.x,
                 agent.position.y,
                 agent.position.z
@@ -187,30 +198,4 @@ Population::init_nations()
     lion_nation.home_coordinate.x = WORLD_CENTER_F32 + 0.0f;
     lion_nation.home_coordinate.y = WORLD_CENTER_F32 - nation_offset;
     lion_nation.home_coordinate.z = ROOF_Z + 3.0f;
-}
-
-void
-Population::init_actor_pool()
-{
-    actor_pool.free_count = ACTION_MAX;
-    actor_pool.active_count = 0;
-
-    for (s32 pool_id = 0; pool_id < ACTION_MAX; ++pool_id)
-    {
-        actor_pool.active_array[pool_id] = 0;
-        actor_pool.free_array[pool_id] = pool_id;
-    }
-}
-
-void
-Population::add_actor(Actor& actor)
-{
-    const s32 actor_id = actor_pool.free_array[--actor_pool.free_count];
-
-    actor.actor_id = actor_id;
-
-    actor_pool.active_array[actor_pool.active_count++] = actor_id;
-    actor_pool.actor_array[actor_id] = actor;
-
-    assert(actor_pool.free_count + actor_pool.active_count == ACTION_MAX);
 }

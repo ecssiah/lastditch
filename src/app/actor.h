@@ -1,24 +1,25 @@
 #pragma once
 
+#include "pool.h"
 #include "app/nation.h"
 #include "app/physics.h"
 #include "core/geometry.h"
 #include "core/types.h"
 
-constexpr s32 ACTION_MAX = 256;
+constexpr s32 ACTOR_POOL_MAX {1 << 8};
 
-constexpr f32 AGENT_DEFAULT_GROUND_SPEED = 1.0f;
-constexpr f32 AGENT_DEFAULT_JUMP_SPEED = 28.0f;
+constexpr f32 AGENT_DEFAULT_GROUND_SPEED {1.0f};
+constexpr f32 AGENT_DEFAULT_JUMP_SPEED {28.0f};
 
-constexpr f32 JUDGE_DEFAULT_GROUND_SPEED = 12.0f;
-constexpr f32 JUDGE_DEFAULT_JUMP_SPEED = 36.0f;
-constexpr f32 JUDGE_DEFAULT_DEBUG_SPEED = 32.0f;
+constexpr f32 JUDGE_DEFAULT_GROUND_SPEED {12.0f};
+constexpr f32 JUDGE_DEFAULT_JUMP_SPEED {36.0f};
+constexpr f32 JUDGE_DEFAULT_DEBUG_SPEED {32.0f};
 
-constexpr f32 CAMERA_SENSITIVITY_X = 0.22f;
-constexpr f32 CAMERA_SENSITIVITY_Y = 0.22f;
-constexpr f32 CAMERA_PITCH_LIMIT = 89.0f;
+constexpr f32 CAMERA_SENSITIVITY_X {0.22f};
+constexpr f32 CAMERA_SENSITIVITY_Y {0.22f};
+constexpr f32 CAMERA_PITCH_LIMIT {89.0f};
 
-constexpr s32 ACTOR_TASK_MAX_COUNT = 128;
+constexpr s32 ACTOR_TASK_MAX_COUNT {128};
 
 #define FOR_LIST_MOVEMENT_TYPE(DO)                                             \
     DO(Ground)                                                                 \
@@ -48,26 +49,27 @@ extern const char* actor_type_string_array[ACTOR_TYPE_COUNT];
 class Actor
 {
 public:
-    s32 actor_id{};
+    s32 id {};
 
-    ActorType actor_type{ActorType::None};
-    NationType nation_type{NationType::Wolf};
-    MovementType movement_type{MovementType::Ground};
+    ActorType actor_type {ActorType::None};
+    NationType nation_type {NationType::Wolf};
+    MovementType movement_type {MovementType::Ground};
 
-    Vec3 position{};
-    Vec3 rotation{};
-    Vec3 rotation_target{};
+    Vec3 position {};
+    Vec3 rotation {};
+    Vec3 rotation_target {};
 
-    b32 is_grounded{false};
+    b32 is_grounded {false};
 
-    f32 speed{0.0f};
-    Vec3 velocity{};
+    f32 speed {0.0f};
+    Vec3 velocity {};
 
-    BoxCollider box_collider{};
+    BoxCollider box_collider {};
 
-    s32 act_id_count{};
-    std::array<s32, ACTOR_TASK_MAX_COUNT> act_id_array{};
+    s32 act_id_count {};
+    std::array<s32, ACTOR_TASK_MAX_COUNT> act_id_array {};
 
     static s32 get_type_index(const std::string& actor_type_string);
 };
 
+using ActorPool = Pool<Actor, ACTOR_POOL_MAX>;

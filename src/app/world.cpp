@@ -68,12 +68,12 @@ World::init(Debug& debug)
 void
 World::update(Population& population, const f32 delta_time)
 {
-    population.for_each_active_actor(
-        [this, delta_time](Actor& actor)
-        {
-            Physics::update_actor(*this, actor, delta_time);
-        }
-    );
+    for (const s32 id : population.get_actor_pool())
+    {
+        Actor& actor = population.get_actor(id);
+
+        Physics::update_actor(*this, actor, delta_time);
+    }
 }
 
 void
@@ -1413,13 +1413,13 @@ World::calculate_area_edges(s32 floor_number)
                     .area_overlap = area_overlap,
                 };
 
-                const s32 edge_id = edge_pool.add(area_edge);
+                area_edge.id = edge_pool.add(area_edge);
 
                 assert(area_left.edge_id_count < AREA_EDGE_MAX);
                 assert(area_right.edge_id_count < AREA_EDGE_MAX);
 
-                area_left.edge_id_array[area_left.edge_id_count++] = edge_id;
-                area_right.edge_id_array[area_right.edge_id_count++] = edge_id;
+                area_left.edge_id_array[area_left.edge_id_count++] = area_edge.id;
+                area_right.edge_id_array[area_right.edge_id_count++] = area_edge.id;
             }
         }
     }
@@ -1668,10 +1668,9 @@ World::construct_areas(s32 floor_number)
 {
     const AreaPool& area_pool {area_pool_vector[floor_number]};
 
-    for (s32 pool_id = 0; pool_id < static_cast<s32>(area_pool.active_id_vector.size()); ++pool_id)
+    for (const s32 id : area_pool)
     {
-        const s32 area_id {area_pool.active_id_vector[pool_id]};
-        const Area& area {area_pool.item_array[area_id]};
+        const Area& area {area_pool.get(id)};
 
         switch (area.area_type)
         {
@@ -1694,10 +1693,9 @@ World::place_content(s32 floor_number)
 {
     const AreaPool& area_pool {area_pool_vector[floor_number]};
 
-    for (s32 pool_id = 0; pool_id < static_cast<s32>(area_pool.active_id_vector.size()); ++pool_id)
+    for (const s32 id : area_pool)
     {
-        const s32 area_id {area_pool.active_id_vector[pool_id]};
-        const Area& area {area_pool.item_array[area_id]};
+        const Area& area {area_pool.get(id)};
 
         if (area.area_type != AreaType::Room)
         {
@@ -1743,12 +1741,11 @@ World::draw_debug_info(Debug& debug)
 {
     const AreaPool& area_pool {area_pool_vector[DEBUG_FLOOR_NUMBER]};
 
-    for (s32 pool_id = 0; pool_id < static_cast<s32>(area_pool.active_id_vector.size()); ++pool_id)
+    for (const s32 id : area_pool)
     {
         const Vec3 red {1.0f, 0.0f, 0.0f};
 
-        const s32 area_id {area_pool.active_id_vector[pool_id]};
-        const Area& area {area_pool.item_array[area_id]};
+        const Area& area {area_pool.get(id)};
 
         const Vec3 area_debug_min {
             static_cast<f32>(area.bounds.min.x),

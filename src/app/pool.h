@@ -2,8 +2,7 @@
 // Created by Michael Chapman on 7/9/26.
 //
 
-#ifndef LASTDITCH_POOL_H
-#define LASTDITCH_POOL_H
+#pragma once
 
 #include <cstddef>
 #include <array>
@@ -32,6 +31,12 @@ struct Pool
     [[nodiscard]] T& get(s32 id) { return item_array[id]; }
     [[nodiscard]] const T& get(s32 id) const { return item_array[id]; }
 
+    auto begin() { return active_id_vector.begin(); }
+    auto end()   { return active_id_vector.end(); }
+
+    auto begin() const { return active_id_vector.begin(); }
+    auto end()   const { return active_id_vector.end(); }
+
     s32 add(T value)
     {
         assert(!free_id_vector.empty());
@@ -54,5 +59,3 @@ struct Pool
         free_id_vector.push_back(id);
     }
 };
-
-#endif //LASTDITCH_POOL_H

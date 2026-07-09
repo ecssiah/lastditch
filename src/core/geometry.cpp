@@ -457,12 +457,13 @@ get_look_at_matrix(const Vec3& position, const Vec3& target, const Vec3& up)
 f32 
 interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 delta_time)
 {
-    const f32 alpha = 1.0f - expf(-speed * delta_time);
-    f32 delta = target - current;
+    const f32 alpha {1.0f - exp(-speed * delta_time)};
 
-    if (fabsf(delta) > EPSILON)
-    {
-        delta = fmodf(delta + 180.0f, 360.0f) - 180.0f;
+    if (
+        f32 delta {target - current};
+        abs(delta) > EPSILON
+    ) {
+        delta = fmod(delta + 180.0f, 360.0f) - 180.0f;
 
         return current + delta * alpha;
     }
@@ -477,9 +478,9 @@ get_forward(const Vec3& rotation)
     const f32 rotation_z {to_radians(rotation.z)};
 
     const Vec3 forward {
-        cosf(rotation_x) * cosf(rotation_z),
-        cosf(rotation_x) * sinf(rotation_z),
-        sinf(rotation_x),
+        cos(rotation_x) * cos(rotation_z),
+        cos(rotation_x) * sin(rotation_z),
+        sin(rotation_x),
     };
 
     return forward.normalize();
@@ -524,23 +525,25 @@ IBounds2::size() const
 b32
 overlaps(const IBounds2& lhs, const IBounds2& rhs)
 {
-    return !(
+    const b32 is_clear {
         lhs.max.x <= rhs.min.x ||
         rhs.max.x <= lhs.min.x ||
         lhs.max.y <= rhs.min.y ||
         rhs.max.y <= lhs.min.y
-    );
+    };
+
+    return !is_clear;
 }
 
 IBounds2
 intersection(const IBounds2& lhs, const IBounds2& rhs)
 {
-    const IVec2 o_min = {
+    const IVec2 o_min {
         max(lhs.min.x, rhs.min.x),
         max(lhs.min.y, rhs.min.y)
     };
 
-    const IVec2 o_max = {
+    const IVec2 o_max {
         min(lhs.max.x, rhs.max.x),
         min(lhs.max.y, rhs.max.y)
     };

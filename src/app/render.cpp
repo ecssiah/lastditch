@@ -713,7 +713,7 @@ Render::init_voxel_render(const World& world)
 }
 
 void
-Render::init_model_render(const Population& population)
+Render::init_model_render(Population& population)
 {
     const GLuint vert_shader {compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert")};
     const GLuint frag_shader {compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag")};
@@ -757,18 +757,17 @@ Render::init_model_render(const Population& population)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
     
-    model_render.model_gpu_data_vector.resize(ACTION_MAX);
+    model_render.model_gpu_data_vector.resize(ACTOR_POOL_MAX);
 
-    population.for_each_active_actor(
-        [this](const Actor& actor)
-        {
-            const ModelGpuData model_gpu_data {load_model_gpu_data(actor)};
+    for (const s32 id : population.get_actor_pool())
+    {
+        const Actor& actor = population.get_actor(id);
+        const ModelGpuData model_gpu_data {load_model_gpu_data(actor)};
 
-            model_render.model_gpu_data_vector[actor.actor_id] = model_gpu_data;
+        model_render.model_gpu_data_vector[actor.id] = model_gpu_data;
 
-            upload_model_gpu_data(model_render.model_gpu_data_vector[actor.actor_id]);
-        }
-    );
+        upload_model_gpu_data(model_render.model_gpu_data_vector[actor.id]);
+    }
 }
 
 void
@@ -891,7 +890,7 @@ Render::update_voxel_render()
 }
 
 void
-Render::update_model_render(const Population& population)
+Render::update_model_render(Population& population)
 {
     glUseProgram(model_render.program_id);
 
@@ -913,33 +912,33 @@ Render::update_model_render(const Population& population)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
 
-    population.for_each_active_actor(
-        [this](const Actor& actor)
-        {
-            const ModelGpuData& model_gpu_data {model_render.model_gpu_data_vector[actor.actor_id]};
+    for (const s32 id : population.get_actor_pool())
+    {
+        Actor& actor = population.get_actor(id);
 
-            Mat4 model_matrix {Mat4::make_diagonal(1.0f)};
-            model_matrix = model_matrix.translate(actor.position);
-            model_matrix = model_matrix.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
+        const ModelGpuData& model_gpu_data {model_render.model_gpu_data_vector[actor.id]};
 
-            glUniformMatrix4fv(
-                model_render.u_model_location,
-                1,
-                GL_FALSE,
-                model_matrix[0]
-            );
+        Mat4 model_matrix {Mat4::make_diagonal(1.0f)};
+        model_matrix = model_matrix.translate(actor.position);
+        model_matrix = model_matrix.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
 
-            glUniform1i(model_render.u_texture_layer_location, model_gpu_data.texture_layer);
+        glUniformMatrix4fv(
+            model_render.u_model_location,
+            1,
+            GL_FALSE,
+            model_matrix[0]
+        );
 
-            glBindVertexArray(model_gpu_data.vao_id);
-            glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model_gpu_data.model_vertex_vector.size()));
-            glBindVertexArray(0);
-        }
-    );
+        glUniform1i(model_render.u_texture_layer_location, model_gpu_data.texture_layer);
+
+        glBindVertexArray(model_gpu_data.vao_id);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model_gpu_data.model_vertex_vector.size()));
+        glBindVertexArray(0);
+    }
 }
 
 void 
-Render::init(const Platform& platform, const Population& population, const World& world)
+Render::init(const Platform& platform, Population& population, const World& world)
 {
     init_glad(platform);
 
@@ -951,7 +950,7 @@ Render::init(const Platform& platform, const Population& population, const World
 }
 
 void 
-Render::update(const Population& population, const Debug& debug)
+Render::update(Population& population, const Debug& debug)
 {
     glClearColor(CLEAR_COLOR[0], CLEAR_COLOR[1], CLEAR_COLOR[2], CLEAR_COLOR[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
