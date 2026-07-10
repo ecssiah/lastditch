@@ -11,6 +11,8 @@
 void
 Population::init(Work& work)
 {
+    actor_vector.reserve(ACTOR_POOL_MAX);
+
     init_nations();
     init_judge();
     init_agents(work);
@@ -22,74 +24,34 @@ Population::quit()
 
 }
 
-Actor*
+Actor&
 Population::get_judge()
 {
-    for (const s32 pool_id : actor_pool)
-    {
-        Actor& actor {actor_pool.get(pool_id)};
-
-        if (actor.id == judge_id)
-        {
-            return &actor;
-        }
-    }
-
-    return nullptr;
+    return actor_vector[judge_id];
 }
 
-const Actor*
+const Actor&
 Population::get_judge() const
 {
-    for (const s32 pool_id : actor_pool)
-    {
-        const Actor& actor {actor_pool.get(pool_id)};
-
-        if (actor.id == judge_id)
-        {
-            return &actor;
-        }
-    }
-
-    return nullptr;
+    return actor_vector[judge_id];
 }
 
-Actor*
+Actor&
 Population::get_actor(const s32 actor_id)
 {
-    for (const s32 pool_id : actor_pool)
-    {
-        Actor& actor {actor_pool.get(pool_id)};
-
-        if (actor.id == actor_id)
-        {
-            return &actor;
-        }
-    }
-
-    return nullptr;
+    return actor_vector[actor_id];
 }
 
-const Actor*
+const Actor&
 Population::get_actor(const s32 actor_id) const
 {
-    for (const s32 pool_id : actor_pool)
-    {
-        const Actor& actor {actor_pool.get(pool_id)};
-
-        if (actor.id == actor_id)
-        {
-            return &actor;
-        }
-    }
-
-    return nullptr;
+    return actor_vector[actor_id];
 }
 
-ActorPool&
-Population::get_actor_pool()
+vector<Actor>&
+Population::get_actor_vector()
 {
-    return actor_pool;
+    return actor_vector;
 }
 
 void
@@ -112,7 +74,7 @@ Population::init_judge()
         },
     };
 
-    actor_pool.add(judge);
+    actor_vector.push_back(judge);
 
     LOG_INFO(
         "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)", 
@@ -148,7 +110,7 @@ Population::init_agents(Work& work)
                 static_cast<f32>(random.uniform(0, 360))
             };
 
-            Actor agent {
+            const Actor agent {
                 .id = actor_id_generator.next(),
                 .actor_type = ActorType::Agent,
                 .nation_type = nation_type,
@@ -162,25 +124,21 @@ Population::init_agents(Work& work)
                 },
             };
 
-            actor_pool.add(agent);
+            actor_vector.push_back(agent);
 
-            const TaskState act_state{
-                .wander = {
-                    .tick = random.uniform(0, 500),
-                    .tick_limit = 500,
-                },
+            const TaskState task_state {
+                random.uniform(0, 500),
+                500
             };
 
             const Task task {
                 .id = task_id_generator.next(),
                 .actor_id = agent.id,
                 .task_type = TaskType::wander,
-                .task_state = act_state,
+                .task_state = task_state,
             };
 
-            work.get_task_pool().add(task);
-
-            agent.act_id_array[agent.act_id_count++] = task.id;
+            work.add_task(task);
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",

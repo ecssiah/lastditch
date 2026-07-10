@@ -2,8 +2,9 @@
 
 #include "core/geometry.h"
 
-struct Viewpoint
+class Viewpoint
 {
+public:
     Vec3 position {};
     Vec3 rotation {};
 

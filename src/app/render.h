@@ -24,14 +24,16 @@ constexpr std::array VERTEX_INDEX_ARRAY {0, 1, 2, 0, 2, 3};
 extern const IVec3 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE];
 extern const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL];
 
-struct VoxelVertex
+class VoxelVertex
 {
+public:
     s32 a_vertex {};
     s32 a_face {};
 };
 
-struct VoxelGpuData
+class VoxelGpuData
 {
+public:
     Vec3 position {};
 
     GLuint vao_id {};
@@ -40,15 +42,17 @@ struct VoxelGpuData
     vector<VoxelVertex> voxel_vertex_vector {};
 };
 
-struct ModelVertex
+class ModelVertex
 {
+public:
     f32 a_position[3] {};
     f32 a_normal[3] {};
     f32 a_uv[2] {};
 };
 
-struct ModelGpuData
+class ModelGpuData
 {
+public:
     Vec3 position {};
     Vec3 rotation {};
 
@@ -60,43 +64,49 @@ struct ModelGpuData
     std::vector<ModelVertex> model_vertex_vector {};
 };
 
-struct SectorQuad
+class SectorQuad
 {
+public:
     IVec3 local_coordinate {};
 
     Direction direction {};
     BlockType block_type {};
 };
 
-struct SectorMesh
+class SectorMesh
 {
+public:
     s32 sector_index {};
 
     std::vector<SectorQuad> sector_quad_vector {};
 };
 
-struct TextVertex
+class TextVertex
 {
+public:
     f32 position[2] {};
     f32 uv[2] {};
 };
 
-struct DebugVertex
+class DebugVertex
 {
+public:
     f32 a_position[3] {};
     f32 a_color[3] {};
 };
 
-struct DebugGpuData
+class DebugGpuData
 {
+public:
     GLuint vao_id {};
     GLuint vbo_id {};
 
     std::vector<DebugVertex> debug_vertex_vector {};
 };
 
-struct DebugRender
+class DebugRender
 {
+public:
     GLuint program_id {};
 
     GLint u_projection_location {};
@@ -106,8 +116,9 @@ struct DebugRender
     std::vector<DebugGpuData> debug_gpu_data_vector {};
 };
 
-struct VoxelRender
+class VoxelRender
 {
+public:
     GLuint program_id {};
 
     GLuint texture_array_id {};
@@ -129,8 +140,9 @@ struct VoxelRender
     vector<VoxelGpuData> voxel_gpu_data_vector {};
 };
 
-struct ModelRender
+class ModelRender
 {
+public:
     GLuint program_id {};
 
     GLuint texture_array_id {};

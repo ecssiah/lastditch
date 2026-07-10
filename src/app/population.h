@@ -17,18 +17,13 @@ public:
     void init(Work& work);
     void quit();
 
-    Actor* get_judge();
+    Actor& get_judge();
+    [[nodiscard]] const Actor& get_judge() const;
 
-    [[nodiscard]]
-    const Actor* get_judge() const;
+    Actor& get_actor(s32 actor_id);
+    [[nodiscard]] const Actor& get_actor(s32 actor_id) const;
 
-    Actor* get_actor(s32 actor_id);
-
-    [[nodiscard]]
-    const Actor* get_actor(s32 actor_id) const;
-
-    [[nodiscard]]
-    ActorPool& get_actor_pool();
+    [[nodiscard]] std::vector<Actor>& get_actor_vector();
 
 private:
     void init_judge();
@@ -42,5 +37,6 @@ private:
 
     std::array<Nation, NATION_TYPE_COUNT> nation_array {};
     s32 judge_id {-1};
-    ActorPool actor_pool {};
+
+    std::vector<Actor> actor_vector {};
 };

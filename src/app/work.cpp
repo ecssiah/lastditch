@@ -6,6 +6,26 @@
 
 using namespace std;
 
+TaskState::TaskState()
+    :
+    wander{}
+{
+
+}
+
+TaskState::TaskState(const s32 tick, const s32 tick_limit)
+    :
+    wander{tick, tick_limit}
+{
+
+}
+
+TaskState::TaskState(const IVec3& target_position)
+    :
+    seek{target_position}
+{
+}
+
 Work::Work()
 {
 
@@ -18,9 +38,7 @@ void Work::init()
 void 
 Work::execute_wander(Population& population, Task& task, const f32 delta_time)
 {
-    Actor* actor {population.get_actor(task.actor_id)};
-
-    assert(actor != nullptr);
+    Actor& actor {population.get_actor(task.actor_id)};
 
     WanderState& wander_state {task.task_state.wander};
 
@@ -41,17 +59,17 @@ Work::execute_wander(Population& population, Task& task, const f32 delta_time)
             sinf(to_radians(direction_angle))
         };
 
-        actor->velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;
-        actor->velocity.y = direction.y * AGENT_DEFAULT_GROUND_SPEED;
+        actor.velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;
+        actor.velocity.y = direction.y * AGENT_DEFAULT_GROUND_SPEED;
 
-        actor->rotation_target.z = direction_angle;
+        actor.rotation_target.z = direction_angle;
 
         wander_state.tick = 0;
     }
 
-    actor->rotation.z = interpolate_to(
-        actor->rotation.z,
-        actor->rotation_target.z,
+    actor.rotation.z = interpolate_to(
+        actor.rotation.z,
+        actor.rotation_target.z,
         5.0f,
         delta_time
     );
@@ -62,19 +80,23 @@ Work::execute_seek(Population& population, Task& task, f32 delta_time)
 {
 }
 
-TaskPool&
-Work::get_task_pool()
+vector<Task>&
+Work::get_task_vector()
 {
-    return task_pool;
+    return task_vector;
+}
+
+void
+Work::add_task(const Task &task)
+{
+    task_vector.push_back(task);
 }
 
 void 
 Work::update(Population& population, const f32 delta_time)
 {
-    for (const s32 pool_id : task_pool)
+    for (Task& task : task_vector)
     {
-        Task& task {task_pool.item_array[pool_id]};
-
         switch (task.task_type)
         {
         case TaskType::wander:

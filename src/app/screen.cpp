@@ -225,26 +225,26 @@ Screen::init(const Platform& platform)
 void
 Screen::draw_debug_info(const Population& population)
 {
-    const Actor* judge {population.get_judge()};
+    const Actor& judge {population.get_judge()};
 
-    const IVec3 cell_coordinate {World::position_to_cell_coordinate(judge->position.x, judge->position.y, judge->position.z)};
+    const IVec3 cell_coordinate {World::position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z)};
     const IVec2 sector_coordinate {World::cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y)};
 
     const string position_text {
         format(
             "POS {:.1f} {:.1f} {:.1f}",
-            judge->position.x,
-            judge->position.y,
-            judge->position.z
+            judge.position.x,
+            judge.position.y,
+            judge.position.z
         )
     };
     
     const string velocity_text {
         format(
         "VEL {:.1f} {:.1f} {:.1f}",
-            judge->velocity.x,
-            judge->velocity.y,
-            judge->velocity.z
+            judge.velocity.x,
+            judge.velocity.y,
+            judge.velocity.z
         )
     };
     
@@ -291,7 +291,7 @@ Screen::draw_debug_info(const Population& population)
         }
     }
 
-    switch (judge->movement_type)
+    switch (judge.movement_type)
     {
     case MovementType::Ground: 
         movement_type_text = "MOV Ground";

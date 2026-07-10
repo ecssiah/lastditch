@@ -8,25 +8,26 @@
 constexpr f32 EPSILON {1e-5f};
 constexpr f32 EPSILON_SQUARED {1e-10f};
 
-#define FOR_LIST_AXIS(DO)                                   \
-    DO(X)                                                   \
-    DO(Y)                                                   \
-    DO(Z)                                                   \
+#define FOR_LIST_AXIS(DO)                                       \
+    DO(X)                                                          \
+    DO(Y)                                                          \
+    DO(Z)                                                          \
 
 enum class Axis : u8
 {
     FOR_LIST_AXIS(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 AXIS_COUNT = FOR_LIST_AXIS(DEFINE_ENUM_COUNT);
+constexpr s32 AXIS_COUNT {FOR_LIST_AXIS(DEFINE_ENUM_COUNT)};
 
-struct Vec2;
-struct Vec3;
-struct IVec2;
-struct IVec3;
+class Vec2;
+class Vec3;
+class IVec2;
+class IVec3;
 
-struct Vec2
+class Vec2
 {
+public:
     f32 x;
     f32 y;
 
@@ -58,15 +59,41 @@ struct Vec2
     friend f32 dot(const Vec2& lhs, const Vec2& rhs);
 };
 
-struct Vec3
+class Vec3
 {
+public:
     f32 x;
     f32 y;
     f32 z;
 
-    Vec3();
-    explicit Vec3(f32 scalar);
-    Vec3(f32 x, f32 y, f32 z);
+
+    constexpr Vec3()
+        :
+        x{0.0f},
+        y{0.0f},
+        z{0.0f}
+    {
+
+    }
+
+    constexpr Vec3(const f32 s)
+        :
+        x{s},
+        y{s},
+        z{s}
+    {
+
+    }
+
+    constexpr Vec3(const f32 x_, const f32 y_, const f32 z_)
+        :
+        x(x_),
+        y(y_),
+        z(z_)
+    {
+
+    }
+
     Vec3(const IVec3& ivec3);
 
     constexpr f32&
@@ -99,8 +126,9 @@ struct Vec3
     friend Vec3 operator*(f32 lhs, const Vec3& rhs);
 };
 
-struct IVec2
+class IVec2
 {
+public:
     s32 x;
     s32 y;
     
@@ -115,8 +143,9 @@ struct IVec2
     friend IVec2 operator*(s32 lhs, const IVec2& rhs);
 };
 
-struct IVec3
+class IVec3
 {
+public:
     s32 x;
     s32 y;
     s32 z;
@@ -136,8 +165,9 @@ struct IVec3
     friend IVec3 operator*(s32 lhs, const IVec3& rhs);
 };
 
-struct Mat4
+class Mat4
 {
+public:
     f32 entry_array[4][4];
 
     constexpr f32*
@@ -154,8 +184,9 @@ struct Mat4
     static Mat4 make_diagonal(f32 s);
 };
 
-struct IBounds2
+class IBounds2
 {
+public:
     IVec2 min;
     IVec2 max;
 
@@ -167,20 +198,23 @@ struct IBounds2
     friend std::vector<IBounds2> subtract(const IBounds2& lhs, const IBounds2& rhs);
 };
 
-struct IBounds3
+class IBounds3
 {
+public:
     IVec3 min;
     IVec3 max;
 };
 
-struct Bounds2
+class Bounds2
 {
+public:
     Vec2 min;
     Vec2 max;
 };
 
-struct Bounds3
+class Bounds3
 {
+public:
     Vec3 min;
     Vec3 max;
 };

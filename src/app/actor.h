@@ -1,6 +1,5 @@
 #pragma once
 
-#include "pool.h"
 #include "app/nation.h"
 #include "app/physics.h"
 #include "core/geometry.h"
@@ -66,10 +65,5 @@ public:
 
     BoxCollider box_collider {};
 
-    s32 act_id_count {};
-    std::array<s32, ACTOR_TASK_MAX_COUNT> act_id_array {};
-
     static s32 get_type_index(const std::string& actor_type_string);
 };
-
-using ActorPool = Pool<Actor, ACTOR_POOL_MAX>;

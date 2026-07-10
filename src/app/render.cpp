@@ -759,27 +759,26 @@ Render::init_model_render(Population& population)
     
     model_render.model_gpu_data_vector.resize(ACTOR_POOL_MAX);
 
-    for (const s32 pool_id : population.get_actor_pool())
+    for (const Actor& actor : population.get_actor_vector())
     {
-        const Actor* actor = population.get_actor(pool_id);
-        const ModelGpuData model_gpu_data {load_model_gpu_data(*actor)};
+        const ModelGpuData model_gpu_data {load_model_gpu_data(actor)};
 
-        model_render.model_gpu_data_vector[actor->id] = model_gpu_data;
+        model_render.model_gpu_data_vector[actor.id] = model_gpu_data;
 
-        upload_model_gpu_data(model_render.model_gpu_data_vector[actor->id]);
+        upload_model_gpu_data(model_render.model_gpu_data_vector[actor.id]);
     }
 }
 
 void
 Render::update_viewpoint(const Population& population)
 {
-    const Actor* judge {population.get_judge()};
+    const Actor& judge {population.get_judge()};
 
     const Vec3 judge_eye_offset {0.0f, 0.0f, 0.7f};
-    const Vec3 judge_eye_position {judge->position + judge_eye_offset};
+    const Vec3 judge_eye_position {judge.position + judge_eye_offset};
     
     viewpoint.position = judge_eye_position;
-    viewpoint.rotation = judge->rotation;
+    viewpoint.rotation = judge.rotation;
 }
 
 void
@@ -912,15 +911,13 @@ Render::update_model_render(Population& population)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
 
-    for (const s32 pool_id : population.get_actor_pool())
+    for (const Actor& actor : population.get_actor_vector())
     {
-        const Actor* actor {population.get_actor(pool_id)};
-
-        const ModelGpuData& model_gpu_data {model_render.model_gpu_data_vector[actor->id]};
+        const ModelGpuData& model_gpu_data {model_render.model_gpu_data_vector[actor.id]};
 
         Mat4 model_matrix {Mat4::make_diagonal(1.0f)};
-        model_matrix = model_matrix.translate(actor->position);
-        model_matrix = model_matrix.rotate(to_radians(actor->rotation.z), Vec3::unit_z());
+        model_matrix = model_matrix.translate(actor.position);
+        model_matrix = model_matrix.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
 
         glUniformMatrix4fv(
             model_render.u_model_location,

@@ -36,33 +36,6 @@ Vec2::Vec2(const IVec2& ivec2)
 
 }
 
-Vec3::Vec3()
-    :
-    x{0.0f},
-    y{0.0f},
-    z{0.0f}
-{
-
-}
-
-Vec3::Vec3(const f32 s)
-    :
-    x{s},
-    y{s},
-    z{s}
-{
-
-}
-
-Vec3::Vec3(const f32 x_, const f32 y_, const f32 z_)
-    :
-    x(x_),
-    y(y_),
-    z(z_)
-{
-
-}
-
 Vec3::Vec3(const IVec3& ivec3)
     :
     x{static_cast<f32>(ivec3.x)},
