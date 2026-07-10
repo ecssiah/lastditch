@@ -20,5 +20,4 @@ public:
     Population population;
 
     Render render;
-    Screen screen;
 };

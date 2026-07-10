@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "actor.h"
+#include "screen.h"
 #include "viewpoint.h"
 #include "app/direction.h"
 #include "app/world.h"
@@ -193,6 +194,7 @@ class Render
     static void upload_model_gpu_data(ModelGpuData& model_gpu_data);
 
 public:
+    Screen screen {};
     Viewpoint viewpoint {};
 
     DebugRender debug_render {};

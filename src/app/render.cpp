@@ -944,6 +944,8 @@ Render::init(const Platform& platform, Population& population, const World& worl
     init_debug_render();
     init_voxel_render(world);
     init_model_render(population);
+
+    screen.init(platform);
 }
 
 void 
@@ -957,6 +959,8 @@ Render::update(Population& population, const Debug& debug)
     update_debug_render(debug);
     update_voxel_render();
     update_model_render(population);
+
+    screen.update(population);
 }
 
 GLuint 
