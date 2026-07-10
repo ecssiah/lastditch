@@ -456,7 +456,7 @@ Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_
 VoxelGpuData
 Render::convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
 {
-    const IVec2 sector_coordinate = World::sector_index_to_coordinate(sector_mesh.sector_index);
+    const IVec2 sector_coordinate {World::sector_index_to_coordinate(sector_mesh.sector_index)};
 
     VoxelGpuData voxel_gpu_data {
         .position = {

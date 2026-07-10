@@ -84,8 +84,8 @@ target_sources(
     src/app/viewpoint.h
     src/app/work.cpp
     src/app/work.h
-    src/app/world.cpp
-    src/app/world.h
+        src/app/world.cpp
+        src/app/World.h
     src/core/config.h
     src/core/config.cpp
     src/core/geometry.h

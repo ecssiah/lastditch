@@ -321,7 +321,6 @@ World::block_type_index_from_string(const string& block_type_string)
     return -1;
 }
 
-
 Cell&
 World::get_cell(const s32 x, const s32 y, const s32 z)
 {
@@ -350,7 +349,8 @@ World::get_edge_vector()
     return edge_vector;
 }
 
-Vec3 World::get_gravity() const
+Vec3
+World::get_gravity() const
 {
     return physics.gravity;
 }
@@ -1575,7 +1575,7 @@ World::get_content_level(const s32 z)
     return content_level;
 }
 
-std::vector<BlockType>
+vector<BlockType>
 World::get_content_block_type_vector(const s32 content_level)
 {
     if (content_level == 1)
