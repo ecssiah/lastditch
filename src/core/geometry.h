@@ -20,10 +20,10 @@ enum class Axis : u8
 
 constexpr s32 AXIS_COUNT {FOR_LIST_AXIS(DEFINE_ENUM_COUNT)};
 
-class Vec2;
-class Vec3;
 class IVec2;
 class IVec3;
+class Vec2;
+class Vec3;
 
 class Vec2
 {
@@ -31,10 +31,28 @@ public:
     f32 x;
     f32 y;
 
-    Vec2();
-    Vec2(f32 x, f32 y);
-    explicit Vec2(f32 scalar);
-    explicit Vec2(const IVec2& ivec2);
+    constexpr Vec2()
+        :
+        x{0.0f},
+        y{0.0f}
+    {
+    }
+
+    constexpr Vec2(const f32 x, const f32 y)
+        :
+        x{x},
+        y{y}
+    {
+    }
+
+    constexpr explicit Vec2(const f32 s)
+        :
+        x{s},
+        y{s}
+    {
+    }
+
+    explicit Vec2(const IVec2& vec);
 
     constexpr f32&
     operator[](const s32 index) { return (&x)[index]; }
@@ -66,14 +84,12 @@ public:
     f32 y;
     f32 z;
 
-
     constexpr Vec3()
         :
         x{0.0f},
         y{0.0f},
         z{0.0f}
     {
-
     }
 
     constexpr Vec3(const f32 s)
@@ -82,19 +98,17 @@ public:
         y{s},
         z{s}
     {
-
     }
 
-    constexpr Vec3(const f32 x_, const f32 y_, const f32 z_)
+    constexpr Vec3(const f32 x, const f32 y, const f32 z)
         :
-        x(x_),
-        y(y_),
-        z(z_)
+        x{x},
+        y{y},
+        z{z}
     {
-
     }
 
-    Vec3(const IVec3& ivec3);
+    explicit Vec3(const IVec3& vec);
 
     constexpr f32&
     operator[](const s32 index) { return (&x)[index]; }
@@ -131,6 +145,30 @@ class IVec2
 public:
     s32 x;
     s32 y;
+
+    constexpr IVec2()
+        :
+        x{0},
+        y{0}
+    {
+
+    }
+
+    constexpr IVec2(const s32 s)
+        :
+        x{s},
+        y{s}
+    {
+
+    }
+
+    constexpr IVec2(const s32 x, const s32 y)
+        :
+        x{x},
+        y{y}
+    {
+
+    }
     
     constexpr s32&
     operator[](const s32 index) { return (&x)[index]; }
@@ -150,9 +188,32 @@ public:
     s32 y;
     s32 z;
 
-    IVec3();
-    explicit IVec3(s32 s);
-    IVec3(s32 x, s32 y, s32 z);
+    constexpr IVec3()
+        :
+        x{0},
+        y{0},
+        z{0}
+    {
+
+    }
+
+    constexpr IVec3(const s32 s)
+        :
+        x{s},
+        y{s},
+        z{s}
+    {
+
+    }
+
+    constexpr IVec3(const s32 x, const s32 y, const s32 z)
+        :
+        x{x},
+        y{y},
+        z{z}
+    {
+
+    }
     
     constexpr s32&
     operator[](const s32 index) { return (&x)[index]; }
@@ -168,7 +229,22 @@ public:
 class Mat4
 {
 public:
-    f32 entry_array[4][4];
+    constexpr Mat4()
+        :
+        entry_array{}
+    {
+
+    }
+
+    constexpr Mat4(f32 s)
+        :
+        entry_array{}
+    {
+        entry_array[0][0] = s;
+        entry_array[1][1] = s;
+        entry_array[2][2] = s;
+        entry_array[3][3] = s;
+    }
 
     constexpr f32*
     operator[](const s32 index) { return entry_array[index]; }
@@ -181,7 +257,8 @@ public:
     [[nodiscard]] Mat4 translate(const Vec3& translation) const;
     [[nodiscard]] Mat4 rotate(f32 angle, const Vec3& axis) const;
 
-    static Mat4 make_diagonal(f32 s);
+private:
+    f32 entry_array[4][4];
 };
 
 class IBounds2

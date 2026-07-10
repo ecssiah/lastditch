@@ -4,70 +4,19 @@
 
 using namespace std;
 
-Vec2::Vec2()
+Vec2::Vec2(const IVec2& vec)
     :
-    x{0.0f},
-    y{0.0f}
+    x{static_cast<f32>(vec.x)},
+    y{static_cast<f32>(vec.y)}
 {
 
 }
 
-Vec2::Vec2(const f32 s)
+Vec3::Vec3(const IVec3& vec)
     :
-    x{s},
-    y{s}
-{
-
-}
-
-Vec2::Vec2(f32 x_, f32 y_)
-    :
-    x{x_},
-    y{y_}
-{
-
-}
-
-Vec2::Vec2(const IVec2& ivec2)
-    :
-    x{static_cast<f32>(ivec2.x)},
-    y{static_cast<f32>(ivec2.y)}
-{
-
-}
-
-Vec3::Vec3(const IVec3& ivec3)
-    :
-    x{static_cast<f32>(ivec3.x)},
-    y{static_cast<f32>(ivec3.y)},
-    z{static_cast<f32>(ivec3.z)}
-{
-
-}
-
-IVec3::IVec3()
-    :
-    x{0},
-    y{0},
-    z{0}
-{
-
-}
-
-IVec3::IVec3(const s32 s)
-    :
-    x{s},
-    y{s},
-    z{s}
-{
-
-}
-
-IVec3::IVec3(const s32 x_, const s32 y_, const s32 z_)
-    :
-    x{x_},
-    y{y_},
-    z{z_}
+    x{static_cast<f32>(vec.x)},
+    y{static_cast<f32>(vec.y)},
+    z{static_cast<f32>(vec.z)}
 {
 
 }
@@ -347,19 +296,6 @@ Mat4::rotate(const f32 angle, const Vec3& axis) const
 }
 
 Mat4
-Mat4::make_diagonal(const f32 s)
-{
-    return {
-        {
-            {s, 0.0f, 0.0f, 0.0f },
-            {0.0f, s, 0.0f, 0.0f },
-            {0.0f, 0.0f, s, 0.0f },
-            {0.0f, 0.0f, 0.0f, s },
-        }
-    };
-}
-
-Mat4 
 get_view_matrix(const Vec3& position, const Vec3& rotation)
 {
     const Vec3 forward = get_forward(rotation);

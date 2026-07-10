@@ -596,8 +596,8 @@ Render::init_viewpoint()
     viewpoint.position = Vec3{0.0f};
     viewpoint.rotation = Vec3{0.0f};
     
-    viewpoint.projection_matrix = Mat4::make_diagonal(1.0f);
-    viewpoint.view_matrix = Mat4::make_diagonal(1.0f);
+    viewpoint.projection_matrix = Mat4{1.0f};
+    viewpoint.view_matrix = Mat4{1.0f};
     
     viewpoint.projection_matrix = get_projection_matrix(
         to_radians(60.0f),
@@ -833,7 +833,7 @@ Render::update_debug_render(const Debug& debug)
 
     upload_debug_gpu_data(debug_gpu_data);
 
-    Mat4 model_matrix {Mat4::make_diagonal(1.0f)};
+    Mat4 model_matrix {1.0f};
 
     glUniformMatrix4fv(
         debug_render.u_model_location, 
@@ -872,7 +872,7 @@ Render::update_voxel_render()
 
     for (const VoxelGpuData& voxel_gpu_data : voxel_render.voxel_gpu_data_vector)
     {
-        Mat4 model_matrix = Mat4::make_diagonal(1.0f);
+        Mat4 model_matrix {1.0f};
         model_matrix = model_matrix.translate(voxel_gpu_data.position);
 
         glUniformMatrix4fv(
@@ -915,7 +915,7 @@ Render::update_model_render(Population& population)
     {
         const ModelGpuData& model_gpu_data {model_render.model_gpu_data_vector[actor.id]};
 
-        Mat4 model_matrix {Mat4::make_diagonal(1.0f)};
+        Mat4 model_matrix {1.0f};
         model_matrix = model_matrix.translate(actor.position);
         model_matrix = model_matrix.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
 

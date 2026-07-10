@@ -159,8 +159,8 @@ IVec3
 World::cell_coordinate_to_local_coordinate(const s32 x, const s32 y, const s32 z)
 {
     return {
-        x & (SECTOR_SIZE_IN_CELLS - 1),
-        y & (SECTOR_SIZE_IN_CELLS - 1),
+        x & SECTOR_SIZE_IN_CELLS - 1,
+        y & SECTOR_SIZE_IN_CELLS - 1,
         z,
     };
 }
@@ -230,7 +230,7 @@ World::is_clear(const s32 x, const s32 y, const s32 z, const u8 direction_mask)
 {
     for (s32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
-        if (direction_mask & (1 << direction_index))
+        if (direction_mask & 1 << direction_index)
         {
             const IVec3 neighbor_position {
                 x + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
@@ -268,7 +268,7 @@ World::get_direction_mask(const s32 x, const s32 y, const s32 z)
 
         if (!valid_neighbor)
         {
-            direction_mask |= (1u << direction_index);
+            direction_mask |= 1u << direction_index;
         }
         else
         {
@@ -277,7 +277,7 @@ World::get_direction_mask(const s32 x, const s32 y, const s32 z)
 
             if (neighbor_cell.block_type == BlockType::None)
             {
-                direction_mask |= (1u << direction_index);
+                direction_mask |= 1u << direction_index;
             }
         }
     }
@@ -391,11 +391,11 @@ World::set_block_type_box(const s32 x, const s32 y, const s32 z, const s32 size_
         {
             for (s32 cell_x = x; cell_x < max.x; ++cell_x)
             {
-                const b32 at_boundary = (
+                const b32 at_boundary {
                     cell_x == x || cell_x == max.x - 1 ||
                     cell_y == y || cell_y == max.y - 1 ||
                     cell_z == z || cell_z == max.z - 1
-                );
+                };
 
                 if (at_boundary)
                 {
@@ -419,9 +419,14 @@ World::set_block_type_wireframe(const s32 x, const s32 y, const s32 z, const s32
             {
                 s32 boundary_count {0};
 
-                if (cell_x == x || cell_x == max.x - 1) boundary_count++;
-                if (cell_y == y || cell_y == max.y - 1) boundary_count++;
-                if (cell_z == z || cell_z == max.z - 1) boundary_count++;
+                if (cell_x == x || cell_x == max.x - 1)
+                    boundary_count++;
+
+                if (cell_y == y || cell_y == max.y - 1)
+                    boundary_count++;
+
+                if (cell_z == z || cell_z == max.z - 1)
+                    boundary_count++;
 
                 if (boundary_count >= 2)
                 {
@@ -433,30 +438,31 @@ World::set_block_type_wireframe(const s32 x, const s32 y, const s32 z, const s32
 }
 
 void
-World::place_area(Area& area)
+World::place_area(const Area& area)
 {
-    vector<Area>& areas {get_area_vector(area.floor_number)};
-    vector<Area> areas_to_add;
+    vector<Area>& floor_area_vector {get_area_vector(area.floor_number)};
 
-    for (auto iterator = areas.begin(); iterator != areas.end();)
+    vector<Area> new_area_vector;
+
+    for (auto iterator = floor_area_vector.begin(); iterator != floor_area_vector.end();)
     {
         if (overlaps(iterator->bounds, area.bounds))
         {
-            const vector<IBounds2> bounds_vector {
-                subtract(iterator->bounds, area.bounds)
-            };
+            const vector bounds_vector {subtract(iterator->bounds, area.bounds)};
 
             for (const IBounds2& bounds : bounds_vector)
             {
-                areas_to_add.push_back(Area{
+                const Area new_area {
                     .id = area_id_generator.next(),
                     .area_type = iterator->area_type,
                     .floor_number = iterator->floor_number,
                     .bounds = bounds,
-                });
+                };
+
+                new_area_vector.push_back(new_area);
             }
 
-            iterator = areas.erase(iterator);
+            iterator = floor_area_vector.erase(iterator);
         }
         else
         {
@@ -464,13 +470,13 @@ World::place_area(Area& area)
         }
     }
 
-    areas.insert(
-        areas.end(),
-        std::make_move_iterator(areas_to_add.begin()),
-        std::make_move_iterator(areas_to_add.end())
+    floor_area_vector.insert(
+        floor_area_vector.end(),
+        make_move_iterator(new_area_vector.begin()),
+        make_move_iterator(new_area_vector.end())
     );
 
-    areas.push_back(area);
+    floor_area_vector.push_back(area);
 }
 
 void

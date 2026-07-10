@@ -528,7 +528,7 @@ private:
     void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
     void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
 
-    void place_area(Area& area);
+    void place_area(const Area& area);
 
     void construct_tower();
 
