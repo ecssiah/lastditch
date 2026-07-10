@@ -14,7 +14,6 @@ Act::Act(const ActType act_type, const Vec3 act_value)
 
 }
 
-
 TaskState::TaskState()
     :
     wander{}
@@ -37,7 +36,7 @@ TaskState::TaskState(const IVec3& target_position)
 }
 
 void
-Work::update(Population& population, const f32 delta_time)
+Work::update(const f32 delta_time, Population& population)
 {
     for (Task& task : task_vector)
     {

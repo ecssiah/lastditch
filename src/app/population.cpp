@@ -21,7 +21,7 @@ Population::init()
 void
 Population::update(const f32 delta_time)
 {
-    work.update(*this, delta_time);
+    work.update(delta_time, *this);
 }
 
 void

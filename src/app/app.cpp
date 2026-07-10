@@ -1,5 +1,6 @@
 #include "app.h"
 
+#include "control.h"
 #include "core/log.h"
 
 App::App()
@@ -24,7 +25,7 @@ App::update()
 
     const f32 delta_time {platform.get_delta_time()};
 
-    state.control.update(platform, state);
+    Control::update(platform, state);
 
     state.world.update(state.population, delta_time);
     state.population.update(delta_time);

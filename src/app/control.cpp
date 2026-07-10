@@ -2,11 +2,16 @@
 
 #include <cmath>
 #include "app/app.h"
-#include "app/actor.h"
 #include "platform/platform.h"
 
 void
-Control::queue_acts(Platform& platform, State& state)
+Control::update(const Platform& platform, State& state)
+{
+    queue_acts(platform, state);
+}
+
+void
+Control::queue_acts(const Platform& platform, State& state)
 {
     queue_move_act(platform, state);
 
@@ -27,7 +32,7 @@ Control::queue_acts(Platform& platform, State& state)
 }
 
 void
-Control::queue_move_act(Platform& platform, State& state)
+Control::queue_move_act(const Platform& platform, State& state)
 {
     Vec3 act_value {};
 
@@ -83,7 +88,7 @@ Control::queue_rotate_act(const Platform& platform, State& state)
 }
 
 void
-Control::queue_jump_act(Platform& platform, State& state)
+Control::queue_jump_act(const Platform& platform, State& state)
 {
     const Act jump_act {ActType::Jump, {}};
 
@@ -91,15 +96,9 @@ Control::queue_jump_act(Platform& platform, State& state)
 }
 
 void
-Control::queue_debug_mode_act(Platform& platform, State& state)
+Control::queue_debug_mode_act(const Platform& platform, State& state)
 {
     const Act debug_act {ActType::DebugMode, {}};
 
     state.population.add_act(debug_act);
-}
-
-void
-Control::update(Platform& platform, State& state)
-{
-    queue_acts(platform, state);
 }

@@ -78,7 +78,7 @@ public:
 class Work
 {
 public:
-    void update(Population& population, f32 delta_time);
+    void update(f32 delta_time, Population& population);
 
     void add_act(const Act& act);
 

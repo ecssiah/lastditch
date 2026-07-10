@@ -4,8 +4,7 @@
 
 using namespace std;
 
-const char* actor_type_string_array[ACTOR_TYPE_COUNT] =
-{
+const char* actor_type_string_array[ACTOR_TYPE_COUNT] {
     FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_STRINGS)
 };
 
