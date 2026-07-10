@@ -1,7 +1,5 @@
 #pragma once
 
-#include "app/work.h"
-#include "core/types.h"
 #include "platform/platform.h"
 
 class Actor;

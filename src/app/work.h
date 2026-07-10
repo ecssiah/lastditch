@@ -6,6 +6,7 @@
 #include "core/types.h"
 
 constexpr s32 ACT_COUNT_PER_FRAME {1 << 8};
+constexpr s32 TASK_COUNT_PER_FRAME {1 << 8};
 
 class Population;
 
@@ -20,18 +21,14 @@ enum class ActType : u8
 class Act
 {
 public:
-    Act() = default;
-    explicit Act(const ActType act_type, const Vec3 act_value) : m_act_type{act_type}, m_act_value {act_value} {}
+    Act(ActType act_type, Vec3 act_value);
 
-    [[nodiscard]]
-    ActType get_act_type() const { return m_act_type; }
-
-    [[nodiscard]]
-    Vec3 get_act_value() const { return m_act_value; }
+    [[nodiscard]] ActType get_act_type() const { return act_type; }
+    [[nodiscard]] Vec3 get_act_value() const { return act_value; }
 
 private:
-    ActType m_act_type {};
-    Vec3 m_act_value {};
+    ActType act_type {};
+    Vec3 act_value {};
 };
 
 class WanderState
@@ -91,17 +88,17 @@ public:
 private:
     void execute_act_deque(Actor& judge);
 
-    static void apply_act(const Act& act, Actor& judge);
+    static void execute_act(const Act& act, Actor& judge);
 
-    static void apply_move_act(const Act& act, Actor& judge);
-    static void apply_rotate_act(const Act& act, Actor& judge);
-    static void apply_jump_act(const Act& act, Actor& judge);
-    static void apply_debug_mode_act(const Act& act, Actor& judge);
+    static void execute_move_act(const Act& act, Actor& judge);
+    static void execute_rotate_act(const Act& act, Actor& judge);
+    static void execute_jump_act(const Act& act, Actor& judge);
+    static void execute_debug_mode_act(const Act& act, Actor& judge);
 
     std::deque<Act> act_deque;
 
-    static void execute_wander(Population&, Task&, f32);
-    static void execute_seek(Population&, Task&, f32);
+    static void execute_wander(Task& task, f32 delta_time, Population& population);
+    static void execute_seek(Task& task, f32 delta_time, Population& population);
 
     std::vector<Task> task_vector;
 };

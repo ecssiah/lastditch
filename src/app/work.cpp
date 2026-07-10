@@ -6,6 +6,15 @@
 
 using namespace std;
 
+Act::Act(const ActType act_type, const Vec3 act_value)
+    :
+    act_type {act_type},
+    act_value {act_value}
+{
+
+}
+
+
 TaskState::TaskState()
     :
     wander{}
@@ -35,10 +44,10 @@ Work::update(Population& population, const f32 delta_time)
         switch (task.task_type)
         {
             case TaskType::wander:
-                execute_wander(population, task, delta_time);
+                execute_wander(task, delta_time, population);
                 break;
             case TaskType::seek:
-                execute_seek(population, task, delta_time);
+                execute_seek(task, delta_time, population);
                 break;
             default: break;
         }
@@ -62,7 +71,7 @@ Work::execute_act_deque(Actor& judge)
 
     while (!act_deque.empty() && acts_applied < ACT_COUNT_PER_FRAME)
     {
-        apply_act(act_deque.front(), judge);
+        execute_act(act_deque.front(), judge);
         act_deque.pop_front();
 
         ++acts_applied;
@@ -70,7 +79,7 @@ Work::execute_act_deque(Actor& judge)
 }
 
 void
-Work::apply_move_act(const Act& act, Actor& judge)
+Work::execute_move_act(const Act& act, Actor& judge)
 {
     const Vec3 judge_forward {get_forward(judge.rotation)};
     const Vec3 judge_right {get_right(judge.rotation)};
@@ -113,27 +122,27 @@ Work::apply_move_act(const Act& act, Actor& judge)
 }
 
 void
-Work::apply_act(const Act& act, Actor& judge)
+Work::execute_act(const Act& act, Actor& judge)
 {
     switch (act.get_act_type())
     {
         case ActType::Move:
-            apply_move_act(act, judge);
+            execute_move_act(act, judge);
             break;
         case ActType::Rotate:
-            apply_rotate_act(act, judge);
+            execute_rotate_act(act, judge);
             break;
         case ActType::Jump:
-            apply_jump_act(act, judge);
+            execute_jump_act(act, judge);
             break;
         case ActType::DebugMode:
-            apply_debug_mode_act(act, judge);
+            execute_debug_mode_act(act, judge);
             break;
     }
 }
 
 void
-Work::apply_rotate_act(const Act& act, Actor& judge)
+Work::execute_rotate_act(const Act& act, Actor& judge)
 {
     judge.rotation.z -= CAMERA_SENSITIVITY_X * act.get_act_value().x;
     judge.rotation.x -= CAMERA_SENSITIVITY_Y * act.get_act_value().y;
@@ -150,7 +159,7 @@ Work::apply_rotate_act(const Act& act, Actor& judge)
 }
 
 void
-Work::apply_jump_act(const Act& act, Actor& judge)
+Work::execute_jump_act(const Act& act, Actor& judge)
 {
     if (judge.is_grounded)
     {
@@ -159,7 +168,7 @@ Work::apply_jump_act(const Act& act, Actor& judge)
 }
 
 void
-Work::apply_debug_mode_act(const Act& act, Actor& judge)
+Work::execute_debug_mode_act(const Act& act, Actor& judge)
 {
     switch (judge.movement_type)
     {
@@ -197,7 +206,7 @@ Work::get_task_vector()
 }
 
 void
-Work::execute_wander(Population& population, Task& task, const f32 delta_time)
+Work::execute_wander(Task& task, const f32 delta_time, Population& population)
 {
     Actor& actor {population.get_actor(task.actor_id)};
 
@@ -233,7 +242,7 @@ Work::execute_wander(Population& population, Task& task, const f32 delta_time)
 }
 
 void
-Work::execute_seek(Population& population, Task& task, f32 delta_time)
+Work::execute_seek(Task& task, f32 delta_time, Population& population)
 {
 
 }
