@@ -1,15 +1,15 @@
 #include "app/action.h"
 
 #include <cmath>
-#include "core/log.h"
 #include "app/app.h"
 #include "app/actor.h"
+#include "core/log.h"
 #include "platform/platform.h"
 
 void
 Action::queue_move_act(Platform& platform, State& state)
 {
-    Vec3 act_value{};
+    Vec3 act_value {};
 
     if (platform.button_is_down(Button::A))
     {
@@ -51,13 +51,13 @@ Action::queue_move_act(Platform& platform, State& state)
 void
 Action::queue_rotate_act(const Platform& platform, State& state)
 {
-    const Vec3 act_value{
+    const Vec3 act_value {
         static_cast<f32>(platform.pointer_delta_x),
         static_cast<f32>(platform.pointer_delta_y),
         0.0f,
     };
 
-    const Act rotate_act{ActType::Rotate, act_value};
+    const Act rotate_act {ActType::Rotate, act_value};
 
     add_act(rotate_act);
 }
@@ -65,7 +65,7 @@ Action::queue_rotate_act(const Platform& platform, State& state)
 void
 Action::queue_jump_act(State& state)
 {
-    const Act jump_act{ActType::Jump, {}};
+    const Act jump_act {ActType::Jump, {}};
 
     add_act(jump_act);
 }
@@ -73,7 +73,7 @@ Action::queue_jump_act(State& state)
 void
 Action::queue_debug_mode_act(State& state)
 {
-    const Act debug_action{ActType::DebugMode, {}};
+    const Act debug_action {ActType::DebugMode, {}};
 
     add_act(debug_action);
 }
@@ -81,18 +81,18 @@ Action::queue_debug_mode_act(State& state)
 void
 Action::apply_move_act(const Act& act, Actor& judge)
 {
-    const Vec3 judge_forward = get_forward(judge.rotation);
-    const Vec3 judge_right = get_right(judge.rotation);
+    const Vec3 judge_forward {get_forward(judge.rotation)};
+    const Vec3 judge_right {get_right(judge.rotation)};
 
-    Vec3 velocity_forward{};
-    Vec3 velocity_right{};
-    Vec3 velocity_up{};
+    Vec3 velocity_forward {};
+    Vec3 velocity_right {};
+    Vec3 velocity_up {};
     
     switch (judge.movement_type)
     {
     case MovementType::Ground:
     {
-        const Vec3 judge_forward_xy{
+        const Vec3 judge_forward_xy {
             judge_forward.x,
             judge_forward.y,
             0.0f
@@ -101,7 +101,7 @@ Action::apply_move_act(const Act& act, Actor& judge)
         velocity_right = act.get_act_value().x * judge_right;
         velocity_forward = act.get_act_value().y * judge_forward_xy;
         
-        const Vec3 move_velocity = judge.speed * (velocity_right + velocity_forward).normalize();
+        const Vec3 move_velocity {judge.speed * (velocity_right + velocity_forward).normalize()};
 
         judge.velocity.x = move_velocity.x;
         judge.velocity.y = move_velocity.y;
@@ -196,35 +196,20 @@ Action::apply_debug_mode_act(const Act& act, Actor& judge)
 void 
 Action::add_act(const Act& act)
 {
-    if (act_queue.current_index < ACT_QUEUE_CAPACITY)
-    {
-        act_queue.act_array[act_queue.count++] = act;
-    }
-    else
-    {
-        LOG_WARN("ActionQueue is full");
-    }
+    act_deque.push_back(act);
 }
 
 void 
 Action::apply_queue(Actor& judge)
 {
-    s32 acts_applied = 0;
-    
-    while (act_queue.current_index < act_queue.count && acts_applied < ACTS_MAX_PER_FRAME)
-    {
-        const Act& act = act_queue.act_array[act_queue.current_index];
+    s32 acts_applied {0};
 
-        apply_act(act, judge);
-        
-        act_queue.current_index++;
-        acts_applied++;
-    }
-
-    if (act_queue.current_index >= act_queue.count)
+    while (!act_deque.empty() && acts_applied < ACT_COUNT_PER_FRAME)
     {
-        act_queue.count = 0;
-        act_queue.current_index = 0;
+        apply_act(act_deque.front(), judge);
+        act_deque.pop_front();
+
+        ++acts_applied;
     }
 }
 
@@ -233,7 +218,7 @@ Action::queue_acts(State& state, Platform& platform)
 {
     queue_move_act(platform, state);
 
-    if (fabs(platform.pointer_delta_x) > EPSILON || fabs(platform.pointer_delta_y) > EPSILON)
+    if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
     {
         queue_rotate_act(platform, state);
     }
@@ -252,7 +237,7 @@ Action::queue_acts(State& state, Platform& platform)
 void
 Action::update(State& state, Platform& platform)
 {
-    Actor& judge = state.population.get_judge();
+    Actor& judge {state.population.get_judge()};
     
     queue_acts(state, platform);
     apply_queue(judge);

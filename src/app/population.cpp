@@ -65,7 +65,7 @@ Population::init_judge()
 {
     judge_id = actor_id_generator.next();
 
-    Actor judge {
+    const Actor judge {
         .id = judge_id,
         .actor_type = ActorType::Judge,
         .nation_type = NationType::Lion,

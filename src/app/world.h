@@ -1,12 +1,10 @@
 #pragma once
 
 #include <array>
-
 #include "app/area.h"
 #include "app/debug.h"
 #include "app/direction.h"
 #include "app/physics.h"
-#include "app/pool.h"
 #include "core/id.h"
 #include "core/random.h"
 #include "core/types.h"
@@ -144,13 +142,6 @@ inline constexpr std::array<const char*, block_type_count>
 block_type_string_array =
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_STRINGS)
-};
-
-struct BlockTypeList
-{
-    const BlockType* block_type_array;
-
-    s32 count;
 };
 
 #define FOR_LIST_SECTION(DO)                                                                \
@@ -454,16 +445,17 @@ inline constexpr std::array<IVec2, section_count> section_size_array =
     },
 };
 
-struct Cell
+class Cell
 {
+public:
     s32 cell_index;
     BlockType block_type;
     u8 direction_mask;
 };
 
-struct Structure
+class Structure
 {
-
+public:
 };
 
 class World
@@ -506,8 +498,8 @@ public:
     b32 is_solid(s32 x, s32 y, s32 z);
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
-    AreaPool& get_area_pool(s32 floor_number);
-    EdgePool& get_edge_pool();
+    std::vector<Area>& get_area_vector(s32 floor_number);
+    std::vector<AreaEdge>& get_edge_vector();
 
     [[nodiscard]] Vec3 get_gravity() const;
 
@@ -536,7 +528,7 @@ private:
     void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
     void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
 
-    void place_area(Area& area);
+    void place_area(const Area& area);
 
     void construct_tower();
 
@@ -565,8 +557,8 @@ private:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
-    std::vector<AreaPool> area_pool_vector {};
-    EdgePool edge_pool {};
+    std::vector<std::vector<Area>> area_vector {};
+    std::vector<AreaEdge> edge_vector {};
 
     IdGenerator area_id_generator {};
     IdGenerator edge_id_generator {};

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <deque>
 #include "core/geometry.h"
 #include "core/types.h"
 #include "platform/platform.h"
 
-constexpr s32 ACT_QUEUE_CAPACITY {1 << 6};
-constexpr s32 ACTS_MAX_PER_FRAME {1 << 8};
+constexpr s32 ACT_COUNT_PER_FRAME {1 << 8};
 
 class Actor;
 class State;
@@ -36,15 +36,6 @@ private:
     Vec3 m_act_value {};
 };
 
-class ActQueue
-{
-public:
-    array<Act, ACT_QUEUE_CAPACITY> act_array {};
-
-    s32 count {};
-    s32 current_index {};
-};
-
 class Action
 {
 public:
@@ -68,6 +59,6 @@ private:
     static void apply_jump_act(const Act& act, Actor& judge);
     static void apply_debug_mode_act(const Act& act, Actor& judge);
 
-    ActQueue act_queue;
+    deque<Act> act_deque;
 };
 

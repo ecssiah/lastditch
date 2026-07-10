@@ -4,13 +4,13 @@
 #include "core/types.h"
 #include "app/direction.h"
 
-constexpr s32 AREA_RESERVE = 1 << 12;
-constexpr s32 EDGE_RESERVE = 1 << 12;
+constexpr s32 AREA_RESERVE {1 << 12};
+constexpr s32 EDGE_RESERVE {1 << 12};
 
-constexpr s32 AREA_EXPANSION_ITERATION_COUNT = 5;
-constexpr s32 AREA_EXPANSION_SIZE_MIN = 8;
+constexpr s32 AREA_EXPANSION_ITERATION_COUNT {5};
+constexpr s32 AREA_EXPANSION_SIZE_MIN {8};
 
-constexpr s32 DOOR_MINIMUM_EDGE_SIZE = 5;
+constexpr s32 DOOR_MINIMUM_EDGE_SIZE {5};
 
 #define FOR_LIST_AREA_TYPE(DO)                                                  \
   DO(Open)                                                                          \
