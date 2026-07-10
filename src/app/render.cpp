@@ -713,7 +713,7 @@ Render::init_voxel_render(const World& world)
 }
 
 void
-Render::init_model_render(Population& population)
+Render::init_model_render(const Population& population)
 {
     const GLuint vert_shader {compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert")};
     const GLuint frag_shader {compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag")};
@@ -889,7 +889,7 @@ Render::update_voxel_render()
 }
 
 void
-Render::update_model_render(Population& population)
+Render::update_model_render(const Population& population)
 {
     glUseProgram(model_render.program_id);
 
@@ -935,7 +935,7 @@ Render::update_model_render(Population& population)
 }
 
 void 
-Render::init(const Platform& platform, Population& population, const World& world)
+Render::init(const Platform& platform, const World& world, const Population& population)
 {
     init_glad(platform);
 
@@ -945,11 +945,12 @@ Render::init(const Platform& platform, Population& population, const World& worl
     init_voxel_render(world);
     init_model_render(population);
 
+    debug.init(world);
     screen.init(platform);
 }
 
 void 
-Render::update(Population& population, const Debug& debug)
+Render::update(const World& world, const Population& population)
 {
     glClearColor(CLEAR_COLOR[0], CLEAR_COLOR[1], CLEAR_COLOR[2], CLEAR_COLOR[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -960,6 +961,7 @@ Render::update(Population& population, const Debug& debug)
     update_voxel_render();
     update_model_render(population);
 
+    debug.update();
     screen.update(population);
 }
 

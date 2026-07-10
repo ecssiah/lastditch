@@ -60,6 +60,12 @@ Population::get_actor_vector()
     return actor_vector;
 }
 
+const vector<Actor>&
+Population::get_actor_vector() const
+{
+    return actor_vector;
+}
+
 Random&
 Population::get_random()
 {

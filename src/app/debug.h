@@ -12,6 +12,8 @@ constexpr Vec3 COLOR_RED    {1.0f, 0.0f, 0.0f};
 constexpr Vec3 COLOR_GREEN  {0.0f, 1.0f, 0.0f};
 constexpr Vec3 COLOR_BLUE   {0.0f, 0.0f, 1.0f};
 
+class World;
+
 class DebugLine
 {
 public:
@@ -23,7 +25,8 @@ public:
 class Debug
 {
 public:
-    void init();
+    void init(const World& world);
+    void update();
     void quit();
     void reset();
 

@@ -24,7 +24,8 @@ public:
     Actor& get_actor(s32 actor_id);
     [[nodiscard]] const Actor& get_actor(s32 actor_id) const;
 
-    [[nodiscard]] std::vector<Actor>& get_actor_vector();
+    std::vector<Actor>& get_actor_vector();
+    [[nodiscard]] const vector<Actor>& get_actor_vector() const;
 
     Random& get_random();
 

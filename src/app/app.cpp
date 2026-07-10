@@ -9,12 +9,10 @@ App::App()
 {
     Log::init();
 
-    state.debug.init();
-
-    state.world.init(state.debug);
+    state.world.init();
     state.population.init();
 
-    state.render.init(platform, state.population, state.world);
+    state.render.init(platform, state.world, state.population);
 }
 
 void
@@ -29,7 +27,7 @@ App::update()
     state.world.update(state.population, delta_time);
     state.population.update(delta_time);
 
-    state.render.update(state.population, state.debug);
+    state.render.update(state.world, state.population);
 
     active = platform.end_frame();
 }
@@ -37,8 +35,6 @@ App::update()
 void
 App::quit()
 {
-    state.debug.quit();
-
     state.population.quit();
     state.world.quit();
     

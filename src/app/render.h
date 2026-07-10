@@ -179,12 +179,12 @@ class Render
     void init_viewpoint();
     void init_debug_render();
     void init_voxel_render(const World& world);
-    void init_model_render(Population& population);
+    void init_model_render(const Population& population);
 
     void update_viewpoint(const Population& population);
     void update_debug_render(const Debug& debug);
     void update_voxel_render();
-    void update_model_render(Population& population);
+    void update_model_render(const Population& population);
 
     void generate_sector_mesh(const World& world, s32 sector_index);
 
@@ -194,6 +194,7 @@ class Render
     static void upload_model_gpu_data(ModelGpuData& model_gpu_data);
 
 public:
+    Debug debug {};
     Screen screen {};
     Viewpoint viewpoint {};
 
@@ -206,6 +207,6 @@ public:
     static const char* get_gl_error_string(GLenum err);
     static void check_gl_error(const char* label);
 
-    void init(const Platform& platform, Population& population, const World& world);
-    void update(Population& population, const Debug& debug);
+    void init(const Platform& platform, const World& world, const Population& population);
+    void update(const World& world, const Population& population);
 };

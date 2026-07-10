@@ -463,7 +463,7 @@ class World
 public:
     World();
 
-    void init(Debug& debug);
+    void init();
     void update(Population& population, f32 delta_time);
     void quit();
 
@@ -499,7 +499,10 @@ public:
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
     std::vector<Area>& get_area_vector(s32 floor_number);
+    [[nodiscard]] const std::vector<Area>& get_area_vector(s32 floor_number) const;
+
     std::vector<AreaEdge>& get_edge_vector();
+    [[nodiscard]] const std::vector<AreaEdge>& get_edge_vector() const;
 
     [[nodiscard]] Vec3 get_gravity() const;
 
@@ -517,8 +520,6 @@ private:
     void construct_areas(s32 floor_number);
 
     void place_content(s32 floor_number);
-
-    void draw_debug_info(Debug& debug) const;
 
     void calculate_world_direction_mask();
     u8 get_direction_mask(s32 x, s32 y, s32 z);

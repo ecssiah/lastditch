@@ -21,7 +21,7 @@ World::World()
 }
 
 void
-World::init(Debug& debug)
+World::init()
 {
     static_assert(TOWER_CENTER_HALL_SIZE % 2 == 0);
     static_assert(TOWER_CENTER_HALL_SIZE + 2 * TOWER_OUTER_HALL_SIZE < TOWER_SIZE);
@@ -55,11 +55,6 @@ World::init(Debug& debug)
     set_block_type(WORLD_CENTER_S32 + 19, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::EagleSymbol);
 
     calculate_world_direction_mask();
-
-    if (DEBUG_AREAS)
-    {
-        draw_debug_info(debug);
-    }
 }
 
 void
@@ -343,11 +338,24 @@ World::get_area_vector(s32 floor_number)
     return area_vector[floor_number];
 }
 
+const vector<Area>&
+World::get_area_vector(s32 floor_number) const
+{
+    return area_vector[floor_number];
+}
+
 vector<AreaEdge>&
 World::get_edge_vector()
 {
     return edge_vector;
 }
+
+const vector<AreaEdge>&
+World::get_edge_vector() const
+{
+    return edge_vector;
+}
+
 
 Vec3
 World::get_gravity() const
@@ -1739,47 +1747,6 @@ World::place_content(s32 floor_number)
                 1, 1, stack_size_z,
                 content_block_type
             );
-        }
-    }
-}
-
-void
-World::draw_debug_info(Debug& debug) const
-{
-    const vector<Area>& floor_area_vector {area_vector[DEBUG_FLOOR_NUMBER]};
-
-    for (const Area& area : floor_area_vector)
-    {
-        const Vec3 area_debug_min {
-            static_cast<f32>(area.bounds.min.x),
-            static_cast<f32>(area.bounds.min.y),
-            static_cast<f32>(area.floor_number * FLOOR_SIZE_Z)
-        };
-        
-        const Vec3 area_debug_max {
-            static_cast<f32>(area.bounds.max.x),
-            static_cast<f32>(area.bounds.max.y),
-            static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
-        };
-        
-        debug.add_box(area_debug_min, area_debug_max, COLOR_RED);
-
-        for (const s32 edge_id : area.edge_id_vector)
-        {
-            const AreaEdge& area_edge {edge_vector[edge_id]};
-
-            const IVec2 area_overlap_bounds_size {area_edge.area_overlap.bounds.size()};
-            
-            const IVec3 door_position {
-                area_edge.area_overlap.bounds.min.x + area_overlap_bounds_size.x / 2,
-                area_edge.area_overlap.bounds.min.y + area_overlap_bounds_size.y / 2,
-                area.floor_number * FLOOR_SIZE_Z + 1,
-            };
-
-            const Vec3 edge_debug_min {Vec3{door_position}};
-            const Vec3 edge_debug_max {Vec3{door_position + IVec3{1}}};
-            
-            debug.add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
         }
     }
 }

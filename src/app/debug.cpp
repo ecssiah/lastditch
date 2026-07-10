@@ -1,5 +1,7 @@
 #include "debug.h"
 
+#include "world.h"
+
 void 
 Debug::add_line(const Vec3& a, const Vec3& b, const Vec3& color)
 {
@@ -50,7 +52,48 @@ Debug::reset()
 }
 
 void 
-Debug::init()
+Debug::init(const World& world)
+{
+    const vector<Area>& floor_area_vector {world.get_area_vector(DEBUG_FLOOR_NUMBER)};
+
+    for (const Area& area : floor_area_vector)
+    {
+        const Vec3 area_debug_min {
+            static_cast<f32>(area.bounds.min.x),
+            static_cast<f32>(area.bounds.min.y),
+            static_cast<f32>(area.floor_number * FLOOR_SIZE_Z)
+        };
+
+        const Vec3 area_debug_max {
+            static_cast<f32>(area.bounds.max.x),
+            static_cast<f32>(area.bounds.max.y),
+            static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
+        };
+
+        add_box(area_debug_min, area_debug_max, COLOR_RED);
+
+        for (const s32 edge_id : area.edge_id_vector)
+        {
+            const AreaEdge& area_edge {world.get_edge_vector()[edge_id]};
+
+            const IVec2 area_overlap_bounds_size {area_edge.area_overlap.bounds.size()};
+
+            const IVec3 door_position {
+                area_edge.area_overlap.bounds.min.x + area_overlap_bounds_size.x / 2,
+                area_edge.area_overlap.bounds.min.y + area_overlap_bounds_size.y / 2,
+                area.floor_number * FLOOR_SIZE_Z + 1,
+            };
+
+            const Vec3 edge_debug_min {Vec3{door_position}};
+            const Vec3 edge_debug_max {Vec3{door_position + IVec3{1}}};
+
+            add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
+        }
+    }
+}
+
+void
+Debug::update()
 {
 
 }
