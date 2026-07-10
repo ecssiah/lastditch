@@ -687,7 +687,7 @@ Render::init_voxel_render(const World& world)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
 
-    voxel_render.block_config_data = config_load("config/block.ini");
+    voxel_render.block_config_data.load("config/block.ini");
 
     load_block_texture_directory();
 
@@ -731,7 +731,7 @@ Render::init_model_render(Population& population)
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    model_render.actor_config_data = config_load("config/actor.ini");
+    model_render.actor_config_data.load("config/actor.ini");
 
     load_actor_texture_directory();
 

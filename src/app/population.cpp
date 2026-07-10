@@ -54,12 +54,18 @@ Population::get_actor_vector()
     return actor_vector;
 }
 
+Random&
+Population::get_random()
+{
+    return random;
+}
+
 void
 Population::init_judge()
 {
     judge_id = actor_id_generator.next();
 
-    Actor judge{
+    Actor judge {
         .id = judge_id,
         .actor_type = ActorType::Judge,
         .nation_type = NationType::Lion,

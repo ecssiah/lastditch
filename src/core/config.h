@@ -1,17 +1,22 @@
 #pragma once
 
 #include <vector>
+#include "types.h"
 
-struct ConfigEntry
+class ConfigEntry
 {
+public:
     std::string key {};
     std::string value {};
 };
 
-struct ConfigData
+class ConfigData
 {
+public:
+    void load(const std::string& config_path);
+
+    static void strip_newline(std::string& line);
+    static b32 parse_line(ConfigEntry& config_entry, std::string& line);
+
     std::vector<ConfigEntry> entry_vector {};
 };
-
-ConfigData config_load(const std::string& config_path);
-void config_destroy(ConfigData& config);

@@ -26,11 +26,6 @@ TaskState::TaskState(const IVec3& target_position)
 {
 }
 
-Work::Work()
-{
-
-}
-
 void Work::init()
 {
 }
@@ -48,11 +43,7 @@ Work::execute_wander(Population& population, Task& task, const f32 delta_time)
     }
     else
     {
-        // TODO: use Random
-        static mt19937 rng{random_device{}()};
-        static uniform_real_distribution angle_dist{0.0f, 360.0f};
-
-        const f32 direction_angle {angle_dist(rng)};
+        const f32 direction_angle {population.get_random().uniform(0.0f, 360.0f)};
 
         const Vec2 direction {
             cosf(to_radians(direction_angle)),

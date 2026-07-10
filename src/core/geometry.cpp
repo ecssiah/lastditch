@@ -40,7 +40,8 @@ operator+(const Vec3& lhs, const Vec3& rhs)
     };
 }
 
-IVec2 operator+(const IVec2& lhs, const IVec2& rhs)
+IVec2
+operator+(const IVec2& lhs, const IVec2& rhs)
 {
     return {
         lhs.x + rhs.x,
@@ -48,7 +49,8 @@ IVec2 operator+(const IVec2& lhs, const IVec2& rhs)
     };
 }
 
-IVec3 operator+(const IVec3& lhs, const IVec3& rhs)
+IVec3
+operator+(const IVec3& lhs, const IVec3& rhs)
 {
     return {
         lhs.x + rhs.x,
@@ -76,7 +78,8 @@ operator-(const Vec3& lhs, const Vec3& rhs)
     };
 }
 
-IVec2 operator-(const IVec2& lhs, const IVec2& rhs)
+IVec2
+operator-(const IVec2& lhs, const IVec2& rhs)
 {
     return {
         lhs.x - rhs.x,
@@ -84,7 +87,8 @@ IVec2 operator-(const IVec2& lhs, const IVec2& rhs)
     };
 }
 
-IVec3 operator-(const IVec3& lhs, const IVec3& rhs)
+IVec3
+operator-(const IVec3& lhs, const IVec3& rhs)
 {
     return {
         lhs.x - rhs.x,
@@ -112,7 +116,8 @@ operator*(const f32 lhs, const Vec3& rhs)
     };
 }
 
-IVec2 operator*(const s32 lhs, const IVec2& rhs)
+IVec2
+operator*(const s32 lhs, const IVec2& rhs)
 {
     return {
         lhs * rhs.x,
@@ -120,7 +125,8 @@ IVec2 operator*(const s32 lhs, const IVec2& rhs)
     };
 }
 
-IVec3 operator*(const s32 lhs, const IVec3& rhs)
+IVec3
+operator*(const s32 lhs, const IVec3& rhs)
 {
     return {
         lhs * rhs.x,
@@ -276,23 +282,119 @@ Mat4::rotate(const f32 angle, const Vec3& axis) const
     const f32 sin_angle {sinf(angle)};
     const f32 tan_angle {1.0f - cos_angle};
 
-    Mat4 rotation {};
+    Mat4 rotation_matrix {};
 
-    rotation[0][0] = cos_angle + axis_normalized.x * axis_normalized.x * tan_angle;
-    rotation[0][1] = axis_normalized.x * axis_normalized.y * tan_angle + axis_normalized.z * sin_angle;
-    rotation[0][2] = axis_normalized.x * axis_normalized.z * tan_angle - axis_normalized.y * sin_angle;
+    rotation_matrix[0][0] = cos_angle + axis_normalized.x * axis_normalized.x * tan_angle;
+    rotation_matrix[0][1] = axis_normalized.x * axis_normalized.y * tan_angle + axis_normalized.z * sin_angle;
+    rotation_matrix[0][2] = axis_normalized.x * axis_normalized.z * tan_angle - axis_normalized.y * sin_angle;
 
-    rotation[1][0] = axis_normalized.y * axis_normalized.x * tan_angle - axis_normalized.z * sin_angle;
-    rotation[1][1] = cos_angle + axis_normalized.y * axis_normalized.y * tan_angle;
-    rotation[1][2] = axis_normalized.y * axis_normalized.z * tan_angle + axis_normalized.x * sin_angle;
+    rotation_matrix[1][0] = axis_normalized.y * axis_normalized.x * tan_angle - axis_normalized.z * sin_angle;
+    rotation_matrix[1][1] = cos_angle + axis_normalized.y * axis_normalized.y * tan_angle;
+    rotation_matrix[1][2] = axis_normalized.y * axis_normalized.z * tan_angle + axis_normalized.x * sin_angle;
 
-    rotation[2][0] = axis_normalized.z * axis_normalized.x * tan_angle + axis_normalized.y * sin_angle;
-    rotation[2][1] = axis_normalized.z * axis_normalized.y * tan_angle - axis_normalized.x * sin_angle;
-    rotation[2][2] = cos_angle + axis_normalized.z * axis_normalized.z * tan_angle;
+    rotation_matrix[2][0] = axis_normalized.z * axis_normalized.x * tan_angle + axis_normalized.y * sin_angle;
+    rotation_matrix[2][1] = axis_normalized.z * axis_normalized.y * tan_angle - axis_normalized.x * sin_angle;
+    rotation_matrix[2][2] = cos_angle + axis_normalized.z * axis_normalized.z * tan_angle;
 
-    rotation[3][3] = 1.0f;
+    rotation_matrix[3][3] = 1.0f;
 
-    return *this * rotation;
+    return *this * rotation_matrix;
+}
+
+IVec2
+IBounds2::position() const
+{
+    return {
+        min.x,
+        min.y
+    };
+}
+
+IVec2
+IBounds2::size() const
+{
+    return {
+        max.x - min.x,
+        max.y - min.y,
+    };
+}
+
+b32
+overlaps(const IBounds2& lhs, const IBounds2& rhs)
+{
+    const b32 is_clear {
+        lhs.max.x <= rhs.min.x ||
+        rhs.max.x <= lhs.min.x ||
+        lhs.max.y <= rhs.min.y ||
+        rhs.max.y <= lhs.min.y
+    };
+
+    return !is_clear;
+}
+
+IBounds2
+intersection(const IBounds2& lhs, const IBounds2& rhs)
+{
+    const IVec2 o_min {
+        max(lhs.min.x, rhs.min.x),
+        max(lhs.min.y, rhs.min.y)
+    };
+
+    const IVec2 o_max {
+        min(lhs.max.x, rhs.max.x),
+        min(lhs.max.y, rhs.max.y)
+    };
+
+    return {
+        {o_min.x, o_min.y},
+        {o_max.x, o_max.y},
+    };
+}
+
+vector<IBounds2>
+subtract(const IBounds2& lhs, const IBounds2& rhs)
+{
+    if (!overlaps(lhs, rhs))
+    {
+        return {lhs};
+    }
+
+    vector<IBounds2> bounds_vector {};
+    const IBounds2 intersection_bounds {intersection(lhs, rhs)};
+
+    if (intersection_bounds.min.x > lhs.min.x)
+    {
+        bounds_vector.push_back({
+            {lhs.min.x, lhs.min.y},
+            {intersection_bounds.min.x, lhs.max.y},
+        });
+    }
+
+    if (intersection_bounds.max.x < lhs.max.x)
+    {
+        bounds_vector.push_back({
+            {intersection_bounds.max.x, lhs.min.y},
+            {lhs.max.x, lhs.max.y}
+        });
+    }
+
+    if (intersection_bounds.min.y > lhs.min.y)
+    {
+        bounds_vector.push_back({
+            {intersection_bounds.min.x, lhs.min.y},
+            {intersection_bounds.max.x, intersection_bounds.min.y}
+        });
+    }
+
+    if (intersection_bounds.max.y < lhs.max.y)
+    {
+        bounds_vector.push_back({
+            {intersection_bounds.min.x, intersection_bounds.max.y},
+            {intersection_bounds.max.x, lhs.max.y}
+        });
+    }
+
+    return bounds_vector;
 }
 
 Mat4
@@ -412,99 +514,4 @@ get_up(const Vec3& rotation)
     const Vec3 up {cross(forward, right)};
 
     return up.normalize();
-}
-
-IVec2 IBounds2::position() const
-{
-    return {
-        min.x,
-        min.y
-    };
-}
-
-IVec2
-IBounds2::size() const
-{
-    return {
-        max.x - min.x,
-        max.y - min.y,
-    };
-}
-
-b32
-overlaps(const IBounds2& lhs, const IBounds2& rhs)
-{
-    const b32 is_clear {
-        lhs.max.x <= rhs.min.x ||
-        rhs.max.x <= lhs.min.x ||
-        lhs.max.y <= rhs.min.y ||
-        rhs.max.y <= lhs.min.y
-    };
-
-    return !is_clear;
-}
-
-IBounds2
-intersection(const IBounds2& lhs, const IBounds2& rhs)
-{
-    const IVec2 o_min {
-        max(lhs.min.x, rhs.min.x),
-        max(lhs.min.y, rhs.min.y)
-    };
-
-    const IVec2 o_max {
-        min(lhs.max.x, rhs.max.x),
-        min(lhs.max.y, rhs.max.y)
-    };
-
-    return {
-        {o_min.x, o_min.y},
-        {o_max.x, o_max.y},
-    };
-}
-
-vector<IBounds2>
-subtract(const IBounds2& lhs, const IBounds2& rhs)
-{
-    if (!overlaps(lhs, rhs))
-    {
-        return {lhs};
-    }
-
-    vector<IBounds2> bounds_vector {};
-    const IBounds2 intersection_bounds {intersection(lhs, rhs)};
-
-    if (intersection_bounds.min.x > lhs.min.x)
-    {
-        bounds_vector.push_back({
-            {lhs.min.x, lhs.min.y},
-            {intersection_bounds.min.x, lhs.max.y},
-        });
-    }
-
-    if (intersection_bounds.max.x < lhs.max.x)
-    {
-        bounds_vector.push_back({
-            {intersection_bounds.max.x, lhs.min.y},
-            {lhs.max.x, lhs.max.y}
-        });
-    }
-
-    if (intersection_bounds.min.y > lhs.min.y)
-    {
-        bounds_vector.push_back({
-            {intersection_bounds.min.x, lhs.min.y},
-            {intersection_bounds.max.x, intersection_bounds.min.y}
-        });
-    }
-
-    if (intersection_bounds.max.y < lhs.max.y)
-    {
-        bounds_vector.push_back({
-            {intersection_bounds.min.x, intersection_bounds.max.y},
-            {intersection_bounds.max.x, lhs.max.y}
-        });
-    }
-
-    return bounds_vector;
 }

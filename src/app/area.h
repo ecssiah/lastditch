@@ -38,15 +38,17 @@ public:
     std::vector<s32> edge_id_vector {};
 };
 
-struct AreaOverlap
+class AreaOverlap
 {
+public:
     IBounds2 bounds {};
     Direction direction {};
 };
 
-struct AreaEdge
+class AreaEdge
 {
-    s32 id {std::numeric_limits<s32>::max()};
+public:
+    s32 id {-1};
 
     s32 area_a_id {-1};
     s32 area_b_id {-1};

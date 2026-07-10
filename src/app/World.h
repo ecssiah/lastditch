@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-
 #include "app/area.h"
 #include "app/debug.h"
 #include "app/direction.h"
@@ -446,16 +445,17 @@ inline constexpr std::array<IVec2, section_count> section_size_array =
     },
 };
 
-struct Cell
+class Cell
 {
+public:
     s32 cell_index;
     BlockType block_type;
     u8 direction_mask;
 };
 
-struct Structure
+class Structure
 {
-
+public:
 };
 
 class World

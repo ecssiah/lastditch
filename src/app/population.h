@@ -25,6 +25,8 @@ public:
 
     [[nodiscard]] std::vector<Actor>& get_actor_vector();
 
+    Random& get_random();
+
 private:
     void init_judge();
     void init_agents(Work& work);

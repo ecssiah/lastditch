@@ -4,8 +4,8 @@
 #include "core/types.h"
 #include "platform/platform.h"
 
-constexpr s32 ACT_QUEUE_CAPACITY = 1u << 6;
-constexpr s32 ACTS_MAX_PER_FRAME = 256;
+constexpr s32 ACT_QUEUE_CAPACITY {1 << 6};
+constexpr s32 ACTS_MAX_PER_FRAME {1 << 8};
 
 class Actor;
 class State;
@@ -32,16 +32,17 @@ public:
     Vec3 get_act_value() const { return m_act_value; }
 
 private:
-    ActType m_act_type{};
-    Vec3 m_act_value{};
+    ActType m_act_type {};
+    Vec3 m_act_value {};
 };
 
-struct ActQueue
+class ActQueue
 {
-    array<Act, ACT_QUEUE_CAPACITY> act_array{};
+public:
+    array<Act, ACT_QUEUE_CAPACITY> act_array {};
 
-    s32 count{};
-    s32 current_index{};
+    s32 count {};
+    s32 current_index {};
 };
 
 class Action

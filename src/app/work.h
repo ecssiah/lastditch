@@ -3,8 +3,6 @@
 #include "app/actor.h"
 #include "core/types.h"
 
-constexpr s32 TASK_MASK_COUNT {1 << 12};
-
 class Population;
 
 class WanderState
@@ -54,8 +52,6 @@ public:
 class Work
 {
 public:
-    Work();
-
     void init();
     void update(Population&, f32);
 

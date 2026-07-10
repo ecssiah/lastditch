@@ -13,8 +13,9 @@ constexpr f32 FALLING_GRAVITY_MODIFIER = 1.7f;
 class Actor;
 class World;
 
-struct BoxCollider
+class BoxCollider
 {
+public:
     b32 collision_enabled;
 
     Vec3 radius;

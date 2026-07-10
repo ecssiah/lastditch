@@ -36,6 +36,7 @@ public:
         x{0.0f},
         y{0.0f}
     {
+
     }
 
     constexpr Vec2(const f32 x, const f32 y)
@@ -43,13 +44,15 @@ public:
         x{x},
         y{y}
     {
+
     }
 
-    constexpr explicit Vec2(const f32 s)
+    explicit constexpr Vec2(const f32 s)
         :
         x{s},
         y{s}
     {
+
     }
 
     explicit Vec2(const IVec2& vec);
@@ -90,14 +93,16 @@ public:
         y{0.0f},
         z{0.0f}
     {
+
     }
 
-    constexpr Vec3(const f32 s)
+    explicit constexpr Vec3(const f32 s)
         :
         x{s},
         y{s},
         z{s}
     {
+
     }
 
     constexpr Vec3(const f32 x, const f32 y, const f32 z)
@@ -106,6 +111,7 @@ public:
         y{y},
         z{z}
     {
+
     }
 
     explicit Vec3(const IVec3& vec);
@@ -154,7 +160,7 @@ public:
 
     }
 
-    constexpr IVec2(const s32 s)
+    explicit constexpr IVec2(const s32 s)
         :
         x{s},
         y{s}
@@ -197,7 +203,7 @@ public:
 
     }
 
-    constexpr IVec3(const s32 s)
+    explicit constexpr IVec3(const s32 s)
         :
         x{s},
         y{s},
@@ -236,7 +242,7 @@ public:
 
     }
 
-    constexpr Mat4(f32 s)
+    explicit constexpr Mat4(f32 s)
         :
         entry_array{}
     {
@@ -313,8 +319,8 @@ Mat4 get_orthographic_matrix(const Vec2& min, const Vec2& max, f32 near, f32 far
 Mat4 get_projection_matrix(f32 fov_y, f32 aspect, f32 near, f32 far);
 Mat4 get_look_at_matrix(const Vec3& position, const Vec3& target, const Vec3& up);
 
-f32 interpolate_to(f32 current, f32 target, f32 speed, f32 delta_time);
-
 Vec3 get_forward(const Vec3& rotation);
 Vec3 get_right(const Vec3& rotation);
 Vec3 get_up(const Vec3& rotation);
+
+f32 interpolate_to(f32 current, f32 target, f32 speed, f32 delta_time);

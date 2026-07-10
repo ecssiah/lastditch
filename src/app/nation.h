@@ -19,8 +19,9 @@ constexpr s32 NATION_TYPE_COUNT {0 FOR_LIST_NATION_TYPE(DEFINE_ENUM_COUNT)};
 
 extern const char* nation_type_string_array[NATION_TYPE_COUNT];
 
-struct Nation
+class Nation
 {
+public:
     NationType nation_type {};
     IVec3 home_coordinate {};
 

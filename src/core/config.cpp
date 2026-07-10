@@ -7,8 +7,8 @@
 
 using namespace std;
 
-static void 
-strip_newline(string& line)
+void
+ConfigData::strip_newline(string& line)
 {
     while (!line.empty() && (line.back() == '\n' || line.back() == '\r'))
     {
@@ -16,8 +16,8 @@ strip_newline(string& line)
     }
 }
 
-static b32 
-parse_line(ConfigEntry& config_entry, string& line)
+b32
+ConfigData::parse_line(ConfigEntry& config_entry, string& line)
 {
     strip_newline(line);
 
@@ -41,11 +41,9 @@ parse_line(ConfigEntry& config_entry, string& line)
     return true;
 }
 
-ConfigData 
-config_load(const string& config_path)
+void
+ConfigData::load(const string& config_path)
 {
-    ConfigData config_data {};
-
     ifstream ifs {config_path};
     
     assert(ifs.is_open());
@@ -58,15 +56,7 @@ config_load(const string& config_path)
 
         if (parse_line(config_entry, line))
         {
-            config_data.entry_vector.push_back(config_entry);
+            entry_vector.push_back(config_entry);
         }
     }
-
-    return config_data;
-}
-
-void 
-config_destroy(ConfigData& config_data)
-{
-
 }
