@@ -37,19 +37,15 @@ struct Pool
     auto begin() const { return active_id_vector.begin(); }
     auto end()   const { return active_id_vector.end(); }
 
-    s32 add(T value)
+    void add(T value)
     {
         assert(!free_id_vector.empty());
 
         const s32 id {free_id_vector.back()};
         free_id_vector.pop_back();
 
-        value.id = id;
-
         item_array[id] = value;
         active_id_vector.push_back(id);
-
-        return id;
     }
 
     void remove(const s32 id)

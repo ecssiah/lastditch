@@ -252,8 +252,8 @@ Action::queue_acts(State& state, Platform& platform)
 void
 Action::update(State& state, Platform& platform)
 {
-    Actor& judge = state.population.get_judge();
+    Actor* judge = state.population.get_judge();
     
     queue_acts(state, platform);
-    apply_queue(judge);
+    apply_queue(*judge);
 }

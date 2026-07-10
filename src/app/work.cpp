@@ -18,9 +18,11 @@ void Work::init()
 void 
 Work::execute_wander(Population& population, Task& task, const f32 delta_time)
 {
-    Actor& actor = population.get_actor(task.actor_id);
+    Actor* actor {population.get_actor(task.actor_id)};
 
-    WanderState& wander_state = task.task_state.wander;
+    assert(actor != nullptr);
+
+    WanderState& wander_state {task.task_state.wander};
 
     if (wander_state.tick < wander_state.tick_limit)
     {
@@ -28,27 +30,28 @@ Work::execute_wander(Population& population, Task& task, const f32 delta_time)
     }
     else
     {
-        static mt19937 rng(random_device{}());
-        static uniform_real_distribution<f32> angle_dist(0.0f, 360.0f);
+        // TODO: use Random
+        static mt19937 rng{random_device{}()};
+        static uniform_real_distribution angle_dist{0.0f, 360.0f};
 
-        const f32 direction_angle = angle_dist(rng);
+        const f32 direction_angle {angle_dist(rng)};
 
-        const Vec2 direction = {
+        const Vec2 direction {
             cosf(to_radians(direction_angle)),
             sinf(to_radians(direction_angle))
         };
 
-        actor.velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;
-        actor.velocity.y = direction.y * AGENT_DEFAULT_GROUND_SPEED;
+        actor->velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;
+        actor->velocity.y = direction.y * AGENT_DEFAULT_GROUND_SPEED;
 
-        actor.rotation_target.z = direction_angle;
+        actor->rotation_target.z = direction_angle;
 
         wander_state.tick = 0;
     }
 
-    actor.rotation.z = interpolate_to(
-        actor.rotation.z,
-        actor.rotation_target.z,
+    actor->rotation.z = interpolate_to(
+        actor->rotation.z,
+        actor->rotation_target.z,
         5.0f,
         delta_time
     );
@@ -68,9 +71,9 @@ Work::get_task_pool()
 void 
 Work::update(Population& population, const f32 delta_time)
 {
-    for (const s32 id : task_pool)
+    for (const s32 pool_id : task_pool)
     {
-        Task& task {task_pool.item_array[id]};
+        Task& task {task_pool.item_array[pool_id]};
 
         switch (task.task_type)
         {

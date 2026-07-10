@@ -1,6 +1,5 @@
 #include "app/population.h"
 
-#include <cassert>
 #include "core/types.h"
 #include "core/log.h"
 #include "app/actor.h"
@@ -8,15 +7,6 @@
 #include "app/physics.h"
 #include "app/work.h"
 #include "app/world.h"
-
-Population::Population()
-    :
-    random{POPULATION_SEED},
-    nation_array{},
-    judge_id{}
-{
-
-}
 
 void
 Population::init(Work& work)
@@ -32,28 +22,68 @@ Population::quit()
 
 }
 
-Actor&
+Actor*
 Population::get_judge()
 {
-    return actor_pool.get(judge_id);
+    for (const s32 pool_id : actor_pool)
+    {
+        Actor& actor {actor_pool.get(pool_id)};
+
+        if (actor.id == judge_id)
+        {
+            return &actor;
+        }
+    }
+
+    return nullptr;
 }
 
-const Actor&
+const Actor*
 Population::get_judge() const
 {
-    return actor_pool.get(judge_id);
+    for (const s32 pool_id : actor_pool)
+    {
+        const Actor& actor {actor_pool.get(pool_id)};
+
+        if (actor.id == judge_id)
+        {
+            return &actor;
+        }
+    }
+
+    return nullptr;
 }
 
-Actor&
-Population::get_actor(s32 actor_id)
+Actor*
+Population::get_actor(const s32 actor_id)
 {
-    return actor_pool.get(actor_id);
+    for (const s32 pool_id : actor_pool)
+    {
+        Actor& actor {actor_pool.get(pool_id)};
+
+        if (actor.id == actor_id)
+        {
+            return &actor;
+        }
+    }
+
+    return nullptr;
 }
 
-const Actor&
-Population::get_actor(s32 actor_id) const
+const Actor*
+Population::get_actor(const s32 actor_id) const
 {
-    return actor_pool.get(actor_id);
+    for (const s32 pool_id : actor_pool)
+    {
+        const Actor& actor {actor_pool.get(pool_id)};
+
+        if (actor.id == actor_id)
+        {
+            return &actor;
+        }
+    }
+
+    return nullptr;
 }
 
 ActorPool&
@@ -65,7 +95,10 @@ Population::get_actor_pool()
 void
 Population::init_judge()
 {
+    judge_id = actor_id_generator.next();
+
     Actor judge{
+        .id = judge_id,
         .actor_type = ActorType::Judge,
         .nation_type = NationType::Lion,
         .position = {WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f},
@@ -79,7 +112,7 @@ Population::init_judge()
         },
     };
 
-    judge_id = actor_pool.add(judge);
+    actor_pool.add(judge);
 
     LOG_INFO(
         "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)", 
@@ -116,6 +149,7 @@ Population::init_agents(Work& work)
             };
 
             Actor agent {
+                .id = actor_id_generator.next(),
                 .actor_type = ActorType::Agent,
                 .nation_type = nation_type,
                 .position = position,
@@ -128,7 +162,7 @@ Population::init_agents(Work& work)
                 },
             };
 
-            agent.id = actor_pool.add(agent);
+            actor_pool.add(agent);
 
             const TaskState act_state{
                 .wander = {
@@ -137,13 +171,14 @@ Population::init_agents(Work& work)
                 },
             };
 
-            Task task {
+            const Task task {
+                .id = task_id_generator.next(),
                 .actor_id = agent.id,
                 .task_type = TaskType::wander,
                 .task_state = act_state,
             };
 
-            task.id = work.get_task_pool().add(task);
+            work.get_task_pool().add(task);
 
             agent.act_id_array[agent.act_id_count++] = task.id;
 

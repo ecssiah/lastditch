@@ -33,8 +33,8 @@ enum class MovementType : u8
 constexpr s32 MOVEMENT_TYPE_COUNT = FOR_LIST_MOVEMENT_TYPE(DEFINE_ENUM_COUNT);
 
 #define FOR_LIST_ACTOR_TYPE(DO)                                                 \
-    DO(None)                                                                    \
-    DO(Judge)                                                                   \
+    DO(None)                                                                        \
+    DO(Judge)                                                                       \
     DO(Agent)
 
 enum ActorType
@@ -42,14 +42,14 @@ enum ActorType
     FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 ACTOR_TYPE_COUNT = FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_COUNT);
+constexpr s32 ACTOR_TYPE_COUNT {FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_COUNT)};
 
 extern const char* actor_type_string_array[ACTOR_TYPE_COUNT];
 
 class Actor
 {
 public:
-    s32 id {};
+    s32 id;
 
     ActorType actor_type {ActorType::None};
     NationType nation_type {NationType::Wolf};

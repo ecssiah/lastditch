@@ -37,8 +37,8 @@ union TaskState
 
 struct Task
 {
-    s32 id {};
-    s32 actor_id {};
+    s32 id {-1};
+    s32 actor_id {-1};
 
     TaskType task_type {};
     TaskState task_state {};

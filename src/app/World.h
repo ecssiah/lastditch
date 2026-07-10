@@ -7,6 +7,7 @@
 #include "app/direction.h"
 #include "app/physics.h"
 #include "app/pool.h"
+#include "core/id.h"
 #include "core/random.h"
 #include "core/types.h"
 
@@ -511,19 +512,6 @@ public:
     [[nodiscard]] Vec3 get_gravity() const;
 
 private:
-    Random random;
-    Physics physics;
-
-    u64 tick_count;
-    u64 second_count;
-
-    f32 time_rate;
-
-    std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array;
-
-    std::vector<AreaPool> area_pool_vector;
-    EdgePool edge_pool;
-
     void init_cell_array();
 
     void construct_doors(const Area& area);
@@ -538,7 +526,7 @@ private:
 
     void place_content(s32 floor_number);
 
-    void draw_debug_info(Debug& debug);
+    void draw_debug_info(Debug& debug) const;
 
     void calculate_world_direction_mask();
     u8 get_direction_mask(s32 x, s32 y, s32 z);
@@ -566,4 +554,20 @@ private:
     static AreaOverlap get_area_overlap(const Area& a, const Area& b);
 
     void calculate_area_edges(s32 floor_number);
+
+    Random random;
+    Physics physics;
+
+    u64 tick_count {0};
+    u64 second_count {0};
+
+    f32 time_rate {1.0f};
+
+    std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
+
+    std::vector<AreaPool> area_pool_vector {};
+    EdgePool edge_pool {};
+
+    IdGenerator area_id_generator {};
+    IdGenerator edge_id_generator {};
 };

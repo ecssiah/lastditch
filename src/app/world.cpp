@@ -68,11 +68,11 @@ World::init(Debug& debug)
 void
 World::update(Population& population, const f32 delta_time)
 {
-    for (const s32 id : population.get_actor_pool())
+    for (const s32 pool_id : population.get_actor_pool())
     {
-        Actor& actor = population.get_actor(id);
+        Actor* actor {population.get_actor(pool_id)};
 
-        Physics::update_actor(*this, actor, delta_time);
+        Physics::update_actor(*this, *actor, delta_time);
     }
 }
 
@@ -456,7 +456,8 @@ World::place_area(Area& area)
 
             for (const IBounds2 bounds : bounds_vector)
             {
-                Area new_area {
+                const Area new_area {
+                    .id = area_id_generator.next(),
                     .area_type = area_test.area_type,
                     .floor_number = area_test.floor_number,
                     .bounds = bounds,
@@ -662,7 +663,8 @@ World::layout_roof_areas()
     {
         for (s32 area_x = TOWER_BORDER; area_x < TOWER_SIZE + TOWER_BORDER; area_x += roof_area_size)
         {
-            Area roof_area{
+            const Area roof_area{
+                .id = area_id_generator.next(),
                 .area_type = AreaType::Open,
                 .floor_number = TOWER_FLOOR_COUNT,
                 .bounds = {
@@ -682,6 +684,7 @@ World::layout_elevator_areas()
     for (s32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT + 1; ++floor_number)
     {
         Area elevator_shaft {
+            .id = area_id_generator.next(),
             .area_type = AreaType::Elevator,
             .floor_number = floor_number,
             .bounds = {
@@ -711,6 +714,7 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant1_size {section_size_array[static_cast<u8>(Section::Quadrant1)]};
         
         Area area_quadrant_1 {
+            .id = area_id_generator.next(),
             .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = { quadrant1_origin,quadrant1_origin + quadrant1_size },
@@ -720,6 +724,7 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant2_size {section_size_array[static_cast<u8>(Section::Quadrant2)]};
 
         Area area_quadrant_2 {
+            .id = area_id_generator.next(),
             .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = { quadrant2_origin,quadrant2_origin + quadrant2_size },
@@ -729,6 +734,7 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant3_size {section_size_array[static_cast<u8>(Section::Quadrant3)]};
 
         Area area_quadrant_3 {
+            .id = area_id_generator.next(),
             .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = { quadrant3_origin,quadrant3_origin + quadrant3_size },
@@ -738,6 +744,7 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant4_size {section_size_array[static_cast<u8>(Section::Quadrant4)]};
 
         Area area_quadrant_4 {
+            .id = area_id_generator.next(),
             .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = { quadrant4_origin,quadrant4_origin + quadrant4_size },
@@ -819,7 +826,8 @@ World::layout_tower_areas()
             const IVec2 section_origin {section_origin_array[section_index]};
             const IVec2 section_size {section_size_array[section_index]};
 
-            Area section_area {
+            const Area section_area {
+                .id = area_id_generator.next(),
                 .area_type = AreaType::Open,
                 .floor_number = floor_number,
                 .bounds = {section_origin, section_origin + section_size},
@@ -840,6 +848,7 @@ World::setup_wolf_territory()
     };
     
     Area temple_area {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -907,6 +916,7 @@ World::setup_wolf_territory()
     };
 
     Area platform_area {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -952,6 +962,7 @@ World::setup_eagle_territory()
     };
     
     Area temple_area {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1019,6 +1030,7 @@ World::setup_eagle_territory()
     };
     
     Area platform_area {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1064,6 +1076,7 @@ World::setup_bear_territory()
     };
     
     Area temple_area {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1131,6 +1144,7 @@ World::setup_bear_territory()
     };
     
     Area platform_area {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1176,6 +1190,7 @@ World::setup_lion_territory()
     };
     
     Area temple_area {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1243,6 +1258,7 @@ World::setup_lion_territory()
     };
     
     Area platform_area {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1287,6 +1303,7 @@ World::layout_test_area()
     };
 
     Area test_room1 {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
         .bounds = {
@@ -1296,6 +1313,7 @@ World::layout_test_area()
     };
 
     Area test_room2 {
+        .id = area_id_generator.next(),
         .area_type = AreaType::Wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
         .bounds = {
@@ -1405,15 +1423,16 @@ World::calculate_area_edges(s32 floor_number)
 
             if (area_overlap_size.x > 0 && area_overlap_size.y > 0)
             {
-                AreaEdge area_edge = {
-                    .area_a_id = area_id_left,
-                    .area_b_id = area_id_right,
+                const AreaEdge area_edge = {
+                    .id = edge_id_generator.next(),
+                    .area_a_id = area_left.id,
+                    .area_b_id = area_right.id,
                     .area_a_direction = area_overlap.direction,
                     .area_b_direction = direction_opposite(area_overlap.direction),
                     .area_overlap = area_overlap,
                 };
 
-                area_edge.id = edge_pool.add(area_edge);
+                edge_pool.add(area_edge);
 
                 assert(area_left.edge_id_count < AREA_EDGE_MAX);
                 assert(area_right.edge_id_count < AREA_EDGE_MAX);
@@ -1510,7 +1529,7 @@ World::construct_doors(const Area& area)
         }
         else if (area_overlap_size.y >= DOOR_MINIMUM_EDGE_SIZE)
         {
-            const IVec3 door_position = {
+            const IVec3 door_position {
                 area_edge->area_overlap.bounds.min.x,
                 area_edge->area_overlap.bounds.min.y + area_overlap_size.y / 2,
                 area.floor_number * FLOOR_SIZE_Z + 1,
@@ -1668,9 +1687,9 @@ World::construct_areas(s32 floor_number)
 {
     const AreaPool& area_pool {area_pool_vector[floor_number]};
 
-    for (const s32 id : area_pool)
+    for (const s32 pool_id : area_pool)
     {
-        const Area& area {area_pool.get(id)};
+        const Area& area {area_pool.get(pool_id)};
 
         switch (area.area_type)
         {
@@ -1693,9 +1712,9 @@ World::place_content(s32 floor_number)
 {
     const AreaPool& area_pool {area_pool_vector[floor_number]};
 
-    for (const s32 id : area_pool)
+    for (const s32 pool_id : area_pool)
     {
-        const Area& area {area_pool.get(id)};
+        const Area& area {area_pool.get(pool_id)};
 
         if (area.area_type != AreaType::Room)
         {
@@ -1737,7 +1756,7 @@ World::place_content(s32 floor_number)
 }
 
 void
-World::draw_debug_info(Debug& debug)
+World::draw_debug_info(Debug& debug) const
 {
     const AreaPool& area_pool {area_pool_vector[DEBUG_FLOOR_NUMBER]};
 
