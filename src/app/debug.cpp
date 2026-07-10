@@ -97,9 +97,3 @@ Debug::update()
 {
 
 }
-
-void 
-Debug::quit()
-{
-
-}

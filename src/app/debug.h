@@ -27,14 +27,14 @@ class Debug
 public:
     void init(const World& world);
     void update();
-    void quit();
-    void reset();
 
-    void add_line(const Vec3& a, const Vec3& b, const Vec3& color);
-    void add_box(const Vec3& min, const Vec3& max, const Vec3& color);
+    void reset();
 
     [[nodiscard]] const std::vector<DebugLine>& get_debug_line_vector() const;
 
 private:
+    void add_line(const Vec3& a, const Vec3& b, const Vec3& color);
+    void add_box(const Vec3& min, const Vec3& max, const Vec3& color);
+
     std::vector<DebugLine> line_vector;
 };
