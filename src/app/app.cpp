@@ -10,10 +10,8 @@ App::App()
 
     state.debug.init();
 
-    state.work.init();
-
     state.world.init(state.debug);
-    state.population.init(state.work);
+    state.population.init();
 
     state.render.init(platform, state.population, state.world);
     state.screen.init(platform);
@@ -24,10 +22,12 @@ App::update()
 {
     platform.begin_frame();
 
-    state.action.update(state, platform);
+    const f32 delta_time {platform.get_delta_time()};
 
-    state.work.update(state.population, platform.get_delta_time());
-    state.world.update(state.population, platform.get_delta_time());
+    state.control.update(platform, state);
+
+    state.world.update(state.population, delta_time);
+    state.population.update(delta_time);
 
     state.render.update(state.population, state.debug);
     state.screen.update(state.population);

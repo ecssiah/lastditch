@@ -58,8 +58,8 @@ target_sources(
     PRIVATE
     external/glad/src/gl.c
     external/stb/src/stb_image.c
-    src/app/action.cpp
-    src/app/action.h
+        src/app/control.cpp
+        src/app/control.h
     src/app/actor.cpp
     src/app/actor.h
     src/app/app.h

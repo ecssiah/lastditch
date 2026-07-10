@@ -14,7 +14,8 @@ constexpr s32 AGENT_INITIAL_COUNT {12};
 class Population
 {
 public:
-    void init(Work& work);
+    void init();
+    void update(f32 delta_time);
     void quit();
 
     Actor& get_judge();
@@ -27,15 +28,18 @@ public:
 
     Random& get_random();
 
+    void add_act(const Act& act);
+
 private:
     void init_judge();
-    void init_agents(Work& work);
+    void init_agents();
     void init_nations();
 
     IdGenerator actor_id_generator {};
     IdGenerator task_id_generator {};
 
     Random random {POPULATION_SEED};
+    Work work {};
 
     std::array<Nation, NATION_TYPE_COUNT> nation_array {};
     s32 judge_id {-1};

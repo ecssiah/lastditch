@@ -1,6 +1,6 @@
 #pragma once
 
-#include "app/action.h"
+#include "app/control.h"
 #include "app/debug.h"
 #include "app/population.h"
 #include "app/world.h"
@@ -16,13 +16,11 @@ public:
     b32 evolving;
 
     Debug debug;
-    Action action;
+    Control control;
     
     World world;
     Population population;
-    
-    Work work;
 
-    Screen screen;
     Render render;
+    Screen screen;
 };

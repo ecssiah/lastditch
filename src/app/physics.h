@@ -16,9 +16,9 @@ class World;
 class BoxCollider
 {
 public:
-    b32 collision_enabled;
+    b32 collision_enabled {true};
 
-    Vec3 radius;
+    Vec3 radius {};
 };
 
 class Physics

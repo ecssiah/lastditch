@@ -9,13 +9,19 @@
 #include "app/world.h"
 
 void
-Population::init(Work& work)
+Population::init()
 {
     actor_vector.reserve(ACTOR_POOL_MAX);
 
     init_nations();
     init_judge();
-    init_agents(work);
+    init_agents();
+}
+
+void
+Population::update(const f32 delta_time)
+{
+    work.update(*this, delta_time);
 }
 
 void
@@ -61,6 +67,12 @@ Population::get_random()
 }
 
 void
+Population::add_act(const Act &act)
+{
+    work.add_act(act);
+}
+
+void
 Population::init_judge()
 {
     judge_id = actor_id_generator.next();
@@ -93,7 +105,7 @@ Population::init_judge()
 }
 
 void
-Population::init_agents(Work& work)
+Population::init_agents()
 {
     for (s32 nation_index = 0; nation_index < NATION_TYPE_COUNT; ++nation_index)
     {
