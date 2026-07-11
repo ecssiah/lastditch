@@ -72,23 +72,40 @@ Debug::init(const World& world)
 
         add_box(area_min, area_max, COLOR_RED);
 
-        // for (const s32 edge_id : area.edge_id_vector)
-        // {
-        //     const Edge& area_edge {world.get_edge_vector()[edge_id]};
-        //
-        //     const IVec2 area_overlap_bounds_size {area_edge.area_overlap.bounds.size()};
-        //
-        //     const IVec3 door_position {
-        //         area_edge.area_overlap.bounds.min.x + area_overlap_bounds_size.x / 2,
-        //         area_edge.area_overlap.bounds.min.y + area_overlap_bounds_size.y / 2,
-        //         area.floor_number * FLOOR_SIZE_Z + 1,
-        //     };
-        //
-        //     const Vec3 edge_debug_min {Vec3{door_position}};
-        //     const Vec3 edge_debug_max {Vec3{door_position + IVec3{1}}};
-        //
-        //     add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
-        // }
+        for (const s32 edge_id : area.edge_id_vector)
+        {
+            const Edge& edge {world.get_edge_vector()[edge_id]};
+
+            for (const Door& door : edge.door_vector)
+            {
+                if (edge.axis == Axis::X)
+                {
+                    const IVec3 door_position {
+                        edge.bounds.min.x + door.offset,
+                        edge.bounds.min.y,
+                        area.floor_number * FLOOR_SIZE_Z + 1,
+                    };
+
+                    const Vec3 edge_debug_min {Vec3{door_position}};
+                    const Vec3 edge_debug_max {Vec3{door_position} + Vec3{1.0f, 2.0f, 1.0f}};
+
+                    add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
+                }
+                else if (edge.axis == Axis::Y)
+                {
+                    const IVec3 door_position {
+                        edge.bounds.min.x,
+                        edge.bounds.min.y + door.offset,
+                        area.floor_number * FLOOR_SIZE_Z + 1,
+                    };
+
+                    const Vec3 edge_debug_min {Vec3{door_position}};
+                    const Vec3 edge_debug_max {Vec3{door_position} + Vec3{2.0f, 1.0f, 1.0f}};
+
+                    add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
+                }
+            }
+        }
     }
 }
 

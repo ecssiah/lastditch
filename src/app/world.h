@@ -271,6 +271,7 @@ private:
 
     Edge get_edge(const Area& area_left, const Area& area_right);
 
+    void calculate_doors(Edge& edge);
     void calculate_edges(s32 floor_number);
 
     Random random {WORLD_SEED};

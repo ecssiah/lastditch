@@ -1036,7 +1036,10 @@ World::layout_tower_areas()
                     const s32 split_size {area_size[axis_split_value] / 2 + split_offset};
 
                     Area area_a {area_copy};
+                    area_a.id = area_id_generator.next();
+
                     Area area_b {area_copy};
+                    area_b.id = area_id_generator.next();
 
                     area_a.bounds.max[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
                     area_b.bounds.min[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
@@ -1579,7 +1582,6 @@ World::layout_test_area()
     place_area(test_room2);
 }
 
-
 void
 World::set_block_type(const s32 x, const s32 y, const s32 z, const BlockType block_type)
 {
@@ -1745,104 +1747,6 @@ World::construct_areas(const s32 floor_number)
     }
 }
 
-// void
-// World::construct_doors(const Area& area)
-// {
-//     for (const s32 edge_id : area.edge_id_vector)
-//     {
-//         const Edge& edge {edge_vector[edge_id]};
-//
-//         const IVec3 door_size {1, 1, 2};
-//
-//         const Direction edge_direction {
-//             area.id == edge.area_a_id
-//                 ? edge.direction_a
-//                 : edge.direction_b
-//         };
-//
-//         const IVec2 area_overlap_size {edge.area_overlap.bounds.size()};
-//
-//         if (area_overlap_size.x >= DOOR_MINIMUM_EDGE_SIZE)
-//         {
-//             const IVec3 door_position {
-//                 edge.area_overlap.bounds.min.x + area_overlap_size.x / 2,
-//                 edge.area_overlap.bounds.min.y,
-//                 area.floor_number * FLOOR_SIZE_Z + 1,
-//             };
-//
-//             const IVec3 door_frame_size {3, 1, 3};
-//
-//             if (edge_direction == Direction::North)
-//             {
-//                 set_block_type_cube(
-//                     door_position.x - 1, door_position.y, door_position.z,
-//                     door_frame_size.x, door_frame_size.y, door_frame_size.z,
-//                     BlockType::Panel3
-//                 );
-//
-//                 set_block_type_cube(
-//                     door_position.x, door_position.y, door_position.z,
-//                     door_size.x, door_size.y, door_size.z,
-//                     BlockType::None
-//                 );
-//             }
-//             else if (edge_direction == Direction::South)
-//             {
-//                 set_block_type_cube(
-//                     door_position.x - 1, door_position.y, door_position.z,
-//                     door_frame_size.x, door_frame_size.y, door_frame_size.z,
-//                     BlockType::Panel3
-//                 );
-//
-//                 set_block_type_cube(
-//                     door_position.x, door_position.y, door_position.z,
-//                     door_size.x, door_size.y, door_size.z,
-//                     BlockType::None
-//                 );
-//             }
-//         }
-//         else if (area_overlap_size.y >= DOOR_MINIMUM_EDGE_SIZE)
-//         {
-//             const IVec3 door_position {
-//                 edge.area_overlap.bounds.min.x,
-//                 edge.area_overlap.bounds.min.y + area_overlap_size.y / 2,
-//                 area.floor_number * FLOOR_SIZE_Z + 1,
-//             };
-//
-//             const IVec3 door_frame_size {1, 3, 3};
-//
-//             if (edge_direction == Direction::East)
-//             {
-//                 set_block_type_cube(
-//                     door_position.x, door_position.y - 1, door_position.z,
-//                     door_frame_size.x, door_frame_size.y, door_frame_size.z,
-//                     BlockType::Panel3
-//                 );
-//
-//                 set_block_type_cube(
-//                     door_position.x, door_position.y, door_position.z,
-//                     door_size.x, door_size.y, door_size.z,
-//                     BlockType::None
-//                 );
-//             }
-//             else if (edge_direction == Direction::West)
-//             {
-//                 set_block_type_cube(
-//                     door_position.x, door_position.y - 1, door_position.z,
-//                     door_frame_size.x, door_frame_size.y, door_frame_size.z,
-//                     BlockType::Panel3
-//                 );
-//
-//                 set_block_type_cube(
-//                     door_position.x, door_position.y, door_position.z,
-//                     door_size.x, door_size.y, door_size.z,
-//                     BlockType::None
-//                 );
-//             }
-//         }
-//     }
-// }
-
 u8
 World::get_direction_mask(const s32 x, const s32 y, const s32 z)
 {
@@ -1900,7 +1804,10 @@ World::calculate_direction_masks()
 Edge
 World::get_edge(const Area& area_left, const Area& area_right)
 {
-    Edge edge {};
+    Edge edge {
+        .area_a_id = area_left.id,
+        .area_b_id = area_right.id,
+    };
 
     if (area_left.bounds.max.x == area_right.bounds.min.x)
     {
@@ -1909,12 +1816,14 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
         if (overlap_y_min < overlap_y_max)
         {
-            edge.axis = Axis::X;
+            const s32 boundary_x {area_left.bounds.max.x};
 
-            edge.bounds.min.x = area_left.bounds.max.x - 1;
+            edge.axis = Axis::Y;
+
+            edge.bounds.min.x = boundary_x - 1;
             edge.bounds.min.y = overlap_y_min;
 
-            edge.bounds.max.x = area_left.bounds.max.x;
+            edge.bounds.max.x = boundary_x + 1;
             edge.bounds.max.y = overlap_y_max;
         }
     }
@@ -1925,12 +1834,14 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
         if (overlap_y_min < overlap_y_max)
         {
-            edge.axis = Axis::X;
+            const s32 boundary_x {area_left.bounds.min.x};
 
-            edge.bounds.min.x = area_left.bounds.min.x;
+            edge.axis = Axis::Y;
+
+            edge.bounds.min.x = boundary_x - 1;
             edge.bounds.min.y = overlap_y_min;
 
-            edge.bounds.max.x = area_left.bounds.min.x + 1;
+            edge.bounds.max.x = boundary_x + 1;
             edge.bounds.max.y = overlap_y_max;
         }
     }
@@ -1941,13 +1852,15 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
         if (overlap_x_min < overlap_x_max)
         {
-            edge.axis = Axis::Y;
+            const s32 boundary_y {area_left.bounds.max.y};
+
+            edge.axis = Axis::X;
 
             edge.bounds.min.x = overlap_x_min;
-            edge.bounds.min.y = area_left.bounds.max.y - 1;
+            edge.bounds.min.y = boundary_y - 1;
 
             edge.bounds.max.x = overlap_x_max;
-            edge.bounds.max.y = area_left.bounds.max.y;
+            edge.bounds.max.y = boundary_y + 1;
         }
     }
     else if (area_left.bounds.min.y == area_right.bounds.max.y)
@@ -1957,13 +1870,15 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
         if (overlap_x_min < overlap_x_max)
         {
-            edge.axis = Axis::Y;
+            const s32 boundary_y {area_left.bounds.min.y};
+
+            edge.axis = Axis::X;
 
             edge.bounds.min.x = overlap_x_min;
-            edge.bounds.min.y = area_left.bounds.min.y;
+            edge.bounds.min.y = boundary_y - 1;
 
             edge.bounds.max.x = overlap_x_max;
-            edge.bounds.max.y = area_left.bounds.min.y + 1;
+            edge.bounds.max.y = boundary_y + 1;
         }
     }
 
@@ -1976,26 +1891,55 @@ World::get_edge(const Area& area_left, const Area& area_right)
 }
 
 void
+World::calculate_doors(Edge& edge)
+{
+
+}
+
+void
 World::calculate_edges(const s32 floor_number)
 {
     vector<Area>& floor_area_vector {get_floor_area_vector(floor_number)};
 
-    for (s32 left_index = 0; left_index < static_cast<s32>(floor_area_vector.size()); ++left_index)
+    const s32 area_count {static_cast<s32>(floor_area_vector.size())};
+
+    for (s32 left_index = 0; left_index < area_count; ++left_index)
     {
         Area& left_area {floor_area_vector[left_index]};
 
-        for (s32 right_index = left_index + 1; right_index < static_cast<s32>(floor_area_vector.size()); ++right_index)
+        for (s32 right_index = left_index + 1; right_index < area_count; ++right_index)
         {
             Area& right_area {floor_area_vector[right_index]};
 
-            const Edge edge {get_edge(left_area, right_area)};
+            Edge edge {get_edge(left_area, right_area)};
 
             if (edge.id != -1)
             {
-                edge_vector.push_back(edge);
-
                 left_area.edge_id_vector.push_back(edge.id);
                 right_area.edge_id_vector.push_back(edge.id);
+
+                if (edge.axis == Axis::X && edge.bounds.size().x > 5)
+                {
+                    const Door door {
+                        .offset = edge.bounds.size().x / 2,
+                        .width = 3,
+                        .height = 3,
+                    };
+
+                    edge.door_vector.push_back(door);
+                }
+                else if (edge.axis == Axis::Y && edge.bounds.size().y > 5)
+                {
+                    const Door door {
+                        .offset = edge.bounds.size().y / 2,
+                        .width = 3,
+                        .height = 3,
+                    };
+
+                    edge.door_vector.push_back(door);
+                }
+
+                edge_vector.push_back(edge);
             }
         }
     }
