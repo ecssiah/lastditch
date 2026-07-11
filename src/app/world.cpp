@@ -12,12 +12,269 @@
 
 using namespace std;
 
-World::World()
-    :
-    random{WORLD_SEED},
-    area_vector{FLOOR_COUNT}
+namespace
 {
+    constexpr array<IVec2, section_count> SECTION_ORIGIN_ARRAY =
+    {
+        {
+            // Center
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            },
+            // Center1
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            },
+            // Center2
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // Center3
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            },
+            // Center4
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            },
+            // Quadrant1
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // Quadrant2
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // Quadrant3
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            },
+            // Quadrant4
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            },
+            // East1
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            },
+            // East2
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            },
+            // East3
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // NorthEast
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // North1
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // North2
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // North3
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // NorthWest
+            {
+                TOWER_BORDER,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // West1
+            {
+                TOWER_BORDER,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            },
+            // West2
+            {
+                TOWER_BORDER,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            },
+            // West3
+            {
+                TOWER_BORDER,
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            },
+            // SouthWest
+            {
+                TOWER_BORDER,
+                TOWER_BORDER,
+            },
+            // South1
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+                TOWER_BORDER,
+            },
+            // South2
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+                TOWER_BORDER,
+            },
+            // South3
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER,
+            },
+            // SouthEast
+            {
+                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+                TOWER_BORDER,
+            },
+        }
+    };
 
+    constexpr array<IVec2, section_count> SECTION_SIZE_ARRAY =
+    {
+        {
+            // Center
+            {
+                TOWER_CENTER_HALL_SIZE,
+                TOWER_CENTER_HALL_SIZE,
+            },
+            // Center1
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_CENTER_HALL_SIZE,
+            },
+            // Center2
+            {
+                TOWER_CENTER_HALL_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // Center3
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_CENTER_HALL_SIZE,
+            },
+            // Center4
+            {
+                TOWER_CENTER_HALL_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // Quadrant1
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // Quadrant2
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // Quadrant3
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // Quadrant4
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // East1
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // East2
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_CENTER_HALL_SIZE,
+            },
+            // East3
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // NorthEast
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // North1
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // North2
+            {
+                TOWER_CENTER_HALL_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // North3
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // NorthWest
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // West1
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // West2
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_CENTER_HALL_SIZE,
+            },
+            // West3
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_QUADRANT_SIZE,
+            },
+            // SouthWest
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // South1
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // South2
+            {
+                TOWER_CENTER_HALL_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // South3
+            {
+                TOWER_QUADRANT_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+            // SouthEast
+            {
+                TOWER_OUTER_HALL_SIZE,
+                TOWER_OUTER_HALL_SIZE,
+            },
+        },
+    };
 }
 
 void
@@ -35,10 +292,10 @@ World::init()
     layout_elevator_areas();
     layout_test_area();
 
-    setup_eagle_territory();
-    setup_wolf_territory();
-    setup_bear_territory();
-    setup_lion_territory();
+    layout_eagle_territory();
+    layout_wolf_territory();
+    layout_bear_territory();
+    layout_lion_territory();
 
     for (s32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
@@ -54,7 +311,7 @@ World::init()
     set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::LionSymbol);
     set_block_type(WORLD_CENTER_S32 + 19, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::EagleSymbol);
 
-    calculate_world_direction_mask();
+    calculate_direction_masks();
 }
 
 void
@@ -243,41 +500,10 @@ World::is_clear(const s32 x, const s32 y, const s32 z, const u8 direction_mask)
     return true;
 }
 
-u8
-World::get_direction_mask(const s32 x, const s32 y, const s32 z)
+s32
+World::get_floor(const s32 z)
 {
-    u8 direction_mask {0};
-    const s32 cell_index {cell_coordinate_to_index(x, y, z)};
-
-    for (s32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
-    {
-        const IVec3 neighbor_position {
-            x + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
-            y + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][1]),
-            z + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
-        };
-
-        const b32 valid_neighbor {
-            cell_coordinate_is_valid(neighbor_position.x, neighbor_position.y, neighbor_position.z)
-        };
-
-        if (!valid_neighbor)
-        {
-            direction_mask |= 1u << direction_index;
-        }
-        else
-        {
-            const s32 neighbor_cell_index {cell_index + get_stride(static_cast<Direction>(direction_index))};
-            const Cell& neighbor_cell {get_cell(neighbor_cell_index)};
-
-            if (neighbor_cell.block_type == BlockType::None)
-            {
-                direction_mask |= 1u << direction_index;
-            }
-        }
-    }
-
-    return direction_mask;
+    return z / FLOOR_SIZE_Z;
 }
 
 s32
@@ -294,12 +520,6 @@ World::get_stride(const Direction direction)
     }
 
     assert(false);
-}
-
-s32
-World::get_floor(const s32 z)
-{
-    return z / FLOOR_SIZE_Z;
 }
 
 s32
@@ -333,13 +553,13 @@ World::get_cell(const s32 x, const s32 y, const s32 z) const
 }
 
 vector<Area>&
-World::get_area_vector(s32 floor_number)
+World::get_floor_area_vector(s32 floor_number)
 {
     return area_vector[floor_number];
 }
 
 const vector<Area>&
-World::get_area_vector(s32 floor_number) const
+World::get_floor_area_vector(s32 floor_number) const
 {
     return area_vector[floor_number];
 }
@@ -361,130 +581,6 @@ Vec3
 World::get_gravity() const
 {
     return physics.gravity;
-}
-
-void
-World::set_block_type(const s32 x, const s32 y, const s32 z, const BlockType block_type)
-{
-    Cell& cell {get_cell(x, y, z)};
-
-    cell.block_type = block_type;
-}
-
-void
-World::set_block_type_cube(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
-{
-    const IVec3 max {x + size_x,y + size_y,z + size_z};
-
-    for (s32 cell_z = z; cell_z < max.z; ++cell_z)
-    {
-        for (s32 cell_y = y; cell_y < max.y; ++cell_y)
-        {
-            for (s32 cell_x = x; cell_x < max.x; ++cell_x)
-            {
-                set_block_type(cell_x, cell_y, cell_z, block_type);
-            }
-        }
-    }
-}
-
-void
-World::set_block_type_box(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
-{
-    const IVec3 max {x + size_x,y + size_y,z + size_z};
-
-    for (s32 cell_z = z; cell_z < max.z; ++cell_z)
-    {
-        for (s32 cell_y = y; cell_y < max.y; ++cell_y)
-        {
-            for (s32 cell_x = x; cell_x < max.x; ++cell_x)
-            {
-                const b32 at_boundary {
-                    cell_x == x || cell_x == max.x - 1 ||
-                    cell_y == y || cell_y == max.y - 1 ||
-                    cell_z == z || cell_z == max.z - 1
-                };
-
-                if (at_boundary)
-                {
-                    set_block_type(cell_x, cell_y, cell_z, block_type);
-                }
-            }
-        }
-    }
-}
-
-void
-World::set_block_type_wireframe(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
-{
-    const IVec3 max {x + size_x,y + size_y,z + size_z};
-
-    for (s32 cell_z = z; cell_z < max.z; ++cell_z)
-    {
-        for (s32 cell_y = y; cell_y < max.y; ++cell_y)
-        {
-            for (s32 cell_x = x; cell_x < max.x; ++cell_x)
-            {
-                s32 boundary_count {0};
-
-                if (cell_x == x || cell_x == max.x - 1)
-                    boundary_count++;
-
-                if (cell_y == y || cell_y == max.y - 1)
-                    boundary_count++;
-
-                if (cell_z == z || cell_z == max.z - 1)
-                    boundary_count++;
-
-                if (boundary_count >= 2)
-                {
-                    set_block_type(cell_x, cell_y, cell_z, block_type);
-                }
-            }
-        }
-    }
-}
-
-void
-World::place_area(const Area& area)
-{
-    vector<Area>& floor_area_vector {get_area_vector(area.floor_number)};
-
-    vector<Area> new_area_vector;
-
-    for (auto iterator = floor_area_vector.begin(); iterator != floor_area_vector.end();)
-    {
-        if (overlaps(iterator->bounds, area.bounds))
-        {
-            const vector bounds_vector {subtract(iterator->bounds, area.bounds)};
-
-            for (const IBounds2& bounds : bounds_vector)
-            {
-                const Area new_area {
-                    .id = area_id_generator.next(),
-                    .area_type = iterator->area_type,
-                    .floor_number = iterator->floor_number,
-                    .bounds = bounds,
-                };
-
-                new_area_vector.push_back(new_area);
-            }
-
-            iterator = floor_area_vector.erase(iterator);
-        }
-        else
-        {
-            ++iterator;
-        }
-    }
-
-    floor_area_vector.insert(
-        floor_area_vector.end(),
-        make_move_iterator(new_area_vector.begin()),
-        make_move_iterator(new_area_vector.end())
-    );
-
-    floor_area_vector.push_back(area);
 }
 
 void
@@ -663,11 +759,160 @@ World::construct_tower()
 }
 
 void
+World::init_cell_array()
+{
+    for (s32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    {
+        cell_array[cell_index].cell_index = cell_index;
+    }
+}
+
+
+s32
+World::get_content_level(const s32 z)
+{
+    if (z >= ROOF_Z)
+    {
+        return 0;
+    }
+
+    const s32 floor_number {z / FLOOR_SIZE_Z};
+    const s32 content_level {(TOWER_FLOOR_COUNT - 1 - floor_number) / 2 + 1};
+
+    return content_level;
+}
+
+vector<BlockType>
+World::get_content_block_type_vector(const s32 content_level)
+{
+    if (content_level == 1)
+    {
+        return {
+            BlockType::Server1,
+            BlockType::Server2,
+            BlockType::Server3,
+        };
+    }
+
+    if (content_level == 2)
+    {
+        return {
+            BlockType::Server1,
+            BlockType::Server2,
+            BlockType::Server3,
+            BlockType::Server4,
+            BlockType::Server5
+        };
+    }
+
+    if (content_level == 3)
+    {
+        return {
+            BlockType::Server3,
+            BlockType::Server4,
+            BlockType::Server5,
+            BlockType::Server6,
+            BlockType::Server7,
+        };
+    }
+
+    return {};
+}
+
+void
+World::place_area(const Area& area)
+{
+    vector<Area>& floor_area_vector {get_floor_area_vector(area.floor_number)};
+
+    vector<Area> new_area_vector;
+
+    for (auto iterator = floor_area_vector.begin(); iterator != floor_area_vector.end();)
+    {
+        if (overlaps(iterator->bounds, area.bounds))
+        {
+            const vector bounds_vector {subtract(iterator->bounds, area.bounds)};
+
+            for (const IBounds2& bounds : bounds_vector)
+            {
+                const Area new_area {
+                    .id = area_id_generator.next(),
+                    .area_type = iterator->area_type,
+                    .floor_number = iterator->floor_number,
+                    .bounds = bounds,
+                };
+
+                new_area_vector.push_back(new_area);
+            }
+
+            iterator = floor_area_vector.erase(iterator);
+        }
+        else
+        {
+            ++iterator;
+        }
+    }
+
+    floor_area_vector.insert(
+        floor_area_vector.end(),
+        make_move_iterator(new_area_vector.begin()),
+        make_move_iterator(new_area_vector.end())
+    );
+
+    floor_area_vector.push_back(area);
+}
+
+void
+World::place_content(const s32 floor_number)
+{
+    const vector<Area>& floor_area_vector {area_vector[floor_number]};
+
+    for (const Area& area : floor_area_vector)
+    {
+        if (area.area_type != AreaType::Room)
+        {
+            continue;
+        }
+
+        const s32 content_level {get_content_level(floor_number * FLOOR_SIZE_Z)};
+
+        if (content_level == 0)
+        {
+            continue;
+        }
+
+        const vector content_block_type_vector {get_content_block_type_vector(content_level)};
+
+        const IVec2 area_bounds_size {area.bounds.size()};
+
+        const s32 stack_count {area_bounds_size.x * area_bounds_size.y / 14};
+
+        for (s32 stack_index = 0; stack_index < stack_count; ++stack_index)
+        {
+            const IVec2 stack_position {
+                area.bounds.min.x + 1 + random.uniform(0, area_bounds_size.x - 3),
+                area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 3)
+            };
+
+            const s32 stack_size_z {random.uniform(0, FLOOR_SIZE_Z - 6)};
+
+            const s32 block_type_index {random.uniform(0, static_cast<s32>(content_block_type_vector.size()) - 1)};
+            const BlockType content_block_type {content_block_type_vector[block_type_index]};
+
+            set_block_type_cube(
+                stack_position.x, stack_position.y, floor_number * FLOOR_SIZE_Z + 1,
+                1, 1, stack_size_z,
+                content_block_type
+            );
+        }
+    }
+}
+
+void
 World::layout_roof_areas()
 {
     constexpr s32 roof_area_size {TOWER_SIZE / 8};
 
-    vector<Area>& floor_area_vector {get_area_vector(TOWER_FLOOR_COUNT)};
+    vector<Area>& floor_area_vector {get_floor_area_vector(TOWER_FLOOR_COUNT)};
 
     for (s32 area_y = TOWER_BORDER; area_y < TOWER_SIZE + TOWER_BORDER; area_y += roof_area_size)
     {
@@ -718,11 +963,11 @@ World::layout_tower_areas()
 {
     for (s32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        vector<Area>& floor_area_vector {get_area_vector(floor_number)};
+        vector<Area>& floor_area_vector {get_floor_area_vector(floor_number)};
 
-        constexpr IVec2 quadrant1_origin {section_origin_array[static_cast<u8>(Section::Quadrant1)]};
-        constexpr IVec2 quadrant1_size {section_size_array[static_cast<u8>(Section::Quadrant1)]};
-        
+        constexpr IVec2 quadrant1_origin {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant1)]};
+        constexpr IVec2 quadrant1_size {SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant1)]};
+
         Area area_quadrant_1 {
             .id = area_id_generator.next(),
             .area_type = AreaType::Room,
@@ -730,8 +975,8 @@ World::layout_tower_areas()
             .bounds = { quadrant1_origin,quadrant1_origin + quadrant1_size },
         };
 
-        constexpr IVec2 quadrant2_origin {section_origin_array[static_cast<u8>(Section::Quadrant2)]};
-        constexpr IVec2 quadrant2_size {section_size_array[static_cast<u8>(Section::Quadrant2)]};
+        constexpr IVec2 quadrant2_origin {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant2)]};
+        constexpr IVec2 quadrant2_size {SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant2)]};
 
         Area area_quadrant_2 {
             .id = area_id_generator.next(),
@@ -740,8 +985,8 @@ World::layout_tower_areas()
             .bounds = { quadrant2_origin,quadrant2_origin + quadrant2_size },
         };
 
-        constexpr IVec2 quadrant3_origin {section_origin_array[static_cast<u8>(Section::Quadrant3)]};
-        constexpr IVec2 quadrant3_size {section_size_array[static_cast<u8>(Section::Quadrant3)]};
+        constexpr IVec2 quadrant3_origin {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant3)]};
+        constexpr IVec2 quadrant3_size {SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant3)]};
 
         Area area_quadrant_3 {
             .id = area_id_generator.next(),
@@ -750,8 +995,8 @@ World::layout_tower_areas()
             .bounds = { quadrant3_origin,quadrant3_origin + quadrant3_size },
         };
 
-        constexpr IVec2 quadrant4_origin {section_origin_array[static_cast<u8>(Section::Quadrant4)]};
-        constexpr IVec2 quadrant4_size {section_size_array[static_cast<u8>(Section::Quadrant4)]};
+        constexpr IVec2 quadrant4_origin {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant4)]};
+        constexpr IVec2 quadrant4_size {SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant4)]};
 
         Area area_quadrant_4 {
             .id = area_id_generator.next(),
@@ -765,13 +1010,13 @@ World::layout_tower_areas()
         floor_area_vector.push_back(area_quadrant_3);
         floor_area_vector.push_back(area_quadrant_4);
 
-        vector<Area> areas_to_add_vector {};
-
         for (s32 iteration = 0; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
         {
+            vector<Area> areas_to_add_vector {};
+
             constexpr s32 axis_x_value {static_cast<size_t>(Axis::X)};
             constexpr s32 axis_y_value {static_cast<size_t>(Axis::Y)};
-            
+
             s32 initial_count {static_cast<s32>(floor_area_vector.size())};
 
             for (s32 i = 0; i < initial_count; )
@@ -817,7 +1062,7 @@ World::layout_tower_areas()
         for (s32 section_index = 0; section_index < section_count; ++section_index)
         {
             const auto section {static_cast<Section>(section_index)};
-            
+
             const b32 quadrant_section {
                 section == Section::Quadrant1 ||
                 section == Section::Quadrant2 ||
@@ -829,9 +1074,9 @@ World::layout_tower_areas()
             {
                 continue;
             }
-            
-            const IVec2 section_origin {section_origin_array[section_index]};
-            const IVec2 section_size {section_size_array[section_index]};
+
+            const IVec2 section_origin {SECTION_ORIGIN_ARRAY[section_index]};
+            const IVec2 section_size {SECTION_SIZE_ARRAY[section_index]};
 
             const Area section_area {
                 .id = area_id_generator.next(),
@@ -846,14 +1091,14 @@ World::layout_tower_areas()
 }
 
 void
-World::setup_wolf_territory()
+World::layout_wolf_territory()
 {
     const IVec3 temple_origin {
         TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         ROOF_Z,
     };
-    
+
     Area temple_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
@@ -933,7 +1178,7 @@ World::setup_wolf_territory()
     };
 
     place_area(platform_area);
-    
+
     set_block_type_cube(
         platform_origin.x, platform_origin.y, platform_origin.z,
         PLATFORM_SIZE_Y, PLATFORM_SIZE_X, 1,
@@ -960,14 +1205,14 @@ World::setup_wolf_territory()
 }
 
 void
-World::setup_eagle_territory()
+World::layout_eagle_territory()
 {
     const IVec3 temple_origin {
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         ROOF_Z,
     };
-    
+
     Area temple_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
@@ -1035,7 +1280,7 @@ World::setup_eagle_territory()
         WORLD_CENTER_S32 - PLATFORM_SIZE_X / 2,
         ROOF_Z,
     };
-    
+
     Area platform_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
@@ -1074,15 +1319,15 @@ World::setup_eagle_territory()
 }
 
 void
-World::setup_bear_territory()
+World::layout_bear_territory()
 {
     const IVec3 temple_origin {
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         ROOF_Z,
     };
-    
-    Area temple_area {
+
+    const Area temple_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1149,8 +1394,8 @@ World::setup_bear_territory()
         TOWER_BORDER + TOWER_SIZE,
         ROOF_Z,
     };
-    
-    Area platform_area {
+
+    const Area platform_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1188,15 +1433,15 @@ World::setup_bear_territory()
 }
 
 void
-World::setup_lion_territory()
+World::layout_lion_territory()
 {
     const IVec3 temple_origin {
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         ROOF_Z,
     };
-    
-    Area temple_area {
+
+    const Area temple_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1263,8 +1508,8 @@ World::setup_lion_territory()
         TOWER_BORDER - PLATFORM_SIZE_Y,
         ROOF_Z,
     };
-    
-    Area platform_area {
+
+    const Area platform_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1273,6 +1518,7 @@ World::setup_lion_territory()
             { platform_origin.x + PLATFORM_SIZE_X,platform_origin.y + PLATFORM_SIZE_Y },
         },
     };
+
     place_area(platform_area);
 
     set_block_type_cube(
@@ -1309,7 +1555,7 @@ World::layout_test_area()
         TOWER_FLOOR_COUNT * FLOOR_SIZE_Z,
     };
 
-    Area test_room1 {
+    const Area test_room1 {
         .id = area_id_generator.next(),
         .area_type = AreaType::Wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
@@ -1319,7 +1565,7 @@ World::layout_test_area()
         },
     };
 
-    Area test_room2 {
+    const Area test_room2 {
         .id = area_id_generator.next(),
         .area_type = AreaType::Wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
@@ -1333,141 +1579,86 @@ World::layout_test_area()
     place_area(test_room2);
 }
 
-AreaOverlap
-World::get_area_overlap(const Area& lhs, const Area& rhs)
+
+void
+World::set_block_type(const s32 x, const s32 y, const s32 z, const BlockType block_type)
 {
-    AreaOverlap area_overlap {
-        .bounds = {{0, 0}, {0, 0}},
-        .direction = Direction::East,
-    };
+    Cell& cell {get_cell(x, y, z)};
 
-    if (lhs.bounds.max.x == rhs.bounds.min.x)
-    {
-        const s32 overlap_y_min {max(lhs.bounds.min.y, rhs.bounds.min.y)};
-        const s32 overlap_y_max {min(lhs.bounds.max.y, rhs.bounds.max.y)};
-
-        if (overlap_y_min < overlap_y_max)
-        {
-            area_overlap.direction = Direction::East;
-
-            area_overlap.bounds.min.x = lhs.bounds.max.x;
-            area_overlap.bounds.min.y = overlap_y_min;
-
-            area_overlap.bounds.max.x = lhs.bounds.max.x + 1;
-            area_overlap.bounds.max.y = overlap_y_max;
-        }
-    }
-    else if (lhs.bounds.min.x == rhs.bounds.max.x)
-    {
-        const s32 overlap_y_min {max(lhs.bounds.min.y, rhs.bounds.min.y)};
-        const s32 overlap_y_max {min(lhs.bounds.max.y, rhs.bounds.max.y)};
-
-        if (overlap_y_min < overlap_y_max)
-        {
-            area_overlap.direction = Direction::West;
-
-            area_overlap.bounds.min.x = lhs.bounds.min.x;
-            area_overlap.bounds.min.y = overlap_y_min;
-
-            area_overlap.bounds.max.x = lhs.bounds.min.x + 1;
-            area_overlap.bounds.max.y = overlap_y_max;
-        }
-    }
-    else if (lhs.bounds.max.y == rhs.bounds.min.y)
-    {
-        const s32 overlap_x_min {max(lhs.bounds.min.x, rhs.bounds.min.x)};
-        const s32 overlap_x_max {min(lhs.bounds.max.x, rhs.bounds.max.x)};
-
-        if (overlap_x_min < overlap_x_max)
-        {
-            area_overlap.direction = Direction::North;
-
-            area_overlap.bounds.min.x = overlap_x_min;
-            area_overlap.bounds.min.y = lhs.bounds.max.y;
-
-            area_overlap.bounds.max.x = overlap_x_max;
-            area_overlap.bounds.max.y = lhs.bounds.max.y + 1;
-        }
-    }
-    else if (lhs.bounds.min.y == rhs.bounds.max.y)
-    {
-        const s32 overlap_x_min {max(lhs.bounds.min.x, rhs.bounds.min.x)};
-        const s32 overlap_x_max {min(lhs.bounds.max.x, rhs.bounds.max.x)};
-
-        if (overlap_x_min < overlap_x_max)
-        {
-            area_overlap.direction = Direction::South;
-
-            area_overlap.bounds.min.x = overlap_x_min;
-            area_overlap.bounds.min.y = lhs.bounds.min.y;
-
-            area_overlap.bounds.max.x = overlap_x_max;
-            area_overlap.bounds.max.y = lhs.bounds.min.y + 1;
-        }
-    }
-
-    return area_overlap;
+    cell.block_type = block_type;
 }
 
 void
-World::calculate_area_edges(s32 floor_number)
+World::set_block_type_cube(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
 {
-    vector<Area>& floor_area_vector {get_area_vector(floor_number)};
+    const IVec3 max {x + size_x,y + size_y,z + size_z};
 
-    for (s32 left_index = 0; left_index < static_cast<s32>(floor_area_vector.size()); ++left_index)
+    for (s32 cell_z = z; cell_z < max.z; ++cell_z)
     {
-        Area& left_area {floor_area_vector[left_index]};
-
-        for (s32 right_index = left_index + 1; right_index < static_cast<s32>(floor_area_vector.size()); ++right_index)
+        for (s32 cell_y = y; cell_y < max.y; ++cell_y)
         {
-            Area& right_area {floor_area_vector[right_index]};
-
-            const AreaOverlap area_overlap {get_area_overlap(left_area, right_area)};
-            const IVec2 area_overlap_size {area_overlap.bounds.size()};
-
-            if (area_overlap_size.x > 0 && area_overlap_size.y > 0)
+            for (s32 cell_x = x; cell_x < max.x; ++cell_x)
             {
-                const AreaEdge area_edge = {
-                    .id = edge_id_generator.next(),
-                    .area_a_id = left_area.id,
-                    .area_b_id = right_area.id,
-                    .area_a_direction = area_overlap.direction,
-                    .area_b_direction = direction_opposite(area_overlap.direction),
-                    .area_overlap = area_overlap,
-                };
-
-                edge_vector.push_back(area_edge);
-
-                left_area.edge_id_vector.push_back(area_edge.id);
-                right_area.edge_id_vector.push_back(area_edge.id);
+                set_block_type(cell_x, cell_y, cell_z, block_type);
             }
         }
     }
 }
 
 void
-World::init_cell_array()
+World::set_block_type_box(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
 {
-    for (s32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    const IVec3 max {x + size_x,y + size_y,z + size_z};
+
+    for (s32 cell_z = z; cell_z < max.z; ++cell_z)
     {
-        cell_array[cell_index].cell_index = cell_index;
+        for (s32 cell_y = y; cell_y < max.y; ++cell_y)
+        {
+            for (s32 cell_x = x; cell_x < max.x; ++cell_x)
+            {
+                const b32 at_boundary {
+                    cell_x == x || cell_x == max.x - 1 ||
+                    cell_y == y || cell_y == max.y - 1 ||
+                    cell_z == z || cell_z == max.z - 1
+                };
+
+                if (at_boundary)
+                {
+                    set_block_type(cell_x, cell_y, cell_z, block_type);
+                }
+            }
+        }
     }
 }
 
 void
-World::calculate_world_direction_mask()
+World::set_block_type_wireframe(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
 {
-    for (s32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    const IVec3 max {x + size_x,y + size_y,z + size_z};
+
+    for (s32 cell_z = z; cell_z < max.z; ++cell_z)
     {
-        Cell& cell {cell_array[cell_index]};
+        for (s32 cell_y = y; cell_y < max.y; ++cell_y)
+        {
+            for (s32 cell_x = x; cell_x < max.x; ++cell_x)
+            {
+                s32 boundary_count {0};
 
-        const IVec3 cell_coordinate {cell_index_to_coordinate(cell_index)};
+                if (cell_x == x || cell_x == max.x - 1)
+                    boundary_count++;
 
-        cell.direction_mask = get_direction_mask(
-            cell_coordinate.x,
-            cell_coordinate.y,
-            cell_coordinate.z
-        );
+                if (cell_y == y || cell_y == max.y - 1)
+                    boundary_count++;
+
+                if (cell_z == z || cell_z == max.z - 1)
+                    boundary_count++;
+
+                if (boundary_count >= 2)
+                {
+                    set_block_type(cell_x, cell_y, cell_z, block_type);
+                }
+            }
+        }
     }
 }
 
@@ -1501,13 +1692,13 @@ World::construct_doors(const Area& area)
             if (edge_direction == Direction::North)
             {
                 set_block_type_cube(
-                    door_position.x - 1, door_position.y - 1, door_position.z,
+                    door_position.x - 1, door_position.y, door_position.z,
                     door_frame_size.x, door_frame_size.y, door_frame_size.z,
                     BlockType::Panel3
                 );
 
                 set_block_type_cube(
-                    door_position.x, door_position.y - 1, door_position.z,
+                    door_position.x, door_position.y, door_position.z,
                     door_size.x, door_size.y, door_size.z,
                     BlockType::None
                 );
@@ -1540,13 +1731,13 @@ World::construct_doors(const Area& area)
             if (edge_direction == Direction::East)
             {
                 set_block_type_cube(
-                    door_position.x - 1, door_position.y - 1, door_position.z,
+                    door_position.x, door_position.y - 1, door_position.z,
                     door_frame_size.x, door_frame_size.y, door_frame_size.z,
                     BlockType::Panel3
                 );
 
                 set_block_type_cube(
-                    door_position.x - 1, door_position.y, door_position.z,
+                    door_position.x, door_position.y, door_position.z,
                     door_size.x, door_size.y, door_size.z,
                     BlockType::None
                 );
@@ -1561,63 +1752,12 @@ World::construct_doors(const Area& area)
 
                 set_block_type_cube(
                     door_position.x, door_position.y, door_position.z,
-                    1, 1, 2,
+                    door_size.x, door_size.y, door_size.z,
                     BlockType::None
                 );
             }
         }
     }
-}
-
-s32
-World::get_content_level(const s32 z)
-{
-    if (z >= ROOF_Z)
-    {
-        return 0;
-    }
-    
-    const s32 floor_number {z / FLOOR_SIZE_Z};
-    const s32 content_level {(TOWER_FLOOR_COUNT - 1 - floor_number) / 2 + 1};
-
-    return content_level;
-}
-
-vector<BlockType>
-World::get_content_block_type_vector(const s32 content_level)
-{
-    if (content_level == 1)
-    {
-        return {
-            BlockType::Server1,
-            BlockType::Server2,
-            BlockType::Server3,
-        };
-    }
-    
-    if (content_level == 2)
-    {
-        return {
-            BlockType::Server1,
-            BlockType::Server2,
-            BlockType::Server3,
-            BlockType::Server4,
-            BlockType::Server5
-        };
-    }
-    
-    if (content_level == 3)
-    {
-        return {
-            BlockType::Server3,
-            BlockType::Server4,
-            BlockType::Server5,
-            BlockType::Server6,
-            BlockType::Server7,
-        };
-    }
-    
-    return {};
 }
 
 void
@@ -1683,7 +1823,7 @@ World::construct_wireframe(const Area& area)
 }
 
 void
-World::construct_areas(s32 floor_number)
+World::construct_areas(const s32 floor_number)
 {
     const vector<Area>& floor_area_vector {area_vector[floor_number]};
 
@@ -1705,48 +1845,92 @@ World::construct_areas(s32 floor_number)
     }
 }
 
-void
-World::place_content(s32 floor_number)
+u8
+World::get_direction_mask(const s32 x, const s32 y, const s32 z)
 {
-    const vector<Area>& floor_area_vector {area_vector[floor_number]};
+    u8 direction_mask {0};
+    const s32 cell_index {cell_coordinate_to_index(x, y, z)};
 
-    for (const Area& area : floor_area_vector)
+    for (s32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
-        if (area.area_type != AreaType::Room)
+        const IVec3 neighbor_position {
+            x + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
+            y + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][1]),
+            z + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
+        };
+
+        const b32 valid_neighbor {
+            cell_coordinate_is_valid(neighbor_position.x, neighbor_position.y, neighbor_position.z)
+        };
+
+        if (!valid_neighbor)
         {
-            continue;
+            direction_mask |= 1u << direction_index;
         }
-
-        const s32 content_level {get_content_level(floor_number * FLOOR_SIZE_Z)};
-
-        if (content_level == 0)
+        else
         {
-            continue;
+            const s32 neighbor_cell_index {cell_index + get_stride(static_cast<Direction>(direction_index))};
+            const Cell& neighbor_cell {get_cell(neighbor_cell_index)};
+
+            if (neighbor_cell.block_type == BlockType::None)
+            {
+                direction_mask |= 1u << direction_index;
+            }
         }
+    }
 
-        const vector content_block_type_vector {get_content_block_type_vector(content_level)};
-        
-        const IVec2 area_bounds_size {area.bounds.size()};
-        
-        const s32 stack_count {area_bounds_size.x * area_bounds_size.y / 14};
+    return direction_mask;
+}
 
-        for (s32 stack_index = 0; stack_index < stack_count; ++stack_index)
+void
+World::calculate_direction_masks()
+{
+    for (s32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
+    {
+        Cell& cell {cell_array[cell_index]};
+
+        const IVec3 cell_coordinate {cell_index_to_coordinate(cell_index)};
+
+        cell.direction_mask = get_direction_mask(
+            cell_coordinate.x,
+            cell_coordinate.y,
+            cell_coordinate.z
+        );
+    }
+}
+
+void
+World::calculate_area_edges(s32 floor_number)
+{
+    vector<Area>& floor_area_vector {get_floor_area_vector(floor_number)};
+
+    for (s32 left_index = 0; left_index < static_cast<s32>(floor_area_vector.size()); ++left_index)
+    {
+        Area& left_area {floor_area_vector[left_index]};
+
+        for (s32 right_index = left_index + 1; right_index < static_cast<s32>(floor_area_vector.size()); ++right_index)
         {
-            const IVec2 stack_position {
-                area.bounds.min.x + 1 + random.uniform(0, area_bounds_size.x - 3),
-                area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 3)
-            };
+            Area& right_area {floor_area_vector[right_index]};
 
-            const s32 stack_size_z {random.uniform(0, FLOOR_SIZE_Z - 6)};
+            const AreaOverlap area_overlap {AreaOverlap::get_overlap(left_area, right_area)};
+            const IVec2 area_overlap_size {area_overlap.bounds.size()};
 
-            const s32 block_type_index {random.uniform(0, static_cast<s32>(content_block_type_vector.size()) - 1)};
-            const BlockType content_block_type {content_block_type_vector[block_type_index]};
+            if (area_overlap_size.x > 0 && area_overlap_size.y > 0)
+            {
+                const AreaEdge area_edge = {
+                    .id = edge_id_generator.next(),
+                    .area_a_id = left_area.id,
+                    .area_b_id = right_area.id,
+                    .area_a_direction = area_overlap.direction,
+                    .area_b_direction = direction_opposite(area_overlap.direction),
+                    .area_overlap = area_overlap,
+                };
 
-            set_block_type_cube(
-                stack_position.x, stack_position.y, floor_number * FLOOR_SIZE_Z + 1,
-                1, 1, stack_size_z,
-                content_block_type
-            );
+                edge_vector.push_back(area_edge);
+
+                left_area.edge_id_vector.push_back(area_edge.id);
+                right_area.edge_id_vector.push_back(area_edge.id);
+            }
         }
     }
 }

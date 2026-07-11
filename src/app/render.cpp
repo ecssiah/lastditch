@@ -80,7 +80,7 @@ Render::upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
             GL_FLOAT,
             GLFW_FALSE,
             sizeof(DebugVertex),
-            reinterpret_cast<void*>(offsetof(DebugVertex, a_position))
+            reinterpret_cast<void*>(offsetof(DebugVertex, position))
         );
 
         glVertexAttribPointer(
@@ -89,7 +89,7 @@ Render::upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
             GL_FLOAT,
             GL_FALSE,
             sizeof(DebugVertex),
-            reinterpret_cast<void*>(offsetof(DebugVertex, a_color))
+            reinterpret_cast<void*>(offsetof(DebugVertex, color))
         );
 
         glEnableVertexAttribArray(0);
@@ -445,8 +445,8 @@ Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_
         };
 
         const VoxelVertex voxel_vertex {
-            .a_vertex = static_cast<s32>(vertex_bitpacked),
-            .a_face = static_cast<s32>(face_bitpacked),
+            .vertex = static_cast<s32>(vertex_bitpacked),
+            .face = static_cast<s32>(face_bitpacked),
         };
 
         voxel_gpu_data.voxel_vertex_vector.push_back(voxel_vertex);
@@ -490,7 +490,7 @@ Render::upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data)
             1,
             GL_UNSIGNED_INT,
             sizeof(VoxelVertex),
-            reinterpret_cast<void*>(offsetof(VoxelVertex, a_vertex))
+            reinterpret_cast<void*>(offsetof(VoxelVertex, vertex))
         );
 
         glVertexAttribIPointer(
@@ -498,7 +498,7 @@ Render::upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data)
             1,
             GL_UNSIGNED_INT,
             sizeof(VoxelVertex),
-            reinterpret_cast<void*>(offsetof(VoxelVertex, a_face))
+            reinterpret_cast<void*>(offsetof(VoxelVertex, face))
         );
 
         glEnableVertexAttribArray(0);
@@ -622,12 +622,12 @@ Render::init_debug_render()
 
     glUseProgram(debug_render.program_id);
 
-    debug_render.u_projection_location = glGetUniformLocation(debug_render.program_id, "u_projection_matrix");
-    debug_render.u_view_location = glGetUniformLocation(debug_render.program_id, "u_view_matrix");
-    debug_render.u_model_location = glGetUniformLocation(debug_render.program_id, "u_model_matrix");
+    debug_render.projection_location = glGetUniformLocation(debug_render.program_id, "u_projection_matrix");
+    debug_render.view_location = glGetUniformLocation(debug_render.program_id, "u_view_matrix");
+    debug_render.model_location = glGetUniformLocation(debug_render.program_id, "u_model_matrix");
 
     glUniformMatrix4fv(
-        debug_render.u_projection_location,
+        debug_render.projection_location,
         1,
         GL_FALSE,
         viewpoint.projection_matrix[0]
@@ -658,27 +658,27 @@ Render::init_voxel_render(const World& world)
 
     glUseProgram(voxel_render.program_id);
 
-    voxel_render.u_texture_sampler_location = glGetUniformLocation(voxel_render.program_id, "u_texture_sampler");
+    voxel_render.texture_sampler_location = glGetUniformLocation(voxel_render.program_id, "u_texture_sampler");
 
-    glUniform1i(voxel_render.u_texture_sampler_location, 0);
+    glUniform1i(voxel_render.texture_sampler_location, 0);
 
-    voxel_render.u_normal_table_location = glGetUniformLocation(voxel_render.program_id, "u_normal_table");
+    voxel_render.normal_table_location = glGetUniformLocation(voxel_render.program_id, "u_normal_table");
 
-    glUniform3fv(voxel_render.u_normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
+    glUniform3fv(voxel_render.normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
 
-    voxel_render.u_uv_projection_table_location = glGetUniformLocation(
+    voxel_render.uv_projection_table_location = glGetUniformLocation(
         voxel_render.program_id,
         "u_uv_projection_table"
     );
 
-    glUniform3fv(voxel_render.u_uv_projection_table_location, DIRECTION_COUNT * 2, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
+    glUniform3fv(voxel_render.uv_projection_table_location, DIRECTION_COUNT * 2, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
 
-    voxel_render.u_projection_location = glGetUniformLocation(voxel_render.program_id, "u_projection_matrix");
-    voxel_render.u_view_location = glGetUniformLocation(voxel_render.program_id, "u_view_matrix");
-    voxel_render.u_model_location = glGetUniformLocation(voxel_render.program_id, "u_model_matrix");
+    voxel_render.projection_location = glGetUniformLocation(voxel_render.program_id, "u_projection_matrix");
+    voxel_render.view_location = glGetUniformLocation(voxel_render.program_id, "u_view_matrix");
+    voxel_render.model_location = glGetUniformLocation(voxel_render.program_id, "u_model_matrix");
 
     glUniformMatrix4fv(
-        voxel_render.u_projection_location, 
+        voxel_render.projection_location,
         1, 
         GL_FALSE,
         viewpoint.projection_matrix[0]
@@ -737,18 +737,18 @@ Render::init_model_render(const Population& population)
 
     glUseProgram(model_render.program_id);
 
-    model_render.u_texture_sampler_location = glGetUniformLocation(model_render.program_id, "u_texture_sampler");
+    model_render.texture_sampler_location = glGetUniformLocation(model_render.program_id, "u_texture_sampler");
 
-    glUniform1i(model_render.u_texture_sampler_location, 0);
+    glUniform1i(model_render.texture_sampler_location, 0);
 
-    model_render.u_texture_layer_location = glGetUniformLocation(model_render.program_id, "u_texture_layer");
+    model_render.texture_layer_location = glGetUniformLocation(model_render.program_id, "u_texture_layer");
 
-    model_render.u_projection_location = glGetUniformLocation(model_render.program_id, "u_projection_matrix");
-    model_render.u_view_location = glGetUniformLocation(model_render.program_id, "u_view_matrix");
-    model_render.u_model_location = glGetUniformLocation(model_render.program_id, "u_model_matrix");
+    model_render.projection_location = glGetUniformLocation(model_render.program_id, "u_projection_matrix");
+    model_render.view_location = glGetUniformLocation(model_render.program_id, "u_view_matrix");
+    model_render.model_location = glGetUniformLocation(model_render.program_id, "u_model_matrix");
 
     glUniformMatrix4fv(
-        model_render.u_projection_location, 
+        model_render.projection_location,
         1, 
         GL_FALSE,
         viewpoint.projection_matrix[0]
@@ -772,9 +772,9 @@ Render::init_model_render(const Population& population)
 void
 Render::update_viewpoint(const Population& population)
 {
-    const Actor& judge {population.get_judge()};
+    const Actor& judge {population.get_actor(population.judge_id)};
 
-    const Vec3 judge_eye_offset {0.0f, 0.0f, 0.7f};
+    constexpr Vec3 judge_eye_offset {0.0f, 0.0f, 0.7f};
     const Vec3 judge_eye_position {judge.position + judge_eye_offset};
     
     viewpoint.position = judge_eye_position;
@@ -789,7 +789,7 @@ Render::update_debug_render(const Debug& debug)
     viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
-        debug_render.u_view_location, 
+        debug_render.view_location,
         1, 
         GL_FALSE, 
         viewpoint.view_matrix[0]
@@ -836,7 +836,7 @@ Render::update_debug_render(const Debug& debug)
     Mat4 model_matrix {1.0f};
 
     glUniformMatrix4fv(
-        debug_render.u_model_location, 
+        debug_render.model_location,
         1, 
         GL_FALSE, 
         model_matrix[0]
@@ -855,7 +855,7 @@ Render::update_voxel_render()
     viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
-        voxel_render.u_view_location, 
+        voxel_render.view_location,
         1, 
         GL_FALSE, 
         viewpoint.view_matrix[0]
@@ -876,7 +876,7 @@ Render::update_voxel_render()
         model_matrix = model_matrix.translate(voxel_gpu_data.position);
 
         glUniformMatrix4fv(
-            voxel_render.u_model_location, 
+            voxel_render.model_location,
             1, 
             GL_FALSE, 
             model_matrix[0]
@@ -896,7 +896,7 @@ Render::update_model_render(const Population& population)
     viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
-        model_render.u_view_location, 
+        model_render.view_location,
         1, 
         GL_FALSE, 
         viewpoint.view_matrix[0]
@@ -920,13 +920,13 @@ Render::update_model_render(const Population& population)
         model_matrix = model_matrix.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
 
         glUniformMatrix4fv(
-            model_render.u_model_location,
+            model_render.model_location,
             1,
             GL_FALSE,
             model_matrix[0]
         );
 
-        glUniform1i(model_render.u_texture_layer_location, model_gpu_data.texture_layer);
+        glUniform1i(model_render.texture_layer_location, model_gpu_data.texture_layer);
 
         glBindVertexArray(model_gpu_data.vao_id);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model_gpu_data.model_vertex_vector.size()));

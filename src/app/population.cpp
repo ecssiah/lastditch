@@ -30,16 +30,10 @@ Population::quit()
 
 }
 
-Actor&
-Population::get_judge()
+Random&
+Population::get_random()
 {
-    return actor_vector[judge_id];
-}
-
-const Actor&
-Population::get_judge() const
-{
-    return actor_vector[judge_id];
+    return random;
 }
 
 Actor&
@@ -64,12 +58,6 @@ const vector<Actor>&
 Population::get_actor_vector() const
 {
     return actor_vector;
-}
-
-Random&
-Population::get_random()
-{
-    return random;
 }
 
 void

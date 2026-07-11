@@ -58,13 +58,14 @@ target_sources(
     PRIVATE
     external/glad/src/gl.c
     external/stb/src/stb_image.c
-        src/app/control.cpp
-        src/app/control.h
     src/app/actor.cpp
     src/app/actor.h
     src/app/app.h
     src/app/app.cpp
+    src/app/area.cpp
     src/app/area.h
+    src/app/control.cpp
+    src/app/control.h
     src/app/debug.cpp
     src/app/debug.h
     src/app/direction.cpp
@@ -84,8 +85,8 @@ target_sources(
     src/app/viewpoint.h
     src/app/work.cpp
     src/app/work.h
-        src/app/world.cpp
-        src/app/World.h
+    src/app/world.cpp
+    src/app/World.h
     src/core/config.h
     src/core/config.cpp
     src/core/geometry.h

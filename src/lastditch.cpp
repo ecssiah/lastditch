@@ -5,7 +5,7 @@ main()
 {
     const auto app {make_unique<App>()};
 
-    while (app->is_active())
+    while (app->active)
     {
         app->update();
     }

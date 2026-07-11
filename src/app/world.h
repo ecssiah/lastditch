@@ -136,11 +136,9 @@ enum class BlockType : u8
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 block_type_count = FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT);
+constexpr s32 block_type_count {FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT)};
 
-inline constexpr std::array<const char*, block_type_count>
-block_type_string_array =
-{
+inline constexpr std::array<const char*, block_type_count> block_type_string_array {
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_STRINGS)
 };
 
@@ -176,273 +174,10 @@ enum class Section : u8
     FOR_LIST_SECTION(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 section_count = FOR_LIST_SECTION(DEFINE_ENUM_COUNT);
+constexpr s32 section_count {FOR_LIST_SECTION(DEFINE_ENUM_COUNT)};
 
-inline constexpr std::array<const char*, section_count> section_string_array =
-{
+inline constexpr std::array<const char*, section_count> section_string_array {
     FOR_LIST_SECTION(DEFINE_ENUM_STRINGS)
-};
-
-inline constexpr std::array<IVec2, section_count> section_origin_array =
-{
-    {
-        // Center                              
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-        },
-        // Center1
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-        },
-        // Center2
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // Center3
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-        },
-        // Center4
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-        },
-        // Quadrant1
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // Quadrant2
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // Quadrant3
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-        },
-        // Quadrant4
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-        },
-        // East1
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-        },
-        // East2
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-        },
-        // East3
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // NorthEast
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // North1
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // North2
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // North3
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // NorthWest
-        {
-            TOWER_BORDER,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // West1
-        {
-            TOWER_BORDER,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-        },
-        // West2
-        {
-            TOWER_BORDER,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-        },
-        // West3
-        {
-            TOWER_BORDER,
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-        },
-        // SouthWest
-        {
-            TOWER_BORDER,
-            TOWER_BORDER,
-        },
-        // South1
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            TOWER_BORDER,
-        },
-        // South2
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            TOWER_BORDER,
-        },
-        // South3
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER,
-        },
-        // SouthEast
-        {
-            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            TOWER_BORDER,
-        },
-    }
-};
-
-inline constexpr std::array<IVec2, section_count> section_size_array =
-{
-    {
-        // Center                             
-        {
-            TOWER_CENTER_HALL_SIZE,
-            TOWER_CENTER_HALL_SIZE,
-        },
-        // Center1
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_CENTER_HALL_SIZE,
-        },
-        // Center2
-        {
-            TOWER_CENTER_HALL_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // Center3
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_CENTER_HALL_SIZE,
-        },
-        // Center4
-        {
-            TOWER_CENTER_HALL_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // Quadrant1
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // Quadrant2
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // Quadrant3
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // Quadrant4
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // East1
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // East2
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_CENTER_HALL_SIZE,
-        },
-        // East3
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // NorthEast
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // North1
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // North2
-        {
-            TOWER_CENTER_HALL_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // North3
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // NorthWest
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // West1
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // West2
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_CENTER_HALL_SIZE,
-        },
-        // West3
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_QUADRANT_SIZE,
-        },
-        // SouthWest
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // South1
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // South2
-        {
-            TOWER_CENTER_HALL_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // South3
-        {
-            TOWER_QUADRANT_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-        // SouthEast
-        {
-            TOWER_OUTER_HALL_SIZE,
-            TOWER_OUTER_HALL_SIZE,
-        },
-    },
 };
 
 class Cell
@@ -453,16 +188,9 @@ public:
     u8 direction_mask;
 };
 
-class Structure
-{
-public:
-};
-
 class World
 {
 public:
-    World();
-
     void init();
     void update(Population& population, f32 delta_time);
     void quit();
@@ -485,8 +213,9 @@ public:
     static Vec3 cell_coordinate_to_position(s32 x, s32 y, s32 z);
     static IVec3 position_to_cell_coordinate(f32 x, f32 y, f32 z);
 
-    static s32 get_stride(Direction direction);
     static s32 get_floor(s32 z);
+    static s32 get_stride(Direction direction);
+
     static s32 block_type_index_from_string(const std::string& block_type_string);
 
     Cell& get_cell(s32 cell_index);
@@ -498,8 +227,8 @@ public:
     b32 is_solid(s32 x, s32 y, s32 z);
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
-    std::vector<Area>& get_area_vector(s32 floor_number);
-    [[nodiscard]] const std::vector<Area>& get_area_vector(s32 floor_number) const;
+    std::vector<Area>& get_floor_area_vector(s32 floor_number);
+    [[nodiscard]] const std::vector<Area>& get_floor_area_vector(s32 floor_number) const;
 
     std::vector<AreaEdge>& get_edge_vector();
     [[nodiscard]] const std::vector<AreaEdge>& get_edge_vector() const;
@@ -509,47 +238,40 @@ public:
 private:
     void init_cell_array();
 
-    void construct_doors(const Area& area);
-
     static s32 get_content_level(s32 z);
     static std::vector<BlockType> get_content_block_type_vector(s32 content_level);
 
-    void construct_room(const Area& area);
-    void construct_elevator(const Area& area);
-    void construct_wireframe(const Area& area);
-    void construct_areas(s32 floor_number);
-
+    void place_area(const Area& area);
     void place_content(s32 floor_number);
 
-    void calculate_world_direction_mask();
-    u8 get_direction_mask(s32 x, s32 y, s32 z);
+    void layout_roof_areas();
+    void layout_elevator_areas();
+    void layout_tower_areas();
+    void layout_wolf_territory();
+    void layout_eagle_territory();
+    void layout_bear_territory();
+    void layout_lion_territory();
+    void layout_test_area();
 
     void set_block_type(s32 x, s32 y, s32 z, BlockType block_type);
     void set_block_type_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
     void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
     void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
 
-    void place_area(const Area& area);
-
     void construct_tower();
+    void construct_doors(const Area& area);
+    void construct_room(const Area& area);
+    void construct_elevator(const Area& area);
+    void construct_wireframe(const Area& area);
+    void construct_areas(s32 floor_number);
 
-    void layout_roof_areas();
-    void layout_elevator_areas();
-    void layout_tower_areas();
+    u8 get_direction_mask(s32 x, s32 y, s32 z);
 
-    void setup_wolf_territory();
-    void setup_eagle_territory();
-    void setup_bear_territory();
-    void setup_lion_territory();
-
-    void layout_test_area();
-
-    static AreaOverlap get_area_overlap(const Area& a, const Area& b);
-
+    void calculate_direction_masks();
     void calculate_area_edges(s32 floor_number);
 
-    Random random;
-    Physics physics;
+    Random random {WORLD_SEED};
+    Physics physics {};
 
     u64 tick_count {0};
     u64 second_count {0};
@@ -558,7 +280,7 @@ private:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
-    std::vector<std::vector<Area>> area_vector {};
+    std::vector<std::vector<Area>> area_vector {FLOOR_COUNT};
     std::vector<AreaEdge> edge_vector {};
 
     IdGenerator area_id_generator {};

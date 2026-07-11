@@ -5,17 +5,15 @@
 
 class App
 {
-    b32 active;
-
-    Platform platform;
-    State state;
-
 public:
     App();
 
     void update();
     void quit();
 
-    [[nodiscard]]
-    b32 is_active() const { return active; }
+    b32 active {true};
+
+private:
+    Platform platform {};
+    State state {};
 };

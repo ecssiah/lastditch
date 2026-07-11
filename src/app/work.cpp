@@ -52,7 +52,7 @@ Work::update(const f32 delta_time, Population& population)
         }
     }
 
-    Actor& judge {population.get_judge()};
+    Actor& judge {population.get_actor(population.judge_id)};
 
     execute_act_deque(judge);
 }

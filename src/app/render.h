@@ -1,12 +1,10 @@
 #pragma once
 
-#include <glad/gl.h>
 #include <vector>
-
-#include "actor.h"
-#include "screen.h"
-#include "viewpoint.h"
+#include <glad/gl.h>
 #include "app/direction.h"
+#include "app/screen.h"
+#include "app/viewpoint.h"
 #include "app/world.h"
 #include "core/config.h"
 #include "core/geometry.h"
@@ -28,8 +26,8 @@ extern const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL];
 class VoxelVertex
 {
 public:
-    s32 a_vertex {};
-    s32 a_face {};
+    s32 vertex {};
+    s32 face {};
 };
 
 class VoxelGpuData
@@ -40,7 +38,7 @@ public:
     GLuint vao_id {};
     GLuint vbo_id {};
 
-    vector<VoxelVertex> voxel_vertex_vector {};
+    std::vector<VoxelVertex> voxel_vertex_vector {};
 };
 
 class ModelVertex
@@ -92,8 +90,8 @@ public:
 class DebugVertex
 {
 public:
-    f32 a_position[3] {};
-    f32 a_color[3] {};
+    f32 position[3] {};
+    f32 color[3] {};
 };
 
 class DebugGpuData
@@ -110,9 +108,9 @@ class DebugRender
 public:
     GLuint program_id {};
 
-    GLint u_projection_location {};
-    GLint u_view_location {};
-    GLint u_model_location {};
+    GLint projection_location {};
+    GLint view_location {};
+    GLint model_location {};
 
     std::vector<DebugGpuData> debug_gpu_data_vector {};
 };
@@ -124,14 +122,14 @@ public:
 
     GLuint texture_array_id {};
 
-    GLint u_texture_sampler_location {};
+    GLint texture_sampler_location {};
 
-    GLint u_normal_table_location {};
-    GLint u_uv_projection_table_location {};
+    GLint normal_table_location {};
+    GLint uv_projection_table_location {};
 
-    GLint u_projection_location {};
-    GLint u_view_location {};
-    GLint u_model_location {};
+    GLint projection_location {};
+    GLint view_location {};
+    GLint model_location {};
 
     ConfigData block_config_data {};
 
@@ -148,13 +146,13 @@ public:
 
     GLuint texture_array_id {};
 
-    GLint u_texture_sampler_location {};
+    GLint texture_sampler_location {};
 
-    GLint u_projection_location {};
-    GLint u_view_location {};
-    GLint u_model_location {};
+    GLint projection_location {};
+    GLint view_location {};
+    GLint model_location {};
 
-    GLint u_texture_layer_location {};
+    GLint texture_layer_location {};
 
     ConfigData actor_config_data {};
 
@@ -165,6 +163,24 @@ public:
 
 class Render
 {
+public:
+    Debug debug {};
+    Screen screen {};
+    Viewpoint viewpoint {};
+
+    DebugRender debug_render {};
+    VoxelRender voxel_render {};
+    ModelRender model_render {};
+
+    static GLuint compile_shader(GLenum type, const char* filepath);
+
+    static const char* get_gl_error_string(GLenum err);
+    static void check_gl_error(const char* label);
+
+    void init(const Platform& platform, const World& world, const Population& population);
+    void update(const World& world, const Population& population);
+
+private:
     static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
     static void load_texture_array_layer(const string& texture_path, GLint layer_index);
 
@@ -192,21 +208,4 @@ class Render
     static VoxelGpuData convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh);
     static void upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data);
     static void upload_model_gpu_data(ModelGpuData& model_gpu_data);
-
-public:
-    Debug debug {};
-    Screen screen {};
-    Viewpoint viewpoint {};
-
-    DebugRender debug_render {};
-    VoxelRender voxel_render {};
-    ModelRender model_render {};
-
-    static GLuint compile_shader(GLenum type, const char* filepath);
-
-    static const char* get_gl_error_string(GLenum err);
-    static void check_gl_error(const char* label);
-
-    void init(const Platform& platform, const World& world, const Population& population);
-    void update(const World& world, const Population& population);
 };

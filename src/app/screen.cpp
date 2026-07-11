@@ -225,7 +225,7 @@ Screen::init(const Platform& platform)
 void
 Screen::draw_debug_info(const Population& population)
 {
-    const Actor& judge {population.get_judge()};
+    const Actor& judge {population.get_actor(population.judge_id)};
 
     const IVec3 cell_coordinate {World::position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z)};
     const IVec2 sector_coordinate {World::cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y)};

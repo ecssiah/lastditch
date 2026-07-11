@@ -1,7 +1,5 @@
 #pragma once
 
-#include <functional>
-#include <utility>
 #include "app/actor.h"
 #include "app/nation.h"
 #include "app/work.h"
@@ -18,8 +16,7 @@ public:
     void update(f32 delta_time);
     void quit();
 
-    Actor& get_judge();
-    [[nodiscard]] const Actor& get_judge() const;
+    Random& get_random();
 
     Actor& get_actor(s32 actor_id);
     [[nodiscard]] const Actor& get_actor(s32 actor_id) const;
@@ -27,9 +24,9 @@ public:
     std::vector<Actor>& get_actor_vector();
     [[nodiscard]] const vector<Actor>& get_actor_vector() const;
 
-    Random& get_random();
-
     void add_act(const Act& act);
+
+    s32 judge_id {-1};
 
 private:
     void init_judge();
@@ -43,7 +40,6 @@ private:
     Work work {};
 
     std::array<Nation, NATION_TYPE_COUNT> nation_array {};
-    s32 judge_id {-1};
 
     std::vector<Actor> actor_vector {};
 };

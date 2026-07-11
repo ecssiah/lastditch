@@ -4,8 +4,6 @@
 #include "core/log.h"
 
 App::App()
-    :
-    active(true)
 {
     Log::init();
 

@@ -43,6 +43,8 @@ class AreaOverlap
 public:
     IBounds2 bounds {};
     Direction direction {};
+
+    static AreaOverlap get_overlap(const Area& lhs, const Area& rhs);
 };
 
 class AreaEdge

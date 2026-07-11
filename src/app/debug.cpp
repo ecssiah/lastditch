@@ -54,23 +54,23 @@ Debug::reset()
 void 
 Debug::init(const World& world)
 {
-    const vector<Area>& floor_area_vector {world.get_area_vector(DEBUG_FLOOR_NUMBER)};
+    const vector<Area>& floor_area_vector {world.get_floor_area_vector(DEBUG_FLOOR_NUMBER)};
 
     for (const Area& area : floor_area_vector)
     {
-        const Vec3 area_debug_min {
+        const Vec3 area_min {
             static_cast<f32>(area.bounds.min.x),
             static_cast<f32>(area.bounds.min.y),
             static_cast<f32>(area.floor_number * FLOOR_SIZE_Z)
         };
 
-        const Vec3 area_debug_max {
+        const Vec3 area_max {
             static_cast<f32>(area.bounds.max.x),
             static_cast<f32>(area.bounds.max.y),
             static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
         };
 
-        add_box(area_debug_min, area_debug_max, COLOR_RED);
+        add_box(area_min, area_max, COLOR_RED);
 
         for (const s32 edge_id : area.edge_id_vector)
         {

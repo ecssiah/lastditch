@@ -6,7 +6,7 @@
 constexpr s32 DEBUG_LINE_MAX {1 << 13};
 
 constexpr b32 DEBUG_AREAS {true};
-constexpr s32 DEBUG_FLOOR_NUMBER {6};
+constexpr s32 DEBUG_FLOOR_NUMBER {5};
 
 constexpr Vec3 COLOR_RED    {1.0f, 0.0f, 0.0f};
 constexpr Vec3 COLOR_GREEN  {0.0f, 1.0f, 0.0f};
