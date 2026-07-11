@@ -26,6 +26,14 @@ enum class AreaType : u8
 
 constexpr s32 AREA_TYPE_COUNT {0 FOR_LIST_AREA_TYPE(DEFINE_ENUM_COUNT)};
 
+class Door
+{
+public:
+    s32 offset {};
+    s32 width {};
+    s32 height {};
+};
+
 class Area
 {
 public:
@@ -38,16 +46,7 @@ public:
     std::vector<s32> edge_id_vector {};
 };
 
-class AreaOverlap
-{
-public:
-    IBounds2 bounds {};
-    Direction direction {};
-
-    static AreaOverlap get_overlap(const Area& lhs, const Area& rhs);
-};
-
-class AreaEdge
+class Edge
 {
 public:
     s32 id {-1};
@@ -55,8 +54,9 @@ public:
     s32 area_a_id {-1};
     s32 area_b_id {-1};
 
-    Direction area_a_direction {Direction::Down};
-    Direction area_b_direction {Direction::Down};
+    Axis axis {};
+    IBounds2 bounds {};
 
-    AreaOverlap area_overlap {};
+    std::vector<Door> door_vector {};
 };
+

@@ -230,8 +230,8 @@ public:
     std::vector<Area>& get_floor_area_vector(s32 floor_number);
     [[nodiscard]] const std::vector<Area>& get_floor_area_vector(s32 floor_number) const;
 
-    std::vector<AreaEdge>& get_edge_vector();
-    [[nodiscard]] const std::vector<AreaEdge>& get_edge_vector() const;
+    std::vector<Edge>& get_edge_vector();
+    [[nodiscard]] const std::vector<Edge>& get_edge_vector() const;
 
     [[nodiscard]] Vec3 get_gravity() const;
 
@@ -259,16 +259,19 @@ private:
     void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
 
     void construct_tower();
-    void construct_doors(const Area& area);
     void construct_room(const Area& area);
     void construct_elevator(const Area& area);
     void construct_wireframe(const Area& area);
     void construct_areas(s32 floor_number);
+    // void construct_doors(const Area& area);
 
     u8 get_direction_mask(s32 x, s32 y, s32 z);
 
     void calculate_direction_masks();
-    void calculate_area_edges(s32 floor_number);
+
+    Edge get_edge(const Area& area_left, const Area& area_right);
+
+    void calculate_edges(s32 floor_number);
 
     Random random {WORLD_SEED};
     Physics physics {};
@@ -281,7 +284,7 @@ private:
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
     std::vector<std::vector<Area>> area_vector {FLOOR_COUNT};
-    std::vector<AreaEdge> edge_vector {};
+    std::vector<Edge> edge_vector {};
 
     IdGenerator area_id_generator {};
     IdGenerator edge_id_generator {};
