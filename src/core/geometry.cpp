@@ -423,6 +423,37 @@ IBounds3::size() const
     };
 }
 
+Bounds2::Bounds2(const IBounds2& bounds)
+    :
+    min { bounds.min },
+    max { bounds.max }
+{
+
+}
+
+Bounds2::Bounds2(const Vec2& min, const Vec2& max)
+    :
+    min { min },
+    max { max }
+{
+
+}
+
+Bounds3::Bounds3(const IBounds3& bounds)
+    :
+    min { bounds.min },
+    max { bounds.max }
+{
+
+}
+
+Bounds3::Bounds3(const Vec3 &min, const Vec3 &max)
+    :
+    min { min },
+    max { max }
+{
+
+}
 
 Mat4
 get_view_matrix(const Vec3& position, const Vec3& rotation)

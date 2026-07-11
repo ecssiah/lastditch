@@ -63,6 +63,7 @@ target_sources(
     src/app/app.h
     src/app/app.cpp
     src/app/area.h
+    src/app/area.cpp
     src/app/control.cpp
     src/app/control.h
     src/app/debug.cpp

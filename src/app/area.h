@@ -29,9 +29,13 @@ constexpr s32 AREA_TYPE_COUNT
     FOR_LIST_AREA_TYPE(DEFINE_ENUM_COUNT)
 };
 
+class Edge;
+
 class Door
 {
 public:
+    static IBounds3 get_bounds(const Edge& edge, const Door& door);
+
     s32 offset {};
     s32 width {};
     s32 height {};

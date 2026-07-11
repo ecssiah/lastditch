@@ -1027,20 +1027,19 @@ World::layout_tower_areas()
 
                 const Axis axis_split { area_size[axis_x_value] > area_size[axis_y_value] ? Axis::X : Axis::Y };
 
-                const s32 axis_split_value {static_cast<s32>(axis_split)};
+                const s32 axis_split_value { static_cast<s32>(axis_split) };
 
                 if (area_size[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
                 {
-                    const s32 split_offset { -2 + random.uniform(0, 5) };
+                    const s32 split_offset { random.uniform(-2, AREA_EXPANSION_SIZE_MIN - 3) };
                     const s32 split_size { area_size[axis_split_value] / 2 + split_offset };
 
                     Area area_a { area_copy };
                     area_a.id = area_id_generator.next();
+                    area_a.bounds.max[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
 
                     Area area_b { area_copy };
                     area_b.id = area_id_generator.next();
-
-                    area_a.bounds.max[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
                     area_b.bounds.min[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
 
                     areas_to_add_vector.push_back(area_a);
@@ -1101,7 +1100,7 @@ World::layout_wolf_territory()
         ROOF_Z,
     };
 
-    constexpr s32 pillar_offset { 2 };
+    constexpr s32 temple_pillar_offset { 2 };
 
     const Area temple_area {
         .id = area_id_generator.next(),
@@ -1140,25 +1139,25 @@ World::layout_wolf_territory()
     );
 
     set_block_type_cube(
-        temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
+        temple_origin.x + temple_pillar_offset, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::WolfSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.y + pillar_offset, temple_origin.z + 1,
+        temple_origin.x + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::WolfSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + pillar_offset, temple_origin.y + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.z + 1,
+        temple_origin.x + temple_pillar_offset, temple_origin.y + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::WolfSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.z + 1,
+        temple_origin.x + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::WolfSymbol
     );
@@ -1215,7 +1214,7 @@ World::layout_eagle_territory()
         ROOF_Z,
     };
 
-    constexpr s32 pillar_offset { 2 };
+    constexpr s32 temple_pillar_offset { 2 };
 
     const Area temple_area {
         .id = area_id_generator.next(),
@@ -1254,25 +1253,25 @@ World::layout_eagle_territory()
     );
 
     set_block_type_cube(
-        temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
+        temple_origin.x + temple_pillar_offset, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::EagleSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.y + pillar_offset, temple_origin.z + 1,
+        temple_origin.x + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::EagleSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + pillar_offset, temple_origin.y + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.z + 1,
+        temple_origin.x + temple_pillar_offset, temple_origin.y + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::EagleSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.z + 1,
+        temple_origin.x + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::EagleSymbol
     );
@@ -1329,7 +1328,7 @@ World::layout_bear_territory()
         ROOF_Z,
     };
 
-    constexpr s32 pillar_offset { 2 };
+    constexpr s32 temple_pillar_offset { 2 };
 
     const Area temple_area {
         .id = area_id_generator.next(),
@@ -1368,25 +1367,25 @@ World::layout_bear_territory()
     );
 
     set_block_type_cube(
-        temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
+        temple_origin.x + temple_pillar_offset, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::BearSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + pillar_offset, temple_origin.y + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.z + 1,
+        temple_origin.x + temple_pillar_offset, temple_origin.y + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::BearSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.y + pillar_offset, temple_origin.z + 1,
+        temple_origin.x + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::BearSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.z + 1,
+        temple_origin.x + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::BearSymbol
     );
@@ -1443,7 +1442,7 @@ World::layout_lion_territory()
         ROOF_Z,
     };
 
-    constexpr s32 pillar_offset { 2 };
+    constexpr s32 temple_pillar_offset { 2 };
 
     const Area temple_area {
         .id = area_id_generator.next(),
@@ -1482,25 +1481,25 @@ World::layout_lion_territory()
     );
 
     set_block_type_cube(
-        temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
+        temple_origin.x + temple_pillar_offset, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::LionSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + pillar_offset, temple_origin.y + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.z + 1,
+        temple_origin.x + temple_pillar_offset, temple_origin.y + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::LionSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.y + pillar_offset, temple_origin.z + 1,
+        temple_origin.x + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::LionSymbol
     );
 
     set_block_type_cube(
-        temple_origin.x + TEMPLE_SIZE_X - pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_Y - pillar_offset - 1, temple_origin.z + 1,
+        temple_origin.x + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.y + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
         BlockType::LionSymbol
     );
@@ -1753,47 +1752,49 @@ World::construct_doors()
     {
         for (const Door& door : edge.door_vector)
         {
+            const IBounds3 door_bounds { Door::get_bounds(edge, door) };
+
             if (edge.axis == Axis::X)
             {
                 set_block_type_cube(
-                    edge.bounds.min.x + 1 + door.offset - door.width / 2,
-                    edge.bounds.min.y,
-                    edge.bounds.min.z + 1,
-                    door.width,
-                    2,
-                    door.height,
+                    door_bounds.min.x,
+                    door_bounds.min.y,
+                    door_bounds.min.z,
+                    door_bounds.size().x,
+                    door_bounds.size().y,
+                    door_bounds.size().z,
                     BlockType::Metal3
                 );
 
                 set_block_type_cube(
-                    edge.bounds.min.x + 1 + door.offset,
-                    edge.bounds.min.y,
-                    edge.bounds.min.z + 1,
-                    1,
-                    2,
-                    2,
+                    door_bounds.min.x + 1,
+                    door_bounds.min.y,
+                    door_bounds.min.z,
+                    door_bounds.size().x - 2,
+                    door_bounds.size().y + 0,
+                    door_bounds.size().z - 1,
                     BlockType::None
                 );
             }
             else if (edge.axis == Axis::Y)
             {
                 set_block_type_cube(
-                    edge.bounds.min.x,
-                    edge.bounds.min.y + 1 + door.offset - door.width / 2,
-                    edge.bounds.min.z + 1,
-                    2,
-                    door.width,
-                    door.height,
+                    door_bounds.min.x,
+                    door_bounds.min.y,
+                    door_bounds.min.z,
+                    door_bounds.size().x,
+                    door_bounds.size().y,
+                    door_bounds.size().z,
                     BlockType::Metal3
                 );
 
                 set_block_type_cube(
-                    edge.bounds.min.x,
-                    edge.bounds.min.y + 1 + door.offset,
-                    edge.bounds.min.z + 1,
-                    2,
-                    1,
-                    2,
+                    door_bounds.min.x,
+                    door_bounds.min.y + 1,
+                    door_bounds.min.z,
+                    door_bounds.size().x + 0,
+                    door_bounds.size().y - 2,
+                    door_bounds.size().z - 1,
                     BlockType::None
                 );
             }
@@ -1872,7 +1873,7 @@ World::calculate_edge(const Area& area_left, const Area& area_right)
         {
             edge.axis = Axis::Y;
 
-            const s32 boundary_x {area_left.bounds.max.x};
+            const s32 boundary_x { area_left.bounds.max.x };
 
             edge.bounds.min.x = boundary_x - 1;
             edge.bounds.min.y = overlap_y_min;

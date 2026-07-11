@@ -6,13 +6,16 @@
 constexpr s32 DEBUG_LINE_MAX { 1 << 13 };
 
 constexpr b32 DEBUG_AREAS { true };
-constexpr s32 DEBUG_FLOOR_ARRAY[] { 5, 6 };
+constexpr s32 DEBUG_FLOOR_ARRAY[] { 0, 1, 2, 3, 4, 5, 6 };
 
-constexpr Vec3 COLOR_BLACK  { 0.0f, 0.0f, 0.0f };
-constexpr Vec3 COLOR_WHITE  { 1.0f, 1.0f, 1.0f };
-constexpr Vec3 COLOR_RED    { 1.0f, 0.0f, 0.0f };
-constexpr Vec3 COLOR_GREEN  { 0.0f, 1.0f, 0.0f };
-constexpr Vec3 COLOR_BLUE   { 0.0f, 0.0f, 1.0f };
+constexpr Vec3 COLOR_BLACK      { 0.0f, 0.0f, 0.0f };
+constexpr Vec3 COLOR_WHITE      { 1.0f, 1.0f, 1.0f };
+constexpr Vec3 COLOR_RED        { 1.0f, 0.0f, 0.0f };
+constexpr Vec3 COLOR_GREEN      { 0.0f, 1.0f, 0.0f };
+constexpr Vec3 COLOR_BLUE       { 0.0f, 0.0f, 1.0f };
+constexpr Vec3 COLOR_YELLOW     { 1.0f, 1.0f, 0.0f };
+constexpr Vec3 COLOR_CYAN       { 0.0f, 1.0f, 1.0f };
+constexpr Vec3 COLOR_MAGENTA    { 1.0f, 0.0f, 1.0f };
 
 class World;
 
@@ -21,7 +24,7 @@ class DebugLine
 public:
     Vec3 a {};
     Vec3 b {};
-    Vec3 color {COLOR_BLACK};
+    Vec3 color { COLOR_BLACK };
 };
 
 class Debug

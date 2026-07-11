@@ -82,29 +82,15 @@ Debug::init(const World& world)
                 {
                     if (edge.axis == Axis::X)
                     {
-                        const IVec3 door_position {
-                            edge.bounds.min.x + door.offset,
-                            edge.bounds.min.y,
-                            area.floor_number * FLOOR_SIZE_Z + 1,
-                        };
+                        const Bounds3 door_bounds { Door::get_bounds(edge, door) };
 
-                        const Vec3 edge_debug_min { door_position };
-                        const Vec3 edge_debug_max { door_position + IVec3{door.width, 2, door.height} };
-
-                        add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
+                        add_box(door_bounds.min, door_bounds.max, COLOR_CYAN);
                     }
                     else if (edge.axis == Axis::Y)
                     {
-                        const IVec3 door_position {
-                            edge.bounds.min.x,
-                            edge.bounds.min.y + door.offset,
-                            area.floor_number * FLOOR_SIZE_Z + 1,
-                        };
+                        const Bounds3 door_bounds { Door::get_bounds(edge, door) };
 
-                        const Vec3 edge_debug_min { door_position };
-                        const Vec3 edge_debug_max { door_position + IVec3{2, door.width, door.height} };
-
-                        add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
+                        add_box(door_bounds.min, door_bounds.max, COLOR_CYAN);
                     }
                 }
             }
