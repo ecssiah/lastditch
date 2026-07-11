@@ -14,7 +14,7 @@ using namespace std;
 
 namespace
 {
-    constexpr array<IVec2, section_count> SECTION_ORIGIN_ARRAY =
+    constexpr array<IVec2, section_count> SECTION_ORIGIN_ARRAY
     {
         {
             // Center
@@ -145,7 +145,7 @@ namespace
         }
     };
 
-    constexpr array<IVec2, section_count> SECTION_SIZE_ARRAY =
+    constexpr array<IVec2, section_count> SECTION_SIZE_ARRAY
     {
         {
             // Center
@@ -301,7 +301,8 @@ World::init()
     {
         calculate_edges(floor_number);
 
-        // construct_areas(floor_number);
+        construct_areas(floor_number);
+        construct_doors();
 
         // place_content(floor_number);
     }
@@ -376,15 +377,15 @@ World::cell_coordinate_to_index(const s32 x, const s32 y, const s32 z)
 IVec3
 World::cell_index_to_coordinate(s32 cell_index)
 {
-    const s32 z = cell_index / WORLD_STRIDE_Z;
+    const s32 z {cell_index / WORLD_STRIDE_Z };
 
     cell_index -= z * WORLD_STRIDE_Z;
 
-    const s32 y = cell_index / WORLD_STRIDE_Y;
+    const s32 y {cell_index / WORLD_STRIDE_Y };
 
     cell_index -= y * WORLD_STRIDE_Y;
 
-    const s32 x = cell_index;
+    const s32 x {cell_index };
 
     return {x, y, z};
 }
@@ -401,8 +402,8 @@ World::cell_coordinate_to_sector_coordinate(const s32 x, const s32 y)
 s32
 World::cell_coordinate_to_sector_index(const s32 x, const s32 y)
 {
-    const IVec2 sector_coordinate {cell_coordinate_to_sector_coordinate(x, y)};
-    const s32 sector_index {sector_coordinate_to_index(sector_coordinate)};
+    const IVec2 sector_coordinate { cell_coordinate_to_sector_coordinate(x, y) };
+    const s32 sector_index { sector_coordinate_to_index(sector_coordinate) };
 
     return sector_index;
 }
@@ -420,7 +421,7 @@ World::cell_coordinate_to_local_coordinate(const s32 x, const s32 y, const s32 z
 s32
 World::cell_coordinate_to_local_index(const s32 x, const s32 y, const s32 z)
 {
-    const IVec3 local_coordinate {cell_coordinate_to_local_coordinate(x, y, z)};
+    const IVec3 local_coordinate { cell_coordinate_to_local_coordinate(x, y, z) };
 
     const s32 local_index {
         (local_coordinate.x << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
@@ -471,8 +472,8 @@ World::is_solid(const s32 x, const s32 y, const s32 z)
         return false;
     }
 
-    const s32 cell_index {cell_coordinate_to_index(x, y, z)};
-    const Cell& cell {get_cell(cell_index)};
+    const s32 cell_index { cell_coordinate_to_index(x, y, z) };
+    const Cell& cell { get_cell(cell_index) };
 
     return cell.block_type != BlockType::None;
 }
@@ -539,7 +540,7 @@ World::block_type_index_from_string(const string& block_type_string)
 Cell&
 World::get_cell(const s32 x, const s32 y, const s32 z)
 {
-    const s32 cell_index {cell_coordinate_to_index(x, y, z)};
+    const s32 cell_index { cell_coordinate_to_index(x, y, z) };
 
     return cell_array[cell_index];
 }
@@ -588,7 +589,7 @@ World::construct_tower()
 {
     for (s32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        const IVec3 floor_origin = {TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z};
+        const IVec3 floor_origin = { TOWER_BORDER, TOWER_BORDER, floor_number * FLOOR_SIZE_Z };
 
         set_block_type_cube(
             floor_origin.x,
@@ -630,14 +631,14 @@ World::construct_tower()
             BlockType::Smooth1
         );
 
-        const s32 cell_z {floor_origin.z};
+        const s32 cell_z { floor_origin.z };
 
         for (s32 cell_x = floor_origin.x + 1; cell_x < floor_origin.x + static_cast<s32>(TOWER_SIZE) - 1; ++cell_x)
         {
             s32 north_position_z {};
             s32 north_size_z {};
 
-            const s32 north_offset {random.uniform(0, FLOOR_SIZE_Z - 3)};
+            const s32 north_offset { random.uniform(0, FLOOR_SIZE_Z - 3) };
 
             if (random.uniform(0, 1) == 0)
             {
@@ -661,7 +662,7 @@ World::construct_tower()
             s32 south_position_z {};
             s32 south_size_z {};
 
-            const s32 south_offset {random.uniform(0, FLOOR_SIZE_Z - 3)};
+            const s32 south_offset { random.uniform(0, FLOOR_SIZE_Z - 3) };
 
             if (random.uniform(0, 1) == 0)
             {
@@ -688,7 +689,7 @@ World::construct_tower()
             s32 east_position_z {};
             s32 east_size_z {};
 
-            const s32 east_offset {random.uniform(0, FLOOR_SIZE_Z - 3)};
+            const s32 east_offset { random.uniform(0, FLOOR_SIZE_Z - 3) };
 
             if (random.uniform(0, 1) == 0)
             {
@@ -710,7 +711,7 @@ World::construct_tower()
             s32 west_position_z {};
             s32 west_size_z {};
 
-            const s32 west_offset {random.uniform(0, FLOOR_SIZE_Z - 3)};
+            const s32 west_offset { random.uniform(0, FLOOR_SIZE_Z - 3) };
 
             if (random.uniform(0, 1) == 0)
             {
@@ -776,8 +777,8 @@ World::get_content_level(const s32 z)
         return 0;
     }
 
-    const s32 floor_number {z / FLOOR_SIZE_Z};
-    const s32 content_level {(TOWER_FLOOR_COUNT - 1 - floor_number) / 2 + 1};
+    const s32 floor_number { z / FLOOR_SIZE_Z };
+    const s32 content_level { (TOWER_FLOOR_COUNT - 1 - floor_number) / 2 + 1 };
 
     return content_level;
 }
@@ -822,15 +823,15 @@ World::get_content_block_type_vector(const s32 content_level)
 void
 World::place_area(const Area& area)
 {
-    vector<Area>& floor_area_vector {get_floor_area_vector(area.floor_number)};
+    vector<Area>& floor_area_vector { get_floor_area_vector(area.floor_number) };
 
-    vector<Area> new_area_vector;
+    vector<Area> new_area_vector {};
 
     for (auto iterator = floor_area_vector.begin(); iterator != floor_area_vector.end();)
     {
         if (overlaps(iterator->bounds, area.bounds))
         {
-            const vector bounds_vector {subtract(iterator->bounds, area.bounds)};
+            const vector bounds_vector { subtract(iterator->bounds, area.bounds) };
 
             for (const IBounds2& bounds : bounds_vector)
             {
@@ -864,7 +865,7 @@ World::place_area(const Area& area)
 void
 World::place_content(const s32 floor_number)
 {
-    const vector<Area>& floor_area_vector {area_vector[floor_number]};
+    const vector<Area>& floor_area_vector { area_vector[floor_number] };
 
     for (const Area& area : floor_area_vector)
     {
@@ -873,18 +874,18 @@ World::place_content(const s32 floor_number)
             continue;
         }
 
-        const s32 content_level {get_content_level(floor_number * FLOOR_SIZE_Z)};
+        const s32 content_level { get_content_level(floor_number * FLOOR_SIZE_Z) };
 
         if (content_level == 0)
         {
             continue;
         }
 
-        const vector content_block_type_vector {get_content_block_type_vector(content_level)};
+        const vector content_block_type_vector { get_content_block_type_vector(content_level) };
 
-        const IVec2 area_bounds_size {area.bounds.size()};
+        const IVec2 area_bounds_size { area.bounds.size() };
 
-        const s32 stack_count {area_bounds_size.x * area_bounds_size.y / 14};
+        const s32 stack_count { area_bounds_size.x * area_bounds_size.y / 14 };
 
         for (s32 stack_index = 0; stack_index < stack_count; ++stack_index)
         {
@@ -893,10 +894,10 @@ World::place_content(const s32 floor_number)
                 area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 3)
             };
 
-            const s32 stack_size_z {random.uniform(0, FLOOR_SIZE_Z - 6)};
+            const s32 stack_size_z { random.uniform(0, FLOOR_SIZE_Z - 6) };
 
-            const s32 block_type_index {random.uniform(0, static_cast<s32>(content_block_type_vector.size()) - 1)};
-            const BlockType content_block_type {content_block_type_vector[block_type_index]};
+            const s32 block_type_index { random.uniform(0, static_cast<s32>(content_block_type_vector.size()) - 1) };
+            const BlockType content_block_type { content_block_type_vector[block_type_index] };
 
             set_block_type_cube(
                 stack_position.x, stack_position.y, floor_number * FLOOR_SIZE_Z + 1,
@@ -910,9 +911,9 @@ World::place_content(const s32 floor_number)
 void
 World::layout_roof_areas()
 {
-    constexpr s32 roof_area_size {TOWER_SIZE / 8};
+    constexpr s32 roof_area_size { TOWER_SIZE / 8 };
 
-    vector<Area>& floor_area_vector {get_floor_area_vector(TOWER_FLOOR_COUNT)};
+    vector<Area>& floor_area_vector { get_floor_area_vector(TOWER_FLOOR_COUNT) };
 
     for (s32 area_y = TOWER_BORDER; area_y < TOWER_SIZE + TOWER_BORDER; area_y += roof_area_size)
     {
@@ -963,10 +964,10 @@ World::layout_tower_areas()
 {
     for (s32 floor_number = 0; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        vector<Area>& floor_area_vector {get_floor_area_vector(floor_number)};
+        vector<Area>& floor_area_vector { get_floor_area_vector(floor_number) };
 
-        constexpr IVec2 quadrant1_origin {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant1)]};
-        constexpr IVec2 quadrant1_size {SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant1)]};
+        constexpr IVec2 quadrant1_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant1)] };
+        constexpr IVec2 quadrant1_size { SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant1)] };
 
         Area area_quadrant_1 {
             .id = area_id_generator.next(),
@@ -975,8 +976,8 @@ World::layout_tower_areas()
             .bounds = { quadrant1_origin,quadrant1_origin + quadrant1_size },
         };
 
-        constexpr IVec2 quadrant2_origin {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant2)]};
-        constexpr IVec2 quadrant2_size {SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant2)]};
+        constexpr IVec2 quadrant2_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant2)] };
+        constexpr IVec2 quadrant2_size { SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant2)] };
 
         Area area_quadrant_2 {
             .id = area_id_generator.next(),
@@ -985,8 +986,8 @@ World::layout_tower_areas()
             .bounds = { quadrant2_origin,quadrant2_origin + quadrant2_size },
         };
 
-        constexpr IVec2 quadrant3_origin {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant3)]};
-        constexpr IVec2 quadrant3_size {SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant3)]};
+        constexpr IVec2 quadrant3_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant3)] };
+        constexpr IVec2 quadrant3_size { SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant3)] };
 
         Area area_quadrant_3 {
             .id = area_id_generator.next(),
@@ -995,8 +996,8 @@ World::layout_tower_areas()
             .bounds = { quadrant3_origin,quadrant3_origin + quadrant3_size },
         };
 
-        constexpr IVec2 quadrant4_origin {SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant4)]};
-        constexpr IVec2 quadrant4_size {SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant4)]};
+        constexpr IVec2 quadrant4_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant4)] };
+        constexpr IVec2 quadrant4_size { SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant4)] };
 
         Area area_quadrant_4 {
             .id = area_id_generator.next(),
@@ -1014,31 +1015,29 @@ World::layout_tower_areas()
         {
             vector<Area> areas_to_add_vector {};
 
-            constexpr s32 axis_x_value {static_cast<size_t>(Axis::X)};
-            constexpr s32 axis_y_value {static_cast<size_t>(Axis::Y)};
+            constexpr s32 axis_x_value { static_cast<size_t>(Axis::X) };
+            constexpr s32 axis_y_value { static_cast<size_t>(Axis::Y) };
 
-            s32 initial_count {static_cast<s32>(floor_area_vector.size())};
+            s32 initial_count { static_cast<s32>(floor_area_vector.size()) };
 
             for (s32 i = 0; i < initial_count; )
             {
-                const Area area_copy {floor_area_vector[i]};
-                const IVec2 area_size {area_copy.bounds.size()};
+                const Area area_copy { floor_area_vector[i] };
+                const IVec2 area_size { area_copy.bounds.size() };
 
-                const Axis axis_split {
-                    area_size[axis_x_value] > area_size[axis_y_value] ? Axis::X : Axis::Y
-                };
+                const Axis axis_split { area_size[axis_x_value] > area_size[axis_y_value] ? Axis::X : Axis::Y };
 
                 const s32 axis_split_value {static_cast<s32>(axis_split)};
 
                 if (area_size[axis_split_value] >= AREA_EXPANSION_SIZE_MIN)
                 {
-                    const s32 split_offset {-2 + random.uniform(0, 5)};
-                    const s32 split_size {area_size[axis_split_value] / 2 + split_offset};
+                    const s32 split_offset { -2 + random.uniform(0, 5) };
+                    const s32 split_size { area_size[axis_split_value] / 2 + split_offset };
 
-                    Area area_a {area_copy};
+                    Area area_a { area_copy };
                     area_a.id = area_id_generator.next();
 
-                    Area area_b {area_copy};
+                    Area area_b { area_copy };
                     area_b.id = area_id_generator.next();
 
                     area_a.bounds.max[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
@@ -1064,7 +1063,7 @@ World::layout_tower_areas()
 
         for (s32 section_index = 0; section_index < section_count; ++section_index)
         {
-            const auto section {static_cast<Section>(section_index)};
+            const Section section { static_cast<Section>(section_index) };
 
             const b32 quadrant_section {
                 section == Section::Quadrant1 ||
@@ -1078,8 +1077,8 @@ World::layout_tower_areas()
                 continue;
             }
 
-            const IVec2 section_origin {SECTION_ORIGIN_ARRAY[section_index]};
-            const IVec2 section_size {SECTION_SIZE_ARRAY[section_index]};
+            const IVec2 section_origin { SECTION_ORIGIN_ARRAY[section_index] };
+            const IVec2 section_size { SECTION_SIZE_ARRAY[section_index] };
 
             const Area section_area {
                 .id = area_id_generator.next(),
@@ -1101,6 +1100,8 @@ World::layout_wolf_territory()
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         ROOF_Z,
     };
+
+    constexpr s32 pillar_offset { 2 };
 
     const Area temple_area {
         .id = area_id_generator.next(),
@@ -1137,8 +1138,6 @@ World::layout_wolf_territory()
         TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BlockType::Smooth4
     );
-
-    constexpr s32 pillar_offset {2};
 
     set_block_type_cube(
         temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
@@ -1216,6 +1215,8 @@ World::layout_eagle_territory()
         ROOF_Z,
     };
 
+    constexpr s32 pillar_offset { 2 };
+
     const Area temple_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
@@ -1251,8 +1252,6 @@ World::layout_eagle_territory()
         TEMPLE_SIZE_Y - 2, TEMPLE_SIZE_X - 2, 1,
         BlockType::Smooth4
     );
-
-    constexpr s32 pillar_offset {2};
 
     set_block_type_cube(
         temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
@@ -1330,6 +1329,8 @@ World::layout_bear_territory()
         ROOF_Z,
     };
 
+    constexpr s32 pillar_offset { 2 };
+
     const Area temple_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
@@ -1365,8 +1366,6 @@ World::layout_bear_territory()
         TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
         BlockType::Smooth4
     );
-
-    constexpr s32 pillar_offset {2};
 
     set_block_type_cube(
         temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
@@ -1444,6 +1443,8 @@ World::layout_lion_territory()
         ROOF_Z,
     };
 
+    constexpr s32 pillar_offset { 2 };
+
     const Area temple_area {
         .id = area_id_generator.next(),
         .area_type = AreaType::Open,
@@ -1479,8 +1480,6 @@ World::layout_lion_territory()
         TEMPLE_SIZE_X - 2, TEMPLE_SIZE_Y - 2, 1,
         BlockType::Smooth4
     );
-
-    constexpr s32 pillar_offset {2};
 
     set_block_type_cube(
         temple_origin.x + pillar_offset, temple_origin.y + pillar_offset, temple_origin.z + 1,
@@ -1585,7 +1584,7 @@ World::layout_test_area()
 void
 World::set_block_type(const s32 x, const s32 y, const s32 z, const BlockType block_type)
 {
-    Cell& cell {get_cell(x, y, z)};
+    Cell& cell { get_cell(x, y, z) };
 
     cell.block_type = block_type;
 }
@@ -1593,7 +1592,7 @@ World::set_block_type(const s32 x, const s32 y, const s32 z, const BlockType blo
 void
 World::set_block_type_cube(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
 {
-    const IVec3 max {x + size_x,y + size_y,z + size_z};
+    const IVec3 max { x + size_x,y + size_y,z + size_z };
 
     for (s32 cell_z = z; cell_z < max.z; ++cell_z)
     {
@@ -1610,7 +1609,7 @@ World::set_block_type_cube(const s32 x, const s32 y, const s32 z, const s32 size
 void
 World::set_block_type_box(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
 {
-    const IVec3 max {x + size_x,y + size_y,z + size_z};
+    const IVec3 max { x + size_x,y + size_y,z + size_z };
 
     for (s32 cell_z = z; cell_z < max.z; ++cell_z)
     {
@@ -1636,7 +1635,7 @@ World::set_block_type_box(const s32 x, const s32 y, const s32 z, const s32 size_
 void
 World::set_block_type_wireframe(const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
 {
-    const IVec3 max {x + size_x,y + size_y,z + size_z};
+    const IVec3 max { x + size_x,y + size_y,z + size_z };
 
     for (s32 cell_z = z; cell_z < max.z; ++cell_z)
     {
@@ -1644,16 +1643,22 @@ World::set_block_type_wireframe(const s32 x, const s32 y, const s32 z, const s32
         {
             for (s32 cell_x = x; cell_x < max.x; ++cell_x)
             {
-                s32 boundary_count {0};
+                s32 boundary_count { 0 };
 
                 if (cell_x == x || cell_x == max.x - 1)
+                {
                     boundary_count++;
+                }
 
                 if (cell_y == y || cell_y == max.y - 1)
+                {
                     boundary_count++;
+                }
 
                 if (cell_z == z || cell_z == max.z - 1)
+                {
                     boundary_count++;
+                }
 
                 if (boundary_count >= 2)
                 {
@@ -1667,7 +1672,7 @@ World::set_block_type_wireframe(const s32 x, const s32 y, const s32 z, const s32
 void
 World::construct_room(const Area& area)
 {
-    const IVec2 area_bounds_size {area.bounds.size()};
+    const IVec2 area_bounds_size { area.bounds.size() };
     
     set_block_type_box(
         area.bounds.min.x, area.bounds.min.y, area.floor_number * FLOOR_SIZE_Z,
@@ -1685,7 +1690,7 @@ World::construct_room(const Area& area)
 void
 World::construct_elevator(const Area& area)
 {
-    const IVec2 area_bounds_size {area.bounds.size()};
+    const IVec2 area_bounds_size { area.bounds.size() };
     
     set_block_type_box(
         area.bounds.min.x, area.bounds.min.y, area.floor_number * FLOOR_SIZE_Z,
@@ -1715,7 +1720,7 @@ World::construct_elevator(const Area& area)
 void
 World::construct_wireframe(const Area& area)
 {
-    const IVec2 area_bounds_size {area.bounds.size()};
+    const IVec2 area_bounds_size { area.bounds.size() };
     
     set_block_type_wireframe(
         area.bounds.min.x, area.bounds.min.y, area.floor_number * FLOOR_SIZE_Z,
@@ -1727,22 +1732,71 @@ World::construct_wireframe(const Area& area)
 void
 World::construct_areas(const s32 floor_number)
 {
-    const vector<Area>& floor_area_vector {area_vector[floor_number]};
+    const vector<Area>& floor_area_vector { area_vector[floor_number] };
 
     for (const Area& area : floor_area_vector)
     {
         switch (area.area_type)
         {
-        case AreaType::Room: 
-            construct_room(area);
-            break;
-        case AreaType::Elevator: 
-            construct_elevator(area);
-            break;
-        case AreaType::Wireframe: 
-            construct_wireframe(area);
-            break;
+        case AreaType::Room: construct_room(area); break;
+        case AreaType::Elevator: construct_elevator(area); break;
+        case AreaType::Wireframe: construct_wireframe(area); break;
         default: break;
+        }
+    }
+}
+
+void
+World::construct_doors()
+{
+    for (const Edge& edge : edge_vector)
+    {
+        for (const Door& door : edge.door_vector)
+        {
+            if (edge.axis == Axis::X)
+            {
+                set_block_type_cube(
+                    edge.bounds.min.x + 1 + door.offset - door.width / 2,
+                    edge.bounds.min.y,
+                    edge.bounds.min.z + 1,
+                    door.width,
+                    2,
+                    door.height,
+                    BlockType::Metal3
+                );
+
+                set_block_type_cube(
+                    edge.bounds.min.x + 1 + door.offset,
+                    edge.bounds.min.y,
+                    edge.bounds.min.z + 1,
+                    1,
+                    2,
+                    2,
+                    BlockType::None
+                );
+            }
+            else if (edge.axis == Axis::Y)
+            {
+                set_block_type_cube(
+                    edge.bounds.min.x,
+                    edge.bounds.min.y + 1 + door.offset - door.width / 2,
+                    edge.bounds.min.z + 1,
+                    2,
+                    door.width,
+                    door.height,
+                    BlockType::Metal3
+                );
+
+                set_block_type_cube(
+                    edge.bounds.min.x,
+                    edge.bounds.min.y + 1 + door.offset,
+                    edge.bounds.min.z + 1,
+                    2,
+                    1,
+                    2,
+                    BlockType::None
+                );
+            }
         }
     }
 }
@@ -1750,8 +1804,8 @@ World::construct_areas(const s32 floor_number)
 u8
 World::get_direction_mask(const s32 x, const s32 y, const s32 z)
 {
-    u8 direction_mask {0};
-    const s32 cell_index {cell_coordinate_to_index(x, y, z)};
+    u8 direction_mask { 0 };
+    const s32 cell_index { cell_coordinate_to_index(x, y, z) };
 
     for (s32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
@@ -1771,8 +1825,8 @@ World::get_direction_mask(const s32 x, const s32 y, const s32 z)
         }
         else
         {
-            const s32 neighbor_cell_index {cell_index + get_stride(static_cast<Direction>(direction_index))};
-            const Cell& neighbor_cell {get_cell(neighbor_cell_index)};
+            const s32 neighbor_cell_index { cell_index + get_stride(static_cast<Direction>(direction_index)) };
+            const Cell& neighbor_cell { get_cell(neighbor_cell_index) };
 
             if (neighbor_cell.block_type == BlockType::None)
             {
@@ -1789,9 +1843,9 @@ World::calculate_direction_masks()
 {
     for (s32 cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
-        Cell& cell {cell_array[cell_index]};
+        Cell& cell { cell_array[cell_index] };
 
-        const IVec3 cell_coordinate {cell_index_to_coordinate(cell_index)};
+        const IVec3 cell_coordinate { cell_index_to_coordinate(cell_index) };
 
         cell.direction_mask = get_direction_mask(
             cell_coordinate.x,
@@ -1802,7 +1856,7 @@ World::calculate_direction_masks()
 }
 
 Edge
-World::get_edge(const Area& area_left, const Area& area_right)
+World::calculate_edge(const Area& area_left, const Area& area_right)
 {
     Edge edge {
         .area_a_id = area_left.id,
@@ -1811,8 +1865,8 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
     if (area_left.bounds.max.x == area_right.bounds.min.x)
     {
-        const s32 overlap_y_min {max(area_left.bounds.min.y, area_right.bounds.min.y)};
-        const s32 overlap_y_max {min(area_left.bounds.max.y, area_right.bounds.max.y)};
+        const s32 overlap_y_min { max(area_left.bounds.min.y, area_right.bounds.min.y) };
+        const s32 overlap_y_max { min(area_left.bounds.max.y, area_right.bounds.max.y) };
 
         if (overlap_y_min < overlap_y_max)
         {
@@ -1822,63 +1876,71 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
             edge.bounds.min.x = boundary_x - 1;
             edge.bounds.min.y = overlap_y_min;
+            edge.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
             edge.bounds.max.x = boundary_x + 1;
             edge.bounds.max.y = overlap_y_max;
+            edge.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.min.x == area_right.bounds.max.x)
     {
-        const s32 overlap_y_min {max(area_left.bounds.min.y, area_right.bounds.min.y)};
-        const s32 overlap_y_max {min(area_left.bounds.max.y, area_right.bounds.max.y)};
+        const s32 overlap_y_min { max(area_left.bounds.min.y, area_right.bounds.min.y) };
+        const s32 overlap_y_max { min(area_left.bounds.max.y, area_right.bounds.max.y) };
 
         if (overlap_y_min < overlap_y_max)
         {
             edge.axis = Axis::Y;
 
-            const s32 boundary_x {area_left.bounds.min.x};
+            const s32 boundary_x { area_left.bounds.min.x };
 
             edge.bounds.min.x = boundary_x - 1;
             edge.bounds.min.y = overlap_y_min;
+            edge.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
             edge.bounds.max.x = boundary_x + 1;
             edge.bounds.max.y = overlap_y_max;
+            edge.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.max.y == area_right.bounds.min.y)
     {
-        const s32 overlap_x_min {max(area_left.bounds.min.x, area_right.bounds.min.x)};
-        const s32 overlap_x_max {min(area_left.bounds.max.x, area_right.bounds.max.x)};
+        const s32 overlap_x_min { max(area_left.bounds.min.x, area_right.bounds.min.x) };
+        const s32 overlap_x_max { min(area_left.bounds.max.x, area_right.bounds.max.x) };
 
         if (overlap_x_min < overlap_x_max)
         {
             edge.axis = Axis::X;
 
-            const s32 boundary_y {area_left.bounds.max.y};
+            const s32 boundary_y { area_left.bounds.max.y };
 
             edge.bounds.min.x = overlap_x_min;
             edge.bounds.min.y = boundary_y - 1;
+            edge.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
             edge.bounds.max.x = overlap_x_max;
             edge.bounds.max.y = boundary_y + 1;
+            edge.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.min.y == area_right.bounds.max.y)
     {
-        const s32 overlap_x_min {max(area_left.bounds.min.x, area_right.bounds.min.x)};
-        const s32 overlap_x_max {min(area_left.bounds.max.x, area_right.bounds.max.x)};
+        const s32 overlap_x_min { max(area_left.bounds.min.x, area_right.bounds.min.x) };
+        const s32 overlap_x_max { min(area_left.bounds.max.x, area_right.bounds.max.x) };
 
         if (overlap_x_min < overlap_x_max)
         {
             edge.axis = Axis::X;
 
-            const s32 boundary_y {area_left.bounds.min.y};
+            const s32 boundary_y { area_left.bounds.min.y };
 
             edge.bounds.min.x = overlap_x_min;
             edge.bounds.min.y = boundary_y - 1;
+            edge.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
             edge.bounds.max.x = overlap_x_max;
             edge.bounds.max.y = boundary_y + 1;
+            edge.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
 
@@ -1891,55 +1953,52 @@ World::get_edge(const Area& area_left, const Area& area_right)
 }
 
 void
-World::calculate_doors(Edge& edge)
-{
-
-}
-
-void
 World::calculate_edges(const s32 floor_number)
 {
-    vector<Area>& floor_area_vector {get_floor_area_vector(floor_number)};
+    vector<Area>& floor_area_vector { get_floor_area_vector(floor_number) };
 
-    const s32 area_count {static_cast<s32>(floor_area_vector.size())};
+    const s32 area_count { static_cast<s32>(floor_area_vector.size()) };
 
     for (s32 left_index = 0; left_index < area_count; ++left_index)
     {
-        Area& left_area {floor_area_vector[left_index]};
+        Area& left_area { floor_area_vector[left_index] };
 
         for (s32 right_index = left_index + 1; right_index < area_count; ++right_index)
         {
-            Area& right_area {floor_area_vector[right_index]};
+            Area& right_area { floor_area_vector[right_index] };
 
-            Edge edge {get_edge(left_area, right_area)};
+            Edge edge { calculate_edge(left_area, right_area) };
 
             if (edge.id != -1)
             {
                 left_area.edge_id_vector.push_back(edge.id);
                 right_area.edge_id_vector.push_back(edge.id);
 
-                constexpr s32 door_width {3};
-                constexpr s32 door_height {3};
-
-                if (edge.axis == Axis::X && edge.bounds.size().x > door_width + 2)
+                if (left_area.area_type == AreaType::Room || right_area.area_type == AreaType::Room)
                 {
-                    const Door door {
-                        .offset = edge.bounds.size().x / 2 - door_width / 2,
-                        .width = door_width,
-                        .height = door_height,
-                    };
+                    constexpr s32 door_width { 3 };
+                    constexpr s32 door_height { 3 };
 
-                    edge.door_vector.push_back(door);
-                }
-                else if (edge.axis == Axis::Y && edge.bounds.size().y > door_width + 2)
-                {
-                    const Door door {
-                        .offset = edge.bounds.size().y / 2 - door_width / 2,
-                        .width = door_width,
-                        .height = door_height,
-                    };
+                    if (edge.axis == Axis::X && edge.bounds.size().x > door_width + 2)
+                    {
+                        const Door door {
+                            .offset = edge.bounds.size().x / 2 - door_width / 2,
+                            .width = door_width,
+                            .height = door_height,
+                        };
 
-                    edge.door_vector.push_back(door);
+                        edge.door_vector.push_back(door);
+                    }
+                    else if (edge.axis == Axis::Y && edge.bounds.size().y > door_width + 2)
+                    {
+                        const Door door {
+                            .offset = edge.bounds.size().y / 2 - door_width / 2,
+                            .width = door_width,
+                            .height = door_height,
+                        };
+
+                        edge.door_vector.push_back(door);
+                    }
                 }
 
                 edge_vector.push_back(edge);

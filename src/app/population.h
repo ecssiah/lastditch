@@ -6,8 +6,8 @@
 #include "core/id.h"
 #include "core/random.h"
 
-constexpr u32 POPULATION_SEED {1388};
-constexpr s32 AGENT_INITIAL_COUNT {12};
+constexpr u32 POPULATION_SEED { 1388 };
+constexpr s32 AGENT_INITIAL_COUNT { 12 };
 
 class Population
 {
@@ -26,7 +26,7 @@ public:
 
     void add_act(const Act& act);
 
-    s32 judge_id {-1};
+    s32 judge_id { -1 };
 
 private:
     void init_judge();
@@ -36,7 +36,7 @@ private:
     IdGenerator actor_id_generator {};
     IdGenerator task_id_generator {};
 
-    Random random {POPULATION_SEED};
+    Random random { POPULATION_SEED };
     Work work {};
 
     std::array<Nation, NATION_TYPE_COUNT> nation_array {};

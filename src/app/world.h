@@ -9,70 +9,70 @@
 #include "core/random.h"
 #include "core/types.h"
 
-constexpr u32 WORLD_SEED {1388};
+constexpr u32 WORLD_SEED { 1388 };
 
-constexpr f32 CELL_SIZE {1.0f};
+constexpr f32 CELL_SIZE { 1.0f };
 
-constexpr s32 SECTOR_SIZE_IN_CELLS_LOG2 {5};
-constexpr s32 SECTOR_SIZE_IN_CELLS {1 << (1 * SECTOR_SIZE_IN_CELLS_LOG2)};
+constexpr s32 SECTOR_SIZE_IN_CELLS_LOG2 { 5 };
+constexpr s32 SECTOR_SIZE_IN_CELLS { 1 << (1 * SECTOR_SIZE_IN_CELLS_LOG2) };
 
-constexpr s32 SECTOR_HEIGHT_IN_CELLS_LOG2 {8};
-constexpr s32 SECTOR_HEIGHT_IN_CELLS {1 << (1 * SECTOR_HEIGHT_IN_CELLS_LOG2)};
+constexpr s32 SECTOR_HEIGHT_IN_CELLS_LOG2 { 8 };
+constexpr s32 SECTOR_HEIGHT_IN_CELLS { 1 << (1 * SECTOR_HEIGHT_IN_CELLS_LOG2) };
 
-constexpr s32 SECTOR_AREA_IN_CELLS {1 << (2 * SECTOR_SIZE_IN_CELLS_LOG2)};
+constexpr s32 SECTOR_AREA_IN_CELLS { 1 << (2 * SECTOR_SIZE_IN_CELLS_LOG2) };
 
-constexpr s32 SECTOR_VOLUME_IN_CELLS {SECTOR_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS};
+constexpr s32 SECTOR_VOLUME_IN_CELLS { SECTOR_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS };
 
-constexpr s32 WORLD_SIZE_IN_SECTORS_LOG2 {3};
-constexpr s32 WORLD_SIZE_IN_SECTORS {1 << (1 * WORLD_SIZE_IN_SECTORS_LOG2)};
-constexpr s32 WORLD_AREA_IN_SECTORS {1 << (2 * WORLD_SIZE_IN_SECTORS_LOG2)};
+constexpr s32 WORLD_SIZE_IN_SECTORS_LOG2 { 3 };
+constexpr s32 WORLD_SIZE_IN_SECTORS { 1 << (1 * WORLD_SIZE_IN_SECTORS_LOG2) };
+constexpr s32 WORLD_AREA_IN_SECTORS { 1 << (2 * WORLD_SIZE_IN_SECTORS_LOG2) };
 
-constexpr s32 WORLD_SIZE_IN_CELLS_LOG2 {SECTOR_SIZE_IN_CELLS_LOG2 + WORLD_SIZE_IN_SECTORS_LOG2};
-constexpr s32 WORLD_SIZE_IN_CELLS {1 << (1 * WORLD_SIZE_IN_CELLS_LOG2)};
-constexpr s32 WORLD_AREA_IN_CELLS {1 << (2 * WORLD_SIZE_IN_CELLS_LOG2)};
+constexpr s32 WORLD_SIZE_IN_CELLS_LOG2 { SECTOR_SIZE_IN_CELLS_LOG2 + WORLD_SIZE_IN_SECTORS_LOG2 };
+constexpr s32 WORLD_SIZE_IN_CELLS { 1 << (1 * WORLD_SIZE_IN_CELLS_LOG2) };
+constexpr s32 WORLD_AREA_IN_CELLS { 1 << (2 * WORLD_SIZE_IN_CELLS_LOG2) };
 
-constexpr s32 WORLD_VOLUME_IN_CELLS {WORLD_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS};
+constexpr s32 WORLD_VOLUME_IN_CELLS { WORLD_AREA_IN_CELLS * SECTOR_HEIGHT_IN_CELLS };
 
-constexpr s32 WORLD_STRIDE_X {1};
-constexpr s32 WORLD_STRIDE_Y {WORLD_SIZE_IN_CELLS};
-constexpr s32 WORLD_STRIDE_Z {WORLD_AREA_IN_CELLS};
+constexpr s32 WORLD_STRIDE_X { 1 };
+constexpr s32 WORLD_STRIDE_Y { WORLD_SIZE_IN_CELLS };
+constexpr s32 WORLD_STRIDE_Z { WORLD_AREA_IN_CELLS };
 
-constexpr s32 WORLD_CENTER_S32 {WORLD_SIZE_IN_CELLS / 2};
-constexpr f32 WORLD_CENTER_F32 {WORLD_SIZE_IN_CELLS / 2.0f};
+constexpr s32 WORLD_CENTER_S32 { WORLD_SIZE_IN_CELLS / 2 };
+constexpr f32 WORLD_CENTER_F32 { WORLD_SIZE_IN_CELLS / 2.0f };
 
-constexpr s32 FLOOR_SIZE_Z {16};
-constexpr s32 FLOOR_COUNT {SECTOR_HEIGHT_IN_CELLS / FLOOR_SIZE_Z};
+constexpr s32 FLOOR_SIZE_Z { 16 };
+constexpr s32 FLOOR_COUNT { SECTOR_HEIGHT_IN_CELLS / FLOOR_SIZE_Z };
 
-constexpr s32 TOWER_BORDER {16};
-constexpr s32 TOWER_FLOOR_COUNT {6};
-constexpr s32 TOWER_SIZE {WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER};
+constexpr s32 TOWER_BORDER { 16 };
+constexpr s32 TOWER_FLOOR_COUNT { 6 };
+constexpr s32 TOWER_SIZE { WORLD_SIZE_IN_CELLS - 2 * TOWER_BORDER };
 
-constexpr s32 TOWER_CENTER_HALL_SIZE {24};
-constexpr s32 TOWER_OUTER_HALL_SIZE {6};
+constexpr s32 TOWER_CENTER_HALL_SIZE { 24 };
+constexpr s32 TOWER_OUTER_HALL_SIZE { 6 };
 
-constexpr s32 TOWER_QUADRANT_SIZE {TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2};
+constexpr s32 TOWER_QUADRANT_SIZE { TOWER_SIZE / 2 - TOWER_OUTER_HALL_SIZE - TOWER_CENTER_HALL_SIZE / 2 };
 
-constexpr s32 ROOF_Z {TOWER_FLOOR_COUNT * FLOOR_SIZE_Z};
-constexpr s32 ROOF_FLOOR_COUNT {FLOOR_COUNT - TOWER_FLOOR_COUNT};
-constexpr s32 ROOF_FLOOR_NUMBER {TOWER_FLOOR_COUNT};
+constexpr s32 ROOF_Z { TOWER_FLOOR_COUNT * FLOOR_SIZE_Z };
+constexpr s32 ROOF_FLOOR_COUNT { FLOOR_COUNT - TOWER_FLOOR_COUNT };
+constexpr s32 ROOF_FLOOR_NUMBER { TOWER_FLOOR_COUNT };
 
-constexpr s32 ROOF_CENTER_PATH_SIZE {18};
+constexpr s32 ROOF_CENTER_PATH_SIZE { 18 };
 
-constexpr s32 PLATFORM_SIZE_X {24};
-constexpr s32 PLATFORM_SIZE_Y {16};
+constexpr s32 PLATFORM_SIZE_X { 24 };
+constexpr s32 PLATFORM_SIZE_Y { 16 };
 
-constexpr s32 TEMPLE_SIZE_X {30};
-constexpr s32 TEMPLE_SIZE_Y {20};
+constexpr s32 TEMPLE_SIZE_X { 30 };
+constexpr s32 TEMPLE_SIZE_Y { 20 };
 
-constexpr s32 TEMPLE_BORDER_OFFSET {24};
+constexpr s32 TEMPLE_BORDER_OFFSET { 24 };
 
-constexpr s32 ELEVATOR_SIZE {16};
+constexpr s32 ELEVATOR_SIZE { 16 };
 
-constexpr bool PLACE_ROOM_CONTENT {true};
+constexpr bool PLACE_ROOM_CONTENT { true };
 
 class Population;
 
-#define FOR_LIST_BLOCK_TYPE(DO)                                                             \
+#define FOR_LIST_BLOCK_TYPE(DO)                                                         \
     DO(None)                                                                                \
     DO(CardinalEast)                                                                        \
     DO(CardinalWest)                                                                        \
@@ -136,9 +136,13 @@ enum class BlockType : u8
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 block_type_count {FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT)};
+constexpr s32 block_type_count
+{
+    FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT)
+};
 
-inline constexpr std::array<const char*, block_type_count> block_type_string_array {
+inline constexpr std::array<const char*, block_type_count> block_type_string_array
+{
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_STRINGS)
 };
 
@@ -174,9 +178,13 @@ enum class Section : u8
     FOR_LIST_SECTION(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 section_count {FOR_LIST_SECTION(DEFINE_ENUM_COUNT)};
+constexpr s32 section_count
+{
+    FOR_LIST_SECTION(DEFINE_ENUM_COUNT)
+};
 
-inline constexpr std::array<const char*, section_count> section_string_array {
+inline constexpr std::array<const char*, section_count> section_string_array
+{
     FOR_LIST_SECTION(DEFINE_ENUM_STRINGS)
 };
 
@@ -258,33 +266,33 @@ private:
     void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
     void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
 
-    void construct_tower();
     void construct_room(const Area& area);
     void construct_elevator(const Area& area);
     void construct_wireframe(const Area& area);
+
+    void construct_tower();
     void construct_areas(s32 floor_number);
-    // void construct_doors(const Area& area);
+
+    void construct_doors();
 
     u8 get_direction_mask(s32 x, s32 y, s32 z);
 
     void calculate_direction_masks();
 
-    Edge get_edge(const Area& area_left, const Area& area_right);
-
-    void calculate_doors(Edge& edge);
+    Edge calculate_edge(const Area& area_left, const Area& area_right);
     void calculate_edges(s32 floor_number);
 
-    Random random {WORLD_SEED};
+    Random random { WORLD_SEED };
     Physics physics {};
 
-    u64 tick_count {0};
-    u64 second_count {0};
+    u64 tick_count { 0 };
+    u64 second_count { 0 };
 
-    f32 time_rate {1.0f};
+    f32 time_rate { 1.0f };
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
-    std::vector<std::vector<Area>> area_vector {FLOOR_COUNT};
+    std::vector<std::vector<Area>> area_vector { FLOOR_COUNT };
     std::vector<Edge> edge_vector {};
 
     IdGenerator area_id_generator {};

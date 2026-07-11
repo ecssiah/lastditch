@@ -1,6 +1,6 @@
-#include "debug.h"
+#include "app/debug.h"
 
-#include "world.h"
+#include "app/world.h"
 
 void 
 Debug::add_line(const Vec3& a, const Vec3& b, const Vec3& color)
@@ -13,15 +13,15 @@ Debug::add_line(const Vec3& a, const Vec3& b, const Vec3& color)
 void 
 Debug::add_box(const Vec3& min, const Vec3& max, const Vec3& color)
 {
-    const Vec3 v000{min.x, min.y, min.z};
-    const Vec3 v100{max.x, min.y, min.z};
-    const Vec3 v010{min.x, max.y, min.z};
-    const Vec3 v110{max.x, max.y, min.z};
+    const Vec3 v000 { min.x, min.y, min.z };
+    const Vec3 v100 { max.x, min.y, min.z };
+    const Vec3 v010 { min.x, max.y, min.z };
+    const Vec3 v110 { max.x, max.y, min.z };
 
-    const Vec3 v001{min.x, min.y, max.z};
-    const Vec3 v101{max.x, min.y, max.z};
-    const Vec3 v011{min.x, max.y, max.z};
-    const Vec3 v111{max.x, max.y, max.z};
+    const Vec3 v001 { min.x, min.y, max.z };
+    const Vec3 v101 { max.x, min.y, max.z };
+    const Vec3 v011 { min.x, max.y, max.z };
+    const Vec3 v111 { max.x, max.y, max.z };
 
     add_line(v000, v100, color);
     add_line(v100, v110, color);
@@ -54,55 +54,58 @@ Debug::reset()
 void 
 Debug::init(const World& world)
 {
-    const vector<Area>& floor_area_vector {world.get_floor_area_vector(DEBUG_FLOOR_NUMBER)};
-
-    for (const Area& area : floor_area_vector)
+    for (s32 floor_index : DEBUG_FLOOR_ARRAY)
     {
-        const Vec3 area_min {
-            static_cast<f32>(area.bounds.min.x),
-            static_cast<f32>(area.bounds.min.y),
-            static_cast<f32>(area.floor_number * FLOOR_SIZE_Z)
-        };
+        const vector<Area>& floor_area_vector { world.get_floor_area_vector(floor_index) };
 
-        const Vec3 area_max {
-            static_cast<f32>(area.bounds.max.x),
-            static_cast<f32>(area.bounds.max.y),
-            static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
-        };
-
-        add_box(area_min, area_max, COLOR_RED);
-
-        for (const s32 edge_id : area.edge_id_vector)
+        for (const Area& area : floor_area_vector)
         {
-            const Edge& edge {world.get_edge_vector()[edge_id]};
+            const Vec3 area_min {
+                static_cast<f32>(area.bounds.min.x),
+                static_cast<f32>(area.bounds.min.y),
+                static_cast<f32>(area.floor_number * FLOOR_SIZE_Z)
+            };
 
-            for (const Door& door : edge.door_vector)
+            const Vec3 area_max {
+                static_cast<f32>(area.bounds.max.x),
+                static_cast<f32>(area.bounds.max.y),
+                static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
+            };
+
+            add_box(area_min, area_max, COLOR_RED);
+
+            for (const s32 edge_id : area.edge_id_vector)
             {
-                if (edge.axis == Axis::X)
+                const Edge& edge { world.get_edge_vector()[edge_id] };
+
+                for (const Door& door : edge.door_vector)
                 {
-                    const IVec3 door_position {
-                        edge.bounds.min.x + door.offset,
-                        edge.bounds.min.y,
-                        area.floor_number * FLOOR_SIZE_Z + 1,
-                    };
+                    if (edge.axis == Axis::X)
+                    {
+                        const IVec3 door_position {
+                            edge.bounds.min.x + door.offset,
+                            edge.bounds.min.y,
+                            area.floor_number * FLOOR_SIZE_Z + 1,
+                        };
 
-                    const Vec3 edge_debug_min {Vec3{door_position}};
-                    const Vec3 edge_debug_max {Vec3{door_position + IVec3{door.width, 2, door.height}}};
+                        const Vec3 edge_debug_min { door_position };
+                        const Vec3 edge_debug_max { door_position + IVec3{door.width, 2, door.height} };
 
-                    add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
-                }
-                else if (edge.axis == Axis::Y)
-                {
-                    const IVec3 door_position {
-                        edge.bounds.min.x,
-                        edge.bounds.min.y + door.offset,
-                        area.floor_number * FLOOR_SIZE_Z + 1,
-                    };
+                        add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
+                    }
+                    else if (edge.axis == Axis::Y)
+                    {
+                        const IVec3 door_position {
+                            edge.bounds.min.x,
+                            edge.bounds.min.y + door.offset,
+                            area.floor_number * FLOOR_SIZE_Z + 1,
+                        };
 
-                    const Vec3 edge_debug_min {Vec3{door_position}};
-                    const Vec3 edge_debug_max {Vec3{door_position + IVec3{2, door.width, door.height}}};
+                        const Vec3 edge_debug_min { door_position };
+                        const Vec3 edge_debug_max { door_position + IVec3{2, door.width, door.height} };
 
-                    add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
+                        add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
+                    }
                 }
             }
         }
