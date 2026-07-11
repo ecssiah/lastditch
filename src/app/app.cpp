@@ -18,7 +18,7 @@ App::update()
 {
     platform.begin_frame();
 
-    const f32 delta_time {platform.get_delta_time()};
+    const f32 delta_time { platform.get_delta_time() };
 
     Control::update(platform, state);
 

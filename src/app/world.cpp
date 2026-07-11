@@ -377,17 +377,17 @@ World::cell_coordinate_to_index(const s32 x, const s32 y, const s32 z)
 IVec3
 World::cell_index_to_coordinate(s32 cell_index)
 {
-    const s32 z {cell_index / WORLD_STRIDE_Z };
+    const s32 z { cell_index / WORLD_STRIDE_Z };
 
     cell_index -= z * WORLD_STRIDE_Z;
 
-    const s32 y {cell_index / WORLD_STRIDE_Y };
+    const s32 y { cell_index / WORLD_STRIDE_Y };
 
     cell_index -= y * WORLD_STRIDE_Y;
 
-    const s32 x {cell_index };
+    const s32 x { cell_index };
 
-    return {x, y, z};
+    return { x, y, z };
 }
 
 IVec2

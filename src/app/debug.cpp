@@ -5,7 +5,7 @@
 void 
 Debug::add_line(const Vec3& a, const Vec3& b, const Vec3& color)
 {
-    const DebugLine debug_line{a, b, color};
+    const DebugLine debug_line { a, b, color };
     
     line_vector.push_back(debug_line);
 }
@@ -54,7 +54,7 @@ Debug::reset()
 void 
 Debug::init(const World& world)
 {
-    for (s32 floor_index : DEBUG_FLOOR_ARRAY)
+    for (const s32 floor_index : DEBUG_FLOOR_ARRAY)
     {
         const vector<Area>& floor_area_vector { world.get_floor_area_vector(floor_index) };
 

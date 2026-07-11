@@ -1,6 +1,5 @@
 #pragma once
 
-#include "app/debug.h"
 #include "app/population.h"
 #include "app/world.h"
 #include "app/render.h"
@@ -9,12 +8,12 @@
 class State
 {
 public:
-    State();
+    State() = default;
 
-    b32 evolving;
+    b32 evolving { true };
 
-    World world;
-    Population population;
+    World world {};
+    Population population {};
 
-    Render render;
+    Render render {};
 };

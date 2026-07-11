@@ -3,7 +3,7 @@
 int
 main()
 {
-    const auto app {make_unique<App>()};
+    const auto app { make_unique<App>() };
 
     while (app->active)
     {

@@ -26,7 +26,7 @@ ConfigData::parse_line(ConfigEntry& config_entry, string& line)
         return false;
     }
 
-    const size_t equal_sign_index {line.find('=')};
+    const size_t equal_sign_index { line.find('=') };
     
     if (equal_sign_index == string::npos)
     {
@@ -44,7 +44,7 @@ ConfigData::parse_line(ConfigEntry& config_entry, string& line)
 void
 ConfigData::load(const string& config_path)
 {
-    ifstream ifs {config_path};
+    ifstream ifs { config_path };
     
     assert(ifs.is_open());
 

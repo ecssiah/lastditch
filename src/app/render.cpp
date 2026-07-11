@@ -15,22 +15,54 @@
 
 using namespace std;
 
-const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE] {
-    {{1, 0, 0}, {1, 1, 0}, {1, 1, 1}, {1, 0, 1}},
-    {{0, 1, 0}, {0, 0, 0}, {0, 0, 1}, {0, 1, 1}},
-    {{1, 1, 0}, {0, 1, 0}, {0, 1, 1}, {1, 1, 1}},
-    {{0, 0, 0}, {1, 0, 0}, {1, 0, 1}, {0, 0, 1}},
-    {{0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}},
-    {{0, 1, 0}, {1, 1, 0}, {1, 0, 0}, {0, 0, 0}},
+const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE]
+{
+    {
+        { 1, 0, 0 },
+        { 1, 1, 0 },
+        { 1, 1, 1 },
+        { 1, 0, 1 },
+    },
+    {
+        { 0, 1, 0 },
+        { 0, 0, 0 },
+        { 0, 0, 1 },
+        { 0, 1, 1 },
+    },
+    {
+        { 1, 1, 0 },
+        { 0, 1, 0 },
+        { 0, 1, 1 },
+        { 1, 1, 1 },
+    },
+    {
+        { 0, 0, 0 },
+        { 1, 0, 0 },
+        { 1, 0, 1 },
+        { 0, 0, 1 },
+    },
+    {
+        { 0, 0, 1 },
+        { 1, 0, 1 },
+        { 1, 1, 1 },
+        { 0, 1, 1 },
+    },
+    {
+        { 0, 1, 0 },
+        { 1, 1, 0 },
+        { 1, 0, 0 },
+        { 0, 0, 0 },
+    },
 };
 
-const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT] {
-    {+0, +1, +0},{+0, +0, +1},
-    {+0, -1, +0},{+0, +0, +1},
-    {-1, +0, +0},{+0, +0, +1},
-    {+1, +0, +0},{+0, +0, +1},
-    {+1, +0, +0},{+0, +1, +0},
-    {+1, +0, +0},{+0, -1, +0},
+const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT]
+{
+    { +0, +1, +0 },{ +0, +0, +1 },
+    { +0, -1, +0 },{ +0, +0, +1 },
+    { -1, +0, +0 },{ +0, +0, +1 },
+    { +1, +0, +0 },{ +0, +0, +1 },
+    { +1, +0, +0 },{ +0, +1, +0 },
+    { +1, +0, +0 },{ +0, -1, +0 },
 };
 
 const char*
@@ -38,12 +70,12 @@ Render::get_gl_error_string(GLenum err)
 {
     switch (err)
     {
-        case GL_INVALID_ENUM:                   return "GL_INVALID_ENUM";
-        case GL_INVALID_VALUE:                  return "GL_INVALID_VALUE";
-        case GL_INVALID_OPERATION:              return "GL_INVALID_OPERATION";
-        case GL_OUT_OF_MEMORY:                  return "GL_OUT_OF_MEMORY";
-        case GL_INVALID_FRAMEBUFFER_OPERATION:  return "GL_INVALID_FRAMEBUFFER_OPERATION";
-        default:                                return "UNKNOWN_ERROR";
+        case GL_INVALID_ENUM:                          return "GL_INVALID_ENUM";
+        case GL_INVALID_VALUE:                         return "GL_INVALID_VALUE";
+        case GL_INVALID_OPERATION:                    return "GL_INVALID_OPERATION";
+        case GL_OUT_OF_MEMORY:                         return "GL_OUT_OF_MEMORY";
+        case GL_INVALID_FRAMEBUFFER_OPERATION:      return "GL_INVALID_FRAMEBUFFER_OPERATION";
+        default:                                          return "UNKNOWN_ERROR";
     }
 }
 
@@ -114,13 +146,21 @@ Render::upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
 void
 Render::load_texture_array_layer(const string& texture_path, const GLint layer_index)
 {
-    int width;
-    int height;
-    int channels;
+    int width {};
+    int height {};
+    int channels {};
 
     stbi_set_flip_vertically_on_load(true);
 
-    const unsigned char* pixel_data_array {stbi_load(texture_path.c_str(), &width, &height, &channels, 4)};
+    const unsigned char* pixel_data_array {
+        stbi_load(
+            texture_path.c_str(),
+            &width,
+            &height,
+            &channels,
+            4
+        )
+    };
 
     assert(pixel_data_array);
 
@@ -167,19 +207,15 @@ Render::load_block_texture_directory()
 
     for (size_t layer_index = 0; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
     {
-        const ConfigEntry& config_entry = voxel_render.block_config_data.entry_vector[layer_index];
+        const ConfigEntry& config_entry { voxel_render.block_config_data.entry_vector[layer_index] };
 
-        const s32 block_type_index = World::block_type_index_from_string(config_entry.key);
+        const s32 block_type_index { World::block_type_index_from_string(config_entry.key) };
 
         assert(block_type_index >= 0);
         assert(block_type_index < block_type_count);
 
-        string texture_path =
-            format(
-                "assets/textures/block/{}",
-                config_entry.value
-            );
-        
+        string texture_path { format("assets/textures/block/{}", config_entry.value) };
+
         voxel_render.block_type_layer_array[block_type_index] = layer_index;
 
         load_texture_array_layer(texture_path, static_cast<GLint>(layer_index));
@@ -211,7 +247,7 @@ Render::load_actor_texture_directory()
     {
         const ConfigEntry& config_entry { model_render.actor_config_data.entry_vector[layer_index]};
 
-        const s32 nation_type_index {Nation::get_type_index(config_entry.key)};
+        const s32 nation_type_index { Nation::get_type_index(config_entry.key) };
 
         assert(nation_type_index >= 0 && nation_type_index < NATION_TYPE_COUNT);
 
@@ -237,7 +273,7 @@ Render::load_model_gpu_data(const Actor& actor) const
         .texture_layer = model_render.nation_type_layer_array[nation_type_index],
     };
 
-    ifstream ifs{"assets/model/actor.obj"};
+    ifstream ifs{ "assets/model/actor.obj" };
     
     assert(ifs.is_open());
     
@@ -330,9 +366,9 @@ Render::load_model_gpu_data(const Actor& actor) const
             {
                 ModelVertex model_vertex {};
 
-                const s32 position_index {position_index_array[model_vertex_index] - 1};
-                const s32 normal_index {normal_index_array[model_vertex_index] - 1};
-                const s32 uv_index {uv_index_array[model_vertex_index] - 1};
+                const s32 position_index { position_index_array[model_vertex_index] - 1 };
+                const s32 normal_index { normal_index_array[model_vertex_index] - 1 };
+                const s32 uv_index { uv_index_array[model_vertex_index] - 1 };
 
                 assert(position_index >= 0);
                 assert(position_index < static_cast<s32>(position_vector.size()));
@@ -367,7 +403,7 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
         .sector_index = sector_index,
     };
 
-    const IVec2 sector_coordinate {World::sector_index_to_coordinate(sector_index)};
+    const IVec2 sector_coordinate { World::sector_index_to_coordinate(sector_index) };
 
     const IVec3 sector_cell_coordinate {
         sector_coordinate.x * SECTOR_SIZE_IN_CELLS,
@@ -386,19 +422,19 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
                     continue;
                 }
 
-                const s32 cell_index {World::cell_coordinate_to_index(cell_x, cell_y, cell_z)};
-                const Cell& cell {world.get_cell(cell_index)};
+                const s32 cell_index { World::cell_coordinate_to_index(cell_x, cell_y, cell_z) };
+                const Cell& cell { world.get_cell(cell_index) };
 
                 if (cell.block_type == BlockType::None)
                 {
                     continue;
                 }
 
-                u8 test_direction_mask {cell.direction_mask};
+                u8 test_direction_mask { cell.direction_mask };
 
                 while (test_direction_mask)
                 {
-                    const Direction direction {direction_from_mask(test_direction_mask)};
+                    const Direction direction { direction_from_mask(test_direction_mask) };
 
                     SectorQuad sector_quad {
                         .local_coordinate = {
@@ -426,8 +462,8 @@ Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_
 {
     for (s32 vertex_index = 0; vertex_index < 6; ++vertex_index)
     {
-        const s32 direction_index {static_cast<s32>(sector_quad.direction)};
-        const s32 block_type_index {static_cast<s32>(sector_quad.block_type)};
+        const s32 direction_index { static_cast<s32>(sector_quad.direction) };
+        const s32 block_type_index { static_cast<s32>(sector_quad.block_type) };
         
         const IVec3 vertex_position {
             sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]]
@@ -456,7 +492,7 @@ Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_
 VoxelGpuData
 Render::convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
 {
-    const IVec2 sector_coordinate {World::sector_index_to_coordinate(sector_mesh.sector_index)};
+    const IVec2 sector_coordinate { World::sector_index_to_coordinate(sector_mesh.sector_index) };
 
     VoxelGpuData voxel_gpu_data {
         .position = {
@@ -581,11 +617,11 @@ Render::upload_model_gpu_data(ModelGpuData& model_gpu_data)
 void
 Render::init_glad(const Platform& platform)
 {
-    const s32 glad_load_gl_result {gladLoadGL(glfwGetProcAddress)};
+    const s32 glad_load_gl_result { gladLoadGL(glfwGetProcAddress) };
 
     assert(glad_load_gl_result != 0);
 
-    const auto [framebuffer_width, framebuffer_height] {platform.get_framebuffer_size()};
+    const auto [framebuffer_width, framebuffer_height] { platform.get_framebuffer_size() };
 
     glViewport(0, 0, framebuffer_width, framebuffer_height);
 }
@@ -593,11 +629,11 @@ Render::init_glad(const Platform& platform)
 void
 Render::init_viewpoint()
 {
-    viewpoint.position = Vec3{0.0f};
-    viewpoint.rotation = Vec3{0.0f};
+    viewpoint.position = Vec3{ 0.0f };
+    viewpoint.rotation = Vec3{ 0.0f };
     
-    viewpoint.projection_matrix = Mat4{1.0f};
-    viewpoint.view_matrix = Mat4{1.0f};
+    viewpoint.projection_matrix = Mat4{ 1.0f };
+    viewpoint.view_matrix = Mat4{ 1.0f };
     
     viewpoint.projection_matrix = get_projection_matrix(
         to_radians(60.0f),
@@ -610,8 +646,8 @@ Render::init_viewpoint()
 void
 Render::init_debug_render()
 {
-    const GLuint vert_shader {compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert")};
-    const GLuint frag_shader {compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag")};
+    const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert") };
+    const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag") };
 
     debug_render.program_id = glCreateProgram();
 
@@ -640,8 +676,8 @@ Render::init_debug_render()
 void
 Render::init_voxel_render(const World& world)
 {
-    const GLuint vert_shader {compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert")};
-    const GLuint frag_shader {compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag")};
+    const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert") };
+    const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag") };
 
     voxel_render.program_id = glCreateProgram();
 
@@ -701,7 +737,7 @@ Render::init_voxel_render(const World& world)
 
     for (const SectorMesh& sector_mesh : voxel_render.sector_mesh_vector)
     {
-        VoxelGpuData voxel_gpu_data {convert_sector_mesh_to_voxel_gpu_data(sector_mesh)};
+        VoxelGpuData voxel_gpu_data { convert_sector_mesh_to_voxel_gpu_data(sector_mesh) };
 
         voxel_render.voxel_gpu_data_vector.push_back(voxel_gpu_data);
     }
@@ -715,8 +751,8 @@ Render::init_voxel_render(const World& world)
 void
 Render::init_model_render(const Population& population)
 {
-    const GLuint vert_shader {compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert")};
-    const GLuint frag_shader {compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag")};
+    const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert") };
+    const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag") };
 
     model_render.program_id = glCreateProgram();
 
@@ -761,7 +797,7 @@ Render::init_model_render(const Population& population)
 
     for (const Actor& actor : population.get_actor_vector())
     {
-        const ModelGpuData model_gpu_data {load_model_gpu_data(actor)};
+        const ModelGpuData model_gpu_data { load_model_gpu_data(actor) };
 
         model_render.model_gpu_data_vector[actor.id] = model_gpu_data;
 
@@ -772,10 +808,10 @@ Render::init_model_render(const Population& population)
 void
 Render::update_viewpoint(const Population& population)
 {
-    const Actor& judge {population.get_actor(population.judge_id)};
+    const Actor& judge { population.get_actor(population.judge_id) };
 
-    constexpr Vec3 judge_eye_offset {0.0f, 0.0f, 0.7f};
-    const Vec3 judge_eye_position {judge.position + judge_eye_offset};
+    constexpr Vec3 judge_eye_offset { 0.0f, 0.0f, 0.7f };
+    const Vec3 judge_eye_position { judge.position + judge_eye_offset };
     
     viewpoint.position = judge_eye_position;
     viewpoint.rotation = judge.rotation;
@@ -802,29 +838,13 @@ Render::update_debug_render(const Debug& debug)
     for (const DebugLine& debug_line : debug.get_debug_line_vector())
     {
         const DebugVertex debug_vertex_a {
-            {
-                debug_line.a.x,
-                debug_line.a.y,
-                debug_line.a.z
-            },
-            {
-                debug_line.color.x,
-                debug_line.color.y,
-                debug_line.color.z
-            },
+            { debug_line.a.x, debug_line.a.y, debug_line.a.z },
+            { debug_line.color.x, debug_line.color.y, debug_line.color.z },
         };
 
         const DebugVertex debug_vertex_b {
-            {
-                debug_line.b.x,
-                debug_line.b.y,
-                debug_line.b.z
-            },
-            {
-                debug_line.color.x,
-                debug_line.color.y,
-                debug_line.color.z
-            },
+            { debug_line.b.x, debug_line.b.y, debug_line.b.z },
+            { debug_line.color.x, debug_line.color.y, debug_line.color.z },
         };
 
         debug_gpu_data.debug_vertex_vector.push_back(debug_vertex_a);
@@ -833,7 +853,7 @@ Render::update_debug_render(const Debug& debug)
 
     upload_debug_gpu_data(debug_gpu_data);
 
-    Mat4 model_matrix {1.0f};
+    Mat4 model_matrix { 1.0f };
 
     glUniformMatrix4fv(
         debug_render.model_location,
@@ -872,7 +892,7 @@ Render::update_voxel_render()
 
     for (const VoxelGpuData& voxel_gpu_data : voxel_render.voxel_gpu_data_vector)
     {
-        Mat4 model_matrix {1.0f};
+        Mat4 model_matrix { 1.0f };
         model_matrix = model_matrix.translate(voxel_gpu_data.position);
 
         glUniformMatrix4fv(
@@ -913,9 +933,9 @@ Render::update_model_render(const Population& population)
 
     for (const Actor& actor : population.get_actor_vector())
     {
-        const ModelGpuData& model_gpu_data {model_render.model_gpu_data_vector[actor.id]};
+        const ModelGpuData& model_gpu_data { model_render.model_gpu_data_vector[actor.id] };
 
-        Mat4 model_matrix {1.0f};
+        Mat4 model_matrix { 1.0f };
         model_matrix = model_matrix.translate(actor.position);
         model_matrix = model_matrix.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
 
@@ -968,7 +988,7 @@ Render::update(const World& world, const Population& population)
 GLuint 
 Render::compile_shader(const GLenum type, const char* filepath)
 {
-    ifstream ifs {filepath};
+    ifstream ifs { filepath };
     
     assert(ifs.is_open());
     
@@ -977,9 +997,9 @@ Render::compile_shader(const GLenum type, const char* filepath)
         std::istreambuf_iterator<char>()
     };
     
-    const char* source_ptr {source_string.c_str()};
+    const char* source_ptr { source_string.c_str() };
     
-    const GLuint shader_id {glCreateShader(type)};
+    const GLuint shader_id { glCreateShader(type) };
 
     glShaderSource(shader_id, 1, &source_ptr, nullptr);
     glCompileShader(shader_id);

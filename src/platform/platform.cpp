@@ -12,7 +12,7 @@ Platform::Platform()
 void
 Platform::init_glfw()
 {
-    const int glfw_result {glfwInit()};
+    const int glfw_result { glfwInit() };
 
     assert(glfw_result != 0);
 
@@ -42,10 +42,7 @@ Platform::update_time()
 {
     time_current = glfwGetTime();
 
-    delta_time =
-        time_previous > 0.0
-           ? static_cast<f32>(time_current - time_previous)
-           : 0.0f;
+    delta_time = time_previous > 0.0 ? static_cast<f32>(time_current - time_previous) : 0.0f;
 
     time_previous = time_current;
 }
@@ -90,8 +87,8 @@ Platform::get_delta_time() const
 pair<s32, s32>
 Platform::get_framebuffer_size() const
 {
-    s32 framebuffer_width;
-    s32 framebuffer_height;
+    s32 framebuffer_width {};
+    s32 framebuffer_height {};
 
     glfwGetFramebufferSize(glfw_window, &framebuffer_width, &framebuffer_height);
 
@@ -143,8 +140,8 @@ Platform::update_buttons()
 
     for (s32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
-        const Button button {glfw_keymap[glfw_key_index]};
-        const s32 button_index {static_cast<s32>(button)};
+        const Button button { glfw_keymap[glfw_key_index] };
+        const s32 button_index { static_cast<s32>(button) };
 
         if (button == Button::None)
         {
@@ -156,8 +153,8 @@ Platform::update_buttons()
 
     for (s32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
-        const Button button {glfw_buttonmap[glfw_button_index]};
-        const s32 button_index {static_cast<s32>(button)};
+        const Button button { glfw_buttonmap[glfw_button_index] };
+        const s32 button_index { static_cast<s32>(button) };
 
         if (button == Button::None)
         {
@@ -193,7 +190,7 @@ Platform::update_pointer()
 b32
 Platform::button_is_down(Button button) const
 {
-    const s32 button_index {static_cast<s32>(button)};
+    const s32 button_index { static_cast<s32>(button) };
 
     return button_array_current[button_index];
 }
@@ -201,7 +198,7 @@ Platform::button_is_down(Button button) const
 b32
 Platform::button_is_pressed(Button button) const
 {
-    const s32 button_index {static_cast<s32>(button)};
+    const s32 button_index { static_cast<s32>(button) };
 
     return button_array_current[button_index] && !button_array_previous[button_index];
 }
@@ -209,7 +206,7 @@ Platform::button_is_pressed(Button button) const
 b32
 Platform::button_is_released(Button button) const
 {
-    const s32 button_index {static_cast<s32>(button)};
+    const s32 button_index { static_cast<s32>(button) };
 
     return !button_array_current[button_index] && button_array_previous[button_index];
 }

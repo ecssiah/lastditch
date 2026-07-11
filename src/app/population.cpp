@@ -75,14 +75,14 @@ Population::init_judge()
         .id = judge_id,
         .actor_type = ActorType::Judge,
         .nation_type = NationType::Lion,
-        .position = {WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f},
-        .rotation = {0.0f, 0.0f, 90.0f},
-        .rotation_target = {0.0f, 0.0f, 90.0f},
+        .position = { WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
+        .rotation = { 0.0f, 0.0f, 90.0f },
+        .rotation_target = { 0.0f, 0.0f, 90.0f },
         .speed = JUDGE_DEFAULT_GROUND_SPEED,
-        .velocity = {0.0f, 0.0f, 0.0f},
+        .velocity = { 0.0f, 0.0f, 0.0f },
         .box_collider = {
             .collision_enabled = true,
-            .radius = {0.30f, 0.30f, 0.90f},
+            .radius = { 0.30f, 0.30f, 0.90f },
         },
     };
 
@@ -90,7 +90,7 @@ Population::init_judge()
 
     LOG_INFO(
         "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)", 
-        nation_type_string_array[static_cast<u8>(judge.nation_type)],
+        NATION_TYPE_STRING_ARRAY[static_cast<u8>(judge.nation_type)],
         judge_id,
         judge.position.x,
         judge.position.y,
@@ -105,10 +105,10 @@ Population::init_agents()
     {
         for (s32 agent_index = 0; agent_index < AGENT_INITIAL_COUNT; ++agent_index)
         {
-            const s32 nation_type_index {random.uniform(0, NATION_TYPE_COUNT - 1)};
+            const s32 nation_type_index { random.uniform(0, NATION_TYPE_COUNT - 1) };
             
-            const auto nation_type {static_cast<NationType>(nation_type_index)};
-            const Nation& nation {nation_array[nation_type_index]};
+            const auto nation_type { static_cast<NationType>(nation_type_index) };
+            const Nation& nation { nation_array[nation_type_index] };
 
             const Vec3 position {
                 static_cast<f32>(nation.home_coordinate.x - 6 + random.uniform(0, 11)),
@@ -132,7 +132,7 @@ Population::init_agents()
                 .speed = AGENT_DEFAULT_GROUND_SPEED,
                 .box_collider = {
                     .collision_enabled = true,
-                    .radius = {0.40f, 0.40f, 0.90f},
+                    .radius = { 0.40f, 0.40f, 0.90f },
                 },
             };
 
@@ -154,7 +154,7 @@ Population::init_agents()
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",
-                nation_type_string_array[nation_type_index],
+                NATION_TYPE_STRING_ARRAY[nation_type_index],
                 agent.id,
                 agent.position.x,
                 agent.position.y,
@@ -167,9 +167,9 @@ Population::init_agents()
 void 
 Population::init_nations()
 {
-    constexpr f32 nation_offset {76.0f};
+    constexpr f32 nation_offset { 76.0f };
 
-    Nation& wolf_nation {nation_array[static_cast<u8>(NationType::Wolf)]};
+    Nation& wolf_nation { nation_array[static_cast<u8>(NationType::Wolf)] };
 
     wolf_nation.nation_type = NationType::Wolf;
 
@@ -177,7 +177,7 @@ Population::init_nations()
     wolf_nation.home_coordinate.y = WORLD_CENTER_F32 + 0.0f;
     wolf_nation.home_coordinate.z = ROOF_Z + 3.0f;
 
-    Nation& eagle_nation {nation_array[static_cast<u8>(NationType::Eagle)]};
+    Nation& eagle_nation { nation_array[static_cast<u8>(NationType::Eagle)] };
 
     eagle_nation.nation_type = NationType::Eagle;
 
@@ -185,7 +185,7 @@ Population::init_nations()
     eagle_nation.home_coordinate.y = WORLD_CENTER_F32 + 0.0f;
     eagle_nation.home_coordinate.z = ROOF_Z + 3.0f;
 
-    Nation& bear_nation {nation_array[static_cast<u8>(NationType::Bear)]};
+    Nation& bear_nation { nation_array[static_cast<u8>(NationType::Bear)] };
 
     bear_nation.nation_type = NationType::Bear;
 
@@ -193,7 +193,7 @@ Population::init_nations()
     bear_nation.home_coordinate.y = WORLD_CENTER_F32 + nation_offset;
     bear_nation.home_coordinate.z = ROOF_Z + 1.0f;
 
-    Nation& lion_nation {nation_array[static_cast<u8>(NationType::Lion)]};
+    Nation& lion_nation { nation_array[static_cast<u8>(NationType::Lion)] };
 
     lion_nation.nation_type = NationType::Lion;
 

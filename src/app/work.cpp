@@ -8,29 +8,29 @@ using namespace std;
 
 Act::Act(const ActType act_type, const Vec3 act_value)
     :
-    act_type {act_type},
-    act_value {act_value}
+    act_type { act_type },
+    act_value { act_value }
 {
 
 }
 
 TaskState::TaskState()
     :
-    wander{}
+    wander {}
 {
 
 }
 
 TaskState::TaskState(const s32 tick, const s32 tick_limit)
     :
-    wander{tick, tick_limit}
+    wander { tick, tick_limit }
 {
 
 }
 
 TaskState::TaskState(const IVec3& target_position)
     :
-    seek{target_position}
+    seek { target_position }
 {
 
 }
@@ -42,17 +42,13 @@ Work::update(const f32 delta_time, Population& population)
     {
         switch (task.task_type)
         {
-            case TaskType::wander:
-                execute_wander(task, delta_time, population);
-                break;
-            case TaskType::seek:
-                execute_seek(task, delta_time, population);
-                break;
+            case TaskType::wander:  execute_wander(task, delta_time, population); break;
+            case TaskType::seek:    execute_seek(task, delta_time, population); break;
             default: break;
         }
     }
 
-    Actor& judge {population.get_actor(population.judge_id)};
+    Actor& judge { population.get_actor(population.judge_id) };
 
     execute_act_deque(judge);
 }
@@ -66,7 +62,7 @@ Work::add_act(const Act& act)
 void
 Work::execute_act_deque(Actor& judge)
 {
-    s32 acts_applied {0};
+    s32 acts_applied { 0 };
 
     while (!act_deque.empty() && acts_applied < ACT_COUNT_PER_FRAME)
     {
@@ -80,8 +76,8 @@ Work::execute_act_deque(Actor& judge)
 void
 Work::execute_move_act(const Act& act, Actor& judge)
 {
-    const Vec3 judge_forward {get_forward(judge.rotation)};
-    const Vec3 judge_right {get_right(judge.rotation)};
+    const Vec3 judge_forward { get_forward(judge.rotation) };
+    const Vec3 judge_right { get_right(judge.rotation) };
 
     Vec3 velocity_forward {};
     Vec3 velocity_right {};
@@ -100,7 +96,7 @@ Work::execute_move_act(const Act& act, Actor& judge)
         velocity_right = act.get_act_value().x * judge_right;
         velocity_forward = act.get_act_value().y * judge_forward_xy;
 
-        const Vec3 move_velocity {judge.speed * (velocity_right + velocity_forward).normalize()};
+        const Vec3 move_velocity { judge.speed * (velocity_right + velocity_forward).normalize() };
 
         judge.velocity.x = move_velocity.x;
         judge.velocity.y = move_velocity.y;
@@ -125,18 +121,10 @@ Work::execute_act(const Act& act, Actor& judge)
 {
     switch (act.get_act_type())
     {
-        case ActType::Move:
-            execute_move_act(act, judge);
-            break;
-        case ActType::Rotate:
-            execute_rotate_act(act, judge);
-            break;
-        case ActType::Jump:
-            execute_jump_act(act, judge);
-            break;
-        case ActType::DebugMode:
-            execute_debug_mode_act(act, judge);
-            break;
+        case ActType::Move:         execute_move_act(act, judge); break;
+        case ActType::Rotate:       execute_rotate_act(act, judge); break;
+        case ActType::Jump:         execute_jump_act(act, judge); break;
+        case ActType::DebugMode:    execute_debug_mode_act(act, judge); break;
     }
 }
 
@@ -207,9 +195,9 @@ Work::get_task_vector()
 void
 Work::execute_wander(Task& task, const f32 delta_time, Population& population)
 {
-    Actor& actor {population.get_actor(task.actor_id)};
+    Actor& actor { population.get_actor(task.actor_id) };
 
-    WanderState& wander_state {task.task_state.wander};
+    WanderState& wander_state { task.task_state.wander };
 
     if (wander_state.tick < wander_state.tick_limit)
     {
@@ -217,11 +205,11 @@ Work::execute_wander(Task& task, const f32 delta_time, Population& population)
     }
     else
     {
-        const f32 direction_angle {population.get_random().uniform(0.0f, 360.0f)};
+        const f32 direction_angle { population.get_random().uniform(0.0f, 360.0f) };
 
         const Vec2 direction {
-            cosf(to_radians(direction_angle)),
-            sinf(to_radians(direction_angle))
+            cos(to_radians(direction_angle)),
+            sin(to_radians(direction_angle))
         };
 
         actor.velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;

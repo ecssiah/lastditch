@@ -68,7 +68,7 @@ Control::queue_move_act(const Platform& platform, State& state)
         act_value.z -= 1.0f;
     }
 
-    const Act move_act{ActType::Move, act_value};
+    const Act move_act { ActType::Move, act_value };
 
     state.population.add_act(move_act);
 }
@@ -82,7 +82,7 @@ Control::queue_rotate_act(const Platform& platform, State& state)
         0.0f,
     };
 
-    const Act rotate_act {ActType::Rotate, act_value};
+    const Act rotate_act { ActType::Rotate, act_value };
 
     state.population.add_act(rotate_act);
 }
@@ -90,7 +90,9 @@ Control::queue_rotate_act(const Platform& platform, State& state)
 void
 Control::queue_jump_act(const Platform& platform, State& state)
 {
-    const Act jump_act {ActType::Jump, {}};
+    const Vec3 act_value {};
+
+    const Act jump_act { ActType::Jump, act_value };
 
     state.population.add_act(jump_act);
 }
@@ -98,7 +100,9 @@ Control::queue_jump_act(const Platform& platform, State& state)
 void
 Control::queue_debug_mode_act(const Platform& platform, State& state)
 {
-    const Act debug_act {ActType::DebugMode, {}};
+    const Vec3 act_value {};
+
+    const Act debug_act { ActType::DebugMode, act_value };
 
     state.population.add_act(debug_act);
 }

@@ -8,10 +8,10 @@
 
 using namespace std;
 
-constexpr s32 WINDOW_WIDTH {1024};
-constexpr s32 WINDOW_HEIGHT {768};
+constexpr s32 WINDOW_WIDTH { 1024 };
+constexpr s32 WINDOW_HEIGHT { 768 };
 
-constexpr f32 WINDOW_ASPECT_RATIO {static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT)};
+constexpr f32 WINDOW_ASPECT_RATIO { static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT) };
 
 #define FOR_LIST_BUTTON(DO)                                                          \
     DO(None)                                                                            \
@@ -28,7 +28,10 @@ constexpr f32 WINDOW_ASPECT_RATIO {static_cast<f32>(WINDOW_WIDTH) / static_cast<
     DO(Q)                                                                               \
     DO(W)                                                                               \
 
-constexpr s32 BUTTON_COUNT {0 FOR_LIST_BUTTON(DEFINE_ENUM_COUNT)};
+constexpr s32 BUTTON_COUNT
+{
+    FOR_LIST_BUTTON(DEFINE_ENUM_COUNT)
+};
 
 enum class Button : u8
 {
@@ -37,15 +40,43 @@ enum class Button : u8
 
 class Platform
 {
+public:
+    Platform();
+
+    void quit();
+
+    void begin_frame();
+    [[nodiscard]] b32 end_frame() const;
+
+    [[nodiscard]] f32 get_delta_time() const;
+
+    [[nodiscard]] pair<s32, s32> get_framebuffer_size() const;
+
+    [[nodiscard]] b32 button_is_down(Button button) const;
+    [[nodiscard]] b32 button_is_pressed(Button button) const;
+    [[nodiscard]] b32 button_is_released(Button button) const;
+
+    f64 pointer_delta_x {};
+    f64 pointer_delta_y {};
+
+private:
+    void init_glfw();
+    void init_buttons();
+
+    void update_buttons();
+    void update_pointer();
+
+    void update_time();
+
     f64 time_current {};
     f64 time_previous {};
 
     f32 delta_time {};
 
-    s32 window_width {WINDOW_WIDTH};
-    s32 window_height {WINDOW_HEIGHT};
+    s32 window_width { WINDOW_WIDTH };
+    s32 window_height { WINDOW_HEIGHT };
 
-    f32 aspect_ratio {WINDOW_ASPECT_RATIO};
+    f32 aspect_ratio { WINDOW_ASPECT_RATIO };
 
     GLFWwindow* glfw_window {};
 
@@ -61,33 +92,7 @@ class Platform
     f64 pointer_previous_x {};
     f64 pointer_previous_y {};
 
-    b32 ignore_delta {true};
-
-    void init_glfw();
-    void init_buttons();
-
-    void update_buttons();
-    void update_pointer();
-
-    void update_time();
-
-public:
-    Platform();
-
-    void begin_frame();
-    [[nodiscard]] b32 end_frame() const;
-    void quit();
-
-    [[nodiscard]] f32 get_delta_time() const;
-
-    [[nodiscard]] pair<s32, s32> get_framebuffer_size() const;
-
-    [[nodiscard]] b32 button_is_down(Button button) const;
-    [[nodiscard]] b32 button_is_pressed(Button button) const;
-    [[nodiscard]] b32 button_is_released(Button button) const;
-
-    f64 pointer_delta_x {};
-    f64 pointer_delta_y {};
+    b32 ignore_delta { true };
 };
 
 

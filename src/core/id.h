@@ -5,9 +5,11 @@
 class IdGenerator
 {
 public:
-    [[nodiscard]]
-    s32 next() { return next_id_++; }
+    [[nodiscard]] s32 next()
+    {
+        return next_id++;
+    }
 
 private:
-    s32 next_id_ {0};
+    s32 next_id { 0 };
 };

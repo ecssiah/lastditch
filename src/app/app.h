@@ -11,7 +11,7 @@ public:
     void update();
     void quit();
 
-    b32 active {true};
+    b32 active { true };
 
 private:
     Platform platform {};

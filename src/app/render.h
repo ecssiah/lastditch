@@ -13,12 +13,12 @@
 
 constexpr f32 CLEAR_COLOR[4] { 0.1f, 0.2f, 0.3f, 1.0f };
 
-constexpr s32 BLOCK_TEXTURE_SIZE {64};
-constexpr s32 ACTOR_TEXTURE_SIZE {128};
+constexpr s32 BLOCK_TEXTURE_SIZE { 64 };
+constexpr s32 ACTOR_TEXTURE_SIZE { 128 };
 
-constexpr s32 FACE_COUNT_PER_VOXEL {6};
-constexpr s32 VERTEX_COUNT_PER_FACE {4};
-constexpr std::array VERTEX_INDEX_ARRAY {0, 1, 2, 0, 2, 3};
+constexpr s32 FACE_COUNT_PER_VOXEL { 6 };
+constexpr s32 VERTEX_COUNT_PER_FACE { 4 };
+constexpr std::array VERTEX_INDEX_ARRAY { 0, 1, 2, 0, 2, 3 };
 
 extern const IVec3 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE];
 extern const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL];
@@ -187,8 +187,7 @@ private:
     void load_block_texture_directory();
     void load_actor_texture_directory();
 
-    [[nodiscard]]
-    ModelGpuData load_model_gpu_data(const Actor& actor) const;
+    [[nodiscard]] ModelGpuData load_model_gpu_data(const Actor& actor) const;
 
     static void init_glad(const Platform& platform);
 

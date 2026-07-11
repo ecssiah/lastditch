@@ -2,17 +2,9 @@
 
 #include <algorithm>
 #include <cmath>
-
-#include "core/types.h"
 #include "app/actor.h"
 #include "app/world.h"
-
-Physics::Physics()
-    :
-    gravity{0, 0, GRAVITY_CONSTANT}
-{
-
-}
+#include "core/types.h"
 
 void
 Physics::update_actor(World& world, Actor& actor, const f32 delta_time)
@@ -29,11 +21,11 @@ Physics::update_actor(World& world, Actor& actor, const f32 delta_time)
 Bounds3
 Physics::get_box_collider_bounds(const BoxCollider& box_collider, const Vec3& position)
 {
-    constexpr f32 world_size {WORLD_SIZE_IN_CELLS};
+    constexpr f32 world_size { WORLD_SIZE_IN_CELLS };
     
     return {
-        max(position - box_collider.radius, Vec3{0.0f}),
-        min(position + box_collider.radius, Vec3{world_size}),
+        max(position - box_collider.radius, Vec3{ 0.0f }),
+        min(position + box_collider.radius, Vec3{ world_size }),
     };
 }
 
@@ -62,7 +54,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
         return;
     }
 
-    Bounds3 actor_bounds {get_box_collider_bounds(actor.box_collider, actor.position)};
+    Bounds3 actor_bounds { get_box_collider_bounds(actor.box_collider, actor.position) };
     Bounds3 swept_bounds {};
     
     for (s32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
@@ -78,25 +70,25 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
         );
     }
 
-    const IBounds3 grid_overlap_bounds {get_grid_overlap_of_bounds(swept_bounds)};
+    const IBounds3 grid_overlap_bounds { get_grid_overlap_of_bounds(swept_bounds) };
 
-    const s32 axis_index {static_cast<s32>(axis)};
+    const s32 axis_index { static_cast<s32>(axis) };
 
-    const f32 actor_min_prev {actor_bounds.min[axis_index]};
-    const f32 actor_max_prev {actor_bounds.max[axis_index]};
+    const f32 actor_min_prev { actor_bounds.min[axis_index] };
+    const f32 actor_max_prev { actor_bounds.max[axis_index] };
 
-    const f32 actor_min_next {actor_min_prev + step_delta_time * actor.velocity[axis_index]};
-    const f32 actor_max_next {actor_max_prev + step_delta_time * actor.velocity[axis_index]};
+    const f32 actor_min_next { actor_min_prev + step_delta_time * actor.velocity[axis_index] };
+    const f32 actor_max_next { actor_max_prev + step_delta_time * actor.velocity[axis_index] };
 
-    const s32 axis_s {(axis_index + 1) % AXIS_COUNT};
-    const s32 axis_t {(axis_index + 2) % AXIS_COUNT};
+    const s32 axis_s { (axis_index + 1) % AXIS_COUNT };
+    const s32 axis_t { (axis_index + 2) % AXIS_COUNT };
 
-    b32 found {false};
-    f32 best {actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY};
+    b32 found { false };
+    f32 best { actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY };
 
-    constexpr s32 axis_z_index {static_cast<s32>(Axis::Z)};
-    constexpr s32 axis_y_index {static_cast<s32>(Axis::Y)};
-    constexpr s32 axis_x_index {static_cast<s32>(Axis::X)};
+    constexpr s32 axis_z_index { static_cast<s32>(Axis::Z) };
+    constexpr s32 axis_y_index { static_cast<s32>(Axis::Y) };
+    constexpr s32 axis_x_index { static_cast<s32>(Axis::X) };
     
     for (s32 z = grid_overlap_bounds.min[axis_z_index]; z <= grid_overlap_bounds.max[axis_z_index]; ++z) 
     {
@@ -104,28 +96,28 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
         {
             for (s32 x = grid_overlap_bounds.min[axis_x_index]; x <= grid_overlap_bounds.max[axis_x_index]; ++x) 
             {
-                const IVec3 cell_coordinate {x, y, z};
+                const IVec3 cell_coordinate { x, y, z };
 
                 if (!World::cell_coordinate_is_valid(x, y, z))
                 {
                     continue;
                 }
 
-                const Cell& cell {world.get_cell(x, y, z)};
+                const Cell& cell { world.get_cell(x, y, z) };
 
                 if (cell.block_type == BlockType::None)
                 {
                     continue;
                 }
 
-                const f32 cell_s {static_cast<f32>(cell_coordinate[axis_s])};
+                const f32 cell_s { static_cast<f32>(cell_coordinate[axis_s]) };
 
                 if (actor_bounds.max[axis_s] <= cell_s || actor_bounds.min[axis_s] >= cell_s + 1.0f)
                 {
                     continue;
                 }
 
-                const f32 cell_t {static_cast<f32>(cell_coordinate[axis_t])};
+                const f32 cell_t { static_cast<f32>(cell_coordinate[axis_t]) };
 
                 if (actor_bounds.max[axis_t] <= cell_t || actor_bounds.min[axis_t] >= cell_t + 1.0f)
                 {
@@ -134,7 +126,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
 
                 if (actor.velocity[axis_index] > 0)
                 {
-                    const f32 block_min {static_cast<f32>(cell_coordinate[axis_index])};
+                    const f32 block_min { static_cast<f32>(cell_coordinate[axis_index]) };
 
                     if (block_min >= actor_max_prev && block_min <= actor_max_next && block_min < best) 
                     {
@@ -144,7 +136,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
                 }
                 else
                 {
-                    const f32 block_max {static_cast<f32>(cell_coordinate[axis_index]) + 1.0f};
+                    const f32 block_max { static_cast<f32>(cell_coordinate[axis_index]) + 1.0f };
 
                     if (block_max <= actor_min_prev && block_max >= actor_min_next && block_max > best) 
                     {
@@ -187,7 +179,7 @@ Physics::integrate(World& world, Actor& actor, const f32 delta_time)
 
     if (actor.movement_type == MovementType::Ground)
     {
-        constexpr s32 axis_index {static_cast<s32>(Axis::Z)};
+        constexpr s32 axis_index { static_cast<s32>(Axis::Z) };
         
         const f32 dz {
             actor.velocity[axis_index] <= 0.0f
@@ -210,16 +202,16 @@ Physics::integrate(World& world, Actor& actor, const f32 delta_time)
             abs(delta_time * actor.velocity.z),
         };
 
-        const f32 max_move {max({move.x, move.y, move.z})};
+        const f32 max_move { max({move.x, move.y, move.z}) };
 
-        s32 step_count {static_cast<s32>(ceil(max_move))};
+        s32 step_count { static_cast<s32>(ceil(max_move)) };
         
         if (step_count < 1)
         {
             step_count = 1;
         }
 
-        const f32 step_delta_time {delta_time / static_cast<f32>(step_count)};
+        const f32 step_delta_time { delta_time / static_cast<f32>(step_count) };
 
         for (s32 step_index = 0; step_index < step_count; ++step_index)
         {
@@ -230,7 +222,7 @@ Physics::integrate(World& world, Actor& actor, const f32 delta_time)
     }
     else
     {
-        const Vec3 displacement {delta_time * actor.velocity};
+        const Vec3 displacement { delta_time * actor.velocity };
 
         actor.position = actor.position + displacement;
     }

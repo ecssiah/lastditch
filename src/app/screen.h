@@ -18,16 +18,16 @@ private:
     void draw_text(const string& text, f32 x, f32 y);
     void draw_debug_info(const Population& population);
 
-    GLuint program_id;
+    GLuint program_id {};
 
-    GLuint vao_id;
-    GLuint vbo_id;
+    GLuint vao_id {};
+    GLuint vbo_id {};
 
-    GLuint font_texture_id;
+    GLuint font_texture_id {};
 
-    GLint u_font_texture_sampler_location;
+    GLint u_font_texture_sampler_location {};
 
-    GLint u_projection_location;
+    GLint u_projection_location {};
 };
 
 

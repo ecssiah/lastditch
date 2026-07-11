@@ -13,23 +13,31 @@
 void
 Screen::load_textures(const string& textures_path)
 {
-    const string font_path = format("{}/null_terminator.png", textures_path);
+    const string font_path { format("{}/null_terminator.png", textures_path) };
 
-    s32 width;
-    s32 height;
-    s32 channels;
+    s32 width {};
+    s32 height {};
+    s32 channels {};
 
     stbi_set_flip_vertically_on_load(0);
 
-    u8* pixel_data_array = stbi_load(font_path.c_str(), &width, &height, &channels, 0);
+    u8* pixel_data_array {
+        stbi_load(
+            font_path.c_str(),
+            &width,
+            &height,
+            &channels,
+            0
+        )
+    };
 
     assert(pixel_data_array != nullptr);
 
     glGenTextures(1, &font_texture_id);
     glBindTexture(GL_TEXTURE_2D, font_texture_id);
 
-    GLint internal_format;
-    GLenum format;
+    GLint internal_format {};
+    GLenum format {};
 
     if (channels == 1)
     {
@@ -77,22 +85,22 @@ Screen::load_textures(const string& textures_path)
 }
 
 void
-Screen::draw_text(const string& text, f32 x, f32 y)
+Screen::draw_text(const string& text, const f32 x, const f32 y)
 {
-    constexpr f32 scale = 2.0f;
+    constexpr f32 scale { 2.0f };
 
-    constexpr f32 char_width = 8.0f * scale;
-    constexpr f32 char_height = 8.0f * scale;
+    constexpr f32 char_width { 8.0f * scale };
+    constexpr f32 char_height { 8.0f * scale };
 
-    constexpr f32 cell_width = 1.0f / 8.0f;
-    constexpr f32 cell_height = 1.0f / 12.0f;
+    constexpr f32 cell_width { 1.0f / 8.0f };
+    constexpr f32 cell_height { 1.0f / 12.0f };
 
-    s32 vertex_count = 0;
-    const size_t vertex_max = text.length() * 6;
+    s32 vertex_count { 0 };
+    const size_t vertex_max { text.length() * 6 };
 
-    vector<TextVertex> text_vertex_array = vector<TextVertex>(vertex_max);
+    vector<TextVertex> text_vertex_array { vertex_max };
 
-    f32 cursor_x = x;
+    f32 cursor_x { x };
 
     for (const char text_char : text)
     {
@@ -102,29 +110,29 @@ Screen::draw_text(const string& text, f32 x, f32 y)
             continue;
         }
 
-        const s32 ascii_value = text_char - 32;
+        const s32 ascii_value { text_char - 32 };
 
-        const s32 texture_col = ascii_value % 8;
-        const s32 texture_row = ascii_value / 8;
+        const s32 texture_col { ascii_value % 8 };
+        const s32 texture_row { ascii_value / 8 };
 
-        const f32 u0 = static_cast<float>(texture_col) * cell_width;
-        const f32 v0 = static_cast<float>(texture_row) * cell_height;
+        const f32 u0 { static_cast<float>(texture_col) * cell_width };
+        const f32 v0 { static_cast<float>(texture_row) * cell_height };
 
-        const f32 u1 = u0 + cell_width;
-        const f32 v1 = v0 + cell_height;
+        const f32 u1 { u0 + cell_width };
+        const f32 v1 { v0 + cell_height };
 
-        const f32 x0 = cursor_x;
-        const f32 y0 = y;
-        const f32 x1 = cursor_x + char_width;
-        const f32 y1 = y + char_height;
+        const f32 x0 { cursor_x };
+        const f32 y0 { y };
+        const f32 x1 { cursor_x + char_width };
+        const f32 y1 { y + char_height };
 
-        const TextVertex text_vertex0 = {{x0, y0}, {u0, v0}};
-        const TextVertex text_vertex1 = {{x1, y0}, {u1, v0}};
-        const TextVertex text_vertex2 = {{x1, y1}, {u1, v1}};
+        const TextVertex text_vertex0 { { x0, y0 }, { u0, v0 } };
+        const TextVertex text_vertex1 { { x1, y0 }, { u1, v0 } };
+        const TextVertex text_vertex2 { { x1, y1 }, { u1, v1 } };
 
-        const TextVertex text_vertex3 = {{x0, y0}, {u0, v0}};
-        const TextVertex text_vertex4 = {{x1, y1}, {u1, v1}};
-        const TextVertex text_vertex5 = {{x0, y1}, {u0, v1}};
+        const TextVertex text_vertex3 { { x0, y0 }, { u0, v0 } };
+        const TextVertex text_vertex4 { { x1, y1 }, { u1, v1 } };
+        const TextVertex text_vertex5 { { x0, y1 }, { u0, v1 } };
 
         text_vertex_array[vertex_count++] = text_vertex0;
         text_vertex_array[vertex_count++] = text_vertex1;
@@ -152,8 +160,8 @@ Screen::draw_text(const string& text, f32 x, f32 y)
 void 
 Screen::init(const Platform& platform)
 {
-    const GLuint vert_shader = Render::compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert");
-    const GLuint frag_shader = Render::compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag");
+    const GLuint vert_shader { Render::compile_shader(GL_VERTEX_SHADER, "assets/shaders/text.vert") };
+    const GLuint frag_shader { Render::compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/text.frag") };
 
     program_id = glCreateProgram();
 
@@ -170,14 +178,16 @@ Screen::init(const Platform& platform)
 
     u_projection_location = glGetUniformLocation(program_id, "u_projection_matrix");
 
-    const auto [framebuffer_width, framebuffer_height] = platform.get_framebuffer_size();
+    const auto [framebuffer_width, framebuffer_height] { platform.get_framebuffer_size() };
 
-    const Mat4 shell_projection_matrix = get_orthographic_matrix(
-        {0.0f, 0.0f}, 
-        {static_cast<f32>(framebuffer_width), static_cast<f32>(framebuffer_height)},
-        -1.0f, 
-        1.0f
-    );
+    const Mat4 shell_projection_matrix {
+        get_orthographic_matrix(
+            { 0.0f, 0.0f },
+            { static_cast<f32>(framebuffer_width),static_cast<f32>(framebuffer_height) },
+            -1.0f,
+            1.0f
+        )
+    };
     
     glUniformMatrix4fv(
         u_projection_location,
@@ -225,10 +235,15 @@ Screen::init(const Platform& platform)
 void
 Screen::draw_debug_info(const Population& population)
 {
-    const Actor& judge {population.get_actor(population.judge_id)};
+    const Actor& judge { population.get_actor(population.judge_id) };
 
-    const IVec3 cell_coordinate {World::position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z)};
-    const IVec2 sector_coordinate {World::cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y)};
+    const IVec3 cell_coordinate {
+        World::position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z)
+    };
+
+    const IVec2 sector_coordinate {
+        World::cell_coordinate_to_sector_coordinate(cell_coordinate.x, cell_coordinate.y)
+    };
 
     const string position_text {
         format(
@@ -248,9 +263,9 @@ Screen::draw_debug_info(const Population& population)
         )
     };
     
-    string cell_coordinate_text {"CEL - - -"};
-    string sector_coordinate_text {"SEC - -"};
-    string floor_text {"FLR -"};
+    string cell_coordinate_text { "CEL - - -" };
+    string sector_coordinate_text { "SEC - -" };
+    string floor_text { "FLR -" };
     string movement_type_text {};
     
     if (World::cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
@@ -276,7 +291,7 @@ Screen::draw_debug_info(const Population& population)
 
     if (cell_coordinate.z >= 0)
     {
-        const s32 floor_number {World::get_floor(cell_coordinate.z)};
+        const s32 floor_number { World::get_floor(cell_coordinate.z) };
         
         if (floor_number < FLOOR_COUNT)
         {
@@ -293,12 +308,8 @@ Screen::draw_debug_info(const Population& population)
 
     switch (judge.movement_type)
     {
-    case MovementType::Ground: 
-        movement_type_text = "MOV Ground";
-        break;
-    case MovementType::Debug: 
-        movement_type_text = "MOV Debug";
-        break;
+    case MovementType::Ground:  movement_type_text = "MOV Ground"; break;
+    case MovementType::Debug:   movement_type_text = "MOV Debug"; break;
     }
 
     draw_text(position_text, 20, 20);
