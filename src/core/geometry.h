@@ -312,7 +312,7 @@ class Bounds2
 public:
     Bounds2() = default;
     Bounds2(const Vec2& min, const Vec2& max);
-    Bounds2(const IBounds2& bounds);
+    explicit Bounds2(const IBounds2& bounds);
 
     Vec2 min {};
     Vec2 max {};
@@ -323,7 +323,7 @@ class Bounds3
 public:
     Bounds3() = default;
     Bounds3(const Vec3& min, const Vec3& max);
-    Bounds3(const IBounds3& bounds);
+    explicit Bounds3(const IBounds3& bounds);
 
     Vec3 min {};
     Vec3 max {};

@@ -60,19 +60,20 @@ Debug::init(const World& world)
 
         for (const Area& area : floor_area_vector)
         {
-            const Vec3 area_min {
-                static_cast<f32>(area.bounds.min.x),
-                static_cast<f32>(area.bounds.min.y),
-                static_cast<f32>(area.floor_number * FLOOR_SIZE_Z)
+            const IBounds3 area_bounds {
+                {
+                    area.bounds.min.x,
+                    area.bounds.min.y,
+                    area.floor_number * FLOOR_SIZE_Z
+                },
+                {
+                    area.bounds.max.x,
+                    area.bounds.max.y,
+                    area.floor_number * FLOOR_SIZE_Z + 2
+                },
             };
 
-            const Vec3 area_max {
-                static_cast<f32>(area.bounds.max.x),
-                static_cast<f32>(area.bounds.max.y),
-                static_cast<f32>(area.floor_number * FLOOR_SIZE_Z) + 2.0f
-            };
-
-            add_box(area_min, area_max, COLOR_RED);
+            add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, COLOR_RED);
 
             for (const s32 edge_id : area.edge_id_vector)
             {
@@ -80,18 +81,9 @@ Debug::init(const World& world)
 
                 for (const Door& door : edge.door_vector)
                 {
-                    if (edge.axis == Axis::X)
-                    {
-                        const Bounds3 door_bounds { Door::get_bounds(edge, door) };
+                    const Bounds3 door_bounds { Door::get_bounds(edge, door) };
 
-                        add_box(door_bounds.min, door_bounds.max, COLOR_CYAN);
-                    }
-                    else if (edge.axis == Axis::Y)
-                    {
-                        const Bounds3 door_bounds { Door::get_bounds(edge, door) };
-
-                        add_box(door_bounds.min, door_bounds.max, COLOR_CYAN);
-                    }
+                    add_box(door_bounds.min, door_bounds.max, COLOR_CYAN);
                 }
             }
         }

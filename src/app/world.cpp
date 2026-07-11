@@ -304,7 +304,7 @@ World::init()
         construct_areas(floor_number);
         construct_doors();
 
-        // place_content(floor_number);
+        place_content(floor_number);
     }
 
     set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::BearSymbol);
@@ -1757,44 +1757,28 @@ World::construct_doors()
             if (edge.axis == Axis::X)
             {
                 set_block_type_cube(
-                    door_bounds.min.x,
-                    door_bounds.min.y,
-                    door_bounds.min.z,
-                    door_bounds.size().x,
-                    door_bounds.size().y,
-                    door_bounds.size().z,
+                    door_bounds.min.x, door_bounds.min.y, door_bounds.min.z,
+                    door_bounds.size().x, door_bounds.size().y, door_bounds.size().z,
                     BlockType::Metal3
                 );
 
                 set_block_type_cube(
-                    door_bounds.min.x + 1,
-                    door_bounds.min.y,
-                    door_bounds.min.z,
-                    door_bounds.size().x - 2,
-                    door_bounds.size().y + 0,
-                    door_bounds.size().z - 1,
+                    door_bounds.min.x + 1, door_bounds.min.y, door_bounds.min.z,
+                    door_bounds.size().x - 2, door_bounds.size().y + 0, door_bounds.size().z - 1,
                     BlockType::None
                 );
             }
             else if (edge.axis == Axis::Y)
             {
                 set_block_type_cube(
-                    door_bounds.min.x,
-                    door_bounds.min.y,
-                    door_bounds.min.z,
-                    door_bounds.size().x,
-                    door_bounds.size().y,
-                    door_bounds.size().z,
+                    door_bounds.min.x, door_bounds.min.y, door_bounds.min.z,
+                    door_bounds.size().x, door_bounds.size().y, door_bounds.size().z,
                     BlockType::Metal3
                 );
 
                 set_block_type_cube(
-                    door_bounds.min.x,
-                    door_bounds.min.y + 1,
-                    door_bounds.min.z,
-                    door_bounds.size().x + 0,
-                    door_bounds.size().y - 2,
-                    door_bounds.size().z - 1,
+                    door_bounds.min.x, door_bounds.min.y + 1, door_bounds.min.z,
+                    door_bounds.size().x + 0, door_bounds.size().y - 2, door_bounds.size().z - 1,
                     BlockType::None
                 );
             }
