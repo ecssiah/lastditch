@@ -87,7 +87,7 @@ Debug::init(const World& world)
                     };
 
                     const Vec3 edge_debug_min {Vec3{door_position}};
-                    const Vec3 edge_debug_max {Vec3{door_position} + Vec3{1.0f, 2.0f, 1.0f}};
+                    const Vec3 edge_debug_max {Vec3{door_position + IVec3{door.width, 2, door.height}}};
 
                     add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
                 }
@@ -100,7 +100,7 @@ Debug::init(const World& world)
                     };
 
                     const Vec3 edge_debug_min {Vec3{door_position}};
-                    const Vec3 edge_debug_max {Vec3{door_position} + Vec3{2.0f, 1.0f, 1.0f}};
+                    const Vec3 edge_debug_max {Vec3{door_position + IVec3{2, door.width, door.height}}};
 
                     add_box(edge_debug_min, edge_debug_max, COLOR_GREEN);
                 }

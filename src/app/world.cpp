@@ -1816,9 +1816,9 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
         if (overlap_y_min < overlap_y_max)
         {
-            const s32 boundary_x {area_left.bounds.max.x};
-
             edge.axis = Axis::Y;
+
+            const s32 boundary_x {area_left.bounds.max.x};
 
             edge.bounds.min.x = boundary_x - 1;
             edge.bounds.min.y = overlap_y_min;
@@ -1834,9 +1834,9 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
         if (overlap_y_min < overlap_y_max)
         {
-            const s32 boundary_x {area_left.bounds.min.x};
-
             edge.axis = Axis::Y;
+
+            const s32 boundary_x {area_left.bounds.min.x};
 
             edge.bounds.min.x = boundary_x - 1;
             edge.bounds.min.y = overlap_y_min;
@@ -1852,9 +1852,9 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
         if (overlap_x_min < overlap_x_max)
         {
-            const s32 boundary_y {area_left.bounds.max.y};
-
             edge.axis = Axis::X;
+
+            const s32 boundary_y {area_left.bounds.max.y};
 
             edge.bounds.min.x = overlap_x_min;
             edge.bounds.min.y = boundary_y - 1;
@@ -1870,9 +1870,9 @@ World::get_edge(const Area& area_left, const Area& area_right)
 
         if (overlap_x_min < overlap_x_max)
         {
-            const s32 boundary_y {area_left.bounds.min.y};
-
             edge.axis = Axis::X;
+
+            const s32 boundary_y {area_left.bounds.min.y};
 
             edge.bounds.min.x = overlap_x_min;
             edge.bounds.min.y = boundary_y - 1;
@@ -1918,22 +1918,25 @@ World::calculate_edges(const s32 floor_number)
                 left_area.edge_id_vector.push_back(edge.id);
                 right_area.edge_id_vector.push_back(edge.id);
 
-                if (edge.axis == Axis::X && edge.bounds.size().x > 5)
+                constexpr s32 door_width {3};
+                constexpr s32 door_height {3};
+
+                if (edge.axis == Axis::X && edge.bounds.size().x > door_width + 2)
                 {
                     const Door door {
-                        .offset = edge.bounds.size().x / 2,
-                        .width = 3,
-                        .height = 3,
+                        .offset = edge.bounds.size().x / 2 - door_width / 2,
+                        .width = door_width,
+                        .height = door_height,
                     };
 
                     edge.door_vector.push_back(door);
                 }
-                else if (edge.axis == Axis::Y && edge.bounds.size().y > 5)
+                else if (edge.axis == Axis::Y && edge.bounds.size().y > door_width + 2)
                 {
                     const Door door {
-                        .offset = edge.bounds.size().y / 2,
-                        .width = 3,
-                        .height = 3,
+                        .offset = edge.bounds.size().y / 2 - door_width / 2,
+                        .width = door_width,
+                        .height = door_height,
                     };
 
                     edge.door_vector.push_back(door);
