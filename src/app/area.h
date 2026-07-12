@@ -29,28 +29,12 @@ constexpr s32 AREA_TYPE_COUNT
     FOR_LIST_AREA_TYPE(DEFINE_ENUM_COUNT)
 };
 
-class Edge;
-
 class Door
 {
 public:
-    static IBounds3 get_bounds(const Edge& edge, const Door& door);
-
     s32 offset {};
     s32 width {};
     s32 height {};
-};
-
-class Area
-{
-public:
-    s32 id { -1 };
-
-    AreaType area_type { AreaType::Open };
-    s32 floor_number { 0 };
-    IBounds2 bounds {};
-
-    std::vector<s32> edge_id_vector {};
 };
 
 class Edge
@@ -67,3 +51,16 @@ public:
     std::vector<Door> door_vector {};
 };
 
+class Area
+{
+public:
+    static IBounds3 get_door_bounds(const Edge& edge, const Door& door);
+
+    s32 id { -1 };
+
+    AreaType area_type { AreaType::Open };
+    s32 floor_number { 0 };
+    IBounds2 bounds {};
+
+    std::vector<s32> edge_id_vector {};
+};

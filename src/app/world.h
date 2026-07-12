@@ -292,7 +292,7 @@ private:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
-    std::vector<std::vector<Area>> area_vector { FLOOR_COUNT };
+    std::vector<std::vector<Area>> floor_area_vector { FLOOR_COUNT };
     std::vector<Edge> edge_vector {};
 
     IdGenerator area_id_generator {};

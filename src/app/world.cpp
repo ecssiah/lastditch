@@ -501,6 +501,19 @@ World::is_clear(const s32 x, const s32 y, const s32 z, const u8 direction_mask)
     return true;
 }
 
+std::vector<Area>&
+World::get_floor_area_vector(const s32 floor_number)
+{
+    return floor_area_vector[floor_number];
+}
+
+const std::vector<Area>&
+World::get_floor_area_vector(const s32 floor_number) const
+{
+    return floor_area_vector[floor_number];
+}
+
+
 s32
 World::get_floor(const s32 z)
 {
@@ -551,18 +564,6 @@ World::get_cell(const s32 x, const s32 y, const s32 z) const
     const s32 cell_index {cell_coordinate_to_index(x, y, z)};
 
     return cell_array[cell_index];
-}
-
-vector<Area>&
-World::get_floor_area_vector(s32 floor_number)
-{
-    return area_vector[floor_number];
-}
-
-const vector<Area>&
-World::get_floor_area_vector(s32 floor_number) const
-{
-    return area_vector[floor_number];
 }
 
 vector<Edge>&
@@ -865,9 +866,9 @@ World::place_area(const Area& area)
 void
 World::place_content(const s32 floor_number)
 {
-    const vector<Area>& floor_area_vector { area_vector[floor_number] };
+    const vector<Area>& area_vector { floor_area_vector[floor_number] };
 
-    for (const Area& area : floor_area_vector)
+    for (const Area& area : area_vector)
     {
         if (area.area_type != AreaType::Room)
         {
@@ -1731,9 +1732,9 @@ World::construct_wireframe(const Area& area)
 void
 World::construct_areas(const s32 floor_number)
 {
-    const vector<Area>& floor_area_vector { area_vector[floor_number] };
+    const vector<Area>& area_vector { floor_area_vector[floor_number] };
 
-    for (const Area& area : floor_area_vector)
+    for (const Area& area : area_vector)
     {
         switch (area.area_type)
         {
@@ -1752,7 +1753,7 @@ World::construct_doors()
     {
         for (const Door& door : edge.door_vector)
         {
-            const IBounds3 door_bounds { Door::get_bounds(edge, door) };
+            const IBounds3 door_bounds { Area::get_door_bounds(edge, door) };
 
             if (edge.axis == Axis::X)
             {
@@ -1940,17 +1941,17 @@ World::calculate_edge(const Area& area_left, const Area& area_right)
 void
 World::calculate_edges(const s32 floor_number)
 {
-    vector<Area>& floor_area_vector { get_floor_area_vector(floor_number) };
+    vector<Area>& area_vector { get_floor_area_vector(floor_number) };
 
-    const s32 area_count { static_cast<s32>(floor_area_vector.size()) };
+    const s32 area_count { static_cast<s32>(area_vector.size()) };
 
     for (s32 left_index = 0; left_index < area_count; ++left_index)
     {
-        Area& left_area { floor_area_vector[left_index] };
+        Area& left_area { area_vector[left_index] };
 
         for (s32 right_index = left_index + 1; right_index < area_count; ++right_index)
         {
-            Area& right_area { floor_area_vector[right_index] };
+            Area& right_area { area_vector[right_index] };
 
             Edge edge { calculate_edge(left_area, right_area) };
 

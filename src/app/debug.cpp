@@ -81,7 +81,7 @@ Debug::init(const World& world)
 
                 for (const Door& door : edge.door_vector)
                 {
-                    const Bounds3 door_bounds { Door::get_bounds(edge, door) };
+                    const Bounds3 door_bounds { Area::get_door_bounds(edge, door) };
 
                     add_box(door_bounds.min, door_bounds.max, COLOR_CYAN);
                 }

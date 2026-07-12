@@ -1,7 +1,7 @@
 #include "area.h"
 
 IBounds3
-Door::get_bounds(const Edge &edge, const Door &door)
+Area::get_door_bounds(const Edge &edge, const Door &door)
 {
     if (edge.axis == Axis::X)
     {
