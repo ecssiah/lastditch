@@ -72,7 +72,7 @@ constexpr bool PLACE_ROOM_CONTENT { true };
 
 class Population;
 
-#define FOR_LIST_BLOCK_TYPE(DO)                                                         \
+#define FOR_LIST_BLOCK_TYPE(DO)                                                             \
     DO(None)                                                                                \
     DO(CardinalEast)                                                                        \
     DO(CardinalWest)                                                                        \

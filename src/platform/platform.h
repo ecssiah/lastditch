@@ -13,20 +13,20 @@ constexpr s32 WINDOW_HEIGHT { 768 };
 
 constexpr f32 WINDOW_ASPECT_RATIO { static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT) };
 
-#define FOR_LIST_BUTTON(DO)                                                          \
-    DO(None)                                                                            \
-    DO(A)                                                                               \
-    DO(D)                                                                               \
-    DO(E)                                                                               \
-    DO(Escape)                                                                          \
-    DO(Mouse_1)                                                                         \
-    DO(Mouse_2)                                                                         \
-    DO(Mouse_3)                                                                         \
-    DO(S)                                                                               \
-    DO(Space)                                                                           \
-    DO(Tab)                                                                             \
-    DO(Q)                                                                               \
-    DO(W)                                                                               \
+#define FOR_LIST_BUTTON(DO)                                                                         \
+    DO(None)                                                                                        \
+    DO(A)                                                                                           \
+    DO(D)                                                                                           \
+    DO(E)                                                                                           \
+    DO(Escape)                                                                                      \
+    DO(Mouse_1)                                                                                     \
+    DO(Mouse_2)                                                                                     \
+    DO(Mouse_3)                                                                                     \
+    DO(S)                                                                                           \
+    DO(Space)                                                                                       \
+    DO(Tab)                                                                                         \
+    DO(Q)                                                                                           \
+    DO(W)                                                                                           \
 
 constexpr s32 BUTTON_COUNT
 {

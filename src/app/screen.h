@@ -29,5 +29,3 @@ private:
 
     GLint u_projection_location {};
 };
-
-

@@ -4,13 +4,13 @@
 #include "core/macros.h"
 #include "core/types.h"
 
-#define FOR_LIST_DIRECTION(DO)                                                  \
-    DO(East)                                                                    \
-    DO(West)                                                                    \
-    DO(North)                                                                   \
-    DO(South)                                                                   \
-    DO(Up)                                                                      \
-    DO(Down)                                                                    \
+#define FOR_LIST_DIRECTION(DO)                                                      \
+    DO(East)                                                                        \
+    DO(West)                                                                        \
+    DO(North)                                                                       \
+    DO(South)                                                                       \
+    DO(Up)                                                                          \
+    DO(Down)                                                                        \
 
 enum class Direction : u8
 {

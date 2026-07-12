@@ -51,7 +51,7 @@ public:
     IVec3 target_position {};
 };
 
-#define FOR_LIST_TASK_TYPE(DO)                                                  \
+#define FOR_LIST_TASK_TYPE(DO)                                                      \
     DO(wander)                                                                      \
     DO(seek)                                                                        \
 

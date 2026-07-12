@@ -301,6 +301,14 @@ Mat4::rotate(const f32 angle, const Vec3& axis) const
     return *this * rotation_matrix;
 }
 
+IBounds2::IBounds2(const IVec2& min, const IVec2& max)
+    :
+    min { min },
+    max { max }
+{
+
+}
+
 IVec2
 IBounds2::position() const
 {
@@ -363,8 +371,8 @@ subtract(const IBounds2& lhs, const IBounds2& rhs)
     if (intersection_bounds.min.x > lhs.min.x)
     {
         const IBounds2 bounds {
-            .min = { lhs.min.x, lhs.min.y },
-            .max = { intersection_bounds.min.x, lhs.max.y }
+            { lhs.min.x, lhs.min.y },
+            { intersection_bounds.min.x, lhs.max.y }
         };
 
         bounds_vector.push_back(bounds);
@@ -373,8 +381,8 @@ subtract(const IBounds2& lhs, const IBounds2& rhs)
     if (intersection_bounds.max.x < lhs.max.x)
     {
         const IBounds2 bounds {
-            .min = { intersection_bounds.max.x, lhs.min.y },
-            .max = { lhs.max.x, lhs.max.y}
+            { intersection_bounds.max.x, lhs.min.y },
+            { lhs.max.x, lhs.max.y}
         };
 
         bounds_vector.push_back(bounds);
@@ -383,8 +391,8 @@ subtract(const IBounds2& lhs, const IBounds2& rhs)
     if (intersection_bounds.min.y > lhs.min.y)
     {
         const IBounds2 bounds {
-            .min = { intersection_bounds.min.x, lhs.min.y },
-            .max = { intersection_bounds.max.x, intersection_bounds.min.y }
+            { intersection_bounds.min.x, lhs.min.y },
+            { intersection_bounds.max.x, intersection_bounds.min.y }
         };
 
         bounds_vector.push_back(bounds);
@@ -393,8 +401,8 @@ subtract(const IBounds2& lhs, const IBounds2& rhs)
     if (intersection_bounds.max.y < lhs.max.y)
     {
         const IBounds2 bounds {
-            .min = { intersection_bounds.min.x, intersection_bounds.max.y },
-            .max = { intersection_bounds.max.x, lhs.max.y }
+            { intersection_bounds.min.x, intersection_bounds.max.y },
+            { intersection_bounds.max.x, lhs.max.y }
         };
 
         bounds_vector.push_back(bounds);
@@ -402,6 +410,15 @@ subtract(const IBounds2& lhs, const IBounds2& rhs)
 
     return bounds_vector;
 }
+
+IBounds3::IBounds3(const IVec3& min, const IVec3& max)
+    :
+    min { min },
+    max { max }
+{
+
+}
+
 
 IVec3
 IBounds3::position() const

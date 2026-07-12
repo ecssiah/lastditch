@@ -23,10 +23,7 @@ find_library(COREVIDEO_FRAMEWORK CoreVideo)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4)
 
-add_executable(
-    lastditch
-    src/lastditch.cpp
-)
+add_executable(lastditch src/lastditch.cpp)
 
 target_include_directories(
     lastditch
@@ -58,47 +55,47 @@ target_sources(
     PRIVATE
     external/glad/src/gl.c
     external/stb/src/stb_image.c
-    src/app/actor.cpp
     src/app/actor.h
+    src/app/actor.cpp
     src/app/app.h
     src/app/app.cpp
     src/app/area.h
     src/app/area.cpp
-    src/app/control.cpp
     src/app/control.h
-    src/app/debug.cpp
+    src/app/control.cpp
     src/app/debug.h
-    src/app/direction.cpp
+    src/app/debug.cpp
     src/app/direction.h
-    src/app/nation.cpp
+    src/app/direction.cpp
     src/app/nation.h
-    src/app/physics.cpp
+    src/app/nation.cpp
     src/app/physics.h
-    src/app/population.cpp
+    src/app/physics.cpp
     src/app/population.h
-    src/app/render.cpp
+    src/app/population.cpp
     src/app/render.h
-    src/app/screen.cpp
+    src/app/render.cpp
     src/app/screen.h
+    src/app/screen.cpp
     src/app/state.h
     src/app/state.cpp
     src/app/viewpoint.h
-    src/app/work.cpp
     src/app/work.h
+    src/app/work.cpp
+    src/app/world.h
     src/app/world.cpp
-    src/app/World.h
     src/core/config.h
     src/core/config.cpp
     src/core/geometry.h
     src/core/geometry.cpp
-    src/core/macros.h
     src/core/log.h
     src/core/log.cpp
+    src/core/macros.h
     src/core/random.cpp
     src/core/random.h
     src/core/types.h
-    src/platform/platform.cpp
     src/platform/platform.h
+    src/platform/platform.cpp
 )
 
 target_compile_definitions(

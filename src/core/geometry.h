@@ -8,10 +8,10 @@
 constexpr f32 EPSILON { 1e-5f };
 constexpr f32 EPSILON_SQUARED { 1e-10f };
 
-#define FOR_LIST_AXIS(DO)                                       \
-    DO(X)                                                          \
-    DO(Y)                                                          \
-    DO(Z)                                                          \
+#define FOR_LIST_AXIS(DO)                                                           \
+    DO(X)                                                                           \
+    DO(Y)                                                                           \
+    DO(Z)                                                                           \
 
 enum class Axis : u8
 {
@@ -286,8 +286,8 @@ private:
 class IBounds2
 {
 public:
-    IVec2 min {};
-    IVec2 max {};
+    IBounds2() = default;
+    IBounds2(const IVec2& min, const IVec2& max);
 
     [[nodiscard]] IVec2 position() const;
     [[nodiscard]] IVec2 size() const;
@@ -295,16 +295,22 @@ public:
     friend b32 overlaps(const IBounds2& lhs, const IBounds2& rhs);
     friend IBounds2 get_intersection(const IBounds2& lhs, const IBounds2& rhs);
     friend std::vector<IBounds2> subtract(const IBounds2& lhs, const IBounds2& rhs);
+
+    IVec2 min {};
+    IVec2 max {};
 };
 
 class IBounds3
 {
 public:
-    IVec3 min {};
-    IVec3 max {};
+    IBounds3() = default;
+    IBounds3(const IVec3& min, const IVec3& max);
 
     [[nodiscard]] IVec3 position() const;
     [[nodiscard]] IVec3 size() const;
+
+    IVec3 min {};
+    IVec3 max {};
 };
 
 class Bounds2
