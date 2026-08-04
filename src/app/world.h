@@ -285,11 +285,6 @@ private:
     Random random { WORLD_SEED };
     Physics physics {};
 
-    u64 tick_count { 0 };
-    u64 second_count { 0 };
-
-    f32 time_rate { 1.0f };
-
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
     std::vector<std::vector<Area>> floor_area_vector { FLOOR_COUNT };

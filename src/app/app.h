@@ -1,6 +1,8 @@
 #pragma once
 
-#include "app/state.h"
+#include "population.h"
+#include "render.h"
+#include "world.h"
 #include "platform/platform.h"
 
 class App
@@ -12,8 +14,13 @@ public:
     void quit();
 
     b32 active { true };
+    b32 evolving { true };
 
 private:
     Platform platform {};
-    State state {};
+
+    World world {};
+    Population population {};
+
+    Render render {};
 };

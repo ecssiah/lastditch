@@ -914,7 +914,7 @@ World::layout_roof_areas()
 {
     constexpr s32 roof_area_size { TOWER_SIZE / 8 };
 
-    vector<Area>& floor_area_vector { get_floor_area_vector(TOWER_FLOOR_COUNT) };
+    vector<Area>& area_vector { get_floor_area_vector(TOWER_FLOOR_COUNT) };
 
     for (s32 area_y = TOWER_BORDER; area_y < TOWER_SIZE + TOWER_BORDER; area_y += roof_area_size)
     {
@@ -930,7 +930,7 @@ World::layout_roof_areas()
                 }
             };
 
-            floor_area_vector.push_back(roof_area);
+            area_vector.push_back(roof_area);
         }
     }
 }

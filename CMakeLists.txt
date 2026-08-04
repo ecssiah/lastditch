@@ -78,7 +78,6 @@ target_sources(
     src/app/screen.h
     src/app/screen.cpp
     src/app/state.h
-    src/app/state.cpp
     src/app/viewpoint.h
     src/app/work.h
     src/app/work.cpp

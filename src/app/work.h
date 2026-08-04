@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <functional>
 #include <vector>
 #include "app/actor.h"
 #include "core/types.h"
@@ -88,6 +89,8 @@ public:
 class Work
 {
 public:
+    void schedule(std::function<void()> act);
+
     void update(f32 delta_time, Population& population);
 
     void add_act(const Act& act);
@@ -96,6 +99,11 @@ public:
     std::vector<Task>& get_task_vector();
 
 private:
+    u64 tick_count { 0 };
+    u64 second_count { 0 };
+
+    f32 time_rate { 1.0f };
+
     void execute_act_deque(Actor& judge);
 
     static void execute_act(const Act& act, Actor& judge);
