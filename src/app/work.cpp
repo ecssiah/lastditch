@@ -1,7 +1,5 @@
 #include "work.h"
 
-#include <random>
-
 #include "actor.h"
 #include "app.h"
 #include "population.h"
@@ -21,14 +19,14 @@ Work::update(World& world, Population& population)
 {
     ++tick_count;
 
+    Actor& judge { population.get_actor(population.judge_id) };
+
+    do_action_deque(judge);
+
     for (Actor& actor : population.get_actor_vector())
     {
         Physics::update_actor(world, actor);
     }
-
-    Actor& judge { population.get_actor(population.judge_id) };
-
-    do_action_deque(judge);
 }
 
 void
@@ -100,10 +98,11 @@ Work::do_action(const Action& action, Actor& judge)
 {
     switch (action.action_type)
     {
-        case ActionType::Move:         do_move_action(action, judge); break;
-        case ActionType::Rotate:       do_rotate_action(action, judge); break;
-        case ActionType::Jump:         do_jump_action(action, judge); break;
-        case ActionType::DebugMode:    do_debug_mode_action(action, judge); break;
+        case ActionType::Move:          do_move_action(action, judge); break;
+        case ActionType::Rotate:        do_rotate_action(action, judge); break;
+        case ActionType::Jump:          do_jump_action(action, judge); break;
+        case ActionType::DebugMode:     do_debug_mode_action(action, judge); break;
+        default:                        throw invalid_argument("invalid action type");
     }
 }
 
@@ -138,23 +137,24 @@ Work::do_debug_mode_action(const Action& action, Actor& judge)
 {
     switch (judge.movement_type)
     {
-    case MovementType::Ground:
-    {
-        judge.movement_type = MovementType::Air;
-        judge.speed = JUDGE_DEFAULT_DEBUG_SPEED;
+        case MovementType::Ground:
+        {
+            judge.movement_type = MovementType::Air;
+            judge.speed = JUDGE_DEFAULT_AIR_SPEED;
 
-        judge.box_collider.collision_enabled = false;
+            judge.box_collider.collision_enabled = false;
 
-        break;
-    }
-    case MovementType::Air:
-    {
-        judge.movement_type = MovementType::Ground;
-        judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
+            break;
+        }
+        case MovementType::Air:
+        {
+            judge.movement_type = MovementType::Ground;
+            judge.speed = JUDGE_DEFAULT_GROUND_SPEED;
 
-        judge.box_collider.collision_enabled = true;
+            judge.box_collider.collision_enabled = true;
 
-        break;
-    }
+            break;
+        }
+        default: throw invalid_argument("invalid movement type");
     }
 }

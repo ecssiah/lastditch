@@ -3,16 +3,17 @@
 #include <cmath>
 
 #include "population.h"
+#include "work.h"
 #include "platform/platform.h"
 
 void
 Control::update(const Platform& platform, Population& population, Work& work)
 {
-    queue_acts(platform, population, work);
+    queue_actions(platform, population, work);
 }
 
 void
-Control::queue_acts(const Platform& platform, Population& population, Work& work)
+Control::queue_actions(const Platform& platform, Population& population, Work& work)
 {
     queue_move_action(platform, population, work);
 

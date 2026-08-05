@@ -12,7 +12,7 @@ constexpr f32 AGENT_DEFAULT_JUMP_SPEED { 28.0f };
 
 constexpr f32 JUDGE_DEFAULT_GROUND_SPEED { 12.0f };
 constexpr f32 JUDGE_DEFAULT_JUMP_SPEED { 36.0f };
-constexpr f32 JUDGE_DEFAULT_DEBUG_SPEED { 32.0f };
+constexpr f32 JUDGE_DEFAULT_AIR_SPEED { 32.0f };
 
 constexpr f32 CAMERA_SENSITIVITY_X { 0.22f };
 constexpr f32 CAMERA_SENSITIVITY_Y { 0.22f };
