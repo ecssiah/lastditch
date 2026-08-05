@@ -133,20 +133,6 @@ Population::init_agents(Work& work)
 
             actor_vector.push_back(agent);
 
-            const TaskState task_state {
-                random.uniform(0, 500),
-                500
-            };
-
-            const Task task {
-                .id = task_id_generator.next(),
-                .actor_id = agent.id,
-                .task_type = TaskType::Wander,
-                .task_state = task_state,
-            };
-
-            work.add_task(task);
-
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",
                 get_nation_type_string(nation_type),

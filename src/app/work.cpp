@@ -16,27 +16,6 @@ Action::Action(const ActionType action_type, const Vec3 action_value)
 
 }
 
-TaskState::TaskState()
-    :
-    wander {}
-{
-
-}
-
-TaskState::TaskState(const s32 tick, const s32 tick_limit)
-    :
-    wander { tick, tick_limit }
-{
-
-}
-
-TaskState::TaskState(const IVec3& target_position)
-    :
-    seek { target_position }
-{
-
-}
-
 void
 Work::update(World& world, Population& population)
 {
@@ -47,19 +26,9 @@ Work::update(World& world, Population& population)
         Physics::update_actor(world, actor);
     }
 
-    for (Task& task : task_vector)
-    {
-        switch (task.task_type)
-        {
-            case TaskType::Wander:  execute_wander(task, population); break;
-            case TaskType::Seek:    execute_seek(task, population); break;
-            default: break;
-        }
-    }
-
     Actor& judge { population.get_actor(population.judge_id) };
 
-    execute_action_deque(judge);
+    do_action_deque(judge);
 }
 
 void
@@ -69,13 +38,13 @@ Work::add_action(const Action& action)
 }
 
 void
-Work::execute_action_deque(Actor& judge)
+Work::do_action_deque(Actor& judge)
 {
     s32 acts_applied { 0 };
 
     while (!action_deque.empty() && acts_applied < ACTION_COUNT_PER_FRAME)
     {
-        execute_action(action_deque.front(), judge);
+        do_action(action_deque.front(), judge);
         action_deque.pop_front();
 
         ++acts_applied;
@@ -83,7 +52,7 @@ Work::execute_action_deque(Actor& judge)
 }
 
 void
-Work::execute_move_action(const Action& action, Actor& judge)
+Work::do_move_action(const Action& action, Actor& judge)
 {
     const Vec3 judge_forward { get_forward(judge.rotation) };
     const Vec3 judge_right { get_right(judge.rotation) };
@@ -94,51 +63,52 @@ Work::execute_move_action(const Action& action, Actor& judge)
 
     switch (judge.movement_type)
     {
-    case MovementType::Ground:
-    {
-        const Vec3 judge_forward_xy {
-            judge_forward.x,
-            judge_forward.y,
-            0.0f
-        };
+        case MovementType::Ground:
+        {
+            const Vec3 judge_forward_xy {
+                judge_forward.x,
+                judge_forward.y,
+                0.0f
+            };
 
-        velocity_right = action.action_value.x * judge_right;
-        velocity_forward = action.action_value.y * judge_forward_xy;
+            velocity_right = action.action_value.x * judge_right;
+            velocity_forward = action.action_value.y * judge_forward_xy;
 
-        const Vec3 move_velocity { judge.speed * (velocity_right + velocity_forward).normalize() };
+            const Vec3 move_velocity { judge.speed * (velocity_right + velocity_forward).normalize() };
 
-        judge.velocity.x = move_velocity.x;
-        judge.velocity.y = move_velocity.y;
+            judge.velocity.x = move_velocity.x;
+            judge.velocity.y = move_velocity.y;
 
-        break;
-    }
-    case MovementType::Air:
-    {
-        velocity_right = action.action_value.x * judge_right;
-        velocity_forward = action.action_value.y * judge_forward;
-        velocity_up = action.action_value.z * Vec3::unit_z();
+            break;
+        }
+        case MovementType::Air:
+        {
+            velocity_right = action.action_value.x * judge_right;
+            velocity_forward = action.action_value.y * judge_forward;
+            velocity_up = action.action_value.z * Vec3::unit_z();
 
-        judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
+            judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
 
-        break;
-    }
+            break;
+        }
+        default: throw invalid_argument("invalid movement type");
     }
 }
 
 void
-Work::execute_action(const Action& action, Actor& judge)
+Work::do_action(const Action& action, Actor& judge)
 {
     switch (action.action_type)
     {
-        case ActionType::Move:         execute_move_action(action, judge); break;
-        case ActionType::Rotate:       execute_rotate_action(action, judge); break;
-        case ActionType::Jump:         execute_jump_action(action, judge); break;
-        case ActionType::DebugMode:    execute_debug_mode_action(action, judge); break;
+        case ActionType::Move:         do_move_action(action, judge); break;
+        case ActionType::Rotate:       do_rotate_action(action, judge); break;
+        case ActionType::Jump:         do_jump_action(action, judge); break;
+        case ActionType::DebugMode:    do_debug_mode_action(action, judge); break;
     }
 }
 
 void
-Work::execute_rotate_action(const Action& action, Actor& judge)
+Work::do_rotate_action(const Action& action, Actor& judge)
 {
     judge.rotation.z -= CAMERA_SENSITIVITY_X * action.action_value.x;
     judge.rotation.x -= CAMERA_SENSITIVITY_Y * action.action_value.y;
@@ -155,7 +125,7 @@ Work::execute_rotate_action(const Action& action, Actor& judge)
 }
 
 void
-Work::execute_jump_action(const Action& action, Actor& judge)
+Work::do_jump_action(const Action& action, Actor& judge)
 {
     if (judge.is_grounded)
     {
@@ -164,7 +134,7 @@ Work::execute_jump_action(const Action& action, Actor& judge)
 }
 
 void
-Work::execute_debug_mode_action(const Action& action, Actor& judge)
+Work::do_debug_mode_action(const Action& action, Actor& judge)
 {
     switch (judge.movement_type)
     {
@@ -187,58 +157,4 @@ Work::execute_debug_mode_action(const Action& action, Actor& judge)
         break;
     }
     }
-}
-
-void
-Work::add_task(const Task &task)
-{
-    task_vector.push_back(task);
-}
-
-vector<Task>&
-Work::get_task_vector()
-{
-    return task_vector;
-}
-
-void
-Work::execute_wander(Task& task, Population& population)
-{
-    Actor& actor { population.get_actor(task.actor_id) };
-
-    WanderState& wander_state { task.task_state.wander };
-
-    if (wander_state.tick < wander_state.tick_limit)
-    {
-        wander_state.tick++;
-    }
-    else
-    {
-        const f32 direction_angle { population.get_random().uniform(0.0f, 360.0f) };
-
-        const Vec2 direction {
-            cos(to_radians(direction_angle)),
-            sin(to_radians(direction_angle))
-        };
-
-        actor.velocity.x = direction.x * AGENT_DEFAULT_GROUND_SPEED;
-        actor.velocity.y = direction.y * AGENT_DEFAULT_GROUND_SPEED;
-
-        actor.rotation_target.z = direction_angle;
-
-        wander_state.tick = 0;
-    }
-
-    actor.rotation.z = interpolate_to(
-        actor.rotation.z,
-        actor.rotation_target.z,
-        5.0f,
-        FIXED_DELTA_TIME_32
-    );
-}
-
-void
-Work::execute_seek(Task& task, Population& population)
-{
-
 }
