@@ -3,6 +3,7 @@
 #include <random>
 
 #include "actor.h"
+#include "app.h"
 #include "population.h"
 
 using namespace std;
@@ -37,21 +38,21 @@ TaskState::TaskState(const IVec3& target_position)
 }
 
 void
-Work::update(World& world, Population& population, const f32 delta_time)
+Work::update(World& world, Population& population)
 {
     ++tick_count;
 
     for (Actor& actor : population.get_actor_vector())
     {
-        Physics::update_actor(world, actor, delta_time);
+        Physics::update_actor(world, actor);
     }
 
     for (Task& task : task_vector)
     {
         switch (task.task_type)
         {
-            case TaskType::wander:  execute_wander(task, delta_time, population); break;
-            case TaskType::seek:    execute_seek(task, delta_time, population); break;
+            case TaskType::wander:  execute_wander(task, population); break;
+            case TaskType::seek:    execute_seek(task, population); break;
             default: break;
         }
     }
@@ -201,7 +202,7 @@ Work::get_task_vector()
 }
 
 void
-Work::execute_wander(Task& task, const f32 delta_time, Population& population)
+Work::execute_wander(Task& task, Population& population)
 {
     Actor& actor { population.get_actor(task.actor_id) };
 
@@ -232,12 +233,12 @@ Work::execute_wander(Task& task, const f32 delta_time, Population& population)
         actor.rotation.z,
         actor.rotation_target.z,
         5.0f,
-        delta_time
+        FIXED_DELTA_TIME_32
     );
 }
 
 void
-Work::execute_seek(Task& task, f32 delta_time, Population& population)
+Work::execute_seek(Task& task, Population& population)
 {
 
 }

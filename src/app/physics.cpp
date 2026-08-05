@@ -4,17 +4,18 @@
 #include <cmath>
 
 #include "actor.h"
+#include "app.h"
 #include "world.h"
 #include "core/types.h"
 
 void
-Physics::update_actor(World& world, Actor& actor, const f32 delta_time)
+Physics::update_actor(World& world, Actor& actor)
 {
     switch (actor.movement_type)
     {
         case MovementType::Ground:
         case MovementType::Debug:
-            integrate(world, actor, delta_time);
+            integrate(world, actor);
             break;
     }
 }
@@ -174,7 +175,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
 }
 
 void
-Physics::integrate(World& world, Actor& actor, const f32 delta_time)
+Physics::integrate(World& world, Actor& actor)
 {
     actor.is_grounded = false;
 
@@ -184,8 +185,8 @@ Physics::integrate(World& world, Actor& actor, const f32 delta_time)
         
         const f32 dz {
             actor.velocity[axis_index] <= 0.0f
-                ? delta_time * FALLING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
-                : delta_time * RISING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
+                ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
+                : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
         };
         
         actor.velocity[axis_index] = clamp(
@@ -198,9 +199,9 @@ Physics::integrate(World& world, Actor& actor, const f32 delta_time)
     if (actor.box_collider.collision_enabled)
     {
         const Vec3 move {
-            abs(delta_time * actor.velocity.x),
-            abs(delta_time * actor.velocity.y),
-            abs(delta_time * actor.velocity.z),
+            abs(FIXED_DELTA_TIME_32 * actor.velocity.x),
+            abs(FIXED_DELTA_TIME_32 * actor.velocity.y),
+            abs(FIXED_DELTA_TIME_32 * actor.velocity.z),
         };
 
         const f32 max_move { max({move.x, move.y, move.z}) };
@@ -212,7 +213,7 @@ Physics::integrate(World& world, Actor& actor, const f32 delta_time)
             step_count = 1;
         }
 
-        const f32 step_delta_time { delta_time / static_cast<f32>(step_count) };
+        const f32 step_delta_time { FIXED_DELTA_TIME_32 / static_cast<f32>(step_count) };
 
         for (s32 step_index = 0; step_index < step_count; ++step_index)
         {
@@ -223,7 +224,7 @@ Physics::integrate(World& world, Actor& actor, const f32 delta_time)
     }
     else
     {
-        const Vec3 displacement { delta_time * actor.velocity };
+        const Vec3 displacement { FIXED_DELTA_TIME_32 * actor.velocity };
 
         actor.position = actor.position + displacement;
     }

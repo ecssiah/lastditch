@@ -78,7 +78,7 @@ Platform::quit()
     glfwTerminate();
 }
 
-f32
+f64
 Platform::get_delta_time() const
 {
     return delta_time;

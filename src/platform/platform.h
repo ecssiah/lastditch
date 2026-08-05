@@ -48,7 +48,7 @@ public:
     void begin_frame();
     [[nodiscard]] b32 end_frame() const;
 
-    [[nodiscard]] f32 get_delta_time() const;
+    [[nodiscard]] f64 get_delta_time() const;
 
     [[nodiscard]] pair<s32, s32> get_framebuffer_size() const;
 
@@ -71,7 +71,7 @@ private:
     f64 time_current {};
     f64 time_previous {};
 
-    f32 delta_time {};
+    f64 delta_time {};
 
     s32 window_width { WINDOW_WIDTH };
     s32 window_height { WINDOW_HEIGHT };

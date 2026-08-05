@@ -63,7 +63,7 @@ public:
 class Work
 {
 public:
-    void update(World& world, Population& population, f32 delta_time);
+    void update(World& world, Population& population);
 
     void schedule(std::function<void()> act);
 
@@ -89,8 +89,8 @@ private:
 
     std::deque<Action> action_deque {};
 
-    static void execute_wander(Task& task, f32 delta_time, Population& population);
-    static void execute_seek(Task& task, f32 delta_time, Population& population);
+    static void execute_wander(Task& task, Population& population);
+    static void execute_seek(Task& task, Population& population);
 
     std::vector<Task> task_vector {};
 };
