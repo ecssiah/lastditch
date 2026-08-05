@@ -1,10 +1,11 @@
 #include "control.h"
 
 #include <cmath>
-#include <iostream>
 
+#include "app.h"
 #include "population.h"
 #include "work.h"
+#include "core/log.h"
 #include "platform/platform.h"
 
 using namespace std;
@@ -20,11 +21,29 @@ Control::init(const Population& population)
         0.1f,
         1000.0f
     );
+
+    LOG_INFO("CONTROL INIT");
 }
 
 void
-Control::update(const Platform& platform, const Population& population, Work& work)
+Control::update(const Platform& platform, Population& population, Work& work)
 {
+    if (platform.button_is_released(ButtonType::Tab))
+    {
+        if (actor_id == -1)
+        {
+            actor_id = population.judge_id;
+        }
+        else
+        {
+            Actor& controlled_actor { population.get_actor(actor_id) };
+
+            controlled_actor.velocity = {};
+
+            actor_id = -1;
+        }
+    }
+
     if (actor_id != -1)
     {
         const Actor& judge { population.get_actor(actor_id) };
@@ -41,8 +60,77 @@ Control::update(const Platform& platform, const Population& population, Work& wo
     }
     else
     {
+        Vec3 direction {};
 
+        if (platform.button_is_down(ButtonType::A))
+        {
+            direction.x -= 1.0f;
+        }
+
+        if (platform.button_is_down(ButtonType::D))
+        {
+            direction.x += 1.0f;
+        }
+
+        if (platform.button_is_down(ButtonType::W))
+        {
+            direction.y += 1.0f;
+        }
+
+        if (platform.button_is_down(ButtonType::S))
+        {
+            direction.y -= 1.0f;
+        }
+
+        direction = direction.normalize();
+
+        if (platform.button_is_down(ButtonType::E))
+        {
+            direction.z += 1.0f;
+        }
+
+        if (platform.button_is_down(ButtonType::Q))
+        {
+            direction.z -= 1.0f;
+        }
+
+        const Vec3 forward { get_forward(rotation) };
+        const Vec3 right { get_right(rotation) };
+
+        Vec3 velocity_forward {};
+        Vec3 velocity_right {};
+        Vec3 velocity_up {};
+
+        velocity_right = direction.x * right;
+        velocity_forward = direction.y * forward;
+        velocity_up = direction.z * Vec3::unit_z();
+
+        const f32 control_speed { 10.0f };
+        Vec3 velocity = control_speed * (velocity_right + velocity_forward + velocity_up);
+
+        position = position + FIXED_DELTA_TIME_32 * velocity;
+
+        rotation.z -= CAMERA_SENSITIVITY_X * static_cast<f32>(platform.pointer_delta_x);
+        rotation.x -= CAMERA_SENSITIVITY_Y * static_cast<f32>(platform.pointer_delta_y);
+
+        if (rotation.x > CAMERA_PITCH_LIMIT)
+        {
+            rotation.x = CAMERA_PITCH_LIMIT;
+        }
+
+        if (rotation.x < -CAMERA_PITCH_LIMIT)
+        {
+            rotation.x = -CAMERA_PITCH_LIMIT;
+        }
+
+        view_matrix = get_view_matrix(position, rotation);
     }
+}
+
+void
+Control::quit()
+{
+    LOG_INFO("CONTROL QUIT");
 }
 
 void
@@ -66,10 +154,12 @@ Control::queue_actions(const Platform& platform, Work& work)
         queue_jump_action(platform, work);
     }
 
-    if (platform.button_is_released(ButtonType::Tab))
-    {
-        queue_debug_mode_action(platform, work);
-    }
+
+
+    // if (platform.button_is_released(ButtonType::Tab))
+    // {
+    //     queue_debug_mode_action(platform, work);
+    // }
 }
 
 void

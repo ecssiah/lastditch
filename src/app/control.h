@@ -11,7 +11,8 @@ class Control
 {
 public:
     void init(const Population& population);
-    void update(const Platform& platform, const Population& population, Work& work);
+    void update(const Platform& platform, Population& population, Work& work);
+    void quit();
 
     void set_actor_id(s32 new_actor_id);
 

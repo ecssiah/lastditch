@@ -21,8 +21,6 @@ App::update()
 
     const f64 frame_time { min<f64>(platform.get_delta_time(), MIN_FRAME_TIME) };
 
-    control.update(platform, population, work);
-
     simulation_time += frame_time;
 
     while (simulation_time >= FIXED_DELTA_TIME_64)
@@ -32,6 +30,7 @@ App::update()
         simulation_time -= FIXED_DELTA_TIME_64;
     }
 
+    control.update(platform, population, work);
     render.update(control, world, population);
 
     active = platform.end_frame();
@@ -40,6 +39,8 @@ App::update()
 void
 App::quit()
 {
+    control.quit();
+
     population.quit();
     world.quit();
 
