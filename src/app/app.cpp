@@ -10,7 +10,8 @@ App::App()
     world.init();
     population.init(work);
 
-    render.init(platform, world, population);
+    control.init(population);
+    render.init(platform, control, world, population);
 }
 
 void
@@ -20,7 +21,7 @@ App::update()
 
     const f64 frame_time { min<f64>(platform.get_delta_time(), MIN_FRAME_TIME) };
 
-    Control::update(platform, population, work);
+    control.update(platform, population, work);
 
     simulation_time += frame_time;
 
@@ -31,7 +32,7 @@ App::update()
         simulation_time -= FIXED_DELTA_TIME_64;
     }
 
-    render.update(world, population);
+    render.update(control, world, population);
 
     active = platform.end_frame();
 }

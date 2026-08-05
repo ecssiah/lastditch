@@ -34,5 +34,6 @@ private:
     World world {};
     Population population {};
 
+    Control control {};
     Render render {};
 };

@@ -8,9 +8,9 @@
 #include "stb_image.h"
 
 #include "actor.h"
+#include "control.h"
 #include "debug.h"
 #include "population.h"
-#include "viewpoint.h"
 #include "world.h"
 #include "core/config.h"
 #include "core/log.h"
@@ -630,24 +630,7 @@ Render::init_glad(const Platform& platform)
 }
 
 void
-Render::init_viewpoint()
-{
-    viewpoint.position = Vec3{ 0.0f };
-    viewpoint.rotation = Vec3{ 0.0f };
-
-    viewpoint.projection_matrix = Mat4{ 1.0f };
-    viewpoint.view_matrix = Mat4{ 1.0f };
-
-    viewpoint.projection_matrix = get_projection_matrix(
-        to_radians(60.0f),
-        WINDOW_ASPECT_RATIO,
-        0.1f,
-        1000.0f
-    );
-}
-
-void
-Render::init_debug_render()
+Render::init_debug_render(const Control& control)
 {
     const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert") };
     const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag") };
@@ -669,7 +652,7 @@ Render::init_debug_render()
         debug_render.projection_location,
         1,
         GL_FALSE,
-        viewpoint.projection_matrix[0]
+        control.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -677,7 +660,7 @@ Render::init_debug_render()
 }
 
 void
-Render::init_voxel_render(const World& world)
+Render::init_voxel_render(const Control& control, const World& world)
 {
     const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert") };
     const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag") };
@@ -720,7 +703,7 @@ Render::init_voxel_render(const World& world)
         voxel_render.projection_location,
         1, 
         GL_FALSE,
-        viewpoint.projection_matrix[0]
+        control.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -752,7 +735,7 @@ Render::init_voxel_render(const World& world)
 }
 
 void
-Render::init_model_render(const Population& population)
+Render::init_model_render(const Control& control, const Population& population)
 {
     const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert") };
     const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag") };
@@ -790,7 +773,7 @@ Render::init_model_render(const Population& population)
         model_render.projection_location,
         1, 
         GL_FALSE,
-        viewpoint.projection_matrix[0]
+        control.projection_matrix[0]
     );
 
     glDeleteShader(vert_shader);
@@ -809,29 +792,15 @@ Render::init_model_render(const Population& population)
 }
 
 void
-Render::update_viewpoint(const Population& population)
-{
-    const Actor& judge { population.get_actor(population.judge_id) };
-
-    constexpr Vec3 judge_eye_offset { 0.0f, 0.0f, 0.7f };
-    const Vec3 judge_eye_position { judge.position + judge_eye_offset };
-    
-    viewpoint.position = judge_eye_position;
-    viewpoint.rotation = judge.rotation;
-}
-
-void
-Render::update_debug_render(const Debug& debug)
+Render::update_debug_render(const Control& control, const Debug& debug)
 {
     glUseProgram(debug_render.program_id);
-
-    viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
         debug_render.view_location,
         1, 
         GL_FALSE, 
-        viewpoint.view_matrix[0]
+        control.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
@@ -871,17 +840,15 @@ Render::update_debug_render(const Debug& debug)
 }
 
 void
-Render::update_voxel_render()
+Render::update_voxel_render(const Control& control)
 {
     glUseProgram(voxel_render.program_id);
-
-    viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
         voxel_render.view_location,
         1, 
         GL_FALSE, 
-        viewpoint.view_matrix[0]
+        control.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
@@ -912,17 +879,15 @@ Render::update_voxel_render()
 }
 
 void
-Render::update_model_render(const Population& population)
+Render::update_model_render(const Control& control, const Population& population)
 {
     glUseProgram(model_render.program_id);
-
-    viewpoint.view_matrix = get_view_matrix(viewpoint.position, viewpoint.rotation);
 
     glUniformMatrix4fv(
         model_render.view_location,
         1, 
         GL_FALSE, 
-        viewpoint.view_matrix[0]
+        control.view_matrix[0]
     );
 
     glEnable(GL_DEPTH_TEST);
@@ -958,15 +923,13 @@ Render::update_model_render(const Population& population)
 }
 
 void 
-Render::init(const Platform& platform, const World& world, const Population& population)
+Render::init(const Platform& platform, const Control& control, const World& world, const Population& population)
 {
     init_glad(platform);
 
-    init_viewpoint();
-
-    init_debug_render();
-    init_voxel_render(world);
-    init_model_render(population);
+    init_debug_render(control);
+    init_voxel_render(control, world);
+    init_model_render(control, population);
 
     debug.init(world);
     screen.init(platform);
@@ -975,16 +938,14 @@ Render::init(const Platform& platform, const World& world, const Population& pop
 }
 
 void 
-Render::update(const World& world, const Population& population)
+Render::update(const Control& control, const World& world, const Population& population)
 {
     glClearColor(CLEAR_COLOR[0], CLEAR_COLOR[1], CLEAR_COLOR[2], CLEAR_COLOR[3]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    update_viewpoint(population);
-
-    update_debug_render(debug);
-    update_voxel_render();
-    update_model_render(population);
+    update_debug_render(control, debug);
+    update_voxel_render(control);
+    update_model_render(control, population);
 
     debug.update();
     screen.update(population);

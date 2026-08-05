@@ -1,40 +1,79 @@
 #include "control.h"
 
 #include <cmath>
+#include <iostream>
 
 #include "population.h"
 #include "work.h"
 #include "platform/platform.h"
 
+using namespace std;
+
 void
-Control::update(const Platform& platform, Population& population, Work& work)
+Control::init(const Population& population)
 {
-    queue_actions(platform, population, work);
+    actor_id = population.judge_id;
+
+    projection_matrix = get_projection_matrix(
+        to_radians(60.0f),
+        WINDOW_ASPECT_RATIO,
+        0.1f,
+        1000.0f
+    );
 }
 
 void
-Control::queue_actions(const Platform& platform, Population& population, Work& work)
+Control::update(const Platform& platform, const Population& population, Work& work)
 {
-    queue_move_action(platform, population, work);
+    if (actor_id != -1)
+    {
+        const Actor& judge { population.get_actor(actor_id) };
+
+        constexpr Vec3 judge_eye_offset { 0.0f, 0.0f, 0.7f };
+        const Vec3 judge_eye_position { judge.position + judge_eye_offset };
+
+        position = judge_eye_position;
+        rotation = judge.rotation;
+
+        view_matrix = get_view_matrix(position, rotation);
+
+        queue_actions(platform, work);
+    }
+    else
+    {
+
+    }
+}
+
+void
+Control::set_actor_id(const s32 new_actor_id)
+{
+    actor_id = new_actor_id;
+}
+
+void
+Control::queue_actions(const Platform& platform, Work& work)
+{
+    queue_move_action(platform, work);
 
     if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
     {
-        queue_rotate_action(platform, population, work);
+        queue_rotate_action(platform, work);
     }
 
     if (platform.button_is_pressed(ButtonType::Space))
     {
-        queue_jump_action(platform, population, work);
+        queue_jump_action(platform, work);
     }
 
     if (platform.button_is_released(ButtonType::Tab))
     {
-        queue_debug_mode_action(platform, population, work);
+        queue_debug_mode_action(platform, work);
     }
 }
 
 void
-Control::queue_move_action(const Platform& platform, Population& population, Work& work)
+Control::queue_move_action(const Platform& platform, Work& work)
 {
     Vec3 action_value {};
 
@@ -72,11 +111,11 @@ Control::queue_move_action(const Platform& platform, Population& population, Wor
 
     const Action move_act { ActionType::Move, action_value };
 
-    population.add_act(move_act, work);
+    work.add_action(move_act);
 }
 
 void
-Control::queue_rotate_action(const Platform& platform, Population& population, Work& work)
+Control::queue_rotate_action(const Platform& platform, Work& work)
 {
     const Vec3 action_value {
         static_cast<f32>(platform.pointer_delta_x),
@@ -86,25 +125,25 @@ Control::queue_rotate_action(const Platform& platform, Population& population, W
 
     const Action rotate_action { ActionType::Rotate, action_value };
 
-    population.add_act(rotate_action, work);
+    work.add_action(rotate_action);
 }
 
 void
-Control::queue_jump_action(const Platform& platform, Population& population, Work& work)
+Control::queue_jump_action(const Platform& platform, Work& work)
 {
     const Vec3 action_value {};
 
     const Action jump_action { ActionType::Jump, action_value };
 
-    population.add_act(jump_action, work);
+    work.add_action(jump_action);
 }
 
 void
-Control::queue_debug_mode_action(const Platform& platform, Population& population, Work& work)
+Control::queue_debug_mode_action(const Platform& platform, Work& work)
 {
     const Vec3 action_value {};
 
     const Action debug_action { ActionType::DebugMode, action_value };
 
-    population.add_act(debug_action, work);
+    work.add_action(debug_action);
 }

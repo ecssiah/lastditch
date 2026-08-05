@@ -6,7 +6,6 @@
 
 #include "direction.h"
 #include "screen.h"
-#include "viewpoint.h"
 #include "world.h"
 #include "core/config.h"
 #include "core/geometry.h"
@@ -14,6 +13,7 @@
 #include "platform/platform.h"
 
 class Actor;
+class Control;
 
 constexpr f32 CLEAR_COLOR[4] { 0.1f, 0.2f, 0.3f, 1.0f };
 
@@ -170,7 +170,6 @@ class Render
 public:
     Debug debug {};
     Screen screen {};
-    Viewpoint viewpoint {};
 
     DebugRender debug_render {};
     VoxelRender voxel_render {};
@@ -181,8 +180,8 @@ public:
     static const char* get_gl_error_string(GLenum err);
     static void check_gl_error(const char* label);
 
-    void init(const Platform& platform, const World& world, const Population& population);
-    void update(const World& world, const Population& population);
+    void init(const Platform& platform, const Control& control, const World& world, const Population& population);
+    void update(const Control& control, const World& world, const Population& population);
     void quit();
 
 private:
@@ -196,15 +195,13 @@ private:
 
     static void init_glad(const Platform& platform);
 
-    void init_viewpoint();
-    void init_debug_render();
-    void init_voxel_render(const World& world);
-    void init_model_render(const Population& population);
+    void init_debug_render(const Control& control);
+    void init_voxel_render(const Control& control, const World& world);
+    void init_model_render(const Control& control, const Population& population);
 
-    void update_viewpoint(const Population& population);
-    void update_debug_render(const Debug& debug);
-    void update_voxel_render();
-    void update_model_render(const Population& population);
+    void update_debug_render(const Control& control, const Debug& debug);
+    void update_voxel_render(const Control& control);
+    void update_model_render(const Control& control, const Population& population);
 
     void generate_sector_mesh(const World& world, s32 sector_index);
 

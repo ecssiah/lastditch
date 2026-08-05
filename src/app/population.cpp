@@ -56,12 +56,6 @@ Population::get_actor_vector() const
 }
 
 void
-Population::add_act(const Action &act, Work& work)
-{
-    work.add_action(act);
-}
-
-void
 Population::init_judge()
 {
     judge_id = actor_id_generator.next();

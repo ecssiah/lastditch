@@ -5,7 +5,6 @@
 #include "core/random.h"
 
 class Actor;
-class Action;
 class Work;
 
 constexpr u32 POPULATION_SEED { 1388 };
@@ -24,8 +23,6 @@ public:
 
     std::vector<Actor>& get_actor_vector();
     [[nodiscard]] const vector<Actor>& get_actor_vector() const;
-
-    void add_act(const Action& act, Work& work);
 
     s32 judge_id { -1 };
 

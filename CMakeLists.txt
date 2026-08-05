@@ -76,7 +76,6 @@ target_sources(
     src/app/render.cpp
     src/app/screen.h
     src/app/screen.cpp
-    src/app/viewpoint.h
     src/app/work.h
     src/app/work.cpp
     src/app/world.h
