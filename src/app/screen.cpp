@@ -310,7 +310,7 @@ Screen::draw_debug_info(const Population& population)
     switch (judge.movement_type)
     {
     case MovementType::Ground:  movement_type_text = "MOV Ground"; break;
-    case MovementType::Debug:   movement_type_text = "MOV Debug"; break;
+    case MovementType::Air:   movement_type_text = "MOV Debug"; break;
     }
 
     draw_text(position_text, 20, 20);

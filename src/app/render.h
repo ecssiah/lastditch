@@ -137,7 +137,7 @@ public:
 
     ConfigData block_config_data {};
 
-    u8 block_type_layer_array[static_cast<s32>(BlockType::COUNT)] {};
+    u8 block_type_layer_array[BLOCK_TYPE_COUNT] {};
 
     vector<SectorMesh> sector_mesh_vector {};
     vector<VoxelGpuData> voxel_gpu_data_vector {};
@@ -160,7 +160,7 @@ public:
 
     ConfigData actor_config_data {};
 
-    u8 nation_type_layer_array[static_cast<s32>(NationType::COUNT)] {};
+    u8 nation_type_layer_array[NATION_TYPE_COUNT] {};
 
     vector<ModelGpuData> model_gpu_data_vector {};
 };

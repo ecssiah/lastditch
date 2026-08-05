@@ -96,11 +96,11 @@ Population::init_judge()
 void
 Population::init_agents(Work& work)
 {
-    for (s32 nation_index = 0; nation_index < static_cast<s32>(NationType::COUNT); ++nation_index)
+    for (s32 nation_index = 0; nation_index < NATION_TYPE_COUNT; ++nation_index)
     {
         for (s32 agent_index = 0; agent_index < AGENT_INITIAL_COUNT; ++agent_index)
         {
-            const s32 nation_type_index { random.uniform(0, static_cast<s32>(NationType::COUNT) - 1) };
+            const s32 nation_type_index { random.uniform(0, NATION_TYPE_COUNT - 1) };
             
             const auto nation_type { static_cast<NationType>(nation_type_index) };
             const Nation& nation { nation_array[nation_type_index] };

@@ -16,7 +16,7 @@ using namespace std;
 
 namespace
 {
-    constexpr array<IVec2, static_cast<s32>(SectionType::COUNT)> SECTION_ORIGIN_ARRAY
+    constexpr array<IVec2, SECTION_TYPE_COUNT> SECTION_ORIGIN_ARRAY
     {
         {
             // Center
@@ -147,7 +147,7 @@ namespace
         }
     };
 
-    constexpr array<IVec2, static_cast<s32>(SectionType::COUNT)> SECTION_SIZE_ARRAY
+    constexpr array<IVec2, SECTION_TYPE_COUNT> SECTION_SIZE_ARRAY
     {
         {
             // Center
@@ -478,7 +478,7 @@ World::is_solid(const s32 x, const s32 y, const s32 z)
 b32
 World::is_clear(const s32 x, const s32 y, const s32 z, const u8 direction_mask)
 {
-    for (s32 direction_index = 0; direction_index < static_cast<s32>(Direction::COUNT); ++direction_index)
+    for (s32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
         if (direction_mask & 1 << direction_index)
         {
@@ -532,7 +532,7 @@ World::get_stride(const Direction direction)
         case Direction::South:      return -WORLD_STRIDE_Y;
         case Direction::Up:         return +WORLD_STRIDE_Z;
         case Direction::Down:       return -WORLD_STRIDE_Z;
-        default:                    throw std::invalid_argument("invalid direction");
+        default:                    throw invalid_argument("invalid direction");
     }
 
     assert(false);
@@ -541,7 +541,7 @@ World::get_stride(const Direction direction)
 s32
 World::block_type_index_from_string(const string& block_type_string)
 {
-    for (s32 block_type_index = 0; block_type_index < static_cast<s32>(BlockType::COUNT); ++block_type_index)
+    for (s32 block_type_index = 0; block_type_index < BLOCK_TYPE_COUNT; ++block_type_index)
     {
         const BlockType block_type { static_cast<BlockType>(block_type_index) };
 

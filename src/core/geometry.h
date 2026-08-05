@@ -16,6 +16,8 @@ enum class Axis : u8
     COUNT,
 };
 
+constexpr s32 AXIS_COUNT { static_cast<s32>(Axis::COUNT) };
+
 class IVec2;
 class IVec3;
 class Vec2;

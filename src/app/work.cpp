@@ -112,7 +112,7 @@ Work::execute_move_action(const Action& action, Actor& judge)
 
         break;
     }
-    case MovementType::Debug:
+    case MovementType::Air:
     {
         velocity_right = action.action_value.x * judge_right;
         velocity_forward = action.action_value.y * judge_forward;
@@ -170,14 +170,14 @@ Work::execute_debug_mode_action(const Action& action, Actor& judge)
     {
     case MovementType::Ground:
     {
-        judge.movement_type = MovementType::Debug;
+        judge.movement_type = MovementType::Air;
         judge.speed = JUDGE_DEFAULT_DEBUG_SPEED;
 
         judge.box_collider.collision_enabled = false;
 
         break;
     }
-    case MovementType::Debug:
+    case MovementType::Air:
     {
         judge.movement_type = MovementType::Ground;
         judge.speed = JUDGE_DEFAULT_GROUND_SPEED;

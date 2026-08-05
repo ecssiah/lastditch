@@ -12,7 +12,7 @@ enum class NationType : u8
     COUNT,
 };
 
-constexpr s32 NATION_TYPE_COUNT { static_cast<std::size_t>(NationType::COUNT) };
+constexpr s32 NATION_TYPE_COUNT { static_cast<s32>(NationType::COUNT) };
 
 constexpr std::string_view
 get_nation_type_string(const NationType nation_type)

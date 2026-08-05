@@ -23,7 +23,7 @@ constexpr s32 ACTOR_TASK_MAX_COUNT { 128 };
 enum class MovementType : u8
 {
     Ground,
-    Debug,
+    Air,
     COUNT,
 };
 
@@ -57,12 +57,14 @@ public:
 
     Vec3 position {};
     Vec3 rotation {};
-    Vec3 rotation_target {};
 
-    b32 is_grounded { false };
+    Vec3 position_target {};
+    Vec3 rotation_target {};
 
     f32 speed { 0.0f };
     Vec3 velocity {};
+
+    b32 is_grounded { false };
 
     BoxCollider box_collider {};
 };

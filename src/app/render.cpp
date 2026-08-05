@@ -18,7 +18,7 @@
 
 using namespace std;
 
-const IVec3 VOXEL_VERTEX_ARRAY[static_cast<s32>(Direction::COUNT)][VERTEX_COUNT_PER_FACE]
+const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE]
 {
     {
         { 1, 0, 0 },
@@ -58,7 +58,7 @@ const IVec3 VOXEL_VERTEX_ARRAY[static_cast<s32>(Direction::COUNT)][VERTEX_COUNT_
     },
 };
 
-const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * static_cast<s32>(Direction::COUNT)]
+const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT]
 {
     { +0, +1, +0 },{ +0, +0, +1 },
     { +0, -1, +0 },{ +0, +0, +1 },
@@ -199,14 +199,14 @@ Render::load_block_texture_directory()
         GL_RGBA8,
         BLOCK_TEXTURE_SIZE,
         BLOCK_TEXTURE_SIZE,
-        static_cast<s32>(BlockType::COUNT),
+        BLOCK_TYPE_COUNT,
         0,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         nullptr
     );
 
-    assert(voxel_render.block_config_data.entry_vector.size() <= static_cast<s32>(BlockType::COUNT));
+    assert(voxel_render.block_config_data.entry_vector.size() <= BLOCK_TYPE_COUNT);
 
     for (size_t layer_index = 0; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
     {
@@ -215,7 +215,7 @@ Render::load_block_texture_directory()
         const s32 block_type_index { World::block_type_index_from_string(config_entry.key) };
 
         assert(block_type_index >= 0);
-        assert(block_type_index < static_cast<s32>(BlockType::COUNT));
+        assert(block_type_index < BLOCK_TYPE_COUNT);
 
         string texture_path { format("assets/textures/block/{}", config_entry.value) };
 
@@ -237,7 +237,7 @@ Render::load_actor_texture_directory()
         GL_RGBA8,
         ACTOR_TEXTURE_SIZE,
         ACTOR_TEXTURE_SIZE,
-        static_cast<s32>(BlockType::COUNT),
+        BLOCK_TYPE_COUNT,
         0,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
@@ -255,7 +255,7 @@ Render::load_actor_texture_directory()
         assert(nation_type_index >= 0 && nation_type_index < NATION_TYPE_COUNT);
 
         model_render.nation_type_layer_array[nation_type_index] = layer_index;
-        
+
         string texture_path {
             format(
                 "assets/textures/model/{}",
@@ -271,21 +271,21 @@ ModelGpuData
 Render::load_model_gpu_data(const Actor& actor) const
 {
     const s32 nation_type_index {static_cast<s32>(actor.nation_type)};
-    
+
     ModelGpuData model_gpu_data {
         .texture_layer = model_render.nation_type_layer_array[nation_type_index],
     };
 
     ifstream ifs{ "assets/model/actor.obj" };
-    
+
     assert(ifs.is_open());
-    
+
     string line {};
 
     vector<Vec3> position_vector {};
     vector<Vec3> normal_vector {};
     vector<Vec2> uv_vector {};
-    
+
     while (getline(ifs, line))
     {
         if (line.starts_with("v "))
@@ -415,7 +415,7 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
     };
 
     for (s32 cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
-    {		
+    {
         for (s32 cell_y = sector_cell_coordinate.y; cell_y < sector_cell_coordinate.y + SECTOR_SIZE_IN_CELLS; ++cell_y)
         {
             for (s32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + SECTOR_SIZE_IN_CELLS; ++cell_x)
@@ -467,11 +467,11 @@ Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_
     {
         const s32 direction_index { static_cast<s32>(sector_quad.direction) };
         const s32 block_type_index { static_cast<s32>(sector_quad.block_type) };
-        
+
         const IVec3 vertex_position {
             sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]]
         };
-        
+
         const u32 vertex_bitpacked {
             (vertex_position.x & 63u) << 0u |
             (vertex_position.y & 63u) << 6u |
@@ -509,7 +509,7 @@ Render::convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
     {
         emit_sector_face(sector_quad, voxel_gpu_data);
     }
-    
+
     return voxel_gpu_data;
 }
 
@@ -634,10 +634,10 @@ Render::init_viewpoint()
 {
     viewpoint.position = Vec3{ 0.0f };
     viewpoint.rotation = Vec3{ 0.0f };
-    
+
     viewpoint.projection_matrix = Mat4{ 1.0f };
     viewpoint.view_matrix = Mat4{ 1.0f };
-    
+
     viewpoint.projection_matrix = get_projection_matrix(
         to_radians(60.0f),
         WINDOW_ASPECT_RATIO,
@@ -703,14 +703,14 @@ Render::init_voxel_render(const World& world)
 
     voxel_render.normal_table_location = glGetUniformLocation(voxel_render.program_id, "u_normal_table");
 
-    glUniform3fv(voxel_render.normal_table_location, static_cast<s32>(Direction::COUNT), &DIRECTION_NORMAL_ARRAY[0]);
+    glUniform3fv(voxel_render.normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0]);
 
     voxel_render.uv_projection_table_location = glGetUniformLocation(
         voxel_render.program_id,
         "u_uv_projection_table"
     );
 
-    glUniform3fv(voxel_render.uv_projection_table_location, static_cast<s32>(Direction::COUNT) * 2, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
+    glUniform3fv(voxel_render.uv_projection_table_location, 2 * DIRECTION_COUNT, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
 
     voxel_render.projection_location = glGetUniformLocation(voxel_render.program_id, "u_projection_matrix");
     voxel_render.view_location = glGetUniformLocation(voxel_render.program_id, "u_view_matrix");

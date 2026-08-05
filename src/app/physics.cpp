@@ -8,14 +8,16 @@
 #include "world.h"
 #include "core/types.h"
 
+using namespace std;
+
 void
 Physics::update_actor(World& world, Actor& actor)
 {
     switch (actor.movement_type)
     {
         case MovementType::Ground:
-        case MovementType::Debug:   integrate(world, actor); break;
-        default:                    throw std::invalid_argument("invalid movement type");
+        case MovementType::Air:   integrate(world, actor); break;
+        default:                    throw invalid_argument("invalid movement type");
     }
 }
 
@@ -58,7 +60,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
     Bounds3 actor_bounds { get_box_collider_bounds(actor.box_collider, actor.position) };
     Bounds3 swept_bounds {};
     
-    for (s32 axis_index = 0; axis_index < static_cast<s32>(Axis::COUNT); ++axis_index)
+    for (s32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
     {
         swept_bounds.min[axis_index] = min(
             actor_bounds.min[axis_index],
@@ -81,8 +83,8 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
     const f32 actor_min_next { actor_min_prev + step_delta_time * actor.velocity[axis_index] };
     const f32 actor_max_next { actor_max_prev + step_delta_time * actor.velocity[axis_index] };
 
-    const s32 axis_s { (axis_index + 1) % static_cast<s32>(Axis::COUNT) };
-    const s32 axis_t { (axis_index + 2) % static_cast<s32>(Axis::COUNT) };
+    const s32 axis_s { (axis_index + 1) % AXIS_COUNT };
+    const s32 axis_t { (axis_index + 2) % AXIS_COUNT };
 
     b32 found { false };
     f32 best { actor.velocity[axis_index] > 0 ? INFINITY : -INFINITY };
