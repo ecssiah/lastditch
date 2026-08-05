@@ -35,7 +35,7 @@ App::update()
         simulation_time -= FIXED_DELTA_TIME_64;
     }
 
-    control.update(platform, work, population);
+    control.update(platform, population);
     render.update(control, world, population);
 
     active = platform.end_frame();

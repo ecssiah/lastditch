@@ -7,7 +7,7 @@
 
 constexpr s32 ACTOR_POOL_MAX { 1 << 8 };
 
-constexpr f32 AGENT_DEFAULT_GROUND_SPEED { 1.0f };
+constexpr f32 AGENT_DEFAULT_MOVE_SPEED { 1.0f };
 constexpr f32 AGENT_DEFAULT_JUMP_SPEED { 28.0f };
 
 constexpr f32 JUDGE_DEFAULT_GROUND_SPEED { 12.0f };
@@ -49,10 +49,10 @@ public:
     Vec3 position {};
     Vec3 rotation {};
 
-    Vec3 position_target {};
-    Vec3 rotation_target {};
+    Vec3 target {};
 
-    f32 speed { 0.0f };
+    f32 move_speed { AGENT_DEFAULT_MOVE_SPEED };
+
     Vec3 velocity {};
 
     b32 is_grounded { false };

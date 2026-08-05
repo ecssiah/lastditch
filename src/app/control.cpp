@@ -26,7 +26,7 @@ Control::init(const Population& population)
 }
 
 void
-Control::update(const Platform& platform, Work& work, Population& population)
+Control::update(const Platform& platform, Population& population)
 {
     if (platform.button_is_released(ButtonType::Tab))
     {
@@ -36,14 +36,14 @@ Control::update(const Platform& platform, Work& work, Population& population)
 
             Actor& controlled_actor { population.get_actor(actor_id) };
 
-            controlled_actor.speed = JUDGE_DEFAULT_GROUND_SPEED;
+            controlled_actor.move_speed = JUDGE_DEFAULT_GROUND_SPEED;
             controlled_actor.velocity = {};
         }
         else
         {
             Actor& controlled_actor { population.get_actor(actor_id) };
 
-            controlled_actor.speed = 0.0f;
+            controlled_actor.move_speed = 0.0f;
             controlled_actor.velocity = {};
 
             actor_id = -1;
@@ -52,17 +52,93 @@ Control::update(const Platform& platform, Work& work, Population& population)
 
     if (actor_id != -1)
     {
-        const Actor& judge { population.get_actor(actor_id) };
+        Vec3 move_input_value {};
 
-        constexpr Vec3 judge_eye_offset { 0.0f, 0.0f, 0.7f };
-        const Vec3 judge_eye_position { judge.position + judge_eye_offset };
+        if (platform.button_is_down(ButtonType::A))
+        {
+            move_input_value.x -= 1.0f;
+        }
 
-        position = judge_eye_position;
-        rotation = judge.rotation;
+        if (platform.button_is_down(ButtonType::D))
+        {
+            move_input_value.x += 1.0f;
+        }
 
-        view_matrix = get_view_matrix(position, rotation);
+        if (platform.button_is_down(ButtonType::W))
+        {
+            move_input_value.y += 1.0f;
+        }
 
-        generate_actions(platform, work);
+        if (platform.button_is_down(ButtonType::S))
+        {
+            move_input_value.y -= 1.0f;
+        }
+
+        move_input_value = move_input_value.normalize();
+
+        if (platform.button_is_down(ButtonType::E))
+        {
+            move_input_value.z += 1.0f;
+        }
+
+        if (platform.button_is_down(ButtonType::Q))
+        {
+            move_input_value.z -= 1.0f;
+        }
+
+        Actor& actor { population.get_actor(actor_id) };
+
+        const Vec3 actor_forward { get_forward(actor.rotation) };
+        const Vec3 actor_right { get_right(actor.rotation) };
+
+        Vec3 velocity_forward {};
+        Vec3 velocity_right {};
+
+        const Vec3 judge_forward_xy {
+            actor_forward.x,
+            actor_forward.y,
+            0.0f
+        };
+
+        velocity_right = move_input_value.x * actor_right;
+        velocity_forward = move_input_value.y * judge_forward_xy;
+
+        const Vec3 move_velocity { actor.move_speed * (velocity_right + velocity_forward).normalize() };
+
+        actor.velocity.x = move_velocity.x;
+        actor.velocity.y = move_velocity.y;
+
+        if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
+        {
+            const Vec3 rotate_input_value {
+                static_cast<f32>(platform.pointer_delta_x),
+                static_cast<f32>(platform.pointer_delta_y),
+                0.0f,
+            };
+
+            actor.rotation.z -= CAMERA_SENSITIVITY_X * rotate_input_value.x;
+            actor.rotation.x -= CAMERA_SENSITIVITY_Y * rotate_input_value.y;
+
+            if (actor.rotation.x > CAMERA_PITCH_LIMIT)
+            {
+                actor.rotation.x = CAMERA_PITCH_LIMIT;
+            }
+
+            if (actor.rotation.x < -CAMERA_PITCH_LIMIT)
+            {
+                actor.rotation.x = -CAMERA_PITCH_LIMIT;
+            }
+        }
+
+        if (platform.button_is_pressed(ButtonType::Space))
+        {
+            if (actor.is_grounded)
+            {
+                actor.velocity.z = JUDGE_DEFAULT_JUMP_SPEED;
+            }
+        }
+
+        sync_actor(actor);
     }
     else
     {
@@ -122,9 +198,9 @@ Control::update(const Platform& platform, Work& work, Population& population)
         {
             rotation.x = -CAMERA_PITCH_LIMIT;
         }
-
-        view_matrix = get_view_matrix(position, rotation);
     }
+
+    view_matrix = get_view_matrix(position, rotation);
 }
 
 void
@@ -134,89 +210,11 @@ Control::quit()
 }
 
 void
-Control::set_actor_id(const s32 new_actor_id)
+Control::sync_actor(const Actor& actor)
 {
-    actor_id = new_actor_id;
-}
+    constexpr Vec3 eye_offset { 0.0f, 0.0f, 0.7f };
+    const Vec3 eye_position { actor.position + eye_offset };
 
-void
-Control::generate_actions(const Platform& platform, Work& work)
-{
-    generate_move_action(platform, work);
-
-    if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
-    {
-        generate_rotate_action(platform, work);
-    }
-
-    if (platform.button_is_pressed(ButtonType::Space))
-    {
-        generate_jump_action(platform, work);
-    }
-}
-
-void
-Control::generate_move_action(const Platform& platform, Work& work)
-{
-    Vec3 action_value {};
-
-    if (platform.button_is_down(ButtonType::A))
-    {
-        action_value.x -= 1.0f;
-    }
-
-    if (platform.button_is_down(ButtonType::D))
-    {
-        action_value.x += 1.0f;
-    }
-
-    if (platform.button_is_down(ButtonType::W))
-    {
-        action_value.y += 1.0f;
-    }
-
-    if (platform.button_is_down(ButtonType::S))
-    {
-        action_value.y -= 1.0f;
-    }
-
-    action_value = action_value.normalize();
-
-    if (platform.button_is_down(ButtonType::E))
-    {
-        action_value.z += 1.0f;
-    }
-
-    if (platform.button_is_down(ButtonType::Q))
-    {
-        action_value.z -= 1.0f;
-    }
-
-    const Action move_act { ActionType::Move, action_value };
-
-    work.add_action(move_act);
-}
-
-void
-Control::generate_rotate_action(const Platform& platform, Work& work)
-{
-    const Vec3 action_value {
-        static_cast<f32>(platform.pointer_delta_x),
-        static_cast<f32>(platform.pointer_delta_y),
-        0.0f,
-    };
-
-    const Action rotate_action { ActionType::Rotate, action_value };
-
-    work.add_action(rotate_action);
-}
-
-void
-Control::generate_jump_action(const Platform& platform, Work& work)
-{
-    const Vec3 action_value {};
-
-    const Action jump_action { ActionType::Jump, action_value };
-
-    work.add_action(jump_action);
+    position = eye_position;
+    rotation = actor.rotation;
 }

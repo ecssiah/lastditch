@@ -13,7 +13,54 @@ using namespace std;
 void
 Physics::update_actor(World& world, Actor& actor)
 {
-    integrate(world, actor);
+    actor.is_grounded = false;
+
+    constexpr s32 z_axis_index { static_cast<s32>(Axis::Z) };
+
+    const f32 dz {
+        actor.velocity[z_axis_index] <= 0.0f
+            ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.get_gravity()[z_axis_index]
+            : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.get_gravity()[z_axis_index]
+    };
+
+    actor.velocity[z_axis_index] = clamp(
+        actor.velocity[z_axis_index] + dz,
+        -MAX_VELOCITY,
+        MAX_VELOCITY
+    );
+
+    if (actor.box_collider.collision_enabled)
+    {
+        const Vec3 move {
+            abs(FIXED_DELTA_TIME_32 * actor.velocity.x),
+            abs(FIXED_DELTA_TIME_32 * actor.velocity.y),
+            abs(FIXED_DELTA_TIME_32 * actor.velocity.z),
+        };
+
+        const f32 max_move { max({move.x, move.y, move.z}) };
+
+        s32 step_count { static_cast<s32>(ceil(max_move)) };
+
+        if (step_count < 1)
+        {
+            step_count = 1;
+        }
+
+        const f32 step_delta_time { FIXED_DELTA_TIME_32 / static_cast<f32>(step_count) };
+
+        for (s32 step_index = 0; step_index < step_count; ++step_index)
+        {
+            resolve_axis_collisions(world, actor, Axis::X, step_delta_time);
+            resolve_axis_collisions(world, actor, Axis::Y, step_delta_time);
+            resolve_axis_collisions(world, actor, Axis::Z, step_delta_time);
+        }
+    }
+    else
+    {
+        const Vec3 displacement { FIXED_DELTA_TIME_32 * actor.velocity };
+
+        actor.position = actor.position + displacement;
+    }
 }
 
 Bounds3
@@ -167,58 +214,5 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
     else
     {
         actor.position[axis_index] += step_delta_time * actor.velocity[axis_index];
-    }
-}
-
-void
-Physics::integrate(World& world, Actor& actor)
-{
-    actor.is_grounded = false;
-
-    constexpr s32 z_axis_index { static_cast<s32>(Axis::Z) };
-
-    const f32 dz {
-        actor.velocity[z_axis_index] <= 0.0f
-            ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.get_gravity()[z_axis_index]
-            : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.get_gravity()[z_axis_index]
-    };
-
-    actor.velocity[z_axis_index] = clamp(
-        actor.velocity[z_axis_index] + dz,
-        -MAX_VELOCITY,
-        MAX_VELOCITY
-    );
-
-    if (actor.box_collider.collision_enabled)
-    {
-        const Vec3 move {
-            abs(FIXED_DELTA_TIME_32 * actor.velocity.x),
-            abs(FIXED_DELTA_TIME_32 * actor.velocity.y),
-            abs(FIXED_DELTA_TIME_32 * actor.velocity.z),
-        };
-
-        const f32 max_move { max({move.x, move.y, move.z}) };
-
-        s32 step_count { static_cast<s32>(ceil(max_move)) };
-        
-        if (step_count < 1)
-        {
-            step_count = 1;
-        }
-
-        const f32 step_delta_time { FIXED_DELTA_TIME_32 / static_cast<f32>(step_count) };
-
-        for (s32 step_index = 0; step_index < step_count; ++step_index)
-        {
-            resolve_axis_collisions(world, actor, Axis::X, step_delta_time);
-            resolve_axis_collisions(world, actor, Axis::Y, step_delta_time);
-            resolve_axis_collisions(world, actor, Axis::Z, step_delta_time);
-        }
-    }
-    else
-    {
-        const Vec3 displacement { FIXED_DELTA_TIME_32 * actor.velocity };
-
-        actor.position = actor.position + displacement;
     }
 }

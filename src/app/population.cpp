@@ -75,8 +75,7 @@ Population::init_judge()
         .nation_type = NationType::Lion,
         .position = { WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
         .rotation = { 0.0f, 0.0f, 90.0f },
-        .rotation_target = { 0.0f, 0.0f, 90.0f },
-        .speed = JUDGE_DEFAULT_GROUND_SPEED,
+        .move_speed = JUDGE_DEFAULT_GROUND_SPEED,
         .velocity = { 0.0f, 0.0f, 0.0f },
         .box_collider = {
             .collision_enabled = true,
@@ -126,8 +125,7 @@ Population::init_agents(Work& work)
                 .nation_type = nation_type,
                 .position = position,
                 .rotation = rotation,
-                .rotation_target = rotation,
-                .speed = AGENT_DEFAULT_GROUND_SPEED,
+                .move_speed = AGENT_DEFAULT_MOVE_SPEED,
                 .box_collider = {
                     .collision_enabled = true,
                     .radius = { 0.40f, 0.40f, 0.90f },
