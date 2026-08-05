@@ -20,6 +20,15 @@ Population::init(Work& work)
 }
 
 void
+Population::update(World& world)
+{
+    for (Actor& actor : actor_vector)
+    {
+        Physics::update_actor(world, actor);
+    }
+}
+
+void
 Population::quit()
 {
     LOG_INFO("POPULATION QUIT");

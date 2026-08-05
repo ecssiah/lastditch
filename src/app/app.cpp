@@ -28,12 +28,14 @@ App::update()
     while (simulation_time >= FIXED_DELTA_TIME_64)
     {
         work.update(world, population);
-        world.update(world, population);
+
+        world.update();
+        population.update(world);
 
         simulation_time -= FIXED_DELTA_TIME_64;
     }
 
-    control.update(platform, population, work);
+    control.update(platform, work, population);
     render.update(control, world, population);
 
     active = platform.end_frame();

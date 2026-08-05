@@ -26,7 +26,7 @@ Control::init(const Population& population)
 }
 
 void
-Control::update(const Platform& platform, Population& population, Work& work)
+Control::update(const Platform& platform, Work& work, Population& population)
 {
     if (platform.button_is_released(ButtonType::Tab))
     {
@@ -62,7 +62,7 @@ Control::update(const Platform& platform, Population& population, Work& work)
 
         view_matrix = get_view_matrix(position, rotation);
 
-        queue_actions(platform, work);
+        generate_actions(platform, work);
     }
     else
     {
@@ -140,23 +140,23 @@ Control::set_actor_id(const s32 new_actor_id)
 }
 
 void
-Control::queue_actions(const Platform& platform, Work& work)
+Control::generate_actions(const Platform& platform, Work& work)
 {
-    queue_move_action(platform, work);
+    generate_move_action(platform, work);
 
     if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
     {
-        queue_rotate_action(platform, work);
+        generate_rotate_action(platform, work);
     }
 
     if (platform.button_is_pressed(ButtonType::Space))
     {
-        queue_jump_action(platform, work);
+        generate_jump_action(platform, work);
     }
 }
 
 void
-Control::queue_move_action(const Platform& platform, Work& work)
+Control::generate_move_action(const Platform& platform, Work& work)
 {
     Vec3 action_value {};
 
@@ -198,7 +198,7 @@ Control::queue_move_action(const Platform& platform, Work& work)
 }
 
 void
-Control::queue_rotate_action(const Platform& platform, Work& work)
+Control::generate_rotate_action(const Platform& platform, Work& work)
 {
     const Vec3 action_value {
         static_cast<f32>(platform.pointer_delta_x),
@@ -212,7 +212,7 @@ Control::queue_rotate_action(const Platform& platform, Work& work)
 }
 
 void
-Control::queue_jump_action(const Platform& platform, Work& work)
+Control::generate_jump_action(const Platform& platform, Work& work)
 {
     const Vec3 action_value {};
 

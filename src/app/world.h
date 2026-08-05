@@ -250,7 +250,7 @@ class World
 {
 public:
     void init();
-    void update(World& world, Population& population);
+    void update();
     void quit();
 
     static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);

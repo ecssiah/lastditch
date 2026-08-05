@@ -6,6 +6,7 @@
 
 class Actor;
 class Work;
+class World;
 
 constexpr u32 POPULATION_SEED { 1388 };
 constexpr s32 AGENT_INITIAL_COUNT { 12 };
@@ -14,6 +15,7 @@ class Population
 {
 public:
     void init(Work& work);
+    void update(World& world);
     void quit();
 
     Random& get_random();

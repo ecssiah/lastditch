@@ -320,12 +320,9 @@ World::init()
 }
 
 void
-World::update(World& world, Population& population)
+World::update()
 {
-    for (Actor& actor : population.get_actor_vector())
-    {
-        Physics::update_actor(world, actor);
-    }
+
 }
 
 void

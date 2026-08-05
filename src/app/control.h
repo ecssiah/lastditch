@@ -13,7 +13,7 @@ class Control
 {
 public:
     void init(const Population& population);
-    void update(const Platform& platform, Population& population, Work& work);
+    void update(const Platform& platform, Work& work, Population& population);
     void quit();
 
     void set_actor_id(s32 new_actor_id);
@@ -27,10 +27,10 @@ public:
     Mat4 view_matrix { 1.0f };
 
 private:
-    static void queue_actions(const Platform& platform, Work& work);
+    static void generate_actions(const Platform& platform, Work& work);
 
-    static void queue_move_action(const Platform& platform, Work& work);
-    static void queue_rotate_action(const Platform& platform, Work& work);
-    static void queue_jump_action(const Platform& platform, Work& work);
+    static void generate_move_action(const Platform& platform, Work& work);
+    static void generate_rotate_action(const Platform& platform, Work& work);
+    static void generate_jump_action(const Platform& platform, Work& work);
 };
 
