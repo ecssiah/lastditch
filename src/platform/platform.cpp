@@ -50,9 +50,10 @@ Platform::update_time()
 void
 Platform::begin_frame()
 {
+    update_time();
+
     glfwPollEvents();
 
-    update_time();
     update_buttons();
     update_pointer();
 }
