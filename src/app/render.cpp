@@ -18,7 +18,7 @@
 
 using namespace std;
 
-const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE]
+const IVec3 VOXEL_VERTEX_ARRAY[static_cast<s32>(Direction::COUNT)][VERTEX_COUNT_PER_FACE]
 {
     {
         { 1, 0, 0 },
@@ -58,7 +58,7 @@ const IVec3 VOXEL_VERTEX_ARRAY[DIRECTION_COUNT][VERTEX_COUNT_PER_FACE]
     },
 };
 
-const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * DIRECTION_COUNT]
+const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * static_cast<s32>(Direction::COUNT)]
 {
     { +0, +1, +0 },{ +0, +0, +1 },
     { +0, -1, +0 },{ +0, +0, +1 },
@@ -199,14 +199,14 @@ Render::load_block_texture_directory()
         GL_RGBA8,
         BLOCK_TEXTURE_SIZE,
         BLOCK_TEXTURE_SIZE,
-        BLOCK_TYPE_COUNT,
+        static_cast<s32>(BlockType::COUNT),
         0,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         nullptr
     );
 
-    assert(voxel_render.block_config_data.entry_vector.size() <= BLOCK_TYPE_COUNT);
+    assert(voxel_render.block_config_data.entry_vector.size() <= static_cast<s32>(BlockType::COUNT));
 
     for (size_t layer_index = 0; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
     {
@@ -215,7 +215,7 @@ Render::load_block_texture_directory()
         const s32 block_type_index { World::block_type_index_from_string(config_entry.key) };
 
         assert(block_type_index >= 0);
-        assert(block_type_index < BLOCK_TYPE_COUNT);
+        assert(block_type_index < static_cast<s32>(BlockType::COUNT));
 
         string texture_path { format("assets/textures/block/{}", config_entry.value) };
 
@@ -237,7 +237,7 @@ Render::load_actor_texture_directory()
         GL_RGBA8,
         ACTOR_TEXTURE_SIZE,
         ACTOR_TEXTURE_SIZE,
-        BLOCK_TYPE_COUNT,
+        static_cast<s32>(BlockType::COUNT),
         0,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
@@ -250,7 +250,7 @@ Render::load_actor_texture_directory()
     {
         const ConfigEntry& config_entry { model_render.actor_config_data.entry_vector[layer_index]};
 
-        const s32 nation_type_index { Nation::get_type_index(config_entry.key) };
+        const s32 nation_type_index { find_nation_type_index(config_entry.key) };
 
         assert(nation_type_index >= 0 && nation_type_index < NATION_TYPE_COUNT);
 
@@ -703,14 +703,14 @@ Render::init_voxel_render(const World& world)
 
     voxel_render.normal_table_location = glGetUniformLocation(voxel_render.program_id, "u_normal_table");
 
-    glUniform3fv(voxel_render.normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0][0]);
+    glUniform3fv(voxel_render.normal_table_location, static_cast<s32>(Direction::COUNT), &DIRECTION_NORMAL_ARRAY[0]);
 
     voxel_render.uv_projection_table_location = glGetUniformLocation(
         voxel_render.program_id,
         "u_uv_projection_table"
     );
 
-    glUniform3fv(voxel_render.uv_projection_table_location, DIRECTION_COUNT * 2, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
+    glUniform3fv(voxel_render.uv_projection_table_location, static_cast<s32>(Direction::COUNT) * 2, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
 
     voxel_render.projection_location = glGetUniformLocation(voxel_render.program_id, "u_projection_matrix");
     voxel_render.view_location = glGetUniformLocation(voxel_render.program_id, "u_view_matrix");
@@ -970,6 +970,8 @@ Render::init(const Platform& platform, const World& world, const Population& pop
 
     debug.init(world);
     screen.init(platform);
+
+    LOG_INFO("RENDER INIT");
 }
 
 void 
@@ -986,6 +988,12 @@ Render::update(const World& world, const Population& population)
 
     debug.update();
     screen.update(population);
+}
+
+void
+Render::quit()
+{
+    LOG_INFO("RENDER QUIT");
 }
 
 GLuint 

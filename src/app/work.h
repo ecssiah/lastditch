@@ -26,18 +26,11 @@ public:
     IVec3 target_position {};
 };
 
-#define FOR_LIST_TASK_TYPE(DO)                                                      \
-    DO(wander)                                                                      \
-    DO(seek)                                                                        \
-
-enum TaskType
+enum class TaskType : u8
 {
-    FOR_LIST_TASK_TYPE(DEFINE_ENUM_VARIANTS)
-};
-
-constexpr s32 TASK_TYPE_COUNT
-{
-    FOR_LIST_TASK_TYPE(DEFINE_ENUM_COUNT)
+    Wander,
+    Seek,
+    COUNT,
 };
 
 union TaskState

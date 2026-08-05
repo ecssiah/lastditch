@@ -1,32 +1,51 @@
 #pragma once
 
 #include "core/geometry.h"
-#include "core/macros.h"
 #include "core/types.h"
-
-#define FOR_LIST_NATION_TYPE(DO)                                                    \
-    DO(Wolf)                                                                        \
-    DO(Eagle)                                                                       \
-    DO(Lion)                                                                        \
-    DO(Bear)                                                                        \
 
 enum class NationType : u8
 {
-    FOR_LIST_NATION_TYPE(DEFINE_ENUM_VARIANTS)
-};
-    
-constexpr s32 NATION_TYPE_COUNT
-{
-    FOR_LIST_NATION_TYPE(DEFINE_ENUM_COUNT)
+    Wolf,
+    Eagle,
+    Lion,
+    Bear,
+    COUNT,
 };
 
-extern const char* NATION_TYPE_STRING_ARRAY[NATION_TYPE_COUNT];
+constexpr s32 NATION_TYPE_COUNT { static_cast<std::size_t>(NationType::COUNT) };
+
+constexpr std::string_view
+get_nation_type_string(const NationType nation_type)
+{
+    switch (nation_type)
+    {
+        case NationType::Wolf:      return "Wolf";
+        case NationType::Eagle:     return "Eagle";
+        case NationType::Lion:      return "Lion";
+        case NationType::Bear:      return "Bear";
+        default:                    throw std::invalid_argument("Invalid Nation Type");
+    }
+}
+
+constexpr s32
+find_nation_type_index(const std::string_view nation_type_string)
+{
+    for (s32 index = 0; index < NATION_TYPE_COUNT; index++)
+    {
+        const NationType nation_type { static_cast<NationType>(index) };
+
+        if (nation_type_string == get_nation_type_string(nation_type))
+        {
+            return index;
+        }
+    }
+
+    return -1;
+}
 
 class Nation
 {
 public:
-    static s32 get_type_index(const std::string& nation_type_string);
-
     NationType nation_type {};
     IVec3 home_coordinate {};
 };

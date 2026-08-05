@@ -12,21 +12,14 @@ constexpr s32 AREA_EXPANSION_SIZE_MIN { 8 };
 
 constexpr s32 DOOR_MINIMUM_EDGE_SIZE { 5 };
 
-#define FOR_LIST_AREA_TYPE(DO)                                                          \
-    DO(Open)                                                                            \
-    DO(Room)                                                                            \
-    DO(Elevator)                                                                        \
-    DO(Temple)                                                                          \
-    DO(Wireframe)                                                                       \
-
 enum class AreaType : u8
 {
-    FOR_LIST_AREA_TYPE(DEFINE_ENUM_VARIANTS)
-};
-
-constexpr s32 AREA_TYPE_COUNT
-{
-    FOR_LIST_AREA_TYPE(DEFINE_ENUM_COUNT)
+    Open,
+    Room,
+    Elevator,
+    Temple,
+    Wireframe,
+    COUNT,
 };
 
 class Door

@@ -20,36 +20,29 @@ constexpr f32 CAMERA_PITCH_LIMIT { 89.0f };
 
 constexpr s32 ACTOR_TASK_MAX_COUNT { 128 };
 
-#define FOR_LIST_MOVEMENT_TYPE(DO)                                                  \
-    DO(Ground)                                                                      \
-    DO(Debug)                                                                       \
-
 enum class MovementType : u8
 {
-    FOR_LIST_MOVEMENT_TYPE(DEFINE_ENUM_VARIANTS)
+    Ground,
+    Debug,
+    COUNT,
 };
 
-constexpr s32 MOVEMENT_TYPE_COUNT
+enum class ActorType : u8
 {
-    FOR_LIST_MOVEMENT_TYPE(DEFINE_ENUM_COUNT)
+    None,
+    Judge,
+    Agent,
+    COUNT,
 };
 
-#define FOR_LIST_ACTOR_TYPE(DO)                                                     \
-    DO(None)                                                                        \
-    DO(Judge)                                                                       \
-    DO(Agent)                                                                       \
+constexpr s32 ACTOR_TYPE_COUNT { static_cast<s32>(ActorType::COUNT) };
 
-enum ActorType
+inline const char* ACTOR_TYPE_STRING_ARRAY[]
 {
-    FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_VARIANTS)
+    "None",
+    "Judge",
+    "Agent",
 };
-
-constexpr s32 ACTOR_TYPE_COUNT
-{
-    FOR_LIST_ACTOR_TYPE(DEFINE_ENUM_COUNT)
-};
-
-extern const char* ACTOR_TYPE_STRING_ARRAY[ACTOR_TYPE_COUNT];
 
 class Actor
 {

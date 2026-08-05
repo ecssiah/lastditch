@@ -3,25 +3,17 @@
 #include <numbers>
 #include <vector>
 
-#include "macros.h"
 #include "types.h"
 
 constexpr f32 EPSILON { 1e-5f };
 constexpr f32 EPSILON_SQUARED { 1e-10f };
 
-#define FOR_LIST_AXIS(DO)                                                           \
-    DO(X)                                                                           \
-    DO(Y)                                                                           \
-    DO(Z)                                                                           \
-
 enum class Axis : u8
 {
-    FOR_LIST_AXIS(DEFINE_ENUM_VARIANTS)
-};
-
-constexpr s32 AXIS_COUNT
-{
-    FOR_LIST_AXIS(DEFINE_ENUM_COUNT)
+    X,
+    Y,
+    Z,
+    COUNT,
 };
 
 class IVec2;

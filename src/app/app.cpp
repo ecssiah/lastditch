@@ -41,6 +41,8 @@ App::quit()
 {
     population.quit();
     world.quit();
+
+    render.quit();
     
     Log::quit();
 

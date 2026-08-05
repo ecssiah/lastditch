@@ -9,13 +9,14 @@
 #include "debug.h"
 #include "direction.h"
 #include "population.h"
+#include "core/log.h"
 #include "core/types.h"
 
 using namespace std;
 
 namespace
 {
-    constexpr array<IVec2, section_count> SECTION_ORIGIN_ARRAY
+    constexpr array<IVec2, static_cast<s32>(SectionType::COUNT)> SECTION_ORIGIN_ARRAY
     {
         {
             // Center
@@ -146,7 +147,7 @@ namespace
         }
     };
 
-    constexpr array<IVec2, section_count> SECTION_SIZE_ARRAY
+    constexpr array<IVec2, static_cast<s32>(SectionType::COUNT)> SECTION_SIZE_ARRAY
     {
         {
             // Center
@@ -308,18 +309,22 @@ World::init()
         place_content(floor_number);
     }
 
+
+
     set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::BearSymbol);
     set_block_type(WORLD_CENTER_S32 + 17, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::WolfSymbol);
     set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::LionSymbol);
     set_block_type(WORLD_CENTER_S32 + 19, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::EagleSymbol);
 
     calculate_direction_masks();
+
+    LOG_INFO("WORLD INIT");
 }
 
 void
 World::quit()
 {
-
+    LOG_INFO("WORLD QUIT");
 }
 
 b32
@@ -473,14 +478,18 @@ World::is_solid(const s32 x, const s32 y, const s32 z)
 b32
 World::is_clear(const s32 x, const s32 y, const s32 z, const u8 direction_mask)
 {
-    for (s32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
+    for (s32 direction_index = 0; direction_index < static_cast<s32>(Direction::COUNT); ++direction_index)
     {
         if (direction_mask & 1 << direction_index)
         {
+            const Direction direction { static_cast<Direction>(direction_index) };
+
+            const Vec3 direction_normal { get_direction_normal(direction) };
+
             const IVec3 neighbor_position {
-                x + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
-                y + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][1]),
-                z + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
+                x + static_cast<s32>(direction_normal.x),
+                y + static_cast<s32>(direction_normal.y),
+                z + static_cast<s32>(direction_normal.z),
             };
 
             if (is_solid(neighbor_position.x, neighbor_position.y, neighbor_position.z))
@@ -517,12 +526,13 @@ World::get_stride(const Direction direction)
 {
     switch (direction)
     {
-        case Direction::East:   return +WORLD_STRIDE_X;
-        case Direction::West:   return -WORLD_STRIDE_X;
-        case Direction::North:  return +WORLD_STRIDE_Y;
-        case Direction::South:  return -WORLD_STRIDE_Y;
-        case Direction::Up:     return +WORLD_STRIDE_Z;
-        case Direction::Down:   return -WORLD_STRIDE_Z;
+        case Direction::East:       return +WORLD_STRIDE_X;
+        case Direction::West:       return -WORLD_STRIDE_X;
+        case Direction::North:      return +WORLD_STRIDE_Y;
+        case Direction::South:      return -WORLD_STRIDE_Y;
+        case Direction::Up:         return +WORLD_STRIDE_Z;
+        case Direction::Down:       return -WORLD_STRIDE_Z;
+        default:                    throw std::invalid_argument("invalid direction");
     }
 
     assert(false);
@@ -531,9 +541,11 @@ World::get_stride(const Direction direction)
 s32
 World::block_type_index_from_string(const string& block_type_string)
 {
-    for (s32 block_type_index = 0; block_type_index < BLOCK_TYPE_COUNT; ++block_type_index)
+    for (s32 block_type_index = 0; block_type_index < static_cast<s32>(BlockType::COUNT); ++block_type_index)
     {
-        if (block_type_string == block_type_string_array[block_type_index])
+        const BlockType block_type { static_cast<BlockType>(block_type_index) };
+
+        if (block_type_string == get_block_type_string(block_type))
         {
             return block_type_index;
         }
@@ -959,8 +971,8 @@ World::layout_tower_areas()
     {
         vector<Area>& floor_area_vector { get_floor_area_vector(floor_number) };
 
-        constexpr IVec2 quadrant1_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant1)] };
-        constexpr IVec2 quadrant1_size { SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant1)] };
+        constexpr IVec2 quadrant1_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
+        constexpr IVec2 quadrant1_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
 
         Area area_quadrant_1 {
             .id = area_id_generator.next(),
@@ -969,8 +981,8 @@ World::layout_tower_areas()
             .bounds = { quadrant1_origin,quadrant1_origin + quadrant1_size },
         };
 
-        constexpr IVec2 quadrant2_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant2)] };
-        constexpr IVec2 quadrant2_size { SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant2)] };
+        constexpr IVec2 quadrant2_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(SectionType::Quadrant2)] };
+        constexpr IVec2 quadrant2_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant2)] };
 
         Area area_quadrant_2 {
             .id = area_id_generator.next(),
@@ -979,8 +991,8 @@ World::layout_tower_areas()
             .bounds = { quadrant2_origin,quadrant2_origin + quadrant2_size },
         };
 
-        constexpr IVec2 quadrant3_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant3)] };
-        constexpr IVec2 quadrant3_size { SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant3)] };
+        constexpr IVec2 quadrant3_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(SectionType::Quadrant3)] };
+        constexpr IVec2 quadrant3_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant3)] };
 
         Area area_quadrant_3 {
             .id = area_id_generator.next(),
@@ -989,8 +1001,8 @@ World::layout_tower_areas()
             .bounds = { quadrant3_origin,quadrant3_origin + quadrant3_size },
         };
 
-        constexpr IVec2 quadrant4_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(Section::Quadrant4)] };
-        constexpr IVec2 quadrant4_size { SECTION_SIZE_ARRAY[static_cast<u8>(Section::Quadrant4)] };
+        constexpr IVec2 quadrant4_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(SectionType::Quadrant4)] };
+        constexpr IVec2 quadrant4_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant4)] };
 
         Area area_quadrant_4 {
             .id = area_id_generator.next(),
@@ -1053,15 +1065,15 @@ World::layout_tower_areas()
             }
         }
 
-        for (s32 section_index = 0; section_index < section_count; ++section_index)
+        for (s32 section_index = 0; section_index < SECTION_TYPE_COUNT; ++section_index)
         {
-            const Section section { static_cast<Section>(section_index) };
+            const SectionType section { static_cast<SectionType>(section_index) };
 
             const b32 quadrant_section {
-                section == Section::Quadrant1 ||
-                section == Section::Quadrant2 ||
-                section == Section::Quadrant3 ||
-                section == Section::Quadrant4
+                section == SectionType::Quadrant1 ||
+                section == SectionType::Quadrant2 ||
+                section == SectionType::Quadrant3 ||
+                section == SectionType::Quadrant4
             };
 
             if (quadrant_section)
@@ -1787,10 +1799,12 @@ World::get_direction_mask(const s32 x, const s32 y, const s32 z)
 
     for (s32 direction_index = 0; direction_index < DIRECTION_COUNT; ++direction_index)
     {
+        const s32 offset { direction_index * 3 };
+
         const IVec3 neighbor_position {
-            x + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][0]),
-            y + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][1]),
-            z + static_cast<s32>(DIRECTION_NORMAL_ARRAY[direction_index][2]),
+            x + static_cast<s32>(DIRECTION_NORMAL_ARRAY[offset + 0]),
+            y + static_cast<s32>(DIRECTION_NORMAL_ARRAY[offset + 1]),
+            z + static_cast<s32>(DIRECTION_NORMAL_ARRAY[offset + 2]),
         };
 
         const b32 valid_neighbor {

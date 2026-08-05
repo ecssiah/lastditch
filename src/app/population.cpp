@@ -15,12 +15,14 @@ Population::init(Work& work)
     init_nations();
     init_judge();
     init_agents(work);
+
+    LOG_INFO("POPULATION INIT");
 }
 
 void
 Population::quit()
 {
-
+    LOG_INFO("POPULATION QUIT");
 }
 
 Random&
@@ -82,8 +84,8 @@ Population::init_judge()
     actor_vector.push_back(judge);
 
     LOG_INFO(
-        "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)", 
-        NATION_TYPE_STRING_ARRAY[static_cast<u8>(judge.nation_type)],
+        "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)",
+        get_nation_type_string(judge.nation_type),
         judge_id,
         judge.position.x,
         judge.position.y,
@@ -94,11 +96,11 @@ Population::init_judge()
 void
 Population::init_agents(Work& work)
 {
-    for (s32 nation_index = 0; nation_index < NATION_TYPE_COUNT; ++nation_index)
+    for (s32 nation_index = 0; nation_index < static_cast<s32>(NationType::COUNT); ++nation_index)
     {
         for (s32 agent_index = 0; agent_index < AGENT_INITIAL_COUNT; ++agent_index)
         {
-            const s32 nation_type_index { random.uniform(0, NATION_TYPE_COUNT - 1) };
+            const s32 nation_type_index { random.uniform(0, static_cast<s32>(NationType::COUNT) - 1) };
             
             const auto nation_type { static_cast<NationType>(nation_type_index) };
             const Nation& nation { nation_array[nation_type_index] };
@@ -139,7 +141,7 @@ Population::init_agents(Work& work)
             const Task task {
                 .id = task_id_generator.next(),
                 .actor_id = agent.id,
-                .task_type = TaskType::wander,
+                .task_type = TaskType::Wander,
                 .task_state = task_state,
             };
 
@@ -147,7 +149,7 @@ Population::init_agents(Work& work)
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",
-                NATION_TYPE_STRING_ARRAY[nation_type_index],
+                get_nation_type_string(nation_type),
                 agent.id,
                 agent.position.x,
                 agent.position.y,

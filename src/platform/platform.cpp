@@ -61,7 +61,7 @@ Platform::begin_frame()
 b32
 Platform::end_frame() const
 {
-    if (button_is_pressed(Button::Escape))
+    if (button_is_pressed(ButtonType::Escape))
     {
         glfwSetWindowShouldClose(glfw_window, 1);
 
@@ -99,7 +99,7 @@ Platform::get_framebuffer_size() const
 void
 Platform::init_buttons()
 {
-    for (s32 button_index = 0; button_index < BUTTON_COUNT; ++button_index)
+    for (s32 button_index = 0; button_index < static_cast<s32>(ButtonType::COUNT); ++button_index)
     {
         button_array_current[button_index] = false;
         button_array_previous[button_index] = false;
@@ -107,33 +107,33 @@ Platform::init_buttons()
 
     for (auto& glfw_key_index : glfw_keymap)
     {
-        glfw_key_index = Button::None;
+        glfw_key_index = ButtonType::None;
     }
 
     for (auto& glfw_button_index : glfw_buttonmap)
     {
-        glfw_button_index = Button::None;
+        glfw_button_index = ButtonType::None;
     }
 
-    glfw_keymap[GLFW_KEY_A] = Button::A;
-    glfw_keymap[GLFW_KEY_D] = Button::D;
-    glfw_keymap[GLFW_KEY_E] = Button::E;
-    glfw_keymap[GLFW_KEY_ESCAPE] = Button::Escape;
-    glfw_keymap[GLFW_KEY_Q] = Button::Q;
-    glfw_keymap[GLFW_KEY_S] = Button::S;
-    glfw_keymap[GLFW_KEY_SPACE] = Button::Space;
-    glfw_keymap[GLFW_KEY_TAB] = Button::Tab;
-    glfw_keymap[GLFW_KEY_W] = Button::W;
+    glfw_keymap[GLFW_KEY_A] = ButtonType::A;
+    glfw_keymap[GLFW_KEY_D] = ButtonType::D;
+    glfw_keymap[GLFW_KEY_E] = ButtonType::E;
+    glfw_keymap[GLFW_KEY_ESCAPE] = ButtonType::Escape;
+    glfw_keymap[GLFW_KEY_Q] = ButtonType::Q;
+    glfw_keymap[GLFW_KEY_S] = ButtonType::S;
+    glfw_keymap[GLFW_KEY_SPACE] = ButtonType::Space;
+    glfw_keymap[GLFW_KEY_TAB] = ButtonType::Tab;
+    glfw_keymap[GLFW_KEY_W] = ButtonType::W;
 
-    glfw_buttonmap[GLFW_MOUSE_BUTTON_LEFT] = Button::Mouse_1;
-    glfw_buttonmap[GLFW_MOUSE_BUTTON_RIGHT] = Button::Mouse_2;
-    glfw_buttonmap[GLFW_MOUSE_BUTTON_MIDDLE] = Button::Mouse_3;
+    glfw_buttonmap[GLFW_MOUSE_BUTTON_LEFT] = ButtonType::Mouse_1;
+    glfw_buttonmap[GLFW_MOUSE_BUTTON_RIGHT] = ButtonType::Mouse_2;
+    glfw_buttonmap[GLFW_MOUSE_BUTTON_MIDDLE] = ButtonType::Mouse_3;
 }
 
 void
 Platform::update_buttons()
 {
-    for (s32 button_index = 0; button_index < BUTTON_COUNT; ++button_index)
+    for (s32 button_index = 0; button_index < static_cast<s32>(ButtonType::COUNT); ++button_index)
     {
         button_array_previous[button_index] = button_array_current[button_index];
         button_array_current[button_index] = false;
@@ -141,10 +141,10 @@ Platform::update_buttons()
 
     for (s32 glfw_key_index = 0; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
-        const Button button { glfw_keymap[glfw_key_index] };
+        const ButtonType button { glfw_keymap[glfw_key_index] };
         const s32 button_index { static_cast<s32>(button) };
 
-        if (button == Button::None)
+        if (button == ButtonType::None)
         {
             continue;
         }
@@ -154,10 +154,10 @@ Platform::update_buttons()
 
     for (s32 glfw_button_index = 0; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
-        const Button button { glfw_buttonmap[glfw_button_index] };
+        const ButtonType button { glfw_buttonmap[glfw_button_index] };
         const s32 button_index { static_cast<s32>(button) };
 
-        if (button == Button::None)
+        if (button == ButtonType::None)
         {
             continue;
         }
@@ -189,7 +189,7 @@ Platform::update_pointer()
 }
 
 b32
-Platform::button_is_down(Button button) const
+Platform::button_is_down(ButtonType button) const
 {
     const s32 button_index { static_cast<s32>(button) };
 
@@ -197,7 +197,7 @@ Platform::button_is_down(Button button) const
 }
 
 b32
-Platform::button_is_pressed(Button button) const
+Platform::button_is_pressed(ButtonType button) const
 {
     const s32 button_index { static_cast<s32>(button) };
 
@@ -205,7 +205,7 @@ Platform::button_is_pressed(Button button) const
 }
 
 b32
-Platform::button_is_released(Button button) const
+Platform::button_is_released(ButtonType button) const
 {
     const s32 button_index { static_cast<s32>(button) };
 

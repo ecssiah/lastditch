@@ -21,12 +21,12 @@ Control::queue_acts(const Platform& platform, Population& population, Work& work
         queue_rotate_action(platform, population, work);
     }
 
-    if (platform.button_is_pressed(Button::Space))
+    if (platform.button_is_pressed(ButtonType::Space))
     {
         queue_jump_action(platform, population, work);
     }
 
-    if (platform.button_is_released(Button::Tab))
+    if (platform.button_is_released(ButtonType::Tab))
     {
         queue_debug_mode_action(platform, population, work);
     }
@@ -37,34 +37,34 @@ Control::queue_move_action(const Platform& platform, Population& population, Wor
 {
     Vec3 action_value {};
 
-    if (platform.button_is_down(Button::A))
+    if (platform.button_is_down(ButtonType::A))
     {
         action_value.x -= 1.0f;
     }
 
-    if (platform.button_is_down(Button::D))
+    if (platform.button_is_down(ButtonType::D))
     {
         action_value.x += 1.0f;
     }
 
-    if (platform.button_is_down(Button::W))
+    if (platform.button_is_down(ButtonType::W))
     {
         action_value.y += 1.0f;
     }
 
-    if (platform.button_is_down(Button::S))
+    if (platform.button_is_down(ButtonType::S))
     {
         action_value.y -= 1.0f;
     }
 
     action_value = action_value.normalize();
 
-    if (platform.button_is_down(Button::E))
+    if (platform.button_is_down(ButtonType::E))
     {
         action_value.z += 1.0f;
     }
 
-    if (platform.button_is_down(Button::Q))
+    if (platform.button_is_down(ButtonType::Q))
     {
         action_value.z -= 1.0f;
     }

@@ -51,8 +51,8 @@ Work::update(World& world, Population& population)
     {
         switch (task.task_type)
         {
-            case TaskType::wander:  execute_wander(task, population); break;
-            case TaskType::seek:    execute_seek(task, population); break;
+            case TaskType::Wander:  execute_wander(task, population); break;
+            case TaskType::Seek:    execute_seek(task, population); break;
             default: break;
         }
     }

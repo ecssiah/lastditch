@@ -39,7 +39,7 @@ private:
 
     Random random { POPULATION_SEED };
 
-    std::array<Nation, NATION_TYPE_COUNT> nation_array {};
+    std::array<Nation, static_cast<s32>(NationType::COUNT)> nation_array {};
 
     std::vector<Actor> actor_vector {};
 };

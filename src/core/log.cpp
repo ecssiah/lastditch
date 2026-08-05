@@ -19,9 +19,8 @@ Log::log_level_to_string(const LogLevel level)
         case LogLevel::Warn:   return "WARN";
         case LogLevel::Error:  return "ERROR";
         case LogLevel::Fatal:  return "FATAL";
+        default:               return "UNKNOWN";
     }
-
-    return "UNKNOWN";
 }
 
 void 

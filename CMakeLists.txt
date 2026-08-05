@@ -66,7 +66,6 @@ target_sources(
     src/app/debug.h
     src/app/debug.cpp
     src/app/direction.h
-    src/app/direction.cpp
     src/app/nation.h
     src/app/nation.cpp
     src/app/physics.h
@@ -77,7 +76,6 @@ target_sources(
     src/app/render.cpp
     src/app/screen.h
     src/app/screen.cpp
-    src/app/state.h
     src/app/viewpoint.h
     src/app/work.h
     src/app/work.cpp
@@ -89,7 +87,6 @@ target_sources(
     src/core/geometry.cpp
     src/core/log.h
     src/core/log.cpp
-    src/core/macros.h
     src/core/random.cpp
     src/core/random.h
     src/core/types.h

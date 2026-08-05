@@ -137,7 +137,7 @@ public:
 
     ConfigData block_config_data {};
 
-    u8 block_type_layer_array[BLOCK_TYPE_COUNT] {};
+    u8 block_type_layer_array[static_cast<s32>(BlockType::COUNT)] {};
 
     vector<SectorMesh> sector_mesh_vector {};
     vector<VoxelGpuData> voxel_gpu_data_vector {};
@@ -160,7 +160,7 @@ public:
 
     ConfigData actor_config_data {};
 
-    u8 nation_type_layer_array[NATION_TYPE_COUNT] {};
+    u8 nation_type_layer_array[static_cast<s32>(NationType::COUNT)] {};
 
     vector<ModelGpuData> model_gpu_data_vector {};
 };
@@ -183,6 +183,7 @@ public:
 
     void init(const Platform& platform, const World& world, const Population& population);
     void update(const World& world, const Population& population);
+    void quit();
 
 private:
     static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);

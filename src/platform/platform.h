@@ -2,9 +2,9 @@
 
 #include <tuple>
 
-#include "core/macros.h"
-#include "core/types.h"
 #include "GLFW/glfw3.h"
+
+#include "core/types.h"
 
 using namespace std;
 
@@ -13,29 +13,22 @@ constexpr s32 WINDOW_HEIGHT { 768 };
 
 constexpr f32 WINDOW_ASPECT_RATIO { static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT) };
 
-#define FOR_LIST_BUTTON(DO)                                                                         \
-    DO(None)                                                                                        \
-    DO(A)                                                                                           \
-    DO(D)                                                                                           \
-    DO(E)                                                                                           \
-    DO(Escape)                                                                                      \
-    DO(Mouse_1)                                                                                     \
-    DO(Mouse_2)                                                                                     \
-    DO(Mouse_3)                                                                                     \
-    DO(S)                                                                                           \
-    DO(Space)                                                                                       \
-    DO(Tab)                                                                                         \
-    DO(Q)                                                                                           \
-    DO(W)                                                                                           \
-
-constexpr s32 BUTTON_COUNT
+enum class ButtonType : u8
 {
-    FOR_LIST_BUTTON(DEFINE_ENUM_COUNT)
-};
-
-enum class Button : u8
-{
-    FOR_LIST_BUTTON(DEFINE_ENUM_VARIANTS)
+    None,
+    A,
+    D,
+    E,
+    Escape,
+    Mouse_1,
+    Mouse_2,
+    Mouse_3,
+    S,
+    Space,
+    Tab,
+    Q,
+    W,
+    COUNT,
 };
 
 class Platform
@@ -52,9 +45,9 @@ public:
 
     [[nodiscard]] pair<s32, s32> get_framebuffer_size() const;
 
-    [[nodiscard]] b32 button_is_down(Button button) const;
-    [[nodiscard]] b32 button_is_pressed(Button button) const;
-    [[nodiscard]] b32 button_is_released(Button button) const;
+    [[nodiscard]] b32 button_is_down(ButtonType button) const;
+    [[nodiscard]] b32 button_is_pressed(ButtonType button) const;
+    [[nodiscard]] b32 button_is_released(ButtonType button) const;
 
     f64 pointer_delta_x {};
     f64 pointer_delta_y {};
@@ -80,11 +73,11 @@ private:
 
     GLFWwindow* glfw_window {};
 
-    Button glfw_keymap[GLFW_KEY_LAST + 1] {};
-    Button glfw_buttonmap[GLFW_MOUSE_BUTTON_LAST + 1] {};
+    ButtonType glfw_keymap[GLFW_KEY_LAST + 1] {};
+    ButtonType glfw_buttonmap[GLFW_MOUSE_BUTTON_LAST + 1] {};
 
-    b32 button_array_current[BUTTON_COUNT] {};
-    b32 button_array_previous[BUTTON_COUNT] {};
+    b32 button_array_current[static_cast<s32>(ButtonType::COUNT)] {};
+    b32 button_array_previous[static_cast<s32>(ButtonType::COUNT)] {};
 
     f64 pointer_current_x {};
     f64 pointer_current_y {};
