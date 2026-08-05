@@ -26,6 +26,9 @@ public:
     Mat4 view_matrix { 1.0f };
 
 private:
+    void drive_actor(const Platform& platform, Population& population);
+    void drive_control(const Platform& platform);
+
     void sync_actor(const Actor& actor);
 };
 

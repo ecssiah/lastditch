@@ -34,17 +34,17 @@ Control::update(const Platform& platform, Population& population)
         {
             actor_id = population.judge_id;
 
-            Actor& controlled_actor { population.get_actor(actor_id) };
+            Actor& actor { population.get_actor(actor_id) };
 
-            controlled_actor.move_speed = JUDGE_DEFAULT_GROUND_SPEED;
-            controlled_actor.velocity = {};
+            actor.move_speed = JUDGE_DEFAULT_GROUND_SPEED;
+            actor.velocity = {};
         }
         else
         {
-            Actor& controlled_actor { population.get_actor(actor_id) };
+            Actor& actor { population.get_actor(actor_id) };
 
-            controlled_actor.move_speed = 0.0f;
-            controlled_actor.velocity = {};
+            actor.move_speed = 0.0f;
+            actor.velocity = {};
 
             actor_id = -1;
         }
@@ -52,152 +52,11 @@ Control::update(const Platform& platform, Population& population)
 
     if (actor_id != -1)
     {
-        Vec3 move_input_value {};
-
-        if (platform.button_is_down(ButtonType::A))
-        {
-            move_input_value.x -= 1.0f;
-        }
-
-        if (platform.button_is_down(ButtonType::D))
-        {
-            move_input_value.x += 1.0f;
-        }
-
-        if (platform.button_is_down(ButtonType::W))
-        {
-            move_input_value.y += 1.0f;
-        }
-
-        if (platform.button_is_down(ButtonType::S))
-        {
-            move_input_value.y -= 1.0f;
-        }
-
-        move_input_value = move_input_value.normalize();
-
-        if (platform.button_is_down(ButtonType::E))
-        {
-            move_input_value.z += 1.0f;
-        }
-
-        if (platform.button_is_down(ButtonType::Q))
-        {
-            move_input_value.z -= 1.0f;
-        }
-
-        Actor& actor { population.get_actor(actor_id) };
-
-        const Vec3 actor_forward { get_forward(actor.rotation) };
-        const Vec3 actor_right { get_right(actor.rotation) };
-
-        Vec3 velocity_forward {};
-        Vec3 velocity_right {};
-
-        const Vec3 judge_forward_xy {
-            actor_forward.x,
-            actor_forward.y,
-            0.0f
-        };
-
-        velocity_right = move_input_value.x * actor_right;
-        velocity_forward = move_input_value.y * judge_forward_xy;
-
-        const Vec3 move_velocity { actor.move_speed * (velocity_right + velocity_forward).normalize() };
-
-        actor.velocity.x = move_velocity.x;
-        actor.velocity.y = move_velocity.y;
-
-        if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
-        {
-            const Vec3 rotate_input_value {
-                static_cast<f32>(platform.pointer_delta_x),
-                static_cast<f32>(platform.pointer_delta_y),
-                0.0f,
-            };
-
-            actor.rotation.z -= CAMERA_SENSITIVITY_X * rotate_input_value.x;
-            actor.rotation.x -= CAMERA_SENSITIVITY_Y * rotate_input_value.y;
-
-            if (actor.rotation.x > CAMERA_PITCH_LIMIT)
-            {
-                actor.rotation.x = CAMERA_PITCH_LIMIT;
-            }
-
-            if (actor.rotation.x < -CAMERA_PITCH_LIMIT)
-            {
-                actor.rotation.x = -CAMERA_PITCH_LIMIT;
-            }
-        }
-
-        if (platform.button_is_pressed(ButtonType::Space))
-        {
-            if (actor.is_grounded)
-            {
-                actor.velocity.z = JUDGE_DEFAULT_JUMP_SPEED;
-            }
-        }
-
-        sync_actor(actor);
+        drive_actor(platform, population);
     }
     else
     {
-        Vec3 input_value {};
-
-        if (platform.button_is_down(ButtonType::A))
-        {
-            input_value.x -= 1.0f;
-        }
-
-        if (platform.button_is_down(ButtonType::D))
-        {
-            input_value.x += 1.0f;
-        }
-
-        if (platform.button_is_down(ButtonType::W))
-        {
-            input_value.y += 1.0f;
-        }
-
-        if (platform.button_is_down(ButtonType::S))
-        {
-            input_value.y -= 1.0f;
-        }
-
-        input_value = input_value.normalize();
-
-        if (platform.button_is_down(ButtonType::E))
-        {
-            input_value.z += 1.0f;
-        }
-
-        if (platform.button_is_down(ButtonType::Q))
-        {
-            input_value.z -= 1.0f;
-        }
-
-        const Vec3 direction {
-            input_value.x * get_right(rotation) +
-            input_value.y * get_forward(rotation) +
-            input_value.z * Vec3::unit_z()
-        };
-
-        const Vec3 velocity { DEBUG_CONTROL_SPEED * direction };
-
-        position = position + FIXED_DELTA_TIME_32 * velocity;
-
-        rotation.z -= CAMERA_SENSITIVITY_X * static_cast<f32>(platform.pointer_delta_x);
-        rotation.x -= CAMERA_SENSITIVITY_Y * static_cast<f32>(platform.pointer_delta_y);
-
-        if (rotation.x > CAMERA_PITCH_LIMIT)
-        {
-            rotation.x = CAMERA_PITCH_LIMIT;
-        }
-
-        if (rotation.x < -CAMERA_PITCH_LIMIT)
-        {
-            rotation.x = -CAMERA_PITCH_LIMIT;
-        }
+        drive_control(platform);
     }
 
     view_matrix = get_view_matrix(position, rotation);
@@ -207,6 +66,153 @@ void
 Control::quit()
 {
     LOG_INFO("CONTROL QUIT");
+}
+
+void
+Control::drive_actor(const Platform& platform, Population& population)
+{
+    Vec3 move_input_value {};
+
+    if (platform.button_is_down(ButtonType::A))
+    {
+        move_input_value.x -= 1.0f;
+    }
+
+    if (platform.button_is_down(ButtonType::D))
+    {
+        move_input_value.x += 1.0f;
+    }
+
+    if (platform.button_is_down(ButtonType::W))
+    {
+        move_input_value.y += 1.0f;
+    }
+
+    if (platform.button_is_down(ButtonType::S))
+    {
+        move_input_value.y -= 1.0f;
+    }
+
+    move_input_value = move_input_value.normalize();
+
+    if (platform.button_is_down(ButtonType::E))
+    {
+        move_input_value.z += 1.0f;
+    }
+
+    if (platform.button_is_down(ButtonType::Q))
+    {
+        move_input_value.z -= 1.0f;
+    }
+
+    Actor& actor { population.get_actor(actor_id) };
+
+    const Vec3 actor_forward { get_forward(actor.rotation) };
+    const Vec3 actor_right { get_right(actor.rotation) };
+
+    Vec3 velocity_forward {};
+    Vec3 velocity_right {};
+
+    const Vec3 judge_forward_xy {
+        actor_forward.x,
+        actor_forward.y,
+        0.0f
+    };
+
+    velocity_right = move_input_value.x * actor_right;
+    velocity_forward = move_input_value.y * judge_forward_xy;
+
+    const Vec3 move_velocity { actor.move_speed * (velocity_right + velocity_forward).normalize() };
+
+    actor.velocity.x = move_velocity.x;
+    actor.velocity.y = move_velocity.y;
+
+    if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
+    {
+        actor.rotation.z -= CAMERA_SENSITIVITY_X * static_cast<f32>(platform.pointer_delta_x);
+        actor.rotation.x -= CAMERA_SENSITIVITY_Y * static_cast<f32>(platform.pointer_delta_y);
+
+        if (actor.rotation.x > CAMERA_PITCH_LIMIT)
+        {
+            actor.rotation.x = CAMERA_PITCH_LIMIT;
+        }
+
+        if (actor.rotation.x < -CAMERA_PITCH_LIMIT)
+        {
+            actor.rotation.x = -CAMERA_PITCH_LIMIT;
+        }
+    }
+
+    if (platform.button_is_pressed(ButtonType::Space))
+    {
+        if (actor.is_grounded)
+        {
+            actor.velocity.z = JUDGE_DEFAULT_JUMP_SPEED;
+        }
+    }
+
+    sync_actor(actor);
+}
+
+void
+Control::drive_control(const Platform& platform)
+{
+    Vec3 move_input_value {};
+
+    if (platform.button_is_down(ButtonType::A))
+    {
+        move_input_value.x -= 1.0f;
+    }
+
+    if (platform.button_is_down(ButtonType::D))
+    {
+        move_input_value.x += 1.0f;
+    }
+
+    if (platform.button_is_down(ButtonType::W))
+    {
+        move_input_value.y += 1.0f;
+    }
+
+    if (platform.button_is_down(ButtonType::S))
+    {
+        move_input_value.y -= 1.0f;
+    }
+
+    move_input_value = move_input_value.normalize();
+
+    if (platform.button_is_down(ButtonType::E))
+    {
+        move_input_value.z += 1.0f;
+    }
+
+    if (platform.button_is_down(ButtonType::Q))
+    {
+        move_input_value.z -= 1.0f;
+    }
+
+    const Vec3 direction {
+        move_input_value.x * get_right(rotation) +
+        move_input_value.y * get_forward(rotation) +
+        move_input_value.z * Vec3::unit_z()
+    };
+
+    const Vec3 velocity { DEBUG_CONTROL_SPEED * direction };
+
+    position = position + FIXED_DELTA_TIME_32 * velocity;
+
+    rotation.z -= CAMERA_SENSITIVITY_X * static_cast<f32>(platform.pointer_delta_x);
+    rotation.x -= CAMERA_SENSITIVITY_Y * static_cast<f32>(platform.pointer_delta_y);
+
+    if (rotation.x > CAMERA_PITCH_LIMIT)
+    {
+        rotation.x = CAMERA_PITCH_LIMIT;
+    }
+
+    if (rotation.x < -CAMERA_PITCH_LIMIT)
+    {
+        rotation.x = -CAMERA_PITCH_LIMIT;
+    }
 }
 
 void
