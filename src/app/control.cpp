@@ -153,13 +153,6 @@ Control::queue_actions(const Platform& platform, Work& work)
     {
         queue_jump_action(platform, work);
     }
-
-
-
-    // if (platform.button_is_released(ButtonType::Tab))
-    // {
-    //     queue_debug_mode_action(platform, work);
-    // }
 }
 
 void
@@ -226,14 +219,4 @@ Control::queue_jump_action(const Platform& platform, Work& work)
     const Action jump_action { ActionType::Jump, action_value };
 
     work.add_action(jump_action);
-}
-
-void
-Control::queue_debug_mode_action(const Platform& platform, Work& work)
-{
-    const Vec3 action_value {};
-
-    const Action debug_action { ActionType::DebugMode, action_value };
-
-    work.add_action(debug_action);
 }

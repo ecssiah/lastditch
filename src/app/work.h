@@ -17,7 +17,6 @@ enum class ActionType : u8
     Move,
     Rotate,
     Jump,
-    DebugMode,
     COUNT,
 };
 
@@ -52,7 +51,6 @@ private:
     static void do_move_action(const Action& action, Actor& judge);
     static void do_rotate_action(const Action& action, Actor& judge);
     static void do_jump_action(const Action& action, Actor& judge);
-    static void do_debug_mode_action(const Action& action, Actor& judge);
 
     std::deque<Action> action_deque {};
 };

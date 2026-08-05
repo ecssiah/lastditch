@@ -948,7 +948,7 @@ Render::update(const Control& control, const World& world, const Population& pop
     update_model_render(control, population);
 
     debug.update();
-    screen.update(population);
+    screen.update(control);
 }
 
 void

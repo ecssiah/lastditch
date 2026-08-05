@@ -5,18 +5,20 @@
 #include "population.h"
 #include "platform/platform.h"
 
+class Control;
+
 class Screen
 {
 public:
     Screen() = default;
 
     void init(const Platform& platform);
-    void update(const Population& population);
+    void update(const Control& control);
 
 private:
     void load_textures(const string& textures_path);
     void draw_text(const string& text, f32 x, f32 y);
-    void draw_debug_info(const Population& population);
+    void draw_debug_info(const Control& control);
 
     GLuint program_id {};
 

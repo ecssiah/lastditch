@@ -7,6 +7,7 @@
 #include "glad/gl.h"
 
 #include "actor.h"
+#include "control.h"
 #include "render.h"
 #include "world.h"
 #include "core/log.h"
@@ -234,12 +235,10 @@ Screen::init(const Platform& platform)
 }
 
 void
-Screen::draw_debug_info(const Population& population)
+Screen::draw_debug_info(const Control& control)
 {
-    const Actor& judge { population.get_actor(population.judge_id) };
-
     const IVec3 cell_coordinate {
-        World::position_to_cell_coordinate(judge.position.x, judge.position.y, judge.position.z)
+        World::position_to_cell_coordinate(control.position.x, control.position.y, control.position.z)
     };
 
     const IVec2 sector_coordinate {
@@ -249,26 +248,16 @@ Screen::draw_debug_info(const Population& population)
     const string position_text {
         format(
             "POS {:.1f} {:.1f} {:.1f}",
-            judge.position.x,
-            judge.position.y,
-            judge.position.z
-        )
-    };
-    
-    const string velocity_text {
-        format(
-        "VEL {:.1f} {:.1f} {:.1f}",
-            judge.velocity.x,
-            judge.velocity.y,
-            judge.velocity.z
+            control.position.x,
+            control.position.y,
+            control.position.z
         )
     };
     
     string cell_coordinate_text { "CEL - - -" };
     string sector_coordinate_text { "SEC - -" };
     string floor_text { "FLR -" };
-    string movement_type_text {};
-    
+
     if (World::cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
     {
         cell_coordinate_text =
@@ -307,22 +296,14 @@ Screen::draw_debug_info(const Population& population)
         }
     }
 
-    switch (judge.movement_type)
-    {
-    case MovementType::Ground:  movement_type_text = "MOV Ground"; break;
-    case MovementType::Air:   movement_type_text = "MOV Debug"; break;
-    }
-
     draw_text(position_text, 20, 20);
-    draw_text(velocity_text, 20, 40);
-    draw_text(cell_coordinate_text, 20, 60);
-    draw_text(sector_coordinate_text, 20, 80);
-    draw_text(floor_text, 20, 100);
-    draw_text(movement_type_text, 20, 120);
+    draw_text(cell_coordinate_text, 20, 40);
+    draw_text(sector_coordinate_text, 20, 60);
+    draw_text(floor_text, 20, 80);
 }
 
 void 
-Screen::update(const Population& population)
+Screen::update(const Control& control)
 {
     glUseProgram(program_id);
 
@@ -339,7 +320,7 @@ Screen::update(const Population& population)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, font_texture_id);
 
-    draw_debug_info(population);
+    draw_debug_info(control);
 
     glBindVertexArray(0);
 }

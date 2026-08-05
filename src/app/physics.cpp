@@ -13,12 +13,7 @@ using namespace std;
 void
 Physics::update_actor(World& world, Actor& actor)
 {
-    switch (actor.movement_type)
-    {
-        case MovementType::Ground:
-        case MovementType::Air:   integrate(world, actor); break;
-        default:                    throw invalid_argument("invalid movement type");
-    }
+    integrate(world, actor);
 }
 
 Bounds3
@@ -180,22 +175,19 @@ Physics::integrate(World& world, Actor& actor)
 {
     actor.is_grounded = false;
 
-    if (actor.movement_type == MovementType::Ground)
-    {
-        constexpr s32 axis_index { static_cast<s32>(Axis::Z) };
-        
-        const f32 dz {
-            actor.velocity[axis_index] <= 0.0f
-                ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
-                : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
-        };
-        
-        actor.velocity[axis_index] = clamp(
-            actor.velocity[axis_index] + dz,
-            -MAX_VELOCITY, 
-            MAX_VELOCITY
-        );
-    }
+    constexpr s32 axis_index { static_cast<s32>(Axis::Z) };
+
+    const f32 dz {
+        actor.velocity[axis_index] <= 0.0f
+            ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
+            : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
+    };
+
+    actor.velocity[axis_index] = clamp(
+        actor.velocity[axis_index] + dz,
+        -MAX_VELOCITY,
+        MAX_VELOCITY
+    );
 
     if (actor.box_collider.collision_enabled)
     {

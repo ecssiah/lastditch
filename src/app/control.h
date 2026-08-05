@@ -30,6 +30,5 @@ private:
     static void queue_move_action(const Platform& platform, Work& work);
     static void queue_rotate_action(const Platform& platform, Work& work);
     static void queue_jump_action(const Platform& platform, Work& work);
-    static void queue_debug_mode_action(const Platform& platform, Work& work);
 };
 
