@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glad/gl.h"
+#include <glad/gl.h>
 
-#include "app/population.h"
+#include "population.h"
 #include "platform/platform.h"
 
 class Screen

@@ -1,27 +1,20 @@
-#include "app/population.h"
+#include "population.h"
 
-#include "core/types.h"
+#include "actor.h"
+#include "physics.h"
+#include "world.h"
+#include "work.h"
 #include "core/log.h"
-#include "app/actor.h"
-#include "app/nation.h"
-#include "app/physics.h"
-#include "app/work.h"
-#include "app/world.h"
+#include "core/types.h"
 
 void
-Population::init()
+Population::init(Work& work)
 {
     actor_vector.reserve(ACTOR_POOL_MAX);
 
     init_nations();
     init_judge();
-    init_agents();
-}
-
-void
-Population::update(const f32 delta_time)
-{
-    work.update(delta_time, *this);
+    init_agents(work);
 }
 
 void
@@ -61,9 +54,9 @@ Population::get_actor_vector() const
 }
 
 void
-Population::add_act(const Act &act)
+Population::add_act(const Action &act, Work& work)
 {
-    work.add_act(act);
+    work.add_action(act);
 }
 
 void
@@ -99,7 +92,7 @@ Population::init_judge()
 }
 
 void
-Population::init_agents()
+Population::init_agents(Work& work)
 {
     for (s32 nation_index = 0; nation_index < NATION_TYPE_COUNT; ++nation_index)
     {

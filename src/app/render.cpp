@@ -1,14 +1,17 @@
-#include "app/render.h"
+#include "render.h"
 
 #include <cassert>
 #include <format>
 #include <fstream>
-#include <glad/gl.h>
-#include <stb_image.h>
-#include "app/debug.h"
-#include "app/population.h"
-#include "app/viewpoint.h"
-#include "app/world.h"
+
+#include "glad/gl.h"
+#include "stb_image.h"
+
+#include "actor.h"
+#include "debug.h"
+#include "population.h"
+#include "viewpoint.h"
+#include "world.h"
 #include "core/config.h"
 #include "core/log.h"
 #include "core/types.h"
@@ -196,14 +199,14 @@ Render::load_block_texture_directory()
         GL_RGBA8,
         BLOCK_TEXTURE_SIZE,
         BLOCK_TEXTURE_SIZE,
-        block_type_count,
+        BLOCK_TYPE_COUNT,
         0,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         nullptr
     );
 
-    assert(voxel_render.block_config_data.entry_vector.size() <= block_type_count);
+    assert(voxel_render.block_config_data.entry_vector.size() <= BLOCK_TYPE_COUNT);
 
     for (size_t layer_index = 0; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
     {
@@ -212,7 +215,7 @@ Render::load_block_texture_directory()
         const s32 block_type_index { World::block_type_index_from_string(config_entry.key) };
 
         assert(block_type_index >= 0);
-        assert(block_type_index < block_type_count);
+        assert(block_type_index < BLOCK_TYPE_COUNT);
 
         string texture_path { format("assets/textures/block/{}", config_entry.value) };
 
@@ -234,7 +237,7 @@ Render::load_actor_texture_directory()
         GL_RGBA8,
         ACTOR_TEXTURE_SIZE,
         ACTOR_TEXTURE_SIZE,
-        block_type_count,
+        BLOCK_TYPE_COUNT,
         0,
         GL_RGBA,
         GL_UNSIGNED_BYTE,

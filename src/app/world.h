@@ -1,10 +1,13 @@
 #pragma once
 
 #include <array>
-#include "app/area.h"
-#include "app/debug.h"
-#include "app/direction.h"
-#include "app/physics.h"
+#include <string>
+#include <vector>
+
+#include "area.h"
+#include "debug.h"
+#include "direction.h"
+#include "physics.h"
 #include "core/id.h"
 #include "core/random.h"
 #include "core/types.h"
@@ -136,12 +139,12 @@ enum class BlockType : u8
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 block_type_count
+constexpr s32 BLOCK_TYPE_COUNT
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_COUNT)
 };
 
-inline constexpr std::array<const char*, block_type_count> block_type_string_array
+inline constexpr std::array<const char*, BLOCK_TYPE_COUNT> block_type_string_array
 {
     FOR_LIST_BLOCK_TYPE(DEFINE_ENUM_STRINGS)
 };
@@ -200,7 +203,6 @@ class World
 {
 public:
     void init();
-    void update(Population& population, f32 delta_time);
     void quit();
 
     static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);

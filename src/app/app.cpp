@@ -8,7 +8,7 @@ App::App()
     Log::init();
 
     world.init();
-    population.init();
+    population.init(work);
 
     render.init(platform, world, population);
 }
@@ -20,10 +20,9 @@ App::update()
 
     const f32 delta_time { platform.get_delta_time() };
 
-    Control::update(platform, population);
+    Control::update(platform, population, work);
 
-    world.update(population, delta_time);
-    population.update(delta_time);
+    work.update(world, population, delta_time);
 
     render.update(world, population);
 

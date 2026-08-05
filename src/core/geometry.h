@@ -2,8 +2,9 @@
 
 #include <numbers>
 #include <vector>
-#include "core/macros.h"
-#include "core/types.h"
+
+#include "macros.h"
+#include "types.h"
 
 constexpr f32 EPSILON { 1e-5f };
 constexpr f32 EPSILON_SQUARED { 1e-10f };

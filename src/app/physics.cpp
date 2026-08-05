@@ -1,9 +1,10 @@
-#include "app/physics.h"
+#include "physics.h"
 
 #include <algorithm>
 #include <cmath>
-#include "app/actor.h"
-#include "app/world.h"
+
+#include "actor.h"
+#include "world.h"
 #include "core/types.h"
 
 void

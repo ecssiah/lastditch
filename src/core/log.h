@@ -3,7 +3,8 @@
 #include <fstream>
 #include <filesystem>
 #include <string>
-#include "core/types.h"
+
+#include "types.h"
 
 #define LOG_TRACE(fmt, ...) Log::message(LogLevel::Trace, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define LOG_INFO(fmt, ...)  Log::message(LogLevel::Info,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)

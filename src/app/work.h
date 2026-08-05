@@ -3,41 +3,15 @@
 #include <deque>
 #include <functional>
 #include <vector>
-#include "app/actor.h"
+
+#include "actor.h"
+#include "control.h"
 #include "core/types.h"
 
-constexpr s32 ACT_COUNT_PER_FRAME { 1 << 8 };
+constexpr s32 ACTION_COUNT_PER_FRAME { 1 << 8 };
 constexpr s32 TASK_COUNT_PER_FRAME { 1 << 8 };
 
 class Population;
-
-enum class ActType : u8
-{
-    Move,
-    Rotate,
-    Jump,
-    DebugMode,
-};
-
-class Act
-{
-public:
-    Act(ActType act_type, Vec3 act_value);
-
-    [[nodiscard]] ActType get_act_type() const
-    {
-        return act_type;
-    }
-
-    [[nodiscard]] Vec3 get_act_value() const
-    {
-        return act_value;
-    }
-
-private:
-    ActType act_type {};
-    Vec3 act_value {};
-};
 
 class WanderState
 {
@@ -61,7 +35,7 @@ enum TaskType
     FOR_LIST_TASK_TYPE(DEFINE_ENUM_VARIANTS)
 };
 
-constexpr s32 task_type_count
+constexpr s32 TASK_TYPE_COUNT
 {
     FOR_LIST_TASK_TYPE(DEFINE_ENUM_COUNT)
 };
@@ -89,11 +63,11 @@ public:
 class Work
 {
 public:
+    void update(World& world, Population& population, f32 delta_time);
+
     void schedule(std::function<void()> act);
 
-    void update(f32 delta_time, Population& population);
-
-    void add_act(const Act& act);
+    void add_action(const Action& action);
 
     void add_task(const Task& task);
     std::vector<Task>& get_task_vector();
@@ -104,16 +78,16 @@ private:
 
     f32 time_rate { 1.0f };
 
-    void execute_act_deque(Actor& judge);
+    void execute_action_deque(Actor& judge);
 
-    static void execute_act(const Act& act, Actor& judge);
+    static void execute_action(const Action& action, Actor& judge);
 
-    static void execute_move_act(const Act& act, Actor& judge);
-    static void execute_rotate_act(const Act& act, Actor& judge);
-    static void execute_jump_act(const Act& act, Actor& judge);
-    static void execute_debug_mode_act(const Act& act, Actor& judge);
+    static void execute_move_action(const Action& action, Actor& judge);
+    static void execute_rotate_action(const Action& action, Actor& judge);
+    static void execute_jump_action(const Action& action, Actor& judge);
+    static void execute_debug_mode_action(const Action& action, Actor& judge);
 
-    std::deque<Act> act_deque {};
+    std::deque<Action> action_deque {};
 
     static void execute_wander(Task& task, f32 delta_time, Population& population);
     static void execute_seek(Task& task, f32 delta_time, Population& population);

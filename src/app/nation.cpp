@@ -1,6 +1,6 @@
-#include "app/nation.h"
+#include "nation.h"
 
-#include "app/world.h"
+#include "world.h"
 
 using namespace std;
 

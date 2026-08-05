@@ -1,15 +1,16 @@
-#include "app/work.h"
+#include "work.h"
 
 #include <random>
-#include "app/actor.h"
-#include "app/population.h"
+
+#include "actor.h"
+#include "population.h"
 
 using namespace std;
 
-Act::Act(const ActType act_type, const Vec3 act_value)
+Action::Action(const ActionType action_type, const Vec3 action_value)
     :
-    act_type { act_type },
-    act_value { act_value }
+    action_type { action_type },
+    action_value { action_value }
 {
 
 }
@@ -36,8 +37,15 @@ TaskState::TaskState(const IVec3& target_position)
 }
 
 void
-Work::update(const f32 delta_time, Population& population)
+Work::update(World& world, Population& population, const f32 delta_time)
 {
+    ++tick_count;
+
+    for (Actor& actor : population.get_actor_vector())
+    {
+        Physics::update_actor(world, actor, delta_time);
+    }
+
     for (Task& task : task_vector)
     {
         switch (task.task_type)
@@ -50,31 +58,31 @@ Work::update(const f32 delta_time, Population& population)
 
     Actor& judge { population.get_actor(population.judge_id) };
 
-    execute_act_deque(judge);
+    execute_action_deque(judge);
 }
 
 void
-Work::add_act(const Act& act)
+Work::add_action(const Action& action)
 {
-    act_deque.push_back(act);
+    action_deque.push_back(action);
 }
 
 void
-Work::execute_act_deque(Actor& judge)
+Work::execute_action_deque(Actor& judge)
 {
     s32 acts_applied { 0 };
 
-    while (!act_deque.empty() && acts_applied < ACT_COUNT_PER_FRAME)
+    while (!action_deque.empty() && acts_applied < ACTION_COUNT_PER_FRAME)
     {
-        execute_act(act_deque.front(), judge);
-        act_deque.pop_front();
+        execute_action(action_deque.front(), judge);
+        action_deque.pop_front();
 
         ++acts_applied;
     }
 }
 
 void
-Work::execute_move_act(const Act& act, Actor& judge)
+Work::execute_move_action(const Action& action, Actor& judge)
 {
     const Vec3 judge_forward { get_forward(judge.rotation) };
     const Vec3 judge_right { get_right(judge.rotation) };
@@ -93,8 +101,8 @@ Work::execute_move_act(const Act& act, Actor& judge)
             0.0f
         };
 
-        velocity_right = act.get_act_value().x * judge_right;
-        velocity_forward = act.get_act_value().y * judge_forward_xy;
+        velocity_right = action.action_value.x * judge_right;
+        velocity_forward = action.action_value.y * judge_forward_xy;
 
         const Vec3 move_velocity { judge.speed * (velocity_right + velocity_forward).normalize() };
 
@@ -105,9 +113,9 @@ Work::execute_move_act(const Act& act, Actor& judge)
     }
     case MovementType::Debug:
     {
-        velocity_right = act.get_act_value().x * judge_right;
-        velocity_forward = act.get_act_value().y * judge_forward;
-        velocity_up = act.get_act_value().z * Vec3::unit_z();
+        velocity_right = action.action_value.x * judge_right;
+        velocity_forward = action.action_value.y * judge_forward;
+        velocity_up = action.action_value.z * Vec3::unit_z();
 
         judge.velocity = judge.speed * (velocity_right + velocity_forward + velocity_up);
 
@@ -117,22 +125,22 @@ Work::execute_move_act(const Act& act, Actor& judge)
 }
 
 void
-Work::execute_act(const Act& act, Actor& judge)
+Work::execute_action(const Action& action, Actor& judge)
 {
-    switch (act.get_act_type())
+    switch (action.action_type)
     {
-        case ActType::Move:         execute_move_act(act, judge); break;
-        case ActType::Rotate:       execute_rotate_act(act, judge); break;
-        case ActType::Jump:         execute_jump_act(act, judge); break;
-        case ActType::DebugMode:    execute_debug_mode_act(act, judge); break;
+        case ActionType::Move:         execute_move_action(action, judge); break;
+        case ActionType::Rotate:       execute_rotate_action(action, judge); break;
+        case ActionType::Jump:         execute_jump_action(action, judge); break;
+        case ActionType::DebugMode:    execute_debug_mode_action(action, judge); break;
     }
 }
 
 void
-Work::execute_rotate_act(const Act& act, Actor& judge)
+Work::execute_rotate_action(const Action& action, Actor& judge)
 {
-    judge.rotation.z -= CAMERA_SENSITIVITY_X * act.get_act_value().x;
-    judge.rotation.x -= CAMERA_SENSITIVITY_Y * act.get_act_value().y;
+    judge.rotation.z -= CAMERA_SENSITIVITY_X * action.action_value.x;
+    judge.rotation.x -= CAMERA_SENSITIVITY_Y * action.action_value.y;
 
     if (judge.rotation.x > CAMERA_PITCH_LIMIT)
     {
@@ -146,7 +154,7 @@ Work::execute_rotate_act(const Act& act, Actor& judge)
 }
 
 void
-Work::execute_jump_act(const Act& act, Actor& judge)
+Work::execute_jump_action(const Action& action, Actor& judge)
 {
     if (judge.is_grounded)
     {
@@ -155,7 +163,7 @@ Work::execute_jump_act(const Act& act, Actor& judge)
 }
 
 void
-Work::execute_debug_mode_act(const Act& act, Actor& judge)
+Work::execute_debug_mode_action(const Action& action, Actor& judge)
 {
     switch (judge.movement_type)
     {

@@ -1,6 +1,6 @@
-#include "app/debug.h"
+#include "debug.h"
 
-#include "app/world.h"
+#include "world.h"
 
 void 
 Debug::add_line(const Vec3& a, const Vec3& b, const Vec3& color)

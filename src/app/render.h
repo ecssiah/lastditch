@@ -1,15 +1,19 @@
 #pragma once
 
 #include <vector>
-#include <glad/gl.h>
-#include "app/direction.h"
-#include "app/screen.h"
-#include "app/viewpoint.h"
-#include "app/world.h"
+
+#include "glad/gl.h"
+
+#include "direction.h"
+#include "screen.h"
+#include "viewpoint.h"
+#include "world.h"
 #include "core/config.h"
 #include "core/geometry.h"
 #include "core/types.h"
 #include "platform/platform.h"
+
+class Actor;
 
 constexpr f32 CLEAR_COLOR[4] { 0.1f, 0.2f, 0.3f, 1.0f };
 
@@ -133,7 +137,7 @@ public:
 
     ConfigData block_config_data {};
 
-    u8 block_type_layer_array[block_type_count] {};
+    u8 block_type_layer_array[BLOCK_TYPE_COUNT] {};
 
     vector<SectorMesh> sector_mesh_vector {};
     vector<VoxelGpuData> voxel_gpu_data_vector {};

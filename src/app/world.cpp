@@ -1,14 +1,15 @@
-#include "app/world.h"
+#include "world.h"
 
 #include <cassert>
 #include <cmath>
 #include <iostream>
 #include <iterator>
+
+#include "area.h"
+#include "debug.h"
+#include "direction.h"
+#include "population.h"
 #include "core/types.h"
-#include "app/area.h"
-#include "app/debug.h"
-#include "app/direction.h"
-#include "app/population.h"
 
 using namespace std;
 
@@ -316,15 +317,6 @@ World::init()
 }
 
 void
-World::update(Population& population, const f32 delta_time)
-{
-    for (Actor& actor : population.get_actor_vector())
-    {
-        Physics::update_actor(*this, actor, delta_time);
-    }
-}
-
-void
 World::quit()
 {
 
@@ -539,7 +531,7 @@ World::get_stride(const Direction direction)
 s32
 World::block_type_index_from_string(const string& block_type_string)
 {
-    for (s32 block_type_index = 0; block_type_index < block_type_count; ++block_type_index)
+    for (s32 block_type_index = 0; block_type_index < BLOCK_TYPE_COUNT; ++block_type_index)
     {
         if (block_type_string == block_type_string_array[block_type_index])
         {

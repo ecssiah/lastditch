@@ -2,8 +2,9 @@
 
 #include <cassert>
 #include <fstream>
-#include "core/log.h"
-#include "core/types.h"
+
+#include "log.h"
+#include "types.h"
 
 using namespace std;
 

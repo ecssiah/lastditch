@@ -1,8 +1,8 @@
 #pragma once
 
+#include "direction.h"
 #include "core/geometry.h"
 #include "core/types.h"
-#include "app/direction.h"
 
 constexpr s32 AREA_RESERVE { 1 << 12 };
 constexpr s32 EDGE_RESERVE { 1 << 12 };

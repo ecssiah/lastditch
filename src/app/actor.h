@@ -1,7 +1,7 @@
 #pragma once
 
-#include "app/nation.h"
-#include "app/physics.h"
+#include "nation.h"
+#include "physics.h"
 #include "core/geometry.h"
 #include "core/types.h"
 

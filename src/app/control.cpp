@@ -1,108 +1,109 @@
-#include "app/control.h"
+#include "control.h"
 
 #include <cmath>
-#include "app/app.h"
+
+#include "population.h"
 #include "platform/platform.h"
 
 void
-Control::update(const Platform& platform, Population& population)
+Control::update(const Platform& platform, Population& population, Work& work)
 {
-    queue_acts(platform, population);
+    queue_acts(platform, population, work);
 }
 
 void
-Control::queue_acts(const Platform& platform, Population& population)
+Control::queue_acts(const Platform& platform, Population& population, Work& work)
 {
-    queue_move_act(platform, population);
+    queue_move_action(platform, population, work);
 
     if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
     {
-        queue_rotate_act(platform, population);
+        queue_rotate_action(platform, population, work);
     }
 
     if (platform.button_is_pressed(Button::Space))
     {
-        queue_jump_act(platform, population);
+        queue_jump_action(platform, population, work);
     }
 
     if (platform.button_is_released(Button::Tab))
     {
-        queue_debug_mode_act(platform, population);
+        queue_debug_mode_action(platform, population, work);
     }
 }
 
 void
-Control::queue_move_act(const Platform& platform, Population& population)
+Control::queue_move_action(const Platform& platform, Population& population, Work& work)
 {
-    Vec3 act_value {};
+    Vec3 action_value {};
 
     if (platform.button_is_down(Button::A))
     {
-        act_value.x -= 1.0f;
+        action_value.x -= 1.0f;
     }
 
     if (platform.button_is_down(Button::D))
     {
-        act_value.x += 1.0f;
+        action_value.x += 1.0f;
     }
 
     if (platform.button_is_down(Button::W))
     {
-        act_value.y += 1.0f;
+        action_value.y += 1.0f;
     }
 
     if (platform.button_is_down(Button::S))
     {
-        act_value.y -= 1.0f;
+        action_value.y -= 1.0f;
     }
 
-    act_value = act_value.normalize();
+    action_value = action_value.normalize();
 
     if (platform.button_is_down(Button::E))
     {
-        act_value.z += 1.0f;
+        action_value.z += 1.0f;
     }
 
     if (platform.button_is_down(Button::Q))
     {
-        act_value.z -= 1.0f;
+        action_value.z -= 1.0f;
     }
 
-    const Act move_act { ActType::Move, act_value };
+    const Action move_act { ActionType::Move, action_value };
 
-    population.add_act(move_act);
+    population.add_act(move_act, work);
 }
 
 void
-Control::queue_rotate_act(const Platform& platform, Population& population)
+Control::queue_rotate_action(const Platform& platform, Population& population, Work& work)
 {
-    const Vec3 act_value {
+    const Vec3 action_value {
         static_cast<f32>(platform.pointer_delta_x),
         static_cast<f32>(platform.pointer_delta_y),
         0.0f,
     };
 
-    const Act rotate_act { ActType::Rotate, act_value };
+    const Action rotate_action { ActionType::Rotate, action_value };
 
-    population.add_act(rotate_act);
+    population.add_act(rotate_action, work);
 }
 
 void
-Control::queue_jump_act(const Platform& platform, Population& population)
+Control::queue_jump_action(const Platform& platform, Population& population, Work& work)
 {
-    const Vec3 act_value {};
+    const Vec3 action_value {};
 
-    const Act jump_act { ActType::Jump, act_value };
+    const Action jump_action { ActionType::Jump, action_value };
 
-    population.add_act(jump_act);
+    population.add_act(jump_action, work);
 }
 
 void
-Control::queue_debug_mode_act(const Platform& platform, Population& population)
+Control::queue_debug_mode_action(const Platform& platform, Population& population, Work& work)
 {
-    const Vec3 act_value {};
+    const Vec3 action_value {};
 
-    const Act debug_act { ActType::DebugMode, act_value };
+    const Action debug_action { ActionType::DebugMode, action_value };
 
-    population.add_act(debug_act);
+    population.add_act(debug_action, work);
 }

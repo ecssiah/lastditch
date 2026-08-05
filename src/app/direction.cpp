@@ -1,4 +1,4 @@
-#include "app/direction.h"
+#include "direction.h"
 
 const char* DIRECTION_STRING_ARRAY[DIRECTION_COUNT]
 {

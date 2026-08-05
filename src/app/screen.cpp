@@ -2,13 +2,14 @@
 
 #include <cassert>
 #include <format>
-#include <glad/gl.h>
 #include <stb_image.h>
 
+#include "glad/gl.h"
+
 #include "actor.h"
+#include "render.h"
+#include "world.h"
 #include "core/log.h"
-#include "app/world.h"
-#include "app/render.h"
 
 void
 Screen::load_textures(const string& textures_path)
