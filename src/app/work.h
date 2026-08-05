@@ -40,9 +40,6 @@ public:
 
 private:
     u64 tick_count { 0 };
-    u64 second_count { 0 };
-
-    f32 time_rate { 1.0f };
 
     void do_action_deque(Actor& judge);
 

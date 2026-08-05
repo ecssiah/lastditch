@@ -19,13 +19,16 @@ App::update()
 {
     platform.begin_frame();
 
-    const f64 frame_time { min<f64>(platform.get_delta_time(), MIN_FRAME_TIME) };
+    const f64 frame_time {
+        min<f64>(platform.get_delta_time(), MIN_FRAME_TIME)
+    };
 
     simulation_time += frame_time;
 
     while (simulation_time >= FIXED_DELTA_TIME_64)
     {
         work.update(world, population);
+        world.update(world, population);
 
         simulation_time -= FIXED_DELTA_TIME_64;
     }

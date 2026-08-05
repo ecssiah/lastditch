@@ -33,11 +33,17 @@ Control::update(const Platform& platform, Population& population, Work& work)
         if (actor_id == -1)
         {
             actor_id = population.judge_id;
+
+            Actor& controlled_actor { population.get_actor(actor_id) };
+
+            controlled_actor.speed = JUDGE_DEFAULT_GROUND_SPEED;
+            controlled_actor.velocity = {};
         }
         else
         {
             Actor& controlled_actor { population.get_actor(actor_id) };
 
+            controlled_actor.speed = 0.0f;
             controlled_actor.velocity = {};
 
             actor_id = -1;
@@ -60,53 +66,47 @@ Control::update(const Platform& platform, Population& population, Work& work)
     }
     else
     {
-        Vec3 direction {};
+        Vec3 input_value {};
 
         if (platform.button_is_down(ButtonType::A))
         {
-            direction.x -= 1.0f;
+            input_value.x -= 1.0f;
         }
 
         if (platform.button_is_down(ButtonType::D))
         {
-            direction.x += 1.0f;
+            input_value.x += 1.0f;
         }
 
         if (platform.button_is_down(ButtonType::W))
         {
-            direction.y += 1.0f;
+            input_value.y += 1.0f;
         }
 
         if (platform.button_is_down(ButtonType::S))
         {
-            direction.y -= 1.0f;
+            input_value.y -= 1.0f;
         }
 
-        direction = direction.normalize();
+        input_value = input_value.normalize();
 
         if (platform.button_is_down(ButtonType::E))
         {
-            direction.z += 1.0f;
+            input_value.z += 1.0f;
         }
 
         if (platform.button_is_down(ButtonType::Q))
         {
-            direction.z -= 1.0f;
+            input_value.z -= 1.0f;
         }
 
-        const Vec3 forward { get_forward(rotation) };
-        const Vec3 right { get_right(rotation) };
+        const Vec3 direction {
+            input_value.x * get_right(rotation) +
+            input_value.y * get_forward(rotation) +
+            input_value.z * Vec3::unit_z()
+        };
 
-        Vec3 velocity_forward {};
-        Vec3 velocity_right {};
-        Vec3 velocity_up {};
-
-        velocity_right = direction.x * right;
-        velocity_forward = direction.y * forward;
-        velocity_up = direction.z * Vec3::unit_z();
-
-        const f32 control_speed { 10.0f };
-        Vec3 velocity = control_speed * (velocity_right + velocity_forward + velocity_up);
+        const Vec3 velocity { DEBUG_CONTROL_SPEED * direction };
 
         position = position + FIXED_DELTA_TIME_32 * velocity;
 

@@ -73,6 +73,7 @@ constexpr s32 ELEVATOR_SIZE { 16 };
 
 constexpr bool PLACE_ROOM_CONTENT { true };
 
+class Actor;
 class Population;
 
 enum class BlockType : u8
@@ -249,6 +250,7 @@ class World
 {
 public:
     void init();
+    void update(World& world, Population& population);
     void quit();
 
     static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);

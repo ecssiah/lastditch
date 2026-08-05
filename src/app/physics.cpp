@@ -175,16 +175,16 @@ Physics::integrate(World& world, Actor& actor)
 {
     actor.is_grounded = false;
 
-    constexpr s32 axis_index { static_cast<s32>(Axis::Z) };
+    constexpr s32 z_axis_index { static_cast<s32>(Axis::Z) };
 
     const f32 dz {
-        actor.velocity[axis_index] <= 0.0f
-            ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
-            : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.get_gravity()[axis_index]
+        actor.velocity[z_axis_index] <= 0.0f
+            ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.get_gravity()[z_axis_index]
+            : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.get_gravity()[z_axis_index]
     };
 
-    actor.velocity[axis_index] = clamp(
-        actor.velocity[axis_index] + dz,
+    actor.velocity[z_axis_index] = clamp(
+        actor.velocity[z_axis_index] + dz,
         -MAX_VELOCITY,
         MAX_VELOCITY
     );

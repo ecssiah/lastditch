@@ -7,6 +7,8 @@ class Platform;
 class Population;
 class Work;
 
+constexpr f32 DEBUG_CONTROL_SPEED { 10.0f };
+
 class Control
 {
 public:

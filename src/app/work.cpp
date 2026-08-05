@@ -22,11 +22,6 @@ Work::update(World& world, Population& population)
     Actor& judge { population.get_actor(population.judge_id) };
 
     do_action_deque(judge);
-
-    for (Actor& actor : population.get_actor_vector())
-    {
-        Physics::update_actor(world, actor);
-    }
 }
 
 void
@@ -38,14 +33,10 @@ Work::add_action(const Action& action)
 void
 Work::do_action_deque(Actor& judge)
 {
-    s32 acts_applied { 0 };
-
-    while (!action_deque.empty() && acts_applied < ACTION_COUNT_PER_FRAME)
+    for (Action& action : action_deque)
     {
         do_action(action_deque.front(), judge);
         action_deque.pop_front();
-
-        ++acts_applied;
     }
 }
 

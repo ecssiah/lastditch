@@ -5,8 +5,8 @@
 #include <iostream>
 #include <iterator>
 
+#include "actor.h"
 #include "area.h"
-#include "debug.h"
 #include "direction.h"
 #include "population.h"
 #include "core/log.h"
@@ -309,8 +309,6 @@ World::init()
         place_content(floor_number);
     }
 
-
-
     set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::BearSymbol);
     set_block_type(WORLD_CENTER_S32 + 17, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::WolfSymbol);
     set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::LionSymbol);
@@ -319,6 +317,15 @@ World::init()
     calculate_direction_masks();
 
     LOG_INFO("WORLD INIT");
+}
+
+void
+World::update(World& world, Population& population)
+{
+    for (Actor& actor : population.get_actor_vector())
+    {
+        Physics::update_actor(world, actor);
+    }
 }
 
 void
