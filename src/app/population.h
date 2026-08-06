@@ -19,10 +19,8 @@ constexpr s32 NATION_HOME_OFFSET { 80 };
 class Population
 {
 public:
-    void init(Work& work);
-    void update(World& world);
-
-    Random& get_random();
+    void init();
+    void update(World& world, Work& work);
 
     Actor& get_actor(s32 actor_id);
     [[nodiscard]] const Actor& get_actor(s32 actor_id) const;
@@ -36,7 +34,7 @@ public:
 
 private:
     void init_judge();
-    void init_agents(Work& work);
+    void init_agents();
 
     IdGenerator actor_id_generator {};
     IdGenerator task_id_generator {};

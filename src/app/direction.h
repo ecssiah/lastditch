@@ -19,18 +19,7 @@ enum class Direction : u8
 
 constexpr s32 DIRECTION_COUNT { static_cast<s32>(Direction::COUNT) };
 
-inline constexpr std::array<f32, DIRECTION_COUNT * 3>
-DIRECTION_NORMAL_ARRAY
-{
-    +1.0f, +0.0f, +0.0f,
-    -1.0f, +0.0f, +0.0f,
-    +0.0f, +1.0f, +0.0f,
-    +0.0f, -1.0f, +0.0f,
-    +0.0f, +0.0f, +1.0f,
-    +0.0f, +0.0f, -1.0f,
-};
-
-constexpr std::string
+constexpr std::string_view
 get_direction_string(Direction direction)
 {
     switch (direction)
@@ -60,6 +49,17 @@ get_direction_opposite(const Direction& direction)
     }
 }
 
+inline constexpr std::array
+DIRECTION_NORMAL_ARRAY
+{
+    +1.0f, +0.0f, +0.0f,
+    -1.0f, +0.0f, +0.0f,
+    +0.0f, +1.0f, +0.0f,
+    +0.0f, -1.0f, +0.0f,
+    +0.0f, +0.0f, +1.0f,
+    +0.0f, +0.0f, -1.0f,
+};
+
 constexpr Vec3
 get_direction_normal(const Direction& direction)
 {
@@ -75,5 +75,17 @@ get_direction_normal(const Direction& direction)
 constexpr Direction
 direction_from_mask(const u8 mask)
 {
-    return static_cast<Direction>(__builtin_ctz(mask));
+    if (mask == 0)
+    {
+        throw std::invalid_argument("empty direction mask");
+    }
+
+    const s32 index { __builtin_ctz(static_cast<unsigned>(mask)) };
+
+    if (index >= DIRECTION_COUNT)
+    {
+        throw std::invalid_argument("invalid direction mask");
+    }
+
+    return static_cast<Direction>(index);
 }

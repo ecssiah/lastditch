@@ -11,7 +11,7 @@ App::init()
     platform.init();
 
     world.init();
-    population.init(work);
+    population.init();
 
     control.init(population);
     render.init(platform, control, world, population);
@@ -36,7 +36,7 @@ App::update()
         work.update(world, population);
 
         world.update();
-        population.update(world);
+        population.update(world, work);
 
         simulation_time -= FIXED_FRAME_TIME_64;
     }

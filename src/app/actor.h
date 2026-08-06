@@ -26,14 +26,14 @@ public:
     ActorType actor_type { ActorType::None };
     NationType nation_type { NationType::Wolf };
 
-    Vec3 position {};
-    Vec3 rotation {};
-
     f32 move_speed { ACTOR_DEFAULT_MOVE_SPEED };
 
+    Vec3 position {};
+    Vec3 rotation {};
     Vec3 velocity {};
 
-    Vec3 target {};
+    Vec3 position_target {};
+    Vec3 rotation_target {};
 
     b32 is_grounded { false };
 

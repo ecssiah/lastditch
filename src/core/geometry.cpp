@@ -544,7 +544,7 @@ f32
 interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 delta_time)
 {
     const f32 alpha { 1.0f - exp(-speed * delta_time) };
-    
+
     f32 delta { target - current };
 
     if (abs(delta) > EPSILON)
@@ -555,6 +555,16 @@ interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 d
     }
     
     return target;
+}
+
+Vec3
+interpolate_to(const Vec3& current, const Vec3& target, const f32 speed, const f32 delta_time)
+{
+    return {
+        interpolate_to(current.x, target.x, speed, delta_time),
+        interpolate_to(current.y, target.y, speed, delta_time),
+        interpolate_to(current.z, target.z, speed, delta_time)
+    };
 }
 
 Vec3 

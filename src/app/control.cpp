@@ -168,17 +168,17 @@ Control::drive_actor(Actor& actor) const
     actor.velocity.x = move_velocity.x;
     actor.velocity.y = move_velocity.y;
 
-    actor.rotation.z -= CAMERA_SENSITIVITY_X * inputs.rotate.x;
-    actor.rotation.x -= CAMERA_SENSITIVITY_Y * inputs.rotate.y;
+    actor.rotation_target.z -= CAMERA_SENSITIVITY_X * inputs.rotate.x;
+    actor.rotation_target.x -= CAMERA_SENSITIVITY_Y * inputs.rotate.y;
 
-    if (actor.rotation.x > CAMERA_PITCH_LIMIT)
+    if (actor.rotation_target.x > CAMERA_PITCH_LIMIT)
     {
-        actor.rotation.x = CAMERA_PITCH_LIMIT;
+        actor.rotation_target.x = CAMERA_PITCH_LIMIT;
     }
 
-    if (actor.rotation.x < -CAMERA_PITCH_LIMIT)
+    if (actor.rotation_target.x < -CAMERA_PITCH_LIMIT)
     {
-        actor.rotation.x = -CAMERA_PITCH_LIMIT;
+        actor.rotation_target.x = -CAMERA_PITCH_LIMIT;
     }
 
     if (inputs.jump == 1.0f && actor.is_grounded)
