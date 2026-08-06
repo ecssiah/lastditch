@@ -1,6 +1,5 @@
 #pragma once
 
-#include "constants.h"
 #include "population.h"
 #include "render.h"
 #include "work.h"

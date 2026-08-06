@@ -1,8 +1,10 @@
 #pragma once
 
+#include "core/geometry.h"
 #include "core/types.h"
 
 constexpr u32 PRIMARY_SEED      { 1388 };
+
 constexpr u32 WORLD_SEED        { PRIMARY_SEED + 0 };
 constexpr u32 POPULATION_SEED   { PRIMARY_SEED + 1 };
 constexpr u32 WORK_SEED         { PRIMARY_SEED + 2 };
@@ -21,8 +23,6 @@ constexpr s32 INITIAL_POPULATION_SIZE { 1 << 3 };
 constexpr s32 INITIAL_POPULATION_CAPACITY { 1 << 8 };
 
 constexpr s32 NATION_HOME_OFFSET { 80 };
-
-
 
 constexpr f32 CELL_SIZE { 1.0f };
 
@@ -81,7 +81,7 @@ constexpr s32 TEMPLE_BORDER_OFFSET { 24 };
 
 constexpr s32 ELEVATOR_SIZE { 16 };
 
-constexpr bool PLACE_ROOM_CONTENT { true };
+constexpr b32 PLACE_ROOM_CONTENT { true };
 
 constexpr f32 CLEAR_COLOR[4] { 0.1f, 0.2f, 0.3f, 1.0f };
 
@@ -90,3 +90,56 @@ constexpr s32 ACTOR_TEXTURE_SIZE { 128 };
 
 constexpr s32 FACE_COUNT_PER_VOXEL { 6 };
 constexpr s32 VERTEX_COUNT_PER_FACE { 4 };
+
+constexpr std::array VERTEX_INDEX_ARRAY { 0, 1, 2, 0, 2, 3 };
+
+constexpr IVec3 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE]
+{
+    {
+        { 1, 0, 0 },
+        { 1, 1, 0 },
+        { 1, 1, 1 },
+        { 1, 0, 1 },
+    },
+    {
+        { 0, 1, 0 },
+        { 0, 0, 0 },
+        { 0, 0, 1 },
+        { 0, 1, 1 },
+    },
+    {
+        { 1, 1, 0 },
+        { 0, 1, 0 },
+        { 0, 1, 1 },
+        { 1, 1, 1 },
+    },
+    {
+        { 0, 0, 0 },
+        { 1, 0, 0 },
+        { 1, 0, 1 },
+        { 0, 0, 1 },
+    },
+    {
+        { 0, 0, 1 },
+        { 1, 0, 1 },
+        { 1, 1, 1 },
+        { 0, 1, 1 },
+    },
+    {
+        { 0, 1, 0 },
+        { 1, 1, 0 },
+        { 1, 0, 0 },
+        { 0, 0, 0 },
+    },
+};
+
+constexpr Vec3
+VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL]
+{
+    { +0, +1, +0 }, { +0, +0, +1 },
+    { +0, -1, +0 }, { +0, +0, +1 },
+    { -1, +0, +0 }, { +0, +0, +1 },
+    { +1, +0, +0 }, { +0, +0, +1 },
+    { +1, +0, +0 }, { +0, +1, +0 },
+    { +1, +0, +0 }, { +0, -1, +0 },
+};

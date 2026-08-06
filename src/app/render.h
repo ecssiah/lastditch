@@ -16,11 +16,6 @@
 class Actor;
 class Control;
 
-constexpr std::array VERTEX_INDEX_ARRAY { 0, 1, 2, 0, 2, 3 };
-
-extern const IVec3 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE];
-extern const Vec3 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL];
-
 class VoxelVertex
 {
 public:
