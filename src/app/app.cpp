@@ -23,19 +23,22 @@ App::update()
     platform.begin_frame();
 
     const f64 frame_time {
-        min<f64>(platform.get_delta_time(), MIN_FRAME_TIME)
+        min<f64>(
+            platform.get_delta_time(),
+            FRAME_TIME_MAX
+        )
     };
 
     simulation_time += frame_time;
 
-    while (simulation_time >= FIXED_DELTA_TIME_64)
+    while (simulation_time >= FIXED_FRAME_TIME_64)
     {
         work.update(world, population);
 
         world.update();
         population.update(world);
 
-        simulation_time -= FIXED_DELTA_TIME_64;
+        simulation_time -= FIXED_FRAME_TIME_64;
     }
 
     control.update(platform, population);

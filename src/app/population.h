@@ -1,6 +1,7 @@
 #pragma once
 
 #include "nation.h"
+#include "world.h"
 #include "core/id.h"
 #include "core/random.h"
 
@@ -9,7 +10,11 @@ class Work;
 class World;
 
 constexpr u32 POPULATION_SEED { 1388 };
-constexpr s32 AGENT_INITIAL_COUNT { 12 };
+
+constexpr s32 INITIAL_POPULATION_SIZE { 1 << 3 };
+constexpr s32 INITIAL_POPULATION_CAPACITY { 1 << 8 };
+
+constexpr s32 NATION_HOME_OFFSET { 80 };
 
 class Population
 {
@@ -25,19 +30,53 @@ public:
     std::vector<Actor>& get_actor_vector();
     [[nodiscard]] const vector<Actor>& get_actor_vector() const;
 
+    Nation& get_nation(NationType nation_type);
+
     s32 judge_id { -1 };
 
 private:
     void init_judge();
     void init_agents(Work& work);
-    void init_nations();
 
     IdGenerator actor_id_generator {};
     IdGenerator task_id_generator {};
 
     Random random { POPULATION_SEED };
 
-    std::array<Nation, NATION_TYPE_COUNT> nation_array {};
+    std::array<Nation, NATION_TYPE_COUNT> nation_array {
+        Nation {
+            .nation_type = NationType::Wolf,
+            .home_coordinate = {
+                WORLD_CENTER_S32 + NATION_HOME_OFFSET,
+                WORLD_CENTER_S32,
+                ROOF_Z + 3,
+            },
+        },
+        Nation {
+            .nation_type = NationType::Eagle,
+            .home_coordinate = {
+                WORLD_CENTER_S32 - NATION_HOME_OFFSET,
+                WORLD_CENTER_S32,
+                ROOF_Z + 3,
+            },
+        },
+        Nation {
+            .nation_type = NationType::Lion,
+            .home_coordinate = {
+                WORLD_CENTER_S32,
+                WORLD_CENTER_S32 - NATION_HOME_OFFSET,
+                ROOF_Z + 3,
+            },
+        },
+        Nation {
+            .nation_type = NationType::Bear,
+            .home_coordinate = {
+                WORLD_CENTER_S32,
+                WORLD_CENTER_S32 + NATION_HOME_OFFSET,
+                ROOF_Z + 3,
+            },
+        },
+    };
 
     std::vector<Actor> actor_vector {};
 };

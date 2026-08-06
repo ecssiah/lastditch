@@ -779,7 +779,7 @@ Render::init_model_render(const Control& control, const Population& population)
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
     
-    model_render.model_gpu_data_vector.resize(ACTOR_POOL_MAX);
+    model_render.model_gpu_data_vector.resize(INITIAL_POPULATION_CAPACITY);
 
     for (const Actor& actor : population.get_actor_vector())
     {

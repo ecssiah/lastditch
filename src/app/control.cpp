@@ -36,7 +36,7 @@ Control::update(const Platform& platform, Population& population)
 
             Actor& actor { population.get_actor(actor_id) };
 
-            actor.move_speed = JUDGE_DEFAULT_GROUND_SPEED;
+            actor.move_speed = ACTOR_DEFAULT_MOVE_SPEED;
             actor.velocity = {};
         }
         else
@@ -127,7 +127,7 @@ Control::drive()
 
     const Vec3 velocity { DEBUG_CONTROL_SPEED * direction };
 
-    position = position + FIXED_DELTA_TIME_32 * velocity;
+    position = position + FIXED_FRAME_TIME_32 * velocity;
 
     rotation.z -= CAMERA_SENSITIVITY_X * inputs.rotate.x;
     rotation.x -= CAMERA_SENSITIVITY_Y * inputs.rotate.y;
@@ -183,7 +183,7 @@ Control::drive_actor(Actor& actor) const
 
     if (inputs.jump == 1.0f && actor.is_grounded)
     {
-        actor.velocity.z = JUDGE_DEFAULT_JUMP_SPEED;
+        actor.velocity.z = ACTOR_DEFAULT_JUMP_SPEED;
     }
 }
 

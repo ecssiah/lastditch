@@ -30,7 +30,7 @@ get_nation_type_string(const NationType nation_type)
 constexpr s32
 find_nation_type_index(const std::string_view nation_type_string)
 {
-    for (s32 index = 0; index < NATION_TYPE_COUNT; index++)
+    for (s32 index { 0 }; index < NATION_TYPE_COUNT; index++)
     {
         const NationType nation_type { static_cast<NationType>(index) };
 

@@ -10,12 +10,17 @@ class Work;
 
 constexpr f32 DEBUG_CONTROL_SPEED { 10.0f };
 
+constexpr f32 CAMERA_SENSITIVITY_X { 0.22f };
+constexpr f32 CAMERA_SENSITIVITY_Y { 0.22f };
+
+constexpr f32 CAMERA_PITCH_LIMIT { 89.0f };
+
 class Inputs
 {
 public:
-    Vec3 move { 0.0f };
+    Vec3 move   { 0.0f };
     Vec2 rotate { 0.0f };
-    f32 jump { 0.0f };
+    f32 jump    { 0.0f };
 };
 
 class Control
