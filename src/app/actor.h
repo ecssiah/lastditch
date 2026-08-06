@@ -18,18 +18,9 @@ enum class ActorType : u8
 
 constexpr s32 ACTOR_TYPE_COUNT { static_cast<s32>(ActorType::COUNT) };
 
-inline const char* ACTOR_TYPE_STRING_ARRAY[]
-{
-    "None",
-    "Judge",
-    "Agent",
-};
-
 class Actor
 {
 public:
-    static s32 find_type_index(const std::string& actor_type_string);
-
     s32 id { -1 };
 
     ActorType actor_type { ActorType::None };

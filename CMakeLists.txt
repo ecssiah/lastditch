@@ -56,7 +56,6 @@ target_sources(
     external/glad/src/gl.c
     external/stb/src/stb_image.c
     src/app/actor.h
-    src/app/actor.cpp
     src/app/app.h
     src/app/app.cpp
     src/app/area.h
