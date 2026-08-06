@@ -8,6 +8,8 @@ App::init()
 {
     Log::init();
 
+    platform.init();
+
     world.init();
     population.init(work);
 

@@ -3,7 +3,8 @@
 #include <cassert>
 #include <utility>
 
-Platform::Platform()
+void
+Platform::init()
 {
     init_glfw();
     init_buttons();

@@ -34,8 +34,9 @@ enum class ButtonType : u8
 class Platform
 {
 public:
-    Platform();
+    Platform() = default;
 
+    void init();
     void quit();
 
     void begin_frame();
