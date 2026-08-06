@@ -11,12 +11,14 @@
 class Population;
 class World;
 
+using Task = std::function<void(World&, Population&)>;
+
 struct TaskRecord
 {
     s32 frequency   { 1 };
     s32 phase       { 0 };
 
-    std::function<void(World&, Population&)> task {};
+    Task task {};
 };
 
 class Work
@@ -26,7 +28,7 @@ public:
 
     b32 find_task(s32 actor_id);
 
-    void schedule(s32 frequency, s32 phase, std::function<void(World&, Population&)> task);
+    void schedule(s32 frequency, s32 phase, Task task);
 
     Random random { WORK_SEED };
 

@@ -4,7 +4,6 @@
 #include <cmath>
 
 #include "actor.h"
-#include "app.h"
 #include "world.h"
 #include "core/types.h"
 

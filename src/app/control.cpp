@@ -2,7 +2,6 @@
 
 #include <cmath>
 
-#include "app.h"
 #include "population.h"
 #include "work.h"
 #include "core/log.h"

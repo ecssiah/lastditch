@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "actor.h"
-#include "app.h"
 #include "physics.h"
 #include "world.h"
 #include "work.h"

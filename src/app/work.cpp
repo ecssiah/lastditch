@@ -3,7 +3,6 @@
 #include <algorithm>
 
 #include "actor.h"
-#include "app.h"
 #include "population.h"
 
 using namespace std;
@@ -23,7 +22,7 @@ Work::update(World& world, Population& population)
 }
 
 void
-Work::schedule(const s32 frequency, const s32 phase, std::function<void(World&, Population&)> task)
+Work::schedule(const s32 frequency, const s32 phase, Task task)
 {
     const TaskRecord task_record {
         .frequency = frequency,
@@ -61,7 +60,7 @@ Work::find_task(s32 actor_id)
                     if (act)
                     {
                         actor.rotation_target.z = clamp(
-                            actor.rotation_target.z + random.uniform(-90.0f, 90.0f),
+                            actor.rotation_target.z + random.uniform(-120.0f, 120.0f),
                             0.0f,
                             360.0f
                         );
