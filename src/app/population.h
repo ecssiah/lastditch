@@ -36,6 +36,8 @@ private:
     void init_judge();
     void init_agents();
 
+    b32 find_task(s32 actor_id, Work& work);
+
     IdGenerator actor_id_generator {};
     IdGenerator task_id_generator {};
 

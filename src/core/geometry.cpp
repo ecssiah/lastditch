@@ -567,6 +567,15 @@ interpolate_to(const Vec3& current, const Vec3& target, const f32 speed, const f
     };
 }
 
+Vec2
+direction_from_angle(const f32 rotation_degrees)
+{
+    return {
+        cos(to_radians(rotation_degrees)),
+        sin(to_radians(rotation_degrees)),
+    };
+}
+
 Vec3 
 get_forward(const Vec3& rotation)
 {

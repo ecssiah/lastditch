@@ -1,10 +1,13 @@
 #include "population.h"
 
+#include <iostream>
+
 #include "actor.h"
 #include "app.h"
 #include "physics.h"
 #include "world.h"
 #include "work.h"
+#include "core/geometry.h"
 #include "core/log.h"
 #include "core/types.h"
 
@@ -24,10 +27,16 @@ Population::update(World& world, Work& work)
 {
     for (Actor& actor : actor_vector)
     {
+        if (!actor.engaged)
+        {
+            actor.decision_timer = random.uniform(10, 20);
+            actor.engaged = find_task(actor.id, work);
+        }
+
         actor.rotation = interpolate_to(
             actor.rotation,
             actor.rotation_target,
-            12.0f,
+            actor.turn_speed,
             FIXED_FRAME_TIME_32
         );
 
@@ -76,8 +85,9 @@ Population::init_judge()
         .id = judge_id,
         .actor_type = ActorType::Judge,
         .nation_type = NationType::Lion,
-        .move_speed = ACTOR_DEFAULT_MOVE_SPEED,
-        .position = { WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
+        .move_speed = JUDGE_DEFAULT_MOVE_SPEED,
+        .turn_speed = JUDGE_DEFAULT_TURN_SPEED,
+        .position = { WORLD_CENTER_F32 - NATION_HOME_OFFSET, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
         .rotation = { 0.0f, 0.0f, 90.0f },
         .velocity = { 0.0f, 0.0f, 0.0f },
         .position_target = { WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
@@ -86,6 +96,9 @@ Population::init_judge()
             .collision_enabled = true,
             .radius = { 0.30f, 0.30f, 0.90f },
         },
+        .engaged = true,
+        .is_grounded = false,
+        .decision_timer = 0,
     };
 
     actor_vector.push_back(judge);
@@ -129,6 +142,7 @@ Population::init_agents()
                 .actor_type = ActorType::Agent,
                 .nation_type = nation_type,
                 .move_speed = ACTOR_DEFAULT_MOVE_SPEED,
+                .turn_speed = ACTOR_DEFAULT_TURN_SPEED,
                 .position = Vec3 { position },
                 .rotation = Vec3 { rotation },
                 .velocity = {},
@@ -138,6 +152,9 @@ Population::init_agents()
                     .collision_enabled = true,
                     .radius = { 0.40f, 0.40f, 0.90f },
                 },
+                .engaged = false,
+                .is_grounded = false,
+                .decision_timer = 0,
             };
 
             actor_vector.push_back(agent);
@@ -152,4 +169,60 @@ Population::init_agents()
             );
         }
     }
+}
+
+b32
+Population::find_task(s32 actor_id, Work& work)
+{
+    work.schedule(
+        1,
+        actor_id,
+        [this, actor_id]
+        {
+            Actor& actor { get_actor(actor_id) };
+
+            if (actor.decision_timer > 0)
+            {
+                --actor.decision_timer;
+            }
+            else
+            {
+                actor.decision_timer = random.uniform(10, 50);
+
+                const f32 distance_to_target { actor.rotation_target.z - actor.rotation.z };
+
+                if (abs(distance_to_target) < 1.0f)
+                {
+                    const b32 act { random.uniform(0 ,1) == 1 };
+
+                    if (act)
+                    {
+                        actor.rotation_target.z = clamp(
+                            actor.rotation_target.z + random.uniform(-90.0f, 90.0f),
+                            0.0f,
+                            360.0f
+                        );
+
+                        const Vec2 direction { direction_from_angle(actor.rotation_target.z) };
+
+                        actor.velocity = {
+                            direction.x * actor.move_speed,
+                            direction.y * actor.move_speed,
+                            actor.velocity.z,
+                        };
+                    }
+                    else
+                    {
+                        actor.velocity = {
+                            0.0f,
+                            0.0f,
+                            actor.velocity.z,
+                        };
+                    }
+                }
+            }
+        }
+    );
+
+    return true;
 }

@@ -5,8 +5,12 @@
 #include "core/geometry.h"
 #include "core/types.h"
 
-constexpr f32 ACTOR_DEFAULT_MOVE_SPEED { 12.0f };
+constexpr f32 ACTOR_DEFAULT_MOVE_SPEED { 1.0f };
+constexpr f32 ACTOR_DEFAULT_TURN_SPEED { 5.0f };
 constexpr f32 ACTOR_DEFAULT_JUMP_SPEED { 28.0f };
+
+constexpr f32 JUDGE_DEFAULT_MOVE_SPEED { 12.0f };
+constexpr f32 JUDGE_DEFAULT_TURN_SPEED { 10.0f };
 
 enum class ActorType : u8
 {
@@ -27,6 +31,7 @@ public:
     NationType nation_type { NationType::Wolf };
 
     f32 move_speed { ACTOR_DEFAULT_MOVE_SPEED };
+    f32 turn_speed { ACTOR_DEFAULT_TURN_SPEED };
 
     Vec3 position {};
     Vec3 rotation {};
@@ -35,7 +40,10 @@ public:
     Vec3 position_target {};
     Vec3 rotation_target {};
 
+    BoxCollider box_collider {};
+
+    b32 engaged { false };
     b32 is_grounded { false };
 
-    BoxCollider box_collider {};
+    s32 decision_timer { 0 };
 };

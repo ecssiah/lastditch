@@ -36,7 +36,7 @@ Control::update(const Platform& platform, Population& population)
 
             Actor& actor { population.get_actor(actor_id) };
 
-            actor.move_speed = ACTOR_DEFAULT_MOVE_SPEED;
+            actor.move_speed = JUDGE_DEFAULT_MOVE_SPEED;
             actor.velocity = {};
         }
         else

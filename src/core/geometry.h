@@ -353,3 +353,5 @@ Vec3 get_up(const Vec3& rotation);
 
 f32 interpolate_to(f32 current, f32 target, f32 speed, f32 delta_time);
 Vec3 interpolate_to(const Vec3& current, const Vec3& target, f32 speed, f32 delta_time);
+
+Vec2 direction_from_angle(f32 rotation_degrees);
