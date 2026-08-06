@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "app/constants.h"
+
 using namespace std;
 
 Vec2::Vec2(const IVec2& vec)

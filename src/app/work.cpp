@@ -1,7 +1,6 @@
 #include "work.h"
 
-#include <iostream>
-#include <ostream>
+#include <algorithm>
 
 #include "actor.h"
 #include "app.h"
@@ -18,13 +17,13 @@ Work::update(World& world, Population& population)
     {
         if ((tick_count + task_record.phase) % task_record.frequency == 0)
         {
-            task_record.task();
+            task_record.task(world, population);
         }
     }
 }
 
 void
-Work::schedule(const s32 frequency, const s32 phase, std::function<void()> task)
+Work::schedule(const s32 frequency, const s32 phase, std::function<void(World&, Population&)> task)
 {
     const TaskRecord task_record {
         .frequency = frequency,
@@ -34,3 +33,60 @@ Work::schedule(const s32 frequency, const s32 phase, std::function<void()> task)
 
     task_record_vector.push_back(task_record);
 }
+
+b32
+Work::find_task(s32 actor_id)
+{
+    schedule(
+        2,
+        actor_id,
+        [this, actor_id](World&, Population& population)
+        {
+            Actor& actor { population.get_actor(actor_id) };
+
+            if (actor.decision_timer > 0)
+            {
+                --actor.decision_timer;
+            }
+            else
+            {
+                actor.decision_timer = random.uniform(10, 50);
+
+                const f32 distance_to_target { actor.rotation_target.z - actor.rotation.z };
+
+                if (abs(distance_to_target) < 1.0f)
+                {
+                    const b32 act { random.uniform(0 ,1) == 1 };
+
+                    if (act)
+                    {
+                        actor.rotation_target.z = clamp(
+                            actor.rotation_target.z + random.uniform(-90.0f, 90.0f),
+                            0.0f,
+                            360.0f
+                        );
+
+                        const Vec2 direction { direction_from_angle(actor.rotation_target.z) };
+
+                        actor.velocity = {
+                            direction.x * actor.move_speed,
+                            direction.y * actor.move_speed,
+                            actor.velocity.z,
+                        };
+                    }
+                    else
+                    {
+                        actor.velocity = {
+                            0.0f,
+                            0.0f,
+                            actor.velocity.z,
+                        };
+                    }
+                }
+            }
+        }
+    );
+
+    return true;
+}
+

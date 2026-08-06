@@ -5,9 +5,6 @@
 
 #include "types.h"
 
-constexpr f32 EPSILON { 1e-5f };
-constexpr f32 EPSILON_SQUARED { 1e-10f };
-
 enum class Axis : u8
 {
     X,

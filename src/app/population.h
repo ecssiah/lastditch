@@ -9,13 +9,6 @@ class Actor;
 class Work;
 class World;
 
-constexpr u32 POPULATION_SEED { 1388 };
-
-constexpr s32 INITIAL_POPULATION_SIZE { 1 << 3 };
-constexpr s32 INITIAL_POPULATION_CAPACITY { 1 << 8 };
-
-constexpr s32 NATION_HOME_OFFSET { 80 };
-
 class Population
 {
 public:

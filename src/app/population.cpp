@@ -29,8 +29,7 @@ Population::update(World& world, Work& work)
     {
         if (!actor.engaged)
         {
-            actor.decision_timer = random.uniform(10, 20);
-            actor.engaged = find_task(actor.id, work);
+            actor.engaged = work.find_task(actor.id);
         }
 
         actor.rotation = interpolate_to(
@@ -169,60 +168,4 @@ Population::init_agents()
             );
         }
     }
-}
-
-b32
-Population::find_task(s32 actor_id, Work& work)
-{
-    work.schedule(
-        1,
-        actor_id,
-        [this, actor_id]
-        {
-            Actor& actor { get_actor(actor_id) };
-
-            if (actor.decision_timer > 0)
-            {
-                --actor.decision_timer;
-            }
-            else
-            {
-                actor.decision_timer = random.uniform(10, 50);
-
-                const f32 distance_to_target { actor.rotation_target.z - actor.rotation.z };
-
-                if (abs(distance_to_target) < 1.0f)
-                {
-                    const b32 act { random.uniform(0 ,1) == 1 };
-
-                    if (act)
-                    {
-                        actor.rotation_target.z = clamp(
-                            actor.rotation_target.z + random.uniform(-90.0f, 90.0f),
-                            0.0f,
-                            360.0f
-                        );
-
-                        const Vec2 direction { direction_from_angle(actor.rotation_target.z) };
-
-                        actor.velocity = {
-                            direction.x * actor.move_speed,
-                            direction.y * actor.move_speed,
-                            actor.velocity.z,
-                        };
-                    }
-                    else
-                    {
-                        actor.velocity = {
-                            0.0f,
-                            0.0f,
-                            actor.velocity.z,
-                        };
-                    }
-                }
-            }
-        }
-    );
-
-    return true;
 }
