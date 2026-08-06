@@ -251,7 +251,6 @@ class World
 public:
     void init();
     void update();
-    void quit();
 
     static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);
     static b32 sector_coordinate_is_valid(s32 x, s32 y);
@@ -293,6 +292,9 @@ public:
 
     [[nodiscard]] Vec3 get_gravity() const;
 
+    Random random { WORLD_SEED };
+    Physics physics {};
+
 private:
     void init_cell_array();
 
@@ -331,9 +333,6 @@ private:
 
     Edge calculate_edge(const Area& area_left, const Area& area_right);
     void calculate_edges(s32 floor_number);
-
-    Random random { WORLD_SEED };
-    Physics physics {};
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 

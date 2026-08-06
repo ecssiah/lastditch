@@ -16,7 +16,6 @@ class Population
 public:
     void init(Work& work);
     void update(World& world);
-    void quit();
 
     Random& get_random();
 

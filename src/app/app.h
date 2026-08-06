@@ -16,8 +16,9 @@ constexpr f64 MIN_FRAME_TIME { 0.25 };
 class App
 {
 public:
-    App();
+    App() = default;
 
+    void init();
     void update();
     void quit();
 

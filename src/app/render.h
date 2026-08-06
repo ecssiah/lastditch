@@ -168,21 +168,20 @@ public:
 class Render
 {
 public:
-    Debug debug {};
-    Screen screen {};
-
-    DebugRender debug_render {};
-    VoxelRender voxel_render {};
-    ModelRender model_render {};
+    void init(const Platform& platform, const Control& control, const World& world, const Population& population);
+    void update(const Control& control, const World& world, const Population& population);
 
     static GLuint compile_shader(GLenum type, const char* filepath);
 
     static const char* get_gl_error_string(GLenum err);
     static void check_gl_error(const char* label);
 
-    void init(const Platform& platform, const Control& control, const World& world, const Population& population);
-    void update(const Control& control, const World& world, const Population& population);
-    void quit();
+    Debug debug {};
+    Screen screen {};
+
+    DebugRender debug_render {};
+    VoxelRender voxel_render {};
+    ModelRender model_render {};
 
 private:
     static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);

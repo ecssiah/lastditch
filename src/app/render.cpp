@@ -73,12 +73,12 @@ Render::get_gl_error_string(GLenum err)
 {
     switch (err)
     {
-        case GL_INVALID_ENUM:                          return "GL_INVALID_ENUM";
-        case GL_INVALID_VALUE:                         return "GL_INVALID_VALUE";
-        case GL_INVALID_OPERATION:                    return "GL_INVALID_OPERATION";
-        case GL_OUT_OF_MEMORY:                         return "GL_OUT_OF_MEMORY";
-        case GL_INVALID_FRAMEBUFFER_OPERATION:      return "GL_INVALID_FRAMEBUFFER_OPERATION";
-        default:                                          return "UNKNOWN_ERROR";
+        case GL_INVALID_ENUM:                           return "GL_INVALID_ENUM";
+        case GL_INVALID_VALUE:                          return "GL_INVALID_VALUE";
+        case GL_INVALID_OPERATION:                      return "GL_INVALID_OPERATION";
+        case GL_OUT_OF_MEMORY:                          return "GL_OUT_OF_MEMORY";
+        case GL_INVALID_FRAMEBUFFER_OPERATION:          return "GL_INVALID_FRAMEBUFFER_OPERATION";
+        default:                                        return "UNKNOWN_ERROR";
     }
 }
 
@@ -208,7 +208,7 @@ Render::load_block_texture_directory()
 
     assert(voxel_render.block_config_data.entry_vector.size() <= BLOCK_TYPE_COUNT);
 
-    for (size_t layer_index = 0; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
+    for (size_t layer_index { 0 }; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
     {
         const ConfigEntry& config_entry { voxel_render.block_config_data.entry_vector[layer_index] };
 
@@ -246,7 +246,7 @@ Render::load_actor_texture_directory()
 
     assert(model_render.actor_config_data.entry_vector.size() <= NATION_TYPE_COUNT);
 
-    for (size_t layer_index = 0; layer_index < model_render.actor_config_data.entry_vector.size(); ++layer_index)
+    for (size_t layer_index { 0 }; layer_index < model_render.actor_config_data.entry_vector.size(); ++layer_index)
     {
         const ConfigEntry& config_entry { model_render.actor_config_data.entry_vector[layer_index]};
 
@@ -276,7 +276,7 @@ Render::load_model_gpu_data(const Actor& actor) const
         .texture_layer = model_render.nation_type_layer_array[nation_type_index],
     };
 
-    ifstream ifs{ "assets/model/actor.obj" };
+    ifstream ifs { "assets/model/actor.obj" };
 
     assert(ifs.is_open());
 
@@ -365,7 +365,7 @@ Render::load_model_gpu_data(const Actor& actor) const
 
             assert(scan_result == 9);
 
-            for (s32 model_vertex_index = 0; model_vertex_index < 3; model_vertex_index++)
+            for (s32 model_vertex_index { 0 }; model_vertex_index < 3; model_vertex_index++)
             {
                 ModelVertex model_vertex {};
 
@@ -414,11 +414,11 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
         0,
     };
 
-    for (s32 cell_z = 0; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
+    for (s32 cell_z { 0 }; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
     {
-        for (s32 cell_y = sector_cell_coordinate.y; cell_y < sector_cell_coordinate.y + SECTOR_SIZE_IN_CELLS; ++cell_y)
+        for (s32 cell_y { sector_cell_coordinate.y }; cell_y < sector_cell_coordinate.y + SECTOR_SIZE_IN_CELLS; ++cell_y)
         {
-            for (s32 cell_x = sector_cell_coordinate.x; cell_x < sector_cell_coordinate.x + SECTOR_SIZE_IN_CELLS; ++cell_x)
+            for (s32 cell_x { sector_cell_coordinate.x }; cell_x < sector_cell_coordinate.x + SECTOR_SIZE_IN_CELLS; ++cell_x)
             {
                 if (!World::cell_coordinate_is_valid(cell_x, cell_y, cell_z))
                 {
@@ -463,7 +463,7 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
 void
 Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
 {
-    for (s32 vertex_index = 0; vertex_index < 6; ++vertex_index)
+    for (s32 vertex_index { 0 }; vertex_index < 6; ++vertex_index)
     {
         const s32 direction_index { static_cast<s32>(sector_quad.direction) };
         const s32 block_type_index { static_cast<s32>(sector_quad.block_type) };
@@ -716,7 +716,7 @@ Render::init_voxel_render(const Control& control, const World& world)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
 
-    for (s32 sector_index = 0; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
+    for (s32 sector_index { 0 }; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
     {
         generate_sector_mesh(world, sector_index);
     }
@@ -951,13 +951,7 @@ Render::update(const Control& control, const World& world, const Population& pop
     screen.update(control);
 }
 
-void
-Render::quit()
-{
-    LOG_INFO("RENDER QUIT");
-}
-
-GLuint 
+GLuint
 Render::compile_shader(const GLenum type, const char* filepath)
 {
     ifstream ifs { filepath };

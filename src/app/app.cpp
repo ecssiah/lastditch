@@ -3,7 +3,8 @@
 #include "control.h"
 #include "core/log.h"
 
-App::App()
+void
+App::init()
 {
     Log::init();
 
@@ -44,13 +45,6 @@ App::update()
 void
 App::quit()
 {
-    control.quit();
-
-    population.quit();
-    world.quit();
-
-    render.quit();
-    
     Log::quit();
 
     platform.quit();

@@ -19,8 +19,8 @@ Physics::update_actor(World& world, Actor& actor)
 
     const f32 dz {
         actor.velocity[z_axis_index] <= 0.0f
-            ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.get_gravity()[z_axis_index]
-            : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.get_gravity()[z_axis_index]
+            ? FIXED_DELTA_TIME_32 * FALLING_GRAVITY_MODIFIER * world.physics.gravity[z_axis_index]
+            : FIXED_DELTA_TIME_32 * RISING_GRAVITY_MODIFIER * world.physics.gravity[z_axis_index]
     };
 
     actor.velocity[z_axis_index] = clamp(
@@ -48,7 +48,7 @@ Physics::update_actor(World& world, Actor& actor)
 
         const f32 step_delta_time { FIXED_DELTA_TIME_32 / static_cast<f32>(step_count) };
 
-        for (s32 step_index = 0; step_index < step_count; ++step_index)
+        for (s32 step_index { 0 }; step_index < step_count; ++step_index)
         {
             resolve_axis_collisions(world, actor, Axis::X, step_delta_time);
             resolve_axis_collisions(world, actor, Axis::Y, step_delta_time);
@@ -102,7 +102,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
     Bounds3 actor_bounds { get_box_collider_bounds(actor.box_collider, actor.position) };
     Bounds3 swept_bounds {};
     
-    for (s32 axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    for (s32 axis_index { 0 }; axis_index < AXIS_COUNT; ++axis_index)
     {
         swept_bounds.min[axis_index] = min(
             actor_bounds.min[axis_index],
@@ -135,11 +135,11 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
     constexpr s32 axis_y_index { static_cast<s32>(Axis::Y) };
     constexpr s32 axis_x_index { static_cast<s32>(Axis::X) };
     
-    for (s32 z = grid_overlap_bounds.min[axis_z_index]; z <= grid_overlap_bounds.max[axis_z_index]; ++z) 
+    for (s32 z { grid_overlap_bounds.min[axis_z_index] }; z <= grid_overlap_bounds.max[axis_z_index]; ++z)
     {
-        for (s32 y = grid_overlap_bounds.min[axis_y_index]; y <= grid_overlap_bounds.max[axis_y_index]; ++y) 
+        for (s32 y { grid_overlap_bounds.min[axis_y_index] }; y <= grid_overlap_bounds.max[axis_y_index]; ++y)
         {
-            for (s32 x = grid_overlap_bounds.min[axis_x_index]; x <= grid_overlap_bounds.max[axis_x_index]; ++x) 
+            for (s32 x { grid_overlap_bounds.min[axis_x_index] }; x <= grid_overlap_bounds.max[axis_x_index]; ++x)
             {
                 const IVec3 cell_coordinate { x, y, z };
 
@@ -173,7 +173,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
                 {
                     const f32 block_min { static_cast<f32>(cell_coordinate[axis_index]) };
 
-                    if (block_min >= actor_max_prev && block_min <= actor_max_next && block_min < best) 
+                    if (block_min >= actor_max_prev && block_min <= actor_max_next && block_min < best)
                     {
                         best = block_min;
                         found = true;

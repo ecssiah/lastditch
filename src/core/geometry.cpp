@@ -243,13 +243,13 @@ operator*(const Mat4& lhs, const Mat4& rhs)
 {
     Mat4 result {};
 
-    for (s32 column = 0; column < 4; ++column)
+    for (s32 column { 0 }; column < 4; ++column)
     {
-        for (s32 row = 0; row < 4; ++row)
+        for (s32 row { 0 }; row < 4; ++row)
         {
-            for (s32 i = 0; i < 4; ++i)
+            for (s32 index { 0 }; index < 4; ++index)
             {
-                result[column][row] += lhs[i][row] * rhs[column][i];
+                result[column][row] += lhs[index][row] * rhs[column][index];
             }
         }
     }
@@ -544,11 +544,11 @@ f32
 interpolate_to(const f32 current, const f32 target, const f32 speed, const f32 delta_time)
 {
     const f32 alpha { 1.0f - exp(-speed * delta_time) };
+    
+    f32 delta { target - current };
 
-    if (
-        f32 delta { target - current };
-        abs(delta) > EPSILON
-    ) {
+    if (abs(delta) > EPSILON)
+    {
         delta = fmod(delta + 180.0f, 360.0f) - 180.0f;
 
         return current + delta * alpha;

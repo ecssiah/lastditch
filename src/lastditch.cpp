@@ -3,7 +3,9 @@
 int
 main()
 {
-    const unique_ptr app { make_unique<App>() };
+    const auto app { make_unique<App>() };
+
+    app->init();
 
     while (app->active)
     {
