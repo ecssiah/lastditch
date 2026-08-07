@@ -33,14 +33,14 @@ Control::update(const Platform& platform, Population& population)
         {
             actor_id = population.judge_id;
 
-            Actor& actor { population.get_actor(actor_id) };
+            Actor& actor { population.actor_vector[actor_id] };
 
             actor.move_speed = JUDGE_DEFAULT_MOVE_SPEED;
             actor.velocity = {};
         }
         else
         {
-            Actor& actor { population.get_actor(actor_id) };
+            Actor& actor { population.actor_vector[actor_id] };
 
             actor.move_speed = 0.0f;
             actor.velocity = {};
@@ -57,7 +57,7 @@ Control::update(const Platform& platform, Population& population)
     }
     else
     {
-        Actor& actor { population.get_actor(actor_id) };
+        Actor& actor { population.actor_vector[actor_id] };
 
         drive_actor(actor);
         sync_to_actor(actor);

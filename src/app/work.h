@@ -11,28 +11,28 @@
 class Population;
 class World;
 
-using Task = std::function<void(World&, Population&)>;
+using JobCallback = std::function<void(World&, Population&)>;
 
-struct TaskRecord
+struct JobRecord
 {
     s32 frequency   { 1 };
     s32 phase       { 0 };
 
-    Task task {};
+    JobCallback job_callback {};
 };
 
 class Work
 {
 public:
+    void init(Population& population);
     void update(World& world, Population& population);
 
-    b32 find_task(s32 actor_id);
-    void add_task(s32 frequency, s32 phase, Task task);
+    void add_job(s32 frequency, s32 phase, JobCallback job_callback);
 
     Random random { WORK_SEED };
 
 private:
     u64 tick_count { 0 };
 
-    std::vector<TaskRecord> task_record_vector {};
+    std::vector<JobRecord> task_record_vector {};
 };

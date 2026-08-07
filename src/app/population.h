@@ -15,17 +15,13 @@ public:
     void init();
     void update(World& world, Work& work);
 
-    Actor& get_actor(s32 actor_id);
-    [[nodiscard]] const Actor& get_actor(s32 actor_id) const;
-
-    std::vector<Actor>& get_actor_vector();
-    [[nodiscard]] const vector<Actor>& get_actor_vector() const;
-
     Nation& get_nation(NationType nation_type);
 
     Random random { POPULATION_SEED };
 
     s32 judge_id { -1 };
+
+    std::vector<Actor> actor_vector {};
 
 private:
     void init_judge();
@@ -68,6 +64,4 @@ private:
             },
         },
     };
-
-    std::vector<Actor> actor_vector {};
 };

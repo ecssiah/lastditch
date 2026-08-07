@@ -735,7 +735,7 @@ Render::init_model_render(const Control& control, const Population& population)
     
     model_render.model_gpu_data_vector.resize(INITIAL_POPULATION_CAPACITY);
 
-    for (const Actor& actor : population.get_actor_vector())
+    for (const Actor& actor : population.actor_vector)
     {
         const ModelGpuData model_gpu_data { load_model_gpu_data(actor) };
 
@@ -853,7 +853,7 @@ Render::update_model_render(const Control& control, const Population& population
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
 
-    for (const Actor& actor : population.get_actor_vector())
+    for (const Actor& actor : population.actor_vector)
     {
         const ModelGpuData& model_gpu_data { model_render.model_gpu_data_vector[actor.id] };
 

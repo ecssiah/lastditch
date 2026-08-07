@@ -26,11 +26,6 @@ Population::update(World& world, Work& work)
 {
     for (Actor& actor : actor_vector)
     {
-        if (!actor.engaged)
-        {
-            actor.engaged = work.find_task(actor.id);
-        }
-
         actor.rotation = interpolate_to(
             actor.rotation,
             actor.rotation_target,
@@ -40,30 +35,6 @@ Population::update(World& world, Work& work)
 
         Physics::update_actor(world, actor);
     }
-}
-
-Actor&
-Population::get_actor(const s32 actor_id)
-{
-    return actor_vector[actor_id];
-}
-
-const Actor&
-Population::get_actor(const s32 actor_id) const
-{
-    return actor_vector[actor_id];
-}
-
-vector<Actor>&
-Population::get_actor_vector()
-{
-    return actor_vector;
-}
-
-const vector<Actor>&
-Population::get_actor_vector() const
-{
-    return actor_vector;
 }
 
 Nation&
