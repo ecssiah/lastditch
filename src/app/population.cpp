@@ -22,7 +22,7 @@ Population::init()
 }
 
 void
-Population::update(World& world, Work& work)
+Population::update(World& world)
 {
     for (Actor& actor : actor_vector)
     {

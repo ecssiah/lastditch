@@ -79,10 +79,10 @@ public:
     static s32 block_type_index_from_string(const std::string& block_type_string);
 
     Cell& get_cell(s32 cell_index);
-    [[nodiscard]] const Cell& get_cell(s32 cell_index) const;
+    const Cell& get_cell(s32 cell_index) const;
 
     Cell& get_cell(s32 x, s32 y, s32 z);
-    [[nodiscard]] const Cell& get_cell(s32 x, s32 y, s32 z) const;
+    const Cell& get_cell(s32 x, s32 y, s32 z) const;
 
     b32 is_solid(s32 x, s32 y, s32 z);
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);

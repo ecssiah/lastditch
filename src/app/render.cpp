@@ -892,7 +892,7 @@ Render::init(const Platform& platform, const Control& control, const World& worl
 }
 
 void 
-Render::update(const Control& control, const World& world, const Population& population)
+Render::update(const Control& control, const Population& population)
 {
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

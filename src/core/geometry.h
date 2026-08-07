@@ -71,9 +71,9 @@ public:
         return { 0.0f, 1.0f };
     }
 
-    [[nodiscard]] f32 get_length() const;
-    [[nodiscard]] f32 get_length_squared() const;
-    [[nodiscard]] Vec2 normalize() const;
+    f32 get_length() const;
+    f32 get_length_squared() const;
+    Vec2 normalize() const;
 
     friend Vec2 operator+(const Vec2& lhs, const Vec2& rhs);
     friend Vec2 operator-(const Vec2& lhs, const Vec2& rhs);
@@ -150,9 +150,9 @@ public:
         return { 0.0f, 0.0f, 1.0f };
     }
 
-    [[nodiscard]] f32 get_length() const;
-    [[nodiscard]] f32 get_length_squared() const;
-    [[nodiscard]] Vec3 normalize() const;
+    f32 get_length() const;
+    f32 get_length_squared() const;
+    Vec3 normalize() const;
 
     friend Vec3 max(const Vec3& lhs, const Vec3& rhs);
     friend Vec3 min(const Vec3& lhs, const Vec3& rhs);
@@ -277,8 +277,8 @@ public:
 
     friend Mat4 operator*(const Mat4& lhs, const Mat4& rhs);
 
-    [[nodiscard]] Mat4 translate(const Vec3& translation) const;
-    [[nodiscard]] Mat4 rotate(f32 angle, const Vec3& axis) const;
+    Mat4 translate(const Vec3& translation) const;
+    Mat4 rotate(f32 angle, const Vec3& axis) const;
 
 private:
     f32 entry_array[4][4] {};
@@ -290,8 +290,8 @@ public:
     IBounds2() = default;
     IBounds2(const IVec2& min, const IVec2& max);
 
-    [[nodiscard]] IVec2 position() const;
-    [[nodiscard]] IVec2 size() const;
+    IVec2 position() const;
+    IVec2 size() const;
 
     friend b32 overlaps(const IBounds2& lhs, const IBounds2& rhs);
     friend IBounds2 get_intersection(const IBounds2& lhs, const IBounds2& rhs);
@@ -307,8 +307,8 @@ public:
     IBounds3() = default;
     IBounds3(const IVec3& min, const IVec3& max);
 
-    [[nodiscard]] IVec3 position() const;
-    [[nodiscard]] IVec3 size() const;
+    IVec3 position() const;
+    IVec3 size() const;
 
     IVec3 min {};
     IVec3 max {};

@@ -5,7 +5,7 @@
 class IdGenerator
 {
 public:
-    [[nodiscard]] s32 next()
+    s32 next()
     {
         return next_id++;
     }

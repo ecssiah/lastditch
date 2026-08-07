@@ -36,7 +36,7 @@ App::update()
     while (simulation_time >= FIXED_FRAME_TIME_64)
     {
         world.update();
-        population.update(world, work);
+        population.update(world);
 
         work.update(world, population);
 
@@ -44,7 +44,7 @@ App::update()
     }
 
     control.update(platform, population);
-    render.update(control, world, population);
+    render.update(control, population);
 
     active = platform.end_frame();
 }

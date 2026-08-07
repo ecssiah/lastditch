@@ -995,7 +995,7 @@ World::layout_tower_areas()
         area_vector.push_back(area_quadrant_3);
         area_vector.push_back(area_quadrant_4);
 
-        for (s32 iteration { 0 }; iteration < AREA_EXPANSION_ITERATION_COUNT; ++iteration)
+        for (s32 iteration { 0 }; iteration < AREA_EXPANSION_ITERATIONS; ++iteration)
         {
             vector<Area> areas_to_add_vector {};
 
@@ -1863,7 +1863,7 @@ World::calculate_direction_masks()
 Border
 World::calculate_border(const Area& area_left, const Area& area_right)
 {
-    Border edge {
+    Border border {
         .area_a_id = area_left.id,
         .area_b_id = area_right.id,
         .area_a_type = area_left.area_type,
@@ -1877,17 +1877,17 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
         if (overlap_y_min < overlap_y_max)
         {
-            edge.axis = Axis::Y;
+            border.axis = Axis::Y;
 
             const s32 boundary_x { area_left.bounds.max.x };
 
-            edge.bounds.min.x = boundary_x - 1;
-            edge.bounds.min.y = overlap_y_min;
-            edge.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
+            border.bounds.min.x = boundary_x - 1;
+            border.bounds.min.y = overlap_y_min;
+            border.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
-            edge.bounds.max.x = boundary_x + 1;
-            edge.bounds.max.y = overlap_y_max;
-            edge.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
+            border.bounds.max.x = boundary_x + 1;
+            border.bounds.max.y = overlap_y_max;
+            border.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.min.x == area_right.bounds.max.x)
@@ -1897,17 +1897,17 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
         if (overlap_y_min < overlap_y_max)
         {
-            edge.axis = Axis::Y;
+            border.axis = Axis::Y;
 
             const s32 boundary_x { area_left.bounds.min.x };
 
-            edge.bounds.min.x = boundary_x - 1;
-            edge.bounds.min.y = overlap_y_min;
-            edge.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
+            border.bounds.min.x = boundary_x - 1;
+            border.bounds.min.y = overlap_y_min;
+            border.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
-            edge.bounds.max.x = boundary_x + 1;
-            edge.bounds.max.y = overlap_y_max;
-            edge.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
+            border.bounds.max.x = boundary_x + 1;
+            border.bounds.max.y = overlap_y_max;
+            border.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.max.y == area_right.bounds.min.y)
@@ -1917,17 +1917,17 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
         if (overlap_x_min < overlap_x_max)
         {
-            edge.axis = Axis::X;
+            border.axis = Axis::X;
 
             const s32 boundary_y { area_left.bounds.max.y };
 
-            edge.bounds.min.x = overlap_x_min;
-            edge.bounds.min.y = boundary_y - 1;
-            edge.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
+            border.bounds.min.x = overlap_x_min;
+            border.bounds.min.y = boundary_y - 1;
+            border.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
-            edge.bounds.max.x = overlap_x_max;
-            edge.bounds.max.y = boundary_y + 1;
-            edge.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
+            border.bounds.max.x = overlap_x_max;
+            border.bounds.max.y = boundary_y + 1;
+            border.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.min.y == area_right.bounds.max.y)
@@ -1937,26 +1937,26 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
         if (overlap_x_min < overlap_x_max)
         {
-            edge.axis = Axis::X;
+            border.axis = Axis::X;
 
             const s32 boundary_y { area_left.bounds.min.y };
 
-            edge.bounds.min.x = overlap_x_min;
-            edge.bounds.min.y = boundary_y - 1;
-            edge.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
+            border.bounds.min.x = overlap_x_min;
+            border.bounds.min.y = boundary_y - 1;
+            border.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
-            edge.bounds.max.x = overlap_x_max;
-            edge.bounds.max.y = boundary_y + 1;
-            edge.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
+            border.bounds.max.x = overlap_x_max;
+            border.bounds.max.y = boundary_y + 1;
+            border.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
 
-    if (edge.bounds.size().x > 0 && edge.bounds.size().y > 0)
+    if (border.bounds.size().x > 0 && border.bounds.size().y > 0)
     {
-        edge.id = edge_id_generator.next();
+        border.id = edge_id_generator.next();
     }
 
-    return edge;
+    return border;
 }
 
 void

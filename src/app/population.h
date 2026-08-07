@@ -13,7 +13,7 @@ class Population
 {
 public:
     void init();
-    void update(World& world, Work& work);
+    void update(World& world);
 
     Nation& get_nation(NationType nation_type);
 

@@ -77,13 +77,13 @@ Debug::init(const World& world)
 
             for (const s32 border_id : area.border_id_vector)
             {
-                const Border& edge { world.border_vector[border_id] };
+                const Border& border { world.border_vector[border_id] };
 
-                for (const Link& link : edge.link_vector)
+                for (const Link& link : border.link_vector)
                 {
-                    const Bounds3 door_bounds { Area::get_link_bounds(edge, link) };
+                    const Bounds3 link_bounds { Area::get_link_bounds(border, link) };
 
-                    add_box(door_bounds.min, door_bounds.max, Color::Cyan);
+                    add_box(link_bounds.min, link_bounds.max, Color::Cyan);
                 }
             }
         }

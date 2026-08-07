@@ -209,7 +209,7 @@ class Render
 {
 public:
     void init(const Platform& platform, const Control& control, const World& world, const Population& population);
-    void update(const Control& control, const World& world, const Population& population);
+    void update(const Control& control, const Population& population);
 
     static GLuint compile_shader(GLenum type, const char* filepath);
 
@@ -232,7 +232,6 @@ private:
     void load_block_texture_directory();
     void load_actor_texture_directory();
 
-    [[nodiscard]]
     ModelGpuData load_model_gpu_data(const Actor& actor) const;
 
     static void init_glad(const Platform& platform);

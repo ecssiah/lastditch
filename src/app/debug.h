@@ -22,7 +22,7 @@ public:
 
     void reset();
 
-    [[nodiscard]] const std::vector<DebugLine>& get_debug_line_vector() const;
+    const std::vector<DebugLine>& get_debug_line_vector() const;
 
 private:
     void add_line(const Vec3& a, const Vec3& b, const Color& color);

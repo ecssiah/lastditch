@@ -40,15 +40,15 @@ public:
     void quit();
 
     void begin_frame();
-    [[nodiscard]] b32 end_frame() const;
+    b32 end_frame() const;
 
-    [[nodiscard]] f64 get_delta_time() const;
+    f64 get_delta_time() const;
 
-    [[nodiscard]] pair<s32, s32> get_framebuffer_size() const;
+    pair<s32, s32> get_framebuffer_size() const;
 
-    [[nodiscard]] b32 button_is_down(ButtonType button) const;
-    [[nodiscard]] b32 button_is_pressed(ButtonType button) const;
-    [[nodiscard]] b32 button_is_released(ButtonType button) const;
+    b32 button_is_down(ButtonType button) const;
+    b32 button_is_pressed(ButtonType button) const;
+    b32 button_is_released(ButtonType button) const;
 
     f64 pointer_delta_x {};
     f64 pointer_delta_y {};
