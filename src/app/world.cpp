@@ -1770,11 +1770,22 @@ World::construct_doors()
                 continue;
             }
 
-            set_block_type_cube(
-                link.position.x, link.position.y, link.position.z,
-                1, 1, 2,
-                BlockType::None
-            );
+            if (link.axis == Axis::X)
+            {
+                set_block_type_cube(
+                    link.position.x, link.position.y, link.position.z + 1,
+                    1, 2, 2,
+                    BlockType::None
+                );
+            }
+            else if (link.axis == Axis::Y)
+            {
+                set_block_type_cube(
+                    link.position.x, link.position.y, link.position.z + 1,
+                    2, 1, 2,
+                    BlockType::None
+                );
+            }
         }
     }
 }
@@ -1978,7 +1989,10 @@ World::calculate_area_borders(const s32 floor_number)
                             border.bounds.position().x,
                             border.bounds.position().y + border.bounds.size().y / 2,
                             border.bounds.position().z,
-                        }
+                        },
+                        .area_1_id = left_area.id,
+                        .area_2_id = right_area.id,
+                        .axis = border.axis,
                     };
 
                     border.link_vector.push_back(link);

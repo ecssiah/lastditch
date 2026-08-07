@@ -54,6 +54,11 @@ Debug::reset()
 void 
 Debug::init(const World& world)
 {
+    if (!DEBUG_AREAS)
+    {
+        return;
+    }
+
     for (const s32 floor_number : DEBUG_FLOOR_ARRAY)
     {
         const vector<Area>& area_vector { world.floor_area_vector[floor_number] };
@@ -83,12 +88,24 @@ Debug::init(const World& world)
                 {
                     const Vec3 link_position { link.position };
 
-                    const Bounds3 link_bounds {
-                        { link_position.x, link_position.y, link_position.z + 1 },
-                        { link_position.x + 1, link_position.y + 1, link_position.z + 3 },
-                    };
+                    if (link.axis == Axis::X)
+                    {
+                        const Bounds3 link_bounds {
+                            { link_position.x, link_position.y, link_position.z + 1 },
+                            { link_position.x + 1, link_position.y + 2, link_position.z + 3 },
+                        };
 
-                    add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                        add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                    }
+                    else if (link.axis == Axis::Y)
+                    {
+                        const Bounds3 link_bounds {
+                            { link_position.x, link_position.y, link_position.z + 1 },
+                            { link_position.x + 2, link_position.y + 1, link_position.z + 3 },
+                        };
+
+                        add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                    }
                 }
             }
         }

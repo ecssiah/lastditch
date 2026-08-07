@@ -22,7 +22,7 @@ constexpr f32 DEBUG_CONTROL_SPEED               { 10.0f };
 
 constexpr s32 DEBUG_LINE_MAX                    { 1 << 13 };
 
-constexpr b32 DEBUG_AREAS                       { true };
+constexpr b32 DEBUG_AREAS                       { false };
 constexpr s32 DEBUG_FLOOR_ARRAY[]               { 0, 1, 2, 3, 4, 5, 6 };
 
 constexpr f32 CAMERA_SENSITIVITY_X              { 0.22f };

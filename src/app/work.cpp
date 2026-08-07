@@ -11,7 +11,7 @@ void
 Work::init()
 {
     add_job(
-        10,
+        1,
         0,
         [](World&, Population& population)
         {
