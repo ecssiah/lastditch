@@ -4,7 +4,6 @@
 
 #include "glad/gl.h"
 
-#include "block.h"
 #include "constants.h"
 #include "direction.h"
 #include "screen.h"
@@ -12,6 +11,8 @@
 #include "core/geometry.h"
 #include "core/types.h"
 #include "platform/platform.h"
+
+constexpr s32 VERTEX_INDEX_ARRAY[6] { 0, 1, 2, 0, 2, 3 };
 
 constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3]
 {
@@ -240,7 +241,7 @@ private:
     void init_voxel_render(const Control& control, const World& world);
     void init_model_render(const Control& control, const Population& population);
 
-    void update_debug_render(const Control& control, const Debug& debug);
+    void update_debug_render(const Control& control);
     void update_voxel_render(const Control& control);
     void update_model_render(const Control& control, const Population& population);
 

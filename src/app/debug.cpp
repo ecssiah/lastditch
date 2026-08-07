@@ -39,13 +39,7 @@ Debug::add_box(const Vec3& min, const Vec3& max, const Color& color)
     add_line(v010, v011, color);
 }
 
-const std::vector<DebugLine>&
-Debug::get_debug_line_vector() const
-{
-    return line_vector;
-}
-
-void 
+void
 Debug::reset()
 {
     line_vector.clear();
@@ -54,7 +48,7 @@ Debug::reset()
 void 
 Debug::init(const World& world)
 {
-    if (!DEBUG_AREAS)
+    if (!DEBUG_SHOW_AREAS)
     {
         return;
     }

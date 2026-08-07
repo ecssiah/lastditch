@@ -22,11 +22,9 @@ public:
 
     void reset();
 
-    const std::vector<DebugLine>& get_debug_line_vector() const;
+    std::vector<DebugLine> line_vector {};
 
 private:
     void add_line(const Vec3& a, const Vec3& b, const Color& color);
     void add_box(const Vec3& min, const Vec3& max, const Color& color);
-
-    std::vector<DebugLine> line_vector {};
 };

@@ -746,7 +746,7 @@ Render::init_model_render(const Control& control, const Population& population)
 }
 
 void
-Render::update_debug_render(const Control& control, const Debug& debug)
+Render::update_debug_render(const Control& control)
 {
     glUseProgram(debug_render.program_id);
 
@@ -761,7 +761,7 @@ Render::update_debug_render(const Control& control, const Debug& debug)
 
     DebugGpuData debug_gpu_data {};
     
-    for (const DebugLine& debug_line : debug.get_debug_line_vector())
+    for (const DebugLine& debug_line : debug.line_vector)
     {
         const DebugVertex debug_vertex_a {
             { debug_line.a.x, debug_line.a.y, debug_line.a.z },
@@ -897,7 +897,7 @@ Render::update(const Control& control, const Population& population)
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    update_debug_render(control, debug);
+    update_debug_render(control);
     update_voxel_render(control);
     update_model_render(control, population);
 

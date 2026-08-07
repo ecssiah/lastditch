@@ -18,12 +18,10 @@ constexpr f64 FRAME_TIME_MAX                    { 0.25 };
 constexpr f64 FIXED_FRAME_TIME_64               { 1.0  / FRAMES_PER_SECOND };
 constexpr f32 FIXED_FRAME_TIME_32               { FIXED_FRAME_TIME_64 };
 
-constexpr f32 DEBUG_CONTROL_SPEED               { 10.0f };
-
-constexpr s32 DEBUG_LINE_MAX                    { 1 << 13 };
-
-constexpr b32 DEBUG_AREAS                       { false };
+constexpr b32 DEBUG_SHOW_AREAS                  { true };
 constexpr s32 DEBUG_FLOOR_ARRAY[]               { 0, 1, 2, 3, 4, 5, 6 };
+
+constexpr f32 DEBUG_CONTROL_SPEED               { 10.0f };
 
 constexpr f32 CAMERA_SENSITIVITY_X              { 0.22f };
 constexpr f32 CAMERA_SENSITIVITY_Y              { 0.22f };
@@ -79,8 +77,6 @@ constexpr s32 TOWER_QUADRANT_SIZE               { TOWER_SIZE / 2 - TOWER_OUTER_H
 constexpr s32 AREA_EXPANSION_ITERATIONS         { 5 };
 constexpr s32 AREA_EXPANSION_SIZE_MIN           { 8 };
 
-constexpr s32 DOOR_MINIMUM_EDGE_SIZE            { 5 };
-
 constexpr s32 ROOF_Z                            { TOWER_FLOOR_COUNT * FLOOR_SIZE_Z };
 constexpr s32 ROOF_FLOOR_COUNT                  { FLOOR_COUNT - TOWER_FLOOR_COUNT };
 constexpr s32 ROOF_FLOOR_NUMBER                 { TOWER_FLOOR_COUNT };
@@ -111,5 +107,3 @@ constexpr f32 GRAVITY_CONSTANT                  { -90.0f };
 
 constexpr f32 RISING_GRAVITY_MODIFIER           { 1.0f };
 constexpr f32 FALLING_GRAVITY_MODIFIER          { 1.7f };
-
-constexpr s32 VERTEX_INDEX_ARRAY[6]             { 0, 1, 2, 0, 2, 3 };
