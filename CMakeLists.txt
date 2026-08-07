@@ -56,42 +56,44 @@ target_sources(
     external/glad/src/gl.c
     external/stb/src/stb_image.c
     src/app/actor.h
-    src/app/app.h
     src/app/app.cpp
-    src/app/area.h
+    src/app/app.h
     src/app/area.cpp
-    src/app/control.h
+    src/app/area.h
+    src/app/cell.h
     src/app/control.cpp
-    src/app/debug.h
+    src/app/control.h
     src/app/debug.cpp
+    src/app/debug.h
     src/app/direction.h
-    src/app/nation.h
     src/app/nation.cpp
-    src/app/physics.h
+    src/app/nation.h
     src/app/physics.cpp
-    src/app/population.h
+    src/app/physics.h
     src/app/population.cpp
-    src/app/render.h
+    src/app/population.h
     src/app/render.cpp
-    src/app/screen.h
+    src/app/render.h
     src/app/screen.cpp
-    src/app/work.h
+    src/app/screen.h
     src/app/work.cpp
-    src/app/world.h
+    src/app/work.h
     src/app/world.cpp
-    src/core/color.h
+    src/app/world.h
     src/core/color.cpp
-    src/core/config.h
+    src/core/color.h
     src/core/config.cpp
-    src/core/geometry.h
+    src/core/config.h
     src/core/geometry.cpp
-    src/core/log.h
+    src/core/geometry.h
+    src/core/id.h
     src/core/log.cpp
+    src/core/log.h
     src/core/random.cpp
     src/core/random.h
     src/core/types.h
-    src/platform/platform.h
     src/platform/platform.cpp
+    src/platform/platform.h
 )
 
 target_compile_definitions(

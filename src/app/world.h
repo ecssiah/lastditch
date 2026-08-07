@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "area.h"
-#include "block.h"
+#include "cell.h"
 #include "constants.h"
 #include "debug.h"
 #include "direction.h"
@@ -49,14 +49,6 @@ enum class SectionType : u8
 
 constexpr s32 SECTION_TYPE_COUNT { static_cast<s32>(SectionType::COUNT) };
 
-class Cell
-{
-public:
-    s32 cell_index;
-    BlockType block_type;
-    u8 direction_mask;
-};
-
 class World
 {
 public:
@@ -95,17 +87,14 @@ public:
     b32 is_solid(s32 x, s32 y, s32 z);
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
-    std::vector<Area>& get_floor_area_vector(s32 floor_number);
-    [[nodiscard]] const std::vector<Area>& get_floor_area_vector(s32 floor_number) const;
-
-    std::vector<Edge>& get_edge_vector();
-    [[nodiscard]] const std::vector<Edge>& get_edge_vector() const;
-
-    [[nodiscard]] Vec3 get_gravity() const;
-
     Random random { WORLD_SEED };
 
     Physics physics {};
+
+    std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
+
+    std::vector<std::vector<Area>> floor_area_vector { FLOOR_COUNT };
+    std::vector<Border> border_vector {};
 
 private:
     void init_cell_array();
@@ -143,13 +132,8 @@ private:
 
     void calculate_direction_masks();
 
-    Edge calculate_edge(const Area& area_left, const Area& area_right);
-    void calculate_edges(s32 floor_number);
-
-    std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
-
-    std::vector<std::vector<Area>> floor_area_vector { FLOOR_COUNT };
-    std::vector<Edge> edge_vector {};
+    Border calculate_border(const Area& area_left, const Area& area_right);
+    void calculate_area_borders(s32 floor_number);
 
     IdGenerator area_id_generator {};
     IdGenerator edge_id_generator {};

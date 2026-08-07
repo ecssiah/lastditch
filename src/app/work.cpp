@@ -8,7 +8,7 @@
 using namespace std;
 
 void
-Work::init(Population &population)
+Work::init()
 {
     add_job(
         10,

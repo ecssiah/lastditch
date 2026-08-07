@@ -54,11 +54,11 @@ Debug::reset()
 void 
 Debug::init(const World& world)
 {
-    for (const s32 floor_index : DEBUG_FLOOR_ARRAY)
+    for (const s32 floor_number : DEBUG_FLOOR_ARRAY)
     {
-        const vector<Area>& floor_area_vector { world.get_floor_area_vector(floor_index) };
+        const vector<Area>& area_vector { world.floor_area_vector[floor_number] };
 
-        for (const Area& area : floor_area_vector)
+        for (const Area& area : area_vector)
         {
             const IBounds3 area_bounds {
                 {
@@ -75,13 +75,13 @@ Debug::init(const World& world)
 
             add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, Color::Red);
 
-            for (const s32 edge_id : area.edge_id_vector)
+            for (const s32 border_id : area.border_id_vector)
             {
-                const Edge& edge { world.get_edge_vector()[edge_id] };
+                const Border& edge { world.border_vector[border_id] };
 
-                for (const Door& door : edge.door_vector)
+                for (const Link& link : edge.link_vector)
                 {
-                    const Bounds3 door_bounds { Area::get_door_bounds(edge, door) };
+                    const Bounds3 door_bounds { Area::get_link_bounds(edge, link) };
 
                     add_box(door_bounds.min, door_bounds.max, Color::Cyan);
                 }

@@ -131,3 +131,11 @@ get_block_type_string(const BlockType block_type)
         default:                            throw std::invalid_argument("invalid block type");
     }
 }
+
+class Cell
+{
+public:
+    s32 cell_index;
+    BlockType block_type;
+    u8 direction_mask;
+};

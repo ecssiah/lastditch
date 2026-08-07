@@ -16,15 +16,18 @@ enum class AreaType : u8
     COUNT,
 };
 
-class Door
+class Link
 {
 public:
     s32 offset {};
+
     s32 width {};
     s32 height {};
+
+    Direction direction {};
 };
 
-class Edge
+class Border
 {
 public:
     s32 id { -1 };
@@ -32,16 +35,19 @@ public:
     s32 area_a_id { -1 };
     s32 area_b_id { -1 };
 
+    AreaType area_a_type { AreaType::Open };
+    AreaType area_b_type { AreaType::Open };
+
     Axis axis {};
     IBounds3 bounds {};
 
-    std::vector<Door> door_vector {};
+    std::vector<Link> link_vector {};
 };
 
 class Area
 {
 public:
-    static IBounds3 get_door_bounds(const Edge& edge, const Door& door);
+    static IBounds3 get_link_bounds(const Border& border, const Link& link);
 
     s32 id { -1 };
 
@@ -49,5 +55,5 @@ public:
     s32 floor_number { 0 };
     IBounds2 bounds {};
 
-    std::vector<s32> edge_id_vector {};
+    std::vector<s32> border_id_vector {};
 };

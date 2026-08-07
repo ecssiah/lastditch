@@ -24,7 +24,7 @@ struct JobRecord
 class Work
 {
 public:
-    void init(Population& population);
+    void init();
     void update(World& world, Population& population);
 
     void add_job(s32 frequency, s32 phase, JobCallback job_callback);

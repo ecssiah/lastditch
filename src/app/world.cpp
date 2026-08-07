@@ -298,7 +298,7 @@ World::init()
 
     for (s32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        calculate_edges(floor_number);
+        calculate_area_borders(floor_number);
 
         construct_areas(floor_number);
         construct_doors();
@@ -500,19 +500,6 @@ World::is_clear(const s32 x, const s32 y, const s32 z, const u8 direction_mask)
     return true;
 }
 
-std::vector<Area>&
-World::get_floor_area_vector(const s32 floor_number)
-{
-    return floor_area_vector[floor_number];
-}
-
-const std::vector<Area>&
-World::get_floor_area_vector(const s32 floor_number) const
-{
-    return floor_area_vector[floor_number];
-}
-
-
 s32
 World::get_floor(const s32 z)
 {
@@ -566,18 +553,6 @@ World::get_cell(const s32 x, const s32 y, const s32 z) const
     const s32 cell_index {cell_coordinate_to_index(x, y, z)};
 
     return cell_array[cell_index];
-}
-
-vector<Edge>&
-World::get_edge_vector()
-{
-    return edge_vector;
-}
-
-const vector<Edge>&
-World::get_edge_vector() const
-{
-    return edge_vector;
 }
 
 void
@@ -822,7 +797,7 @@ World::get_content_block_type_vector(const s32 content_level)
 void
 World::place_area(const Area& area)
 {
-    vector<Area>& area_vector { get_floor_area_vector(area.floor_number) };
+    vector<Area>& area_vector { floor_area_vector[area.floor_number] };
     vector<Area> new_area_vector {};
 
     for (auto iterator { area_vector.begin() }; iterator != area_vector.end();)
@@ -911,7 +886,7 @@ World::layout_roof_areas()
 {
     constexpr s32 roof_area_size { TOWER_SIZE / 8 };
 
-    vector<Area>& area_vector { get_floor_area_vector(TOWER_FLOOR_COUNT) };
+    vector<Area>& area_vector { floor_area_vector[TOWER_FLOOR_COUNT] };
 
     for (s32 area_y { TOWER_BORDER }; area_y < TOWER_SIZE + TOWER_BORDER; area_y += roof_area_size)
     {
@@ -973,7 +948,7 @@ World::layout_tower_areas()
 {
     for (s32 floor_number { 0 }; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        vector<Area>& area_vector { get_floor_area_vector(floor_number) };
+        vector<Area>& area_vector { floor_area_vector[floor_number] };
 
         constexpr IVec2 quadrant1_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
         constexpr IVec2 quadrant1_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
@@ -1786,37 +1761,42 @@ World::construct_areas(const s32 floor_number)
 void
 World::construct_doors()
 {
-    for (const Edge& edge : edge_vector)
+    for (const Border& border : border_vector)
     {
-        for (const Door& door : edge.door_vector)
+        for (const Link& link : border.link_vector)
         {
-            const IBounds3 door_bounds { Area::get_door_bounds(edge, door) };
+            const IBounds3 link_bounds { Area::get_link_bounds(border, link) };
 
-            if (edge.axis == Axis::X)
+            if (border.area_a_type != AreaType::Room && border.area_b_type != AreaType::Room)
+            {
+                continue;
+            }
+
+            if (border.axis == Axis::X)
             {
                 set_block_type_cube(
-                    door_bounds.min.x, door_bounds.min.y, door_bounds.min.z,
-                    door_bounds.size().x, door_bounds.size().y, door_bounds.size().z,
+                    link_bounds.min.x, link_bounds.min.y, link_bounds.min.z,
+                    link_bounds.size().x, link_bounds.size().y, link_bounds.size().z,
                     BlockType::Metal3
                 );
 
                 set_block_type_cube(
-                    door_bounds.min.x + 1, door_bounds.min.y, door_bounds.min.z,
-                    door_bounds.size().x - 2, door_bounds.size().y + 0, door_bounds.size().z - 1,
+                    link_bounds.min.x + 1, link_bounds.min.y, link_bounds.min.z,
+                    link_bounds.size().x - 2, link_bounds.size().y + 0, link_bounds.size().z - 1,
                     BlockType::None
                 );
             }
-            else if (edge.axis == Axis::Y)
+            else if (border.axis == Axis::Y)
             {
                 set_block_type_cube(
-                    door_bounds.min.x, door_bounds.min.y, door_bounds.min.z,
-                    door_bounds.size().x, door_bounds.size().y, door_bounds.size().z,
+                    link_bounds.min.x, link_bounds.min.y, link_bounds.min.z,
+                    link_bounds.size().x, link_bounds.size().y, link_bounds.size().z,
                     BlockType::Metal3
                 );
 
                 set_block_type_cube(
-                    door_bounds.min.x, door_bounds.min.y + 1, door_bounds.min.z,
-                    door_bounds.size().x + 0, door_bounds.size().y - 2, door_bounds.size().z - 1,
+                    link_bounds.min.x, link_bounds.min.y + 1, link_bounds.min.z,
+                    link_bounds.size().x + 0, link_bounds.size().y - 2, link_bounds.size().z - 1,
                     BlockType::None
                 );
             }
@@ -1880,12 +1860,14 @@ World::calculate_direction_masks()
     }
 }
 
-Edge
-World::calculate_edge(const Area& area_left, const Area& area_right)
+Border
+World::calculate_border(const Area& area_left, const Area& area_right)
 {
-    Edge edge {
+    Border edge {
         .area_a_id = area_left.id,
         .area_b_id = area_right.id,
+        .area_a_type = area_left.area_type,
+        .area_b_type = area_right.area_type,
     };
 
     if (area_left.bounds.max.x == area_right.bounds.min.x)
@@ -1978,9 +1960,9 @@ World::calculate_edge(const Area& area_left, const Area& area_right)
 }
 
 void
-World::calculate_edges(const s32 floor_number)
+World::calculate_area_borders(const s32 floor_number)
 {
-    vector<Area>& area_vector { get_floor_area_vector(floor_number) };
+    vector<Area>& area_vector { floor_area_vector[floor_number] };
 
     const s32 area_count { static_cast<s32>(area_vector.size()) };
 
@@ -1992,41 +1974,38 @@ World::calculate_edges(const s32 floor_number)
         {
             Area& right_area { area_vector[right_index] };
 
-            Edge edge { calculate_edge(left_area, right_area) };
+            Border border { calculate_border(left_area, right_area) };
 
-            if (edge.id != -1)
+            if (border.id != -1)
             {
-                left_area.edge_id_vector.push_back(edge.id);
-                right_area.edge_id_vector.push_back(edge.id);
+                left_area.border_id_vector.push_back(border.id);
+                right_area.border_id_vector.push_back(border.id);
 
-                if (left_area.area_type == AreaType::Room || right_area.area_type == AreaType::Room)
+                constexpr s32 link_width { 3 };
+                constexpr s32 link_height { 3 };
+
+                if (border.axis == Axis::X && border.bounds.size().x > link_width + 2)
                 {
-                    constexpr s32 door_width { 3 };
-                    constexpr s32 door_height { 3 };
+                    const Link link {
+                        .offset = border.bounds.size().x / 2 - link_width / 2,
+                        .width = link_width,
+                        .height = link_height,
+                    };
 
-                    if (edge.axis == Axis::X && edge.bounds.size().x > door_width + 2)
-                    {
-                        const Door door {
-                            .offset = edge.bounds.size().x / 2 - door_width / 2,
-                            .width = door_width,
-                            .height = door_height,
-                        };
+                    border.link_vector.push_back(link);
+                }
+                else if (border.axis == Axis::Y && border.bounds.size().y > link_width + 2)
+                {
+                    const Link link {
+                        .offset = border.bounds.size().y / 2 - link_width / 2,
+                        .width = link_width,
+                        .height = link_height,
+                    };
 
-                        edge.door_vector.push_back(door);
-                    }
-                    else if (edge.axis == Axis::Y && edge.bounds.size().y > door_width + 2)
-                    {
-                        const Door door {
-                            .offset = edge.bounds.size().y / 2 - door_width / 2,
-                            .width = door_width,
-                            .height = door_height,
-                        };
-
-                        edge.door_vector.push_back(door);
-                    }
+                    border.link_vector.push_back(link);
                 }
 
-                edge_vector.push_back(edge);
+                border_vector.push_back(border);
             }
         }
     }

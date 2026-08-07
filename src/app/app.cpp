@@ -13,7 +13,7 @@ App::init()
     world.init();
     population.init();
 
-    work.init(population);
+    work.init();
 
     control.init(population);
     render.init(platform, control, world, population);
