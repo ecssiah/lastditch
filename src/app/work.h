@@ -27,8 +27,7 @@ public:
     void update(World& world, Population& population);
 
     b32 find_task(s32 actor_id);
-
-    void schedule(s32 frequency, s32 phase, Task task);
+    void add_task(s32 frequency, s32 phase, Task task);
 
     Random random { WORK_SEED };
 

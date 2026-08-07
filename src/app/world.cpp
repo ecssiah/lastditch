@@ -14,270 +14,267 @@
 
 using namespace std;
 
-namespace
+constexpr array<IVec2, SECTION_TYPE_COUNT> SECTION_ORIGIN_ARRAY
 {
-    constexpr array<IVec2, SECTION_TYPE_COUNT> SECTION_ORIGIN_ARRAY
     {
+        // Center
         {
-            // Center
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            },
-            // Center1
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            },
-            // Center2
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // Center3
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            },
-            // Center4
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            },
-            // Quadrant1
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // Quadrant2
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // Quadrant3
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            },
-            // Quadrant4
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            },
-            // East1
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            },
-            // East2
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            },
-            // East3
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // NorthEast
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // North1
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // North2
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // North3
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // NorthWest
-            {
-                TOWER_BORDER,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // West1
-            {
-                TOWER_BORDER,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-            },
-            // West2
-            {
-                TOWER_BORDER,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-            },
-            // West3
-            {
-                TOWER_BORDER,
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-            },
-            // SouthWest
-            {
-                TOWER_BORDER,
-                TOWER_BORDER,
-            },
-            // South1
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
-                TOWER_BORDER,
-            },
-            // South2
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
-                TOWER_BORDER,
-            },
-            // South3
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER,
-            },
-            // SouthEast
-            {
-                TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
-                TOWER_BORDER,
-            },
-        }
-    };
-
-    constexpr array<IVec2, SECTION_TYPE_COUNT> SECTION_SIZE_ARRAY
-    {
-        {
-            // Center
-            {
-                TOWER_CENTER_HALL_SIZE,
-                TOWER_CENTER_HALL_SIZE,
-            },
-            // Center1
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_CENTER_HALL_SIZE,
-            },
-            // Center2
-            {
-                TOWER_CENTER_HALL_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // Center3
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_CENTER_HALL_SIZE,
-            },
-            // Center4
-            {
-                TOWER_CENTER_HALL_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // Quadrant1
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // Quadrant2
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // Quadrant3
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // Quadrant4
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // East1
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // East2
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_CENTER_HALL_SIZE,
-            },
-            // East3
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // NorthEast
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // North1
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // North2
-            {
-                TOWER_CENTER_HALL_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // North3
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // NorthWest
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // West1
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // West2
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_CENTER_HALL_SIZE,
-            },
-            // West3
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_QUADRANT_SIZE,
-            },
-            // SouthWest
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // South1
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // South2
-            {
-                TOWER_CENTER_HALL_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // South3
-            {
-                TOWER_QUADRANT_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
-            // SouthEast
-            {
-                TOWER_OUTER_HALL_SIZE,
-                TOWER_OUTER_HALL_SIZE,
-            },
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
         },
-    };
-}
+        // Center1
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        },
+        // Center2
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // Center3
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        },
+        // Center4
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+        },
+        // Quadrant1
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // Quadrant2
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // Quadrant3
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+        },
+        // Quadrant4
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+        },
+        // East1
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+        },
+        // East2
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        },
+        // East3
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // NorthEast
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // North1
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // North2
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // North3
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // NorthWest
+        {
+            TOWER_BORDER,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // West1
+        {
+            TOWER_BORDER,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+        },
+        // West2
+        {
+            TOWER_BORDER,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+        },
+        // West3
+        {
+            TOWER_BORDER,
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+        },
+        // SouthWest
+        {
+            TOWER_BORDER,
+            TOWER_BORDER,
+        },
+        // South1
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE,
+            TOWER_BORDER,
+        },
+        // South2
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE,
+            TOWER_BORDER,
+        },
+        // South3
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER,
+        },
+        // SouthEast
+        {
+            TOWER_BORDER + TOWER_OUTER_HALL_SIZE + 2 * TOWER_QUADRANT_SIZE + TOWER_CENTER_HALL_SIZE,
+            TOWER_BORDER,
+        },
+    }
+};
+
+constexpr array<IVec2, SECTION_TYPE_COUNT> SECTION_SIZE_ARRAY
+{
+    {
+        // Center
+        {
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_CENTER_HALL_SIZE,
+        },
+        // Center1
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_CENTER_HALL_SIZE,
+        },
+        // Center2
+        {
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // Center3
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_CENTER_HALL_SIZE,
+        },
+        // Center4
+        {
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // Quadrant1
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // Quadrant2
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // Quadrant3
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // Quadrant4
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // East1
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // East2
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_CENTER_HALL_SIZE,
+        },
+        // East3
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // NorthEast
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // North1
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // North2
+        {
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // North3
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // NorthWest
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // West1
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // West2
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_CENTER_HALL_SIZE,
+        },
+        // West3
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_QUADRANT_SIZE,
+        },
+        // SouthWest
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // South1
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // South2
+        {
+            TOWER_CENTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // South3
+        {
+            TOWER_QUADRANT_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+        // SouthEast
+        {
+            TOWER_OUTER_HALL_SIZE,
+            TOWER_OUTER_HALL_SIZE,
+        },
+    },
+};
 
 void
 World::init()
@@ -306,7 +303,10 @@ World::init()
         construct_areas(floor_number);
         construct_doors();
 
-        place_content(floor_number);
+        if (PLACE_ROOM_CONTENT)
+        {
+            place_content(floor_number);
+        }
     }
 
     set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::BearSymbol);
@@ -580,12 +580,6 @@ World::get_edge_vector() const
     return edge_vector;
 }
 
-Vec3
-World::get_gravity() const
-{
-    return physics.gravity;
-}
-
 void
 World::construct_tower()
 {
@@ -774,7 +768,6 @@ World::init_cell_array()
     }
 }
 
-
 s32
 World::get_content_level(const s32 z)
 {
@@ -944,9 +937,20 @@ World::layout_elevator_areas()
 {
     for (s32 floor_number { 0 }; floor_number < TOWER_FLOOR_COUNT + 1; ++floor_number)
     {
+        AreaType area_type { AreaType::Elevator };
+
+        if (floor_number == 0)
+        {
+            area_type = AreaType::ElevatorBase;
+        }
+        else if (floor_number == ROOF_FLOOR_NUMBER)
+        {
+            area_type = AreaType::ElevatorTop;
+        }
+
         Area elevator_shaft {
             .id = area_id_generator.next(),
-            .area_type = AreaType::Elevator,
+            .area_type = area_type,
             .floor_number = floor_number,
             .bounds = {
                 {
@@ -1722,11 +1726,23 @@ World::construct_elevator(const Area& area)
         BlockType::None
     );
 
-    set_block_type_box(
-        area.bounds.min.x + 3, area.bounds.min.y + 3, area.floor_number * FLOOR_SIZE_Z,
-        area_bounds_size.x - 6, area_bounds_size.y - 6, FLOOR_SIZE_Z,
-        BlockType::None
-    );
+    if (area.area_type != AreaType::ElevatorBase)
+    {
+        set_block_type_box(
+            area.bounds.min.x + 3, area.bounds.min.y + 3, area.floor_number * FLOOR_SIZE_Z,
+            area_bounds_size.x - 6, area_bounds_size.y - 6, 1,
+            BlockType::None
+        );
+    }
+
+    if (area.area_type != AreaType::ElevatorTop)
+    {
+        set_block_type_box(
+            area.bounds.min.x + 3, area.bounds.min.y + 3, (area.floor_number + 1) * FLOOR_SIZE_Z - 1,
+            area_bounds_size.x - 6, area_bounds_size.y - 6, 1,
+            BlockType::None
+        );
+    }
 }
 
 void
@@ -1750,10 +1766,19 @@ World::construct_areas(const s32 floor_number)
     {
         switch (area.area_type)
         {
-            case AreaType::Room: construct_room(area); break;
-            case AreaType::Elevator: construct_elevator(area); break;
-            case AreaType::Wireframe: construct_wireframe(area); break;
-            default: break;
+            case AreaType::Room:
+                construct_room(area);
+                break;
+            case AreaType::ElevatorTop:
+            case AreaType::Elevator:
+            case AreaType::ElevatorBase:
+                construct_elevator(area);
+                break;
+            case AreaType::Wireframe:
+                construct_wireframe(area);
+                break;
+            default:
+                break;
         }
     }
 }

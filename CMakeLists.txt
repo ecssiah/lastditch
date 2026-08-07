@@ -79,6 +79,8 @@ target_sources(
     src/app/work.cpp
     src/app/world.h
     src/app/world.cpp
+    src/core/color.h
+    src/core/color.cpp
     src/core/config.h
     src/core/config.cpp
     src/core/geometry.h

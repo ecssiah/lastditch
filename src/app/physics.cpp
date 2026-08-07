@@ -18,8 +18,8 @@ Physics::update_actor(World& world, Actor& actor)
 
     const f32 dz {
         actor.velocity[z_axis_index] <= 0.0f
-            ? FIXED_FRAME_TIME_32 * FALLING_GRAVITY_MODIFIER * world.physics.gravity[z_axis_index]
-            : FIXED_FRAME_TIME_32 * RISING_GRAVITY_MODIFIER * world.physics.gravity[z_axis_index]
+            ? FIXED_FRAME_TIME_32 * FALLING_GRAVITY_MODIFIER * world.physics.gravity
+            : FIXED_FRAME_TIME_32 * RISING_GRAVITY_MODIFIER * world.physics.gravity
     };
 
     actor.velocity[z_axis_index] = clamp(

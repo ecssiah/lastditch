@@ -109,6 +109,15 @@ public:
 
     }
 
+    explicit constexpr Vec3(const f32 vec[4])
+        :
+        x { vec[0] },
+        y { vec[1] },
+        z { vec[2] }
+    {
+
+    }
+
     explicit Vec3(const IVec3& vec);
 
     constexpr f32&

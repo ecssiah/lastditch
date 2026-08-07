@@ -23,18 +23,16 @@ public:
 
     Nation& get_nation(NationType nation_type);
 
+    Random random { POPULATION_SEED };
+
     s32 judge_id { -1 };
 
 private:
     void init_judge();
     void init_agents();
 
-    b32 find_task(s32 actor_id, Work& work);
-
     IdGenerator actor_id_generator {};
     IdGenerator task_id_generator {};
-
-    Random random { POPULATION_SEED };
 
     std::array<Nation, NATION_TYPE_COUNT> nation_array {
         Nation {

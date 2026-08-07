@@ -3,7 +3,7 @@
 #include "world.h"
 
 void 
-Debug::add_line(const Vec3& a, const Vec3& b, const Vec3& color)
+Debug::add_line(const Vec3& a, const Vec3& b, const Color& color)
 {
     const DebugLine debug_line { a, b, color };
     
@@ -11,7 +11,7 @@ Debug::add_line(const Vec3& a, const Vec3& b, const Vec3& color)
 }
 
 void 
-Debug::add_box(const Vec3& min, const Vec3& max, const Vec3& color)
+Debug::add_box(const Vec3& min, const Vec3& max, const Color& color)
 {
     const Vec3 v000 { min.x, min.y, min.z };
     const Vec3 v100 { max.x, min.y, min.z };
@@ -73,7 +73,7 @@ Debug::init(const World& world)
                 },
             };
 
-            add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, COLOR_RED);
+            add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, Color::Red);
 
             for (const s32 edge_id : area.edge_id_vector)
             {
@@ -83,7 +83,7 @@ Debug::init(const World& world)
                 {
                     const Bounds3 door_bounds { Area::get_door_bounds(edge, door) };
 
-                    add_box(door_bounds.min, door_bounds.max, COLOR_CYAN);
+                    add_box(door_bounds.min, door_bounds.max, Color::Cyan);
                 }
             }
         }

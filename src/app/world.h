@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "constants.h"
 #include "area.h"
 #include "block.h"
+#include "constants.h"
 #include "debug.h"
 #include "direction.h"
 #include "physics.h"
@@ -104,6 +104,7 @@ public:
     [[nodiscard]] Vec3 get_gravity() const;
 
     Random random { WORLD_SEED };
+
     Physics physics {};
 
 private:

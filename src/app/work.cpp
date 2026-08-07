@@ -22,7 +22,7 @@ Work::update(World& world, Population& population)
 }
 
 void
-Work::schedule(const s32 frequency, const s32 phase, Task task)
+Work::add_task(const s32 frequency, const s32 phase, Task task)
 {
     const TaskRecord task_record {
         .frequency = frequency,
@@ -36,10 +36,10 @@ Work::schedule(const s32 frequency, const s32 phase, Task task)
 b32
 Work::find_task(s32 actor_id)
 {
-    schedule(
+    add_task(
         2,
         actor_id,
-        [this, actor_id](World&, Population& population)
+        [actor_id](World&, Population& population)
         {
             Actor& actor { population.get_actor(actor_id) };
 
@@ -49,18 +49,18 @@ Work::find_task(s32 actor_id)
             }
             else
             {
-                actor.decision_timer = random.uniform(10, 50);
+                actor.decision_timer = population.random.uniform(10, 50);
 
                 const f32 distance_to_target { actor.rotation_target.z - actor.rotation.z };
 
                 if (abs(distance_to_target) < 1.0f)
                 {
-                    const b32 act { random.uniform(0 ,1) == 1 };
+                    const b32 should_act { population.random.uniform(0 ,1) == 1 };
 
-                    if (act)
+                    if (should_act)
                     {
                         actor.rotation_target.z = clamp(
-                            actor.rotation_target.z + random.uniform(-120.0f, 120.0f),
+                            actor.rotation_target.z + population.random.uniform(-120.0f, 120.0f),
                             0.0f,
                             360.0f
                         );

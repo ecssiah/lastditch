@@ -419,13 +419,17 @@ Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_
         const s32 block_type_index { static_cast<s32>(sector_quad.block_type) };
 
         const IVec3 vertex_position {
-            sector_quad.local_coordinate + VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]]
+            VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]][0],
+            VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]][1],
+            VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]][2],
         };
 
+        const IVec3 vertex_world_position { sector_quad.local_coordinate + vertex_position };
+
         const u32 vertex_bitpacked {
-            (vertex_position.x & 63u) << 0u |
-            (vertex_position.y & 63u) << 6u |
-            (vertex_position.z & 255u) << 12u
+            (vertex_world_position.x & 63u) << 0u |
+            (vertex_world_position.y & 63u) << 6u |
+            (vertex_world_position.z & 255u) << 12u
         };
 
         const u32 face_bitpacked {
@@ -761,12 +765,12 @@ Render::update_debug_render(const Control& control, const Debug& debug)
     {
         const DebugVertex debug_vertex_a {
             { debug_line.a.x, debug_line.a.y, debug_line.a.z },
-            { debug_line.color.x, debug_line.color.y, debug_line.color.z },
+            { debug_line.color.r, debug_line.color.g, debug_line.color.b },
         };
 
         const DebugVertex debug_vertex_b {
             { debug_line.b.x, debug_line.b.y, debug_line.b.z },
-            { debug_line.color.x, debug_line.color.y, debug_line.color.z },
+            { debug_line.color.r, debug_line.color.g, debug_line.color.b },
         };
 
         debug_gpu_data.debug_vertex_vector.push_back(debug_vertex_a);
@@ -890,7 +894,7 @@ Render::init(const Platform& platform, const Control& control, const World& worl
 void 
 Render::update(const Control& control, const World& world, const Population& population)
 {
-    glClearColor(CLEAR_COLOR[0], CLEAR_COLOR[1], CLEAR_COLOR[2], CLEAR_COLOR[3]);
+    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     update_debug_render(control, debug);

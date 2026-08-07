@@ -1,14 +1,8 @@
 #pragma once
 
+#include "constants.h"
 #include "core/geometry.h"
 #include "core/types.h"
-
-constexpr f32 MAX_VELOCITY { 200.0f };
-
-constexpr f32 GRAVITY_CONSTANT { -90.0f };
-
-constexpr f32 RISING_GRAVITY_MODIFIER { 1.0f };
-constexpr f32 FALLING_GRAVITY_MODIFIER { 1.7f };
 
 class Actor;
 class World;
@@ -28,7 +22,7 @@ public:
 
     static void update_actor(World& world, Actor& actor);
 
-    Vec3 gravity {0, 0, GRAVITY_CONSTANT};
+    f32 gravity { GRAVITY_CONSTANT };
 
 private:
     static Bounds3 get_box_collider_bounds(const BoxCollider& box_collider, const Vec3& position);

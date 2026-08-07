@@ -8,13 +8,6 @@ class Platform;
 class Population;
 class Work;
 
-constexpr f32 DEBUG_CONTROL_SPEED { 10.0f };
-
-constexpr f32 CAMERA_SENSITIVITY_X { 0.22f };
-constexpr f32 CAMERA_SENSITIVITY_Y { 0.22f };
-
-constexpr f32 CAMERA_PITCH_LIMIT { 89.0f };
-
 class Inputs
 {
 public:

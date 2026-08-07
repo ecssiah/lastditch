@@ -33,10 +33,10 @@ App::update()
 
     while (simulation_time >= FIXED_FRAME_TIME_64)
     {
-        work.update(world, population);
-
         world.update();
         population.update(world, work);
+
+        work.update(world, population);
 
         simulation_time -= FIXED_FRAME_TIME_64;
     }

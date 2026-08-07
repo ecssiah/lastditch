@@ -49,7 +49,7 @@ get_direction_opposite(const Direction& direction)
     }
 }
 
-inline constexpr std::array
+constexpr std::array
 DIRECTION_NORMAL_ARRAY
 {
     +1.0f, +0.0f, +0.0f,

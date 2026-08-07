@@ -5,13 +5,63 @@
 #include "glad/gl.h"
 
 #include "block.h"
+#include "constants.h"
 #include "direction.h"
 #include "screen.h"
-#include "world.h"
 #include "core/config.h"
 #include "core/geometry.h"
 #include "core/types.h"
 #include "platform/platform.h"
+
+constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3]
+{
+    {
+        { 1, 0, 0 },
+        { 1, 1, 0 },
+        { 1, 1, 1 },
+        { 1, 0, 1 },
+    },
+    {
+        { 0, 1, 0 },
+        { 0, 0, 0 },
+        { 0, 0, 1 },
+        { 0, 1, 1 },
+    },
+    {
+        { 1, 1, 0 },
+        { 0, 1, 0 },
+        { 0, 1, 1 },
+        { 1, 1, 1 },
+    },
+    {
+        { 0, 0, 0 },
+        { 1, 0, 0 },
+        { 1, 0, 1 },
+        { 0, 0, 1 },
+    },
+    {
+        { 0, 0, 1 },
+        { 1, 0, 1 },
+        { 1, 1, 1 },
+        { 0, 1, 1 },
+    },
+    {
+        { 0, 1, 0 },
+        { 1, 1, 0 },
+        { 1, 0, 0 },
+        { 0, 0, 0 },
+    },
+};
+
+constexpr f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3]
+{
+    { +0, +1, +0 }, { +0, +0, +1 },
+    { +0, -1, +0 }, { +0, +0, +1 },
+    { -1, +0, +0 }, { +0, +0, +1 },
+    { +1, +0, +0 }, { +0, +0, +1 },
+    { +1, +0, +0 }, { +0, +1, +0 },
+    { +1, +0, +0 }, { +0, -1, +0 },
+};
 
 class Actor;
 class Control;
@@ -22,6 +72,7 @@ public:
     s32 vertex {};
     s32 face {};
 };
+
 
 class VoxelGpuData
 {
@@ -172,6 +223,8 @@ public:
     VoxelRender voxel_render {};
     ModelRender model_render {};
 
+    Color clear_color { 0.32f, 0.42f, 0.52f, 1.0f };
+
 private:
     static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
     static void load_texture_array_layer(const string& texture_path, GLint layer_index);
@@ -179,7 +232,8 @@ private:
     void load_block_texture_directory();
     void load_actor_texture_directory();
 
-    [[nodiscard]] ModelGpuData load_model_gpu_data(const Actor& actor) const;
+    [[nodiscard]]
+    ModelGpuData load_model_gpu_data(const Actor& actor) const;
 
     static void init_glad(const Platform& platform);
 
