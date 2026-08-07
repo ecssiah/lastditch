@@ -17,6 +17,11 @@ Work::init(Population &population)
         {
             for (Actor& actor : population.actor_vector)
             {
+                if (actor.id == population.judge_id)
+                {
+                    continue;
+                }
+
                 if (actor.decision_timer > 0)
                 {
                     --actor.decision_timer;
