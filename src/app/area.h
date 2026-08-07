@@ -4,6 +4,9 @@
 #include "core/geometry.h"
 #include "core/types.h"
 
+class Border;
+class Link;
+
 enum class AreaType : u8
 {
     Open,
@@ -16,15 +19,27 @@ enum class AreaType : u8
     COUNT,
 };
 
+class Area
+{
+public:
+    s32 id { -1 };
+
+    AreaType area_type { AreaType::Open };
+    s32 floor_number { 0 };
+    IBounds2 bounds {};
+
+    std::vector<s32> border_id_vector {};
+};
+
 class Link
 {
 public:
-    s32 offset {};
+    IVec3 position {};
 
-    s32 width {};
-    s32 height {};
+    s32 area_1_id { -1 };
+    s32 area_2_id { -1 };
 
-    Direction direction {};
+    Axis axis {};
 };
 
 class Border
@@ -42,18 +57,4 @@ public:
     IBounds3 bounds {};
 
     std::vector<Link> link_vector {};
-};
-
-class Area
-{
-public:
-    static IBounds3 get_link_bounds(const Border& border, const Link& link);
-
-    s32 id { -1 };
-
-    AreaType area_type { AreaType::Open };
-    s32 floor_number { 0 };
-    IBounds2 bounds {};
-
-    std::vector<s32> border_id_vector {};
 };

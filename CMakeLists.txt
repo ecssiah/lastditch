@@ -58,7 +58,6 @@ target_sources(
     src/app/actor.h
     src/app/app.cpp
     src/app/app.h
-    src/app/area.cpp
     src/app/area.h
     src/app/cell.h
     src/app/control.cpp

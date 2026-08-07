@@ -1765,41 +1765,16 @@ World::construct_doors()
     {
         for (const Link& link : border.link_vector)
         {
-            const IBounds3 link_bounds { Area::get_link_bounds(border, link) };
-
             if (border.area_a_type != AreaType::Room && border.area_b_type != AreaType::Room)
             {
                 continue;
             }
 
-            if (border.axis == Axis::X)
-            {
-                set_block_type_cube(
-                    link_bounds.min.x, link_bounds.min.y, link_bounds.min.z,
-                    link_bounds.size().x, link_bounds.size().y, link_bounds.size().z,
-                    BlockType::Metal3
-                );
-
-                set_block_type_cube(
-                    link_bounds.min.x + 1, link_bounds.min.y, link_bounds.min.z,
-                    link_bounds.size().x - 2, link_bounds.size().y + 0, link_bounds.size().z - 1,
-                    BlockType::None
-                );
-            }
-            else if (border.axis == Axis::Y)
-            {
-                set_block_type_cube(
-                    link_bounds.min.x, link_bounds.min.y, link_bounds.min.z,
-                    link_bounds.size().x, link_bounds.size().y, link_bounds.size().z,
-                    BlockType::Metal3
-                );
-
-                set_block_type_cube(
-                    link_bounds.min.x, link_bounds.min.y + 1, link_bounds.min.z,
-                    link_bounds.size().x + 0, link_bounds.size().y - 2, link_bounds.size().z - 1,
-                    BlockType::None
-                );
-            }
+            set_block_type_cube(
+                link.position.x, link.position.y, link.position.z,
+                1, 1, 2,
+                BlockType::None
+            );
         }
     }
 }
@@ -1981,25 +1956,29 @@ World::calculate_area_borders(const s32 floor_number)
                 left_area.border_id_vector.push_back(border.id);
                 right_area.border_id_vector.push_back(border.id);
 
-                constexpr s32 link_width { 3 };
-                constexpr s32 link_height { 3 };
-
-                if (border.axis == Axis::X && border.bounds.size().x > link_width + 2)
+                if (border.axis == Axis::X)
                 {
                     const Link link {
-                        .offset = border.bounds.size().x / 2 - link_width / 2,
-                        .width = link_width,
-                        .height = link_height,
+                        .position = {
+                            border.bounds.position().x + border.bounds.size().x / 2,
+                            border.bounds.position().y,
+                            border.bounds.position().z,
+                        },
+                        .area_1_id = left_area.id,
+                        .area_2_id = right_area.id,
+                        .axis = border.axis,
                     };
 
                     border.link_vector.push_back(link);
                 }
-                else if (border.axis == Axis::Y && border.bounds.size().y > link_width + 2)
+                else if (border.axis == Axis::Y)
                 {
                     const Link link {
-                        .offset = border.bounds.size().y / 2 - link_width / 2,
-                        .width = link_width,
-                        .height = link_height,
+                        .position = {
+                            border.bounds.position().x,
+                            border.bounds.position().y + border.bounds.size().y / 2,
+                            border.bounds.position().z,
+                        }
                     };
 
                     border.link_vector.push_back(link);
