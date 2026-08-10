@@ -22,14 +22,7 @@ App::update()
 {
     platform.begin_frame();
 
-    const f64 frame_time {
-        min<f64>(
-            platform.delta_time,
-            FRAME_TIME_MAX
-        )
-    };
-
-    simulation_time += frame_time;
+    simulation_time += platform.frame_time;
 
     while (simulation_time >= FIXED_FRAME_TIME_64)
     {

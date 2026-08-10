@@ -1,9 +1,9 @@
 #include "work.h"
 
 #include <algorithm>
-
 #include "actor.h"
 #include "population.h"
+#include "world.h"
 
 using namespace std;
 

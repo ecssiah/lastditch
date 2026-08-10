@@ -1,7 +1,10 @@
 #include "platform/platform.h"
 
+#include <algorithm>
 #include <cassert>
 #include <utility>
+
+#include "app/constants.h"
 
 using namespace std;
 
@@ -61,6 +64,8 @@ Platform::begin_frame()
 
     update_buttons();
     update_pointer();
+
+    frame_time = min<f64>(delta_time,FRAME_TIME_MAX);
 }
 
 void
@@ -98,33 +103,33 @@ Platform::init_buttons()
 {
     for (s32 button_index { 0 }; button_index < static_cast<s32>(ButtonType::COUNT); ++button_index)
     {
-        button_array_current[button_index] = false;
-        button_array_previous[button_index] = false;
+        current_button_array[button_index] = false;
+        previous_button_array[button_index] = false;
     }
 
-    for (auto& glfw_key_index : glfw_key_map)
+    for (auto& glfw_key_index : glfw_key_array)
     {
         glfw_key_index = ButtonType::None;
     }
 
-    for (auto& glfw_button_index : glfw_button_map)
+    for (auto& glfw_button_index : glfw_button_array)
     {
         glfw_button_index = ButtonType::None;
     }
 
-    glfw_key_map[GLFW_KEY_A] = ButtonType::A;
-    glfw_key_map[GLFW_KEY_D] = ButtonType::D;
-    glfw_key_map[GLFW_KEY_E] = ButtonType::E;
-    glfw_key_map[GLFW_KEY_ESCAPE] = ButtonType::Escape;
-    glfw_key_map[GLFW_KEY_Q] = ButtonType::Q;
-    glfw_key_map[GLFW_KEY_S] = ButtonType::S;
-    glfw_key_map[GLFW_KEY_SPACE] = ButtonType::Space;
-    glfw_key_map[GLFW_KEY_TAB] = ButtonType::Tab;
-    glfw_key_map[GLFW_KEY_W] = ButtonType::W;
+    glfw_key_array[GLFW_KEY_A] = ButtonType::A;
+    glfw_key_array[GLFW_KEY_D] = ButtonType::D;
+    glfw_key_array[GLFW_KEY_E] = ButtonType::E;
+    glfw_key_array[GLFW_KEY_ESCAPE] = ButtonType::Escape;
+    glfw_key_array[GLFW_KEY_Q] = ButtonType::Q;
+    glfw_key_array[GLFW_KEY_S] = ButtonType::S;
+    glfw_key_array[GLFW_KEY_SPACE] = ButtonType::Space;
+    glfw_key_array[GLFW_KEY_TAB] = ButtonType::Tab;
+    glfw_key_array[GLFW_KEY_W] = ButtonType::W;
 
-    glfw_button_map[GLFW_MOUSE_BUTTON_LEFT] = ButtonType::Mouse_1;
-    glfw_button_map[GLFW_MOUSE_BUTTON_RIGHT] = ButtonType::Mouse_2;
-    glfw_button_map[GLFW_MOUSE_BUTTON_MIDDLE] = ButtonType::Mouse_3;
+    glfw_button_array[GLFW_MOUSE_BUTTON_LEFT] = ButtonType::Mouse_1;
+    glfw_button_array[GLFW_MOUSE_BUTTON_RIGHT] = ButtonType::Mouse_2;
+    glfw_button_array[GLFW_MOUSE_BUTTON_MIDDLE] = ButtonType::Mouse_3;
 }
 
 void
@@ -132,13 +137,13 @@ Platform::update_buttons()
 {
     for (s32 button_index { 0 }; button_index < static_cast<s32>(ButtonType::COUNT); ++button_index)
     {
-        button_array_previous[button_index] = button_array_current[button_index];
-        button_array_current[button_index] = false;
+        previous_button_array[button_index] = current_button_array[button_index];
+        current_button_array[button_index] = false;
     }
 
     for (s32 glfw_key_index { 0 }; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
-        const ButtonType button { glfw_key_map[glfw_key_index] };
+        const ButtonType button { glfw_key_array[glfw_key_index] };
         const s32 button_index { static_cast<s32>(button) };
 
         if (button == ButtonType::None)
@@ -146,12 +151,12 @@ Platform::update_buttons()
             continue;
         }
 
-        button_array_current[button_index] = glfwGetKey(glfw_window, glfw_key_index) == GLFW_PRESS;
+        current_button_array[button_index] = glfwGetKey(glfw_window, glfw_key_index) == GLFW_PRESS;
     }
 
     for (s32 glfw_button_index { 0 }; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
-        const ButtonType button { glfw_button_map[glfw_button_index] };
+        const ButtonType button { glfw_button_array[glfw_button_index] };
         const s32 button_index { static_cast<s32>(button) };
 
         if (button == ButtonType::None)
@@ -159,7 +164,7 @@ Platform::update_buttons()
             continue;
         }
 
-        button_array_current[button_index] = glfwGetMouseButton(glfw_window, glfw_button_index) == GLFW_PRESS;
+        current_button_array[button_index] = glfwGetMouseButton(glfw_window, glfw_button_index) == GLFW_PRESS;
     }
 }
 
@@ -190,7 +195,7 @@ Platform::button_is_down(ButtonType button) const
 {
     const s32 button_index { static_cast<s32>(button) };
 
-    return button_array_current[button_index];
+    return current_button_array[button_index];
 }
 
 b32
@@ -198,7 +203,7 @@ Platform::button_is_pressed(ButtonType button) const
 {
     const s32 button_index { static_cast<s32>(button) };
 
-    return button_array_current[button_index] && !button_array_previous[button_index];
+    return current_button_array[button_index] && !previous_button_array[button_index];
 }
 
 b32
@@ -206,5 +211,5 @@ Platform::button_is_released(ButtonType button) const
 {
     const s32 button_index { static_cast<s32>(button) };
 
-    return !button_array_current[button_index] && button_array_previous[button_index];
+    return !current_button_array[button_index] && previous_button_array[button_index];
 }

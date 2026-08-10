@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-
 #include "actor.h"
 #include "constants.h"
 #include "control.h"
