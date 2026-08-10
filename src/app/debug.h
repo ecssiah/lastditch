@@ -6,11 +6,10 @@
 
 class World;
 
-class DebugLine
+struct DebugLine
 {
-public:
-    Vec3 a {};
-    Vec3 b {};
+    Vec3 a      {};
+    Vec3 b      {};
     Color color { Color::Black };
 };
 
@@ -19,8 +18,6 @@ class Debug
 public:
     void init(const World& world);
     void update();
-
-    void reset();
 
     std::vector<DebugLine> line_vector {};
 

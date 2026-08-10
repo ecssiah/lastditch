@@ -2,6 +2,71 @@
 
 #include "world.h"
 
+void
+Debug::init(const World& world)
+{
+    if (DEBUG_SHOW_AREAS)
+    {
+        for (const s32 floor_number : DEBUG_FLOOR_ARRAY)
+        {
+            const vector<Area>& area_vector { world.floor_area_vector[floor_number] };
+
+            for (const Area& area : area_vector)
+            {
+                const IBounds3 area_bounds {
+                    {
+                        area.bounds.min.x,
+                        area.bounds.min.y,
+                        area.floor_number * FLOOR_SIZE_Z
+                    },
+                    {
+                        area.bounds.max.x,
+                        area.bounds.max.y,
+                        area.floor_number * FLOOR_SIZE_Z + 2
+                    },
+                };
+
+                add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, Color::Red);
+
+                for (const s32 border_id : area.border_id_vector)
+                {
+                    const Border& border { world.border_vector[border_id] };
+
+                    for (const Link& link : border.link_vector)
+                    {
+                        const Vec3 link_position { link.position };
+
+                        if (link.axis == Axis::X)
+                        {
+                            const Bounds3 link_bounds {
+                                { link_position.x, link_position.y, link_position.z + 1 },
+                                { link_position.x + 1, link_position.y + 2, link_position.z + 3 },
+                            };
+
+                            add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                        }
+                        else if (link.axis == Axis::Y)
+                        {
+                            const Bounds3 link_bounds {
+                                { link_position.x, link_position.y, link_position.z + 1 },
+                                { link_position.x + 2, link_position.y + 1, link_position.z + 3 },
+                            };
+
+                            add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void
+Debug::update()
+{
+
+}
+
 void 
 Debug::add_line(const Vec3& a, const Vec3& b, const Color& color)
 {
@@ -37,77 +102,4 @@ Debug::add_box(const Vec3& min, const Vec3& max, const Color& color)
     add_line(v100, v101, color);
     add_line(v110, v111, color);
     add_line(v010, v011, color);
-}
-
-void
-Debug::reset()
-{
-    line_vector.clear();
-}
-
-void 
-Debug::init(const World& world)
-{
-    if (!DEBUG_SHOW_AREAS)
-    {
-        return;
-    }
-
-    for (const s32 floor_number : DEBUG_FLOOR_ARRAY)
-    {
-        const vector<Area>& area_vector { world.floor_area_vector[floor_number] };
-
-        for (const Area& area : area_vector)
-        {
-            const IBounds3 area_bounds {
-                {
-                    area.bounds.min.x,
-                    area.bounds.min.y,
-                    area.floor_number * FLOOR_SIZE_Z
-                },
-                {
-                    area.bounds.max.x,
-                    area.bounds.max.y,
-                    area.floor_number * FLOOR_SIZE_Z + 2
-                },
-            };
-
-            add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, Color::Red);
-
-            for (const s32 border_id : area.border_id_vector)
-            {
-                const Border& border { world.border_vector[border_id] };
-
-                for (const Link& link : border.link_vector)
-                {
-                    const Vec3 link_position { link.position };
-
-                    if (link.axis == Axis::X)
-                    {
-                        const Bounds3 link_bounds {
-                            { link_position.x, link_position.y, link_position.z + 1 },
-                            { link_position.x + 1, link_position.y + 2, link_position.z + 3 },
-                        };
-
-                        add_box(link_bounds.min, link_bounds.max, Color::Cyan);
-                    }
-                    else if (link.axis == Axis::Y)
-                    {
-                        const Bounds3 link_bounds {
-                            { link_position.x, link_position.y, link_position.z + 1 },
-                            { link_position.x + 2, link_position.y + 1, link_position.z + 3 },
-                        };
-
-                        add_box(link_bounds.min, link_bounds.max, Color::Cyan);
-                    }
-                }
-            }
-        }
-    }
-}
-
-void
-Debug::update()
-{
-
 }
