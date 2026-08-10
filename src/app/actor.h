@@ -5,13 +5,6 @@
 #include "core/geometry.h"
 #include "core/types.h"
 
-constexpr f32 ACTOR_DEFAULT_MOVE_SPEED { 1.0f };
-constexpr f32 ACTOR_DEFAULT_TURN_SPEED { 5.0f };
-constexpr f32 ACTOR_DEFAULT_JUMP_SPEED { 28.0f };
-
-constexpr f32 JUDGE_DEFAULT_MOVE_SPEED { 12.0f };
-constexpr f32 JUDGE_DEFAULT_TURN_SPEED { 12.0f };
-
 enum class ActorType : u8
 {
     None,

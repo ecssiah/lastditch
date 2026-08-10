@@ -95,6 +95,13 @@ constexpr s32 ELEVATOR_SIZE                     { 16 };
 
 constexpr b32 PLACE_ROOM_CONTENT                { true };
 
+constexpr f32 ACTOR_DEFAULT_MOVE_SPEED          { 1.0f };
+constexpr f32 ACTOR_DEFAULT_TURN_SPEED          { 5.0f };
+constexpr f32 ACTOR_DEFAULT_JUMP_SPEED          { 28.0f };
+
+constexpr f32 JUDGE_DEFAULT_MOVE_SPEED          { 12.0f };
+constexpr f32 JUDGE_DEFAULT_TURN_SPEED          { 12.0f };
+
 constexpr s32 BLOCK_TEXTURE_SIZE                { 64 };
 constexpr s32 ACTOR_TEXTURE_SIZE                { 128 };
 

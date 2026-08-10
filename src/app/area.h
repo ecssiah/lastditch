@@ -6,7 +6,7 @@
 
 enum class AreaType : u8
 {
-    Open,
+    Free,
     Room,
     ElevatorTop,
     Elevator,
@@ -20,7 +20,7 @@ struct Area
 {
     s32 id { -1 };
 
-    AreaType area_type { AreaType::Open };
+    AreaType area_type { AreaType::Free };
     s32 floor_number { 0 };
     IBounds2 bounds {};
 
@@ -44,8 +44,8 @@ struct Border
     s32 area_a_id { -1 };
     s32 area_b_id { -1 };
 
-    AreaType area_a_type { AreaType::Open };
-    AreaType area_b_type { AreaType::Open };
+    AreaType area_a_type { AreaType::Free };
+    AreaType area_b_type { AreaType::Free };
 
     Axis axis {};
     IBounds3 bounds {};

@@ -876,7 +876,7 @@ World::layout_roof_areas()
         {
             const Area roof_area {
                 .id = area_id_generator.next(),
-                .area_type = AreaType::Open,
+                .area_type = AreaType::Free,
                 .floor_number = TOWER_FLOOR_COUNT,
                 .bounds = {
                     {area_x, area_y},
@@ -1047,7 +1047,7 @@ World::layout_tower_areas()
 
             const Area section_area {
                 .id = area_id_generator.next(),
-                .area_type = AreaType::Open,
+                .area_type = AreaType::Free,
                 .floor_number = floor_number,
                 .bounds = {section_origin, section_origin + section_size},
             };
@@ -1070,7 +1070,7 @@ World::layout_wolf_territory()
 
     const Area temple_area {
         .id = area_id_generator.next(),
-        .area_type = AreaType::Open,
+        .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
             { temple_origin.x, temple_origin.y },
@@ -1138,7 +1138,7 @@ World::layout_wolf_territory()
 
     const Area platform_area {
         .id = area_id_generator.next(),
-        .area_type = AreaType::Open,
+        .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
             { platform_origin.x, platform_origin.y },
@@ -1186,7 +1186,7 @@ World::layout_eagle_territory()
 
     const Area temple_area {
         .id = area_id_generator.next(),
-        .area_type = AreaType::Open,
+        .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
             { temple_origin.x, temple_origin.y },
@@ -1254,7 +1254,7 @@ World::layout_eagle_territory()
 
     const Area platform_area {
         .id = area_id_generator.next(),
-        .area_type = AreaType::Open,
+        .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
             {platform_origin.x, platform_origin.y},
@@ -1302,7 +1302,7 @@ World::layout_bear_territory()
 
     const Area temple_area {
         .id = area_id_generator.next(),
-        .area_type = AreaType::Open,
+        .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
             { temple_origin.x,temple_origin.y },
@@ -1370,7 +1370,7 @@ World::layout_bear_territory()
 
     const Area platform_area {
         .id = area_id_generator.next(),
-        .area_type = AreaType::Open,
+        .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
             { platform_origin.x,platform_origin.y },
@@ -1418,7 +1418,7 @@ World::layout_lion_territory()
 
     const Area temple_area {
         .id = area_id_generator.next(),
-        .area_type = AreaType::Open,
+        .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
             { temple_origin.x, temple_origin.y },
@@ -1486,7 +1486,7 @@ World::layout_lion_territory()
 
     const Area platform_area {
         .id = area_id_generator.next(),
-        .area_type = AreaType::Open,
+        .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
             { platform_origin.x, platform_origin.y },
