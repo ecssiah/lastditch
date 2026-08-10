@@ -4,11 +4,10 @@
 
 #include "types.h"
 
-class ConfigEntry
+struct ConfigEntry
 {
-public:
-    std::string key {};
-    std::string value {};
+    std::string key     {};
+    std::string value   {};
 };
 
 class ConfigData

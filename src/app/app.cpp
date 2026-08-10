@@ -13,8 +13,6 @@ App::init()
     world.init();
     population.init();
 
-    work.init();
-
     control.init(population);
     render.init(platform, control, world, population);
 }
@@ -26,7 +24,7 @@ App::update()
 
     const f64 frame_time {
         min<f64>(
-            platform.get_delta_time(),
+            platform.delta_time,
             FRAME_TIME_MAX
         )
     };
@@ -35,9 +33,6 @@ App::update()
 
     while (simulation_time >= FIXED_FRAME_TIME_64)
     {
-        world.update();
-        population.update(world);
-
         work.update(world, population);
 
         simulation_time -= FIXED_FRAME_TIME_64;
@@ -46,7 +41,7 @@ App::update()
     control.update(platform, population);
     render.update(control, population);
 
-    active = platform.end_frame();
+    platform.end_frame();
 }
 
 void
@@ -55,4 +50,10 @@ App::quit()
     Log::quit();
 
     platform.quit();
+}
+
+b32
+App::is_active() const
+{
+    return platform.active;
 }

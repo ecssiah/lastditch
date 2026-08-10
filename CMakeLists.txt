@@ -65,7 +65,6 @@ target_sources(
     src/app/debug.cpp
     src/app/debug.h
     src/app/direction.h
-    src/app/nation.cpp
     src/app/nation.h
     src/app/physics.cpp
     src/app/physics.h
@@ -79,7 +78,6 @@ target_sources(
     src/app/work.h
     src/app/world.cpp
     src/app/world.h
-    src/core/color.cpp
     src/core/color.h
     src/core/config.cpp
     src/core/config.h

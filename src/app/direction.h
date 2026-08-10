@@ -73,7 +73,7 @@ get_direction_normal(const Direction& direction)
 };
 
 constexpr Direction
-direction_from_mask(const u8 mask)
+get_direction_from_mask(const u8 mask)
 {
     if (mask == 0)
     {

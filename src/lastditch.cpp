@@ -7,7 +7,7 @@ main()
 
     app->init();
 
-    while (app->active)
+    while (app->is_active())
     {
         app->update();
     }

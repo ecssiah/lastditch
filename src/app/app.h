@@ -15,7 +15,8 @@ public:
     void update();
     void quit();
 
-    b32 active { true };
+    b32 is_active() const;
+
     b32 evolving { true };
 
 private:

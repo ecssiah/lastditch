@@ -6,14 +6,12 @@
 #include "core/random.h"
 
 class Actor;
-class Work;
 class World;
 
 class Population
 {
 public:
     void init();
-    void update(World& world);
 
     Nation& get_nation(NationType nation_type);
 
@@ -28,7 +26,6 @@ private:
     void init_agents();
 
     IdGenerator actor_id_generator {};
-    IdGenerator task_id_generator {};
 
     std::array<Nation, NATION_TYPE_COUNT> nation_array {
         Nation {

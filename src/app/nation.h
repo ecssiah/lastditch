@@ -43,10 +43,9 @@ find_nation_type_index(const std::string_view nation_type_string)
     return -1;
 }
 
-class Nation
+struct Nation
 {
-public:
-    NationType nation_type {};
-    IVec3 home_coordinate {};
+    NationType nation_type  {};
+    IVec3 home_coordinate   {};
 };
 

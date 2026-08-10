@@ -100,10 +100,11 @@ constexpr s32 ACTOR_TEXTURE_SIZE                { 128 };
 
 constexpr s32 FACE_COUNT_PER_VOXEL              { 6 };
 constexpr s32 VERTEX_COUNT_PER_FACE             { 4 };
+constexpr s32 COORDINATES_PER_VERTEX            { 3 };
 
 constexpr f32 MAX_VELOCITY                      { 200.0f };
 
-constexpr f32 GRAVITY_CONSTANT                  { -90.0f };
+constexpr f32 GRAVITY                           { -70.0f };
 
 constexpr f32 RISING_GRAVITY_MODIFIER           { 1.0f };
 constexpr f32 FALLING_GRAVITY_MODIFIER          { 1.7f };

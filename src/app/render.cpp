@@ -376,7 +376,7 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
                 }
 
                 const s32 cell_index { World::cell_coordinate_to_index(cell_x, cell_y, cell_z) };
-                const Cell& cell { world.get_cell(cell_index) };
+                const Cell& cell { world.cell_array[cell_index] };
 
                 if (cell.block_type == BlockType::None)
                 {
@@ -387,7 +387,7 @@ Render::generate_sector_mesh(const World& world, const s32 sector_index)
 
                 while (test_direction_mask)
                 {
-                    const Direction direction { direction_from_mask(test_direction_mask) };
+                    const Direction direction { get_direction_from_mask(test_direction_mask) };
 
                     SectorQuad sector_quad {
                         .local_coordinate = {

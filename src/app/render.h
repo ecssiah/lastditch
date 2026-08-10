@@ -14,7 +14,7 @@
 
 constexpr s32 VERTEX_INDEX_ARRAY[6] { 0, 1, 2, 0, 2, 3 };
 
-constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3]
+constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][COORDINATES_PER_VERTEX]
 {
     {
         { 1, 0, 0 },
@@ -54,7 +54,7 @@ constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][3]
     },
 };
 
-constexpr f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3]
+constexpr f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][COORDINATES_PER_VERTEX]
 {
     { +0, +1, +0 }, { +0, +0, +1 },
     { +0, -1, +0 }, { +0, +0, +1 },
@@ -64,20 +64,14 @@ constexpr f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][3]
     { +1, +0, +0 }, { +0, -1, +0 },
 };
 
-class Actor;
-class Control;
-
-class VoxelVertex
+struct VoxelVertex
 {
-public:
     s32 vertex {};
     s32 face {};
 };
 
-
-class VoxelGpuData
+struct VoxelGpuData
 {
-public:
     Vec3 position {};
 
     GLuint vao_id {};
@@ -86,17 +80,15 @@ public:
     std::vector<VoxelVertex> voxel_vertex_vector {};
 };
 
-class ModelVertex
+struct ModelVertex
 {
-public:
-    f32 a_position[3] {};
-    f32 a_normal[3] {};
-    f32 a_uv[2] {};
+    f32 a_position[3]   {};
+    f32 a_normal[3]     {};
+    f32 a_uv[2]         {};
 };
 
-class ModelGpuData
+struct ModelGpuData
 {
-public:
     Vec3 position {};
     Vec3 rotation {};
 
@@ -108,40 +100,35 @@ public:
     std::vector<ModelVertex> model_vertex_vector {};
 };
 
-class SectorQuad
+struct SectorQuad
 {
-public:
     IVec3 local_coordinate {};
 
     Direction direction {};
     BlockType block_type {};
 };
 
-class SectorMesh
+struct SectorMesh
 {
-public:
     s32 sector_index {};
 
     std::vector<SectorQuad> sector_quad_vector {};
 };
 
-class TextVertex
+struct TextVertex
 {
-public:
     f32 position[2] {};
-    f32 uv[2] {};
+    f32 uv[2]       {};
 };
 
-class DebugVertex
+struct DebugVertex
 {
-public:
     f32 position[3] {};
-    f32 color[3] {};
+    f32 color[3]    {};
 };
 
-class DebugGpuData
+struct DebugGpuData
 {
-public:
     GLuint vao_id {};
     GLuint vbo_id {};
 
@@ -224,18 +211,18 @@ public:
     VoxelRender voxel_render {};
     ModelRender model_render {};
 
-    Color clear_color { 0.32f, 0.42f, 0.52f, 1.0f };
+    Color clear_color { 0.32f, 0.42f, 0.52f };
 
 private:
     static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
     static void load_texture_array_layer(const string& texture_path, GLint layer_index);
 
-    void load_block_texture_directory();
-    void load_actor_texture_directory();
+    static void emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data);
+    static VoxelGpuData convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh);
+    static void upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data);
+    static void upload_model_gpu_data(ModelGpuData& model_gpu_data);
 
-    ModelGpuData load_model_gpu_data(const Actor& actor) const;
-
-    static void init_glad(const Platform& platform);
+    void init_glad(const Platform& platform);
 
     void init_debug_render(const Control& control);
     void init_voxel_render(const Control& control, const World& world);
@@ -245,10 +232,10 @@ private:
     void update_voxel_render(const Control& control);
     void update_model_render(const Control& control, const Population& population);
 
-    void generate_sector_mesh(const World& world, s32 sector_index);
+    void load_block_texture_directory();
+    void load_actor_texture_directory();
 
-    static void emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data);
-    static VoxelGpuData convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh);
-    static void upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data);
-    static void upload_model_gpu_data(ModelGpuData& model_gpu_data);
+    ModelGpuData load_model_gpu_data(const Actor& actor) const;
+
+    void generate_sector_mesh(const World& world, s32 sector_index);
 };

@@ -21,22 +21,6 @@ Population::init()
     LOG_INFO("POPULATION INIT");
 }
 
-void
-Population::update(World& world)
-{
-    for (Actor& actor : actor_vector)
-    {
-        actor.rotation = interpolate_to(
-            actor.rotation,
-            actor.rotation_target,
-            actor.turn_speed,
-            FIXED_FRAME_TIME_32
-        );
-
-        Physics::update_actor(world, actor);
-    }
-}
-
 Nation&
 Population::get_nation(NationType nation_type)
 {

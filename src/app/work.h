@@ -13,7 +13,7 @@ class World;
 
 using JobCallback = std::function<void(World&, Population&)>;
 
-struct JobRecord
+struct Job
 {
     s32 frequency   { 1 };
     s32 phase       { 0 };
@@ -21,18 +21,19 @@ struct JobRecord
     JobCallback job_callback {};
 };
 
+extern std::vector<Job> JOB_VECTOR;
+
 class Work
 {
 public:
-    void init();
     void update(World& world, Population& population);
 
-    void add_job(s32 frequency, s32 phase, JobCallback job_callback);
+    b32 is_due(const Job& job) const;
 
     Random random { WORK_SEED };
 
 private:
     u64 tick_count { 0 };
 
-    std::vector<JobRecord> task_record_vector {};
+    std::vector<Job> job_vector;
 };

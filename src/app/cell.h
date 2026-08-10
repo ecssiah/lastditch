@@ -132,10 +132,9 @@ get_block_type_string(const BlockType block_type)
     }
 }
 
-class Cell
+struct Cell
 {
-public:
-    s32 cell_index;
-    BlockType block_type;
-    u8 direction_mask;
+    s32 cell_index          { -1 };
+    BlockType block_type    { BlockType::None };
+    u8 direction_mask       { 0 };
 };

@@ -7,11 +7,10 @@
 
 using namespace std;
 
-void
-Work::init()
+vector<Job> JOB_VECTOR
 {
-    add_job(
-        1,
+    {
+        4,
         0,
         [](World&, Population& population)
         {
@@ -63,32 +62,44 @@ Work::init()
                     }
                 }
             }
-        }
-    );
-}
+        },
+    },
+    {
+        1,
+         0,
+         [](World& world, Population& population)
+         {
+             for (Actor& actor : population.actor_vector)
+             {
+                 actor.rotation = interpolate_to(
+                     actor.rotation,
+                     actor.rotation_target,
+                     actor.turn_speed,
+                     FIXED_FRAME_TIME_32
+                 );
+
+                 Physics::update_actor(world, actor);
+             }
+        },
+    },
+};
 
 void
 Work::update(World& world, Population& population)
 {
     ++tick_count;
 
-    for (JobRecord& task_record : task_record_vector)
+    for (Job& job : JOB_VECTOR)
     {
-        if ((tick_count + task_record.phase) % task_record.frequency == 0)
+        if (is_due(job))
         {
-            task_record.job_callback(world, population);
+            job.job_callback(world, population);
         }
     }
 }
 
-void
-Work::add_job(const s32 frequency, const s32 phase, JobCallback job_callback)
+b32
+Work::is_due(const Job &job) const
 {
-    const JobRecord task_record {
-        .frequency = frequency,
-        .phase = phase,
-        .job_callback = std::move(job_callback),
-    };
-
-    task_record_vector.push_back(task_record);
+    return (tick_count + job.phase) % job.frequency == 0;
 }

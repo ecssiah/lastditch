@@ -3,11 +3,15 @@
 #include <cassert>
 #include <utility>
 
+using namespace std;
+
 void
 Platform::init()
 {
     init_glfw();
     init_buttons();
+
+    active = true;
 }
 
 void
@@ -59,31 +63,23 @@ Platform::begin_frame()
     update_pointer();
 }
 
-b32
-Platform::end_frame() const
+void
+Platform::end_frame()
 {
     if (button_is_pressed(ButtonType::Escape))
     {
         glfwSetWindowShouldClose(glfw_window, 1);
 
-        return false;
+        active = false;
     }
 
     glfwSwapBuffers(glfw_window);
-
-    return true;
 }
 
 void
 Platform::quit()
 {
     glfwTerminate();
-}
-
-f64
-Platform::get_delta_time() const
-{
-    return delta_time;
 }
 
 pair<s32, s32>
@@ -106,29 +102,29 @@ Platform::init_buttons()
         button_array_previous[button_index] = false;
     }
 
-    for (auto& glfw_key_index : glfw_keymap)
+    for (auto& glfw_key_index : glfw_key_map)
     {
         glfw_key_index = ButtonType::None;
     }
 
-    for (auto& glfw_button_index : glfw_buttonmap)
+    for (auto& glfw_button_index : glfw_button_map)
     {
         glfw_button_index = ButtonType::None;
     }
 
-    glfw_keymap[GLFW_KEY_A] = ButtonType::A;
-    glfw_keymap[GLFW_KEY_D] = ButtonType::D;
-    glfw_keymap[GLFW_KEY_E] = ButtonType::E;
-    glfw_keymap[GLFW_KEY_ESCAPE] = ButtonType::Escape;
-    glfw_keymap[GLFW_KEY_Q] = ButtonType::Q;
-    glfw_keymap[GLFW_KEY_S] = ButtonType::S;
-    glfw_keymap[GLFW_KEY_SPACE] = ButtonType::Space;
-    glfw_keymap[GLFW_KEY_TAB] = ButtonType::Tab;
-    glfw_keymap[GLFW_KEY_W] = ButtonType::W;
+    glfw_key_map[GLFW_KEY_A] = ButtonType::A;
+    glfw_key_map[GLFW_KEY_D] = ButtonType::D;
+    glfw_key_map[GLFW_KEY_E] = ButtonType::E;
+    glfw_key_map[GLFW_KEY_ESCAPE] = ButtonType::Escape;
+    glfw_key_map[GLFW_KEY_Q] = ButtonType::Q;
+    glfw_key_map[GLFW_KEY_S] = ButtonType::S;
+    glfw_key_map[GLFW_KEY_SPACE] = ButtonType::Space;
+    glfw_key_map[GLFW_KEY_TAB] = ButtonType::Tab;
+    glfw_key_map[GLFW_KEY_W] = ButtonType::W;
 
-    glfw_buttonmap[GLFW_MOUSE_BUTTON_LEFT] = ButtonType::Mouse_1;
-    glfw_buttonmap[GLFW_MOUSE_BUTTON_RIGHT] = ButtonType::Mouse_2;
-    glfw_buttonmap[GLFW_MOUSE_BUTTON_MIDDLE] = ButtonType::Mouse_3;
+    glfw_button_map[GLFW_MOUSE_BUTTON_LEFT] = ButtonType::Mouse_1;
+    glfw_button_map[GLFW_MOUSE_BUTTON_RIGHT] = ButtonType::Mouse_2;
+    glfw_button_map[GLFW_MOUSE_BUTTON_MIDDLE] = ButtonType::Mouse_3;
 }
 
 void
@@ -142,7 +138,7 @@ Platform::update_buttons()
 
     for (s32 glfw_key_index { 0 }; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
     {
-        const ButtonType button { glfw_keymap[glfw_key_index] };
+        const ButtonType button { glfw_key_map[glfw_key_index] };
         const s32 button_index { static_cast<s32>(button) };
 
         if (button == ButtonType::None)
@@ -155,7 +151,7 @@ Platform::update_buttons()
 
     for (s32 glfw_button_index { 0 }; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
     {
-        const ButtonType button { glfw_buttonmap[glfw_button_index] };
+        const ButtonType button { glfw_button_map[glfw_button_index] };
         const s32 button_index { static_cast<s32>(button) };
 
         if (button == ButtonType::None)

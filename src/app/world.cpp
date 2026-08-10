@@ -319,12 +319,6 @@ World::init()
     LOG_INFO("WORLD INIT");
 }
 
-void
-World::update()
-{
-
-}
-
 b32
 World::cell_coordinate_is_valid(const s32 x, const s32 y, const s32 z)
 {
@@ -447,18 +441,6 @@ World::position_to_cell_coordinate(const f32 x, const f32 y, const f32 z)
     };
 }
 
-Cell&
-World::get_cell(s32 cell_index)
-{
-    return cell_array[cell_index];
-}
-
-const Cell&
-World::get_cell(s32 cell_index) const
-{
-    return cell_array[cell_index];
-}
-
 b32
 World::is_solid(const s32 x, const s32 y, const s32 z)
 {
@@ -468,7 +450,7 @@ World::is_solid(const s32 x, const s32 y, const s32 z)
     }
 
     const s32 cell_index { cell_coordinate_to_index(x, y, z) };
-    const Cell& cell { get_cell(cell_index) };
+    const Cell& cell { cell_array[cell_index] };
 
     return cell.block_type != BlockType::None;
 }
@@ -1817,7 +1799,7 @@ World::get_direction_mask(const s32 x, const s32 y, const s32 z)
         else
         {
             const s32 neighbor_cell_index { cell_index + get_stride(static_cast<Direction>(direction_index)) };
-            const Cell& neighbor_cell { get_cell(neighbor_cell_index) };
+            const Cell& neighbor_cell { cell_array[neighbor_cell_index] };
 
             if (neighbor_cell.block_type == BlockType::None)
             {

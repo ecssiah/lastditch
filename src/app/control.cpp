@@ -148,24 +148,21 @@ Control::drive_actor(Actor& actor) const
     const Vec3 forward { get_forward(actor.rotation) };
     const Vec3 right { get_right(actor.rotation) };
 
-    Vec3 velocity_forward {};
-    Vec3 velocity_right {};
-
     const Vec3 forward_xy {
         forward.x,
         forward.y,
         0.0f
     };
 
-    velocity_right = inputs.move.x * right;
-    velocity_forward = inputs.move.y * forward_xy;
+    const Vec3 velocity_right { inputs.move.x * right };
+    const Vec3 velocity_forward { inputs.move.y * forward_xy };
 
-    const Vec3 move_velocity {
+    const Vec3 velocity {
         actor.move_speed * (velocity_right + velocity_forward).normalize()
     };
 
-    actor.velocity.x = move_velocity.x;
-    actor.velocity.y = move_velocity.y;
+    actor.velocity.x = velocity.x;
+    actor.velocity.y = velocity.y;
 
     actor.rotation_target.z -= CAMERA_SENSITIVITY_X * inputs.rotate.x;
     actor.rotation_target.x -= CAMERA_SENSITIVITY_Y * inputs.rotate.y;

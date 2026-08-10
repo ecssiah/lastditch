@@ -10,7 +10,8 @@ class Random
 {
 public:
     explicit Random(const u32 seed)
-        : engine { seed }
+        :
+        engine { seed }
     {
 
     }

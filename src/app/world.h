@@ -53,7 +53,6 @@ class World
 {
 public:
     void init();
-    void update();
 
     static b32 cell_coordinate_is_valid(s32 x, s32 y, s32 z);
     static b32 sector_coordinate_is_valid(s32 x, s32 y);
@@ -77,9 +76,6 @@ public:
     static s32 get_stride(Direction direction);
 
     static s32 block_type_index_from_string(const std::string& block_type_string);
-
-    Cell& get_cell(s32 cell_index);
-    const Cell& get_cell(s32 cell_index) const;
 
     Cell& get_cell(s32 x, s32 y, s32 z);
     const Cell& get_cell(s32 x, s32 y, s32 z) const;
