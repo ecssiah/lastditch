@@ -12,8 +12,6 @@
 #include "core/types.h"
 #include "platform/platform.h"
 
-constexpr s32 VERTEX_INDEX_ARRAY[6] { 0, 1, 2, 0, 2, 3 };
-
 constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][COORDINATES_PER_VERTEX]
 {
     {
@@ -53,6 +51,8 @@ constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][CO
         { 0, 0, 0 },
     },
 };
+
+constexpr s32 VERTEX_INDEX_ARRAY[6] { 0, 1, 2, 0, 2, 3 };
 
 constexpr f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][COORDINATES_PER_VERTEX]
 {
@@ -174,6 +174,8 @@ public:
 class ModelRender
 {
 public:
+    ModelGpuData& get_model_gpu_data(const NationType& nation_type);
+
     GLuint program_id {};
 
     GLuint texture_array_id {};
@@ -196,7 +198,7 @@ public:
 class Render
 {
 public:
-    void init(const Platform& platform, const Control& control, const World& world, const Population& population);
+    void init(const Platform& platform, const Control& control, const World& world);
     void update(const Control& control, const Population& population);
 
     static GLuint compile_shader(GLenum type, const char* filepath);
@@ -226,7 +228,7 @@ private:
 
     void init_debug_render(const Control& control);
     void init_voxel_render(const Control& control, const World& world);
-    void init_model_render(const Control& control, const Population& population);
+    void init_model_render(const Control& control);
 
     void update_debug_render(const Control& control);
     void update_voxel_render(const Control& control);
@@ -235,7 +237,7 @@ private:
     void load_block_texture_directory();
     void load_actor_texture_directory();
 
-    ModelGpuData load_model_gpu_data(const Actor& actor) const;
+    void load_model_gpu_data(s32 nation_type_index);
 
     void generate_sector_mesh(const World& world, s32 sector_index);
 };

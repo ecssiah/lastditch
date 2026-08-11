@@ -35,7 +35,6 @@ public:
 
     BoxCollider box_collider {};
 
-    b32 engaged { false };
     b32 is_grounded { false };
 
     s32 decision_timer { 0 };

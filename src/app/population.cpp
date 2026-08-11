@@ -13,8 +13,6 @@
 void
 Population::init()
 {
-    actor_vector.reserve(INITIAL_POPULATION_CAPACITY);
-
     init_judge();
     init_agents();
 
@@ -22,7 +20,7 @@ Population::init()
 }
 
 Nation&
-Population::get_nation(NationType nation_type)
+Population::get_nation(const NationType nation_type)
 {
     const u8 nation_index { static_cast<u8>(nation_type) };
 
@@ -49,7 +47,6 @@ Population::init_judge()
             .collision_enabled = true,
             .radius = { 0.30f, 0.30f, 0.90f },
         },
-        .engaged = true,
         .is_grounded = false,
         .decision_timer = 0,
     };
@@ -69,15 +66,10 @@ Population::init_judge()
 void
 Population::init_agents()
 {
-    for (s32 nation_index { 0 }; nation_index < NATION_TYPE_COUNT; ++nation_index)
+    for (const Nation& nation : nation_array)
     {
         for (s32 agent_index { 0 }; agent_index < INITIAL_POPULATION_SIZE; ++agent_index)
         {
-            const s32 nation_type_index { random.uniform(0, NATION_TYPE_COUNT - 1) };
-            
-            const auto nation_type { static_cast<NationType>(nation_type_index) };
-            const Nation& nation { nation_array[nation_type_index] };
-
             const IVec3 position {
                 nation.home_coordinate.x - 6 + random.uniform(0, 11),
                 nation.home_coordinate.y - 6 + random.uniform(0, 11),
@@ -93,7 +85,7 @@ Population::init_agents()
             const Actor agent {
                 .id = actor_id_generator.next(),
                 .actor_type = ActorType::Agent,
-                .nation_type = nation_type,
+                .nation_type = nation.nation_type,
                 .move_speed = ACTOR_DEFAULT_MOVE_SPEED,
                 .turn_speed = ACTOR_DEFAULT_TURN_SPEED,
                 .position = Vec3 { position },
@@ -105,7 +97,6 @@ Population::init_agents()
                     .collision_enabled = true,
                     .radius = { 0.40f, 0.40f, 0.90f },
                 },
-                .engaged = false,
                 .is_grounded = false,
                 .decision_timer = 0,
             };
@@ -114,7 +105,7 @@ Population::init_agents()
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",
-                get_nation_type_string(nation_type),
+                get_nation_type_string(nation.nation_type),
                 agent.id,
                 agent.position.x,
                 agent.position.y,

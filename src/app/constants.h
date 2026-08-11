@@ -29,7 +29,6 @@ constexpr f32 CAMERA_SENSITIVITY_Y              { 0.22f };
 constexpr f32 CAMERA_PITCH_LIMIT                { 89.0f };
 
 constexpr s32 INITIAL_POPULATION_SIZE           { 1 << 3 };
-constexpr s32 INITIAL_POPULATION_CAPACITY       { 1 << 8 };
 
 constexpr s32 NATION_HOME_OFFSET                { 80 };
 

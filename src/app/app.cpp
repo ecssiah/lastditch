@@ -14,7 +14,7 @@ App::init()
     population.init();
 
     control.init(population);
-    render.init(platform, control, world, population);
+    render.init(platform, control, world);
 }
 
 void

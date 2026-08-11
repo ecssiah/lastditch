@@ -18,6 +18,14 @@
 
 using namespace std;
 
+ModelGpuData&
+ModelRender::get_model_gpu_data(const NationType &nation_type)
+{
+    const s32 nation_type_index { static_cast<s32>(nation_type) };
+
+    return model_gpu_data_vector[nation_type_index];
+}
+
 const char*
 Render::get_gl_error_string(GLenum err)
 {
@@ -217,11 +225,9 @@ Render::load_actor_texture_directory()
     }
 }
 
-ModelGpuData
-Render::load_model_gpu_data(const Actor& actor) const
+void
+Render::load_model_gpu_data(const s32 nation_type_index)
 {
-    const s32 nation_type_index {static_cast<s32>(actor.nation_type)};
-
     ModelGpuData model_gpu_data {
         .texture_layer = model_render.nation_type_layer_array[nation_type_index],
     };
@@ -346,7 +352,7 @@ Render::load_model_gpu_data(const Actor& actor) const
         }
     }
 
-    return model_gpu_data;
+    model_render.model_gpu_data_vector[nation_type_index] = model_gpu_data;
 }
 
 void
@@ -689,7 +695,7 @@ Render::init_voxel_render(const Control& control, const World& world)
 }
 
 void
-Render::init_model_render(const Control& control, const Population& population)
+Render::init_model_render(const Control& control)
 {
     const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert") };
     const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag") };
@@ -732,16 +738,14 @@ Render::init_model_render(const Control& control, const Population& population)
 
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
-    
-    model_render.model_gpu_data_vector.resize(INITIAL_POPULATION_CAPACITY);
 
-    for (const Actor& actor : population.actor_vector)
+    model_render.model_gpu_data_vector.resize(static_cast<s32>(NationType::COUNT));
+
+    for (s32 nation_type_index { 0 }; nation_type_index < static_cast<s32>(NationType::COUNT); ++nation_type_index)
     {
-        const ModelGpuData model_gpu_data { load_model_gpu_data(actor) };
+        load_model_gpu_data(nation_type_index);
 
-        model_render.model_gpu_data_vector[actor.id] = model_gpu_data;
-
-        upload_model_gpu_data(model_render.model_gpu_data_vector[actor.id]);
+        upload_model_gpu_data(model_render.model_gpu_data_vector[nation_type_index]);
     }
 }
 
@@ -855,7 +859,7 @@ Render::update_model_render(const Control& control, const Population& population
 
     for (const Actor& actor : population.actor_vector)
     {
-        const ModelGpuData& model_gpu_data { model_render.model_gpu_data_vector[actor.id] };
+        const ModelGpuData& model_gpu_data { model_render.get_model_gpu_data(actor.nation_type) };
 
         Mat4 model_matrix { 1.0f };
         model_matrix = model_matrix.translate(actor.position);
@@ -877,13 +881,13 @@ Render::update_model_render(const Control& control, const Population& population
 }
 
 void 
-Render::init(const Platform& platform, const Control& control, const World& world, const Population& population)
+Render::init(const Platform& platform, const Control& control, const World& world)
 {
     init_glad(platform);
 
     init_debug_render(control);
     init_voxel_render(control, world);
-    init_model_render(control, population);
+    init_model_render(control);
 
     debug.init(world);
     screen.init(platform);
