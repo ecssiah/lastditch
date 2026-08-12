@@ -66,6 +66,8 @@ target_sources(
     src/app/debug.h
     src/app/direction.h
     src/app/nation.h
+    src/app/navigation.h
+    src/app/navigation.cpp
     src/app/physics.cpp
     src/app/physics.h
     src/app/population.cpp

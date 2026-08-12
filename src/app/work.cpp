@@ -7,12 +7,12 @@
 
 using namespace std;
 
-vector<Job> JOB_VECTOR
+const vector<Job> JOB_VECTOR
 {
     {
-        4,
-        0,
-        [](World&, Population& population)
+        .frequency = 4,
+        .phase = 0,
+        .job_callback = [](World&, Population& population)
         {
             for (Actor& actor : population.actor_vector)
             {
@@ -65,21 +65,21 @@ vector<Job> JOB_VECTOR
         },
     },
     {
-        1,
-         0,
-         [](World& world, Population& population)
-         {
-             for (Actor& actor : population.actor_vector)
-             {
-                 actor.rotation = interpolate_to(
+        .frequency = 1,
+        .phase = 0,
+        .job_callback = [](World& world, Population& population)
+        {
+            for (Actor& actor : population.actor_vector)
+            {
+                actor.rotation = interpolate_to(
                      actor.rotation,
                      actor.rotation_target,
                      actor.turn_speed,
                      FIXED_FRAME_TIME_32
                  );
 
-                 Physics::update_actor(world, actor);
-             }
+                Physics::update_actor(world, actor);
+            }
         },
     },
 };
@@ -89,7 +89,7 @@ Work::update(World& world, Population& population)
 {
     ++tick_count;
 
-    for (Job& job : JOB_VECTOR)
+    for (const Job& job : JOB_VECTOR)
     {
         if (is_due(job))
         {

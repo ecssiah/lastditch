@@ -4,6 +4,7 @@
 #include "actor.h"
 #include "constants.h"
 #include "control.h"
+#include "navigation.h"
 #include "core/random.h"
 #include "core/types.h"
 
@@ -20,7 +21,7 @@ struct Job
     JobCallback job_callback {};
 };
 
-extern std::vector<Job> JOB_VECTOR;
+extern const std::vector<Job> JOB_VECTOR;
 
 class Work
 {
@@ -30,6 +31,7 @@ public:
     b32 is_due(const Job& job) const;
 
     Random random { WORK_SEED };
+    Navigation navigation {};
 
 private:
     u64 tick_count { 0 };
