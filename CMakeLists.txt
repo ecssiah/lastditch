@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(
-    lastditch
-    VERSION 0.1
-    LANGUAGES C CXX
+        lastditch
+        VERSION 0.1
+        LANGUAGES C CXX
 )
 
 set(CMAKE_C_STANDARD 17)
@@ -14,6 +14,11 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+if(APPLE)
+        enable_language(OBJC)
+        enable_language(OBJCXX)
+endif()
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_library(OPENGL_FRAMEWORK OpenGL)
@@ -21,105 +26,126 @@ find_library(COCOA_FRAMEWORK Cocoa)
 find_library(IOKIT_FRAMEWORK IOKit)
 find_library(COREVIDEO_FRAMEWORK CoreVideo)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/glfw-3.4)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw-3.4)
+
+add_subdirectory(
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL3-3.4.14
+        EXCLUDE_FROM_ALL
+)
+
+add_subdirectory(
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL3_image-3.4.4
+        EXCLUDE_FROM_ALL
+)
+
+add_subdirectory(
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL3_ttf-3.1.0
+        EXCLUDE_FROM_ALL
+)
 
 add_executable(lastditch src/lastditch.cpp)
 
+target_link_libraries(
+        lastditch
+        PRIVATE
+        SDL3::SDL3
+)
+
 target_include_directories(
-    lastditch
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/stb/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+        lastditch
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/stb/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_link_libraries(
-    lastditch
-    PRIVATE
-    glfw
+        lastditch
+        PRIVATE
+        glfw
 )
 
 if (APPLE)
-    target_link_libraries(
-        lastditch
-        PRIVATE
-        ${OPENGL_FRAMEWORK}
-        ${COCOA_FRAMEWORK}
-        ${IOKIT_FRAMEWORK}
-        ${COREVIDEO_FRAMEWORK}
-    )
+        target_link_libraries(
+                lastditch
+                PRIVATE
+                ${OPENGL_FRAMEWORK}
+                ${COCOA_FRAMEWORK}
+                ${IOKIT_FRAMEWORK}
+                ${COREVIDEO_FRAMEWORK}
+        )
 endif ()
 
 target_sources(
-    lastditch
-    PRIVATE
-    external/glad/src/gl.c
-    external/stb/src/stb_image.c
-    src/app/actor.h
-    src/app/app.cpp
-    src/app/app.h
-    src/app/area.h
-    src/app/cell.h
-    src/app/control.cpp
-    src/app/control.h
-    src/app/debug.cpp
-    src/app/debug.h
-    src/app/direction.h
-    src/app/nation.h
-    src/app/navigation.h
-    src/app/navigation.cpp
-    src/app/physics.cpp
-    src/app/physics.h
-    src/app/population.cpp
-    src/app/population.h
-    src/app/render.cpp
-    src/app/render.h
-    src/app/screen.cpp
-    src/app/screen.h
-    src/app/work.cpp
-    src/app/work.h
-    src/app/world.cpp
-    src/app/world.h
-    src/core/color.h
-    src/core/config.cpp
-    src/core/config.h
-    src/core/geometry.cpp
-    src/core/geometry.h
-    src/core/id.h
-    src/core/log.cpp
-    src/core/log.h
-    src/core/random.cpp
-    src/core/random.h
-    src/core/types.h
-    src/platform/platform.cpp
-    src/platform/platform.h
+        lastditch
+        PRIVATE
+        vendor/glad/src/gl.c
+        vendor/stb/src/stb_image.c
+        src/app/actor.h
+        src/app/app.cpp
+        src/app/app.h
+        src/app/area.h
+        src/app/cell.h
+        src/app/control.cpp
+        src/app/control.h
+        src/app/debug.cpp
+        src/app/debug.h
+        src/app/direction.h
+        src/app/nation.h
+        src/app/navigation.h
+        src/app/navigation.cpp
+        src/app/physics.cpp
+        src/app/physics.h
+        src/app/population.cpp
+        src/app/population.h
+        src/app/render.cpp
+        src/app/render.h
+        src/app/screen.cpp
+        src/app/screen.h
+        src/app/work.cpp
+        src/app/work.h
+        src/app/world.cpp
+        src/app/world.h
+        src/core/color.h
+        src/core/config.cpp
+        src/core/config.h
+        src/core/geometry.cpp
+        src/core/geometry.h
+        src/core/id.h
+        src/core/log.cpp
+        src/core/log.h
+        src/core/random.cpp
+        src/core/random.h
+        src/core/types.h
+        src/platform/platform.cpp
+        src/platform/platform.h
 )
 
 target_compile_definitions(
-    lastditch
-    PRIVATE
-    GLFW_INCLUDE_NONE
-    GL_SILENCE_DEPRECATION
+        lastditch
+        PRIVATE
+        GLFW_INCLUDE_NONE
+        GL_SILENCE_DEPRECATION
 )
 
 target_compile_options(
-    lastditch
-    PRIVATE
-    -Wall
-    -Wextra
-    -Wno-missing-braces
+        lastditch
+        PRIVATE
+        -Wall
+        -Wextra
+        -Wno-missing-braces
 )
 
 add_custom_command(
-    TARGET
-    lastditch
-    POST_BUILD
-    COMMAND 
-        ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/assets
-        $<TARGET_FILE_DIR:lastditch>/assets
-    COMMAND 
-        ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/config
-        $<TARGET_FILE_DIR:lastditch>/config
+        TARGET
+        lastditch
+        POST_BUILD
+        COMMAND
+                ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/assets
+                $<TARGET_FILE_DIR:lastditch>/assets
+        COMMAND
+                ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/config
+                $<TARGET_FILE_DIR:lastditch>/config
 )
