@@ -39,12 +39,12 @@ public:
     void quit();
     void begin_frame();
 
-    [[nodiscard]] SDL_Window* window() const { return sdl_window; }
-    [[nodiscard]] std::pair<s32, s32> get_framebuffer_size() const;
+    SDL_Window* window() const { return sdl_window; }
+    std::pair<s32, s32> get_framebuffer_size() const;
 
-    [[nodiscard]] b32 button_is_down(ButtonType button) const;
-    [[nodiscard]] b32 button_is_pressed(ButtonType button) const;
-    [[nodiscard]] b32 button_is_released(ButtonType button) const;
+    b32 button_is_down(ButtonType button) const;
+    b32 button_is_pressed(ButtonType button) const;
+    b32 button_is_released(ButtonType button) const;
 
     b32 active { true };
 

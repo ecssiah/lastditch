@@ -40,10 +40,12 @@ ButtonType button_from_mouse(const u8 button)
 void Platform::init()
 {
     const bool initialized { SDL_Init(SDL_INIT_VIDEO) };
+
     if (!initialized)
     {
         LOG_ERROR("SDL initialization failed: %s", SDL_GetError());
     }
+
     assert(initialized && "SDL_Init failed");
 
     sdl_window = SDL_CreateWindow(
@@ -52,9 +54,11 @@ void Platform::init()
         WINDOW_HEIGHT,
         SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
     );
+
     assert(sdl_window && "SDL_CreateWindow failed");
 
     const bool relative_mode { SDL_SetWindowRelativeMouseMode(sdl_window, true) };
+
     if (!relative_mode)
     {
         LOG_ERROR("SDL relative mouse mode failed: %s", SDL_GetError());
@@ -72,6 +76,7 @@ void Platform::quit()
         SDL_DestroyWindow(sdl_window);
         sdl_window = nullptr;
     }
+
     SDL_Quit();
 }
 

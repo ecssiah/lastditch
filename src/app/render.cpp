@@ -755,6 +755,7 @@ void Render::init_text_render()
 void Render::prepare_text_geometry(vector<TextVertex>& vertices, vector<u32>& indices)
 {
     const vector<TextLabel>& labels { screen.labels() };
+
     while (text_render.texts.size() < labels.size())
     {
         TTF_Text* text { TTF_CreateText(text_render.engine, text_render.font, "", 0) };
@@ -763,6 +764,7 @@ void Render::prepare_text_geometry(vector<TextVertex>& vertices, vector<u32>& in
         text_render.texts.push_back(text);
         text_render.values.emplace_back();
     }
+
     while (text_render.texts.size() > labels.size())
     {
         TTF_DestroyText(text_render.texts.back());
@@ -771,10 +773,12 @@ void Render::prepare_text_geometry(vector<TextVertex>& vertices, vector<u32>& in
     }
 
     text_render.batches.clear();
+
     for (size_t label_index { 0 }; label_index < labels.size(); ++label_index)
     {
         const TextLabel& label { labels[label_index] };
         TTF_Text* text { text_render.texts[label_index] };
+
         if (text_render.values[label_index] != label.text)
         {
             const bool updated { TTF_SetTextString(text, label.text.c_str(), 0) };
