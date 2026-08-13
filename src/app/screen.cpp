@@ -23,21 +23,21 @@ void Screen::draw_debug_info(const Control& control)
     };
 
     const string position_text {
-        format("POS {:.1f} {:.1f} {:.1f}", control.position.x, control.position.y, control.position.z)
+        format("Position {:.1f} {:.1f} {:.1f}", control.position.x, control.position.y, control.position.z)
     };
 
-    string cell_coordinate_text { "CEL - - -" };
-    string sector_coordinate_text { "SEC - -" };
-    string floor_text { "FLR -" };
+    string cell_coordinate_text { "Cell - - -" };
+    string sector_coordinate_text { "Sector - -" };
+    string floor_text { "Floor -" };
 
     if (World::cell_coordinate_is_valid(cell_coordinate.x, cell_coordinate.y, cell_coordinate.z))
     {
-        cell_coordinate_text = format("CEL {} {} {}", cell_coordinate.x, cell_coordinate.y, cell_coordinate.z);
+        cell_coordinate_text = format("Cell {} {} {}", cell_coordinate.x, cell_coordinate.y, cell_coordinate.z);
     }
 
     if (World::sector_coordinate_is_valid(sector_coordinate.x, sector_coordinate.y))
     {
-        sector_coordinate_text = format("SEC {} {}", sector_coordinate.x, sector_coordinate.y);
+        sector_coordinate_text = format("Sector {} {}", sector_coordinate.x, sector_coordinate.y);
     }
 
     if (cell_coordinate.z >= 0)
@@ -47,8 +47,8 @@ void Screen::draw_debug_info(const Control& control)
         if (floor_number < FLOOR_COUNT)
         {
             floor_text = floor_number < TOWER_FLOOR_COUNT
-                ? format("FLR T-{}", floor_number)
-                : format("FLR R-{}", floor_number);
+                ? format("Floor T-{}", floor_number)
+                : format("Floor R-{}", floor_number);
         }
     }
 
