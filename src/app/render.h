@@ -21,6 +21,9 @@
 class Control;
 class Population;
 class World;
+struct TTF_Font;
+struct TTF_Text;
+struct TTF_TextEngine;
 
 constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][COORDINATES_PER_VERTEX]
 {
@@ -51,6 +54,12 @@ struct DebugVertex
 {
     f32 position[3] {};
     f32 color[3] {};
+};
+
+struct TextVertex
+{
+    f32 position[2] {};
+    f32 uv[2] {};
 };
 
 struct VoxelGpuData
@@ -117,9 +126,22 @@ struct ModelRender
 struct TextRender
 {
     SDL_GPUGraphicsPipeline* pipeline {};
-    SDL_GPUTexture* texture {};
     SDL_GPUSampler* sampler {};
     DynamicGpuBuffer vertices {};
+    DynamicGpuBuffer indices {};
+    TTF_Font* font {};
+    TTF_TextEngine* engine {};
+    std::vector<TTF_Text*> texts {};
+    std::vector<std::string> values {};
+
+    struct DrawBatch
+    {
+        SDL_GPUTexture* texture {};
+        u32 index_count {};
+        u32 first_index {};
+        s32 vertex_offset {};
+    };
+    std::vector<DrawBatch> batches {};
 };
 
 class Render
@@ -157,18 +179,25 @@ private:
         const std::vector<std::string>& paths,
         bool flip_vertical
     );
-    void upload_dynamic_buffer(DynamicGpuBuffer& target, const void* data, size_t size, SDL_GPUCommandBuffer* commands);
+    void upload_dynamic_buffer(
+        DynamicGpuBuffer& target,
+        const void* data,
+        size_t size,
+        SDL_GPUBufferUsageFlags usage,
+        SDL_GPUCommandBuffer* commands
+    );
     void recreate_depth_texture(u32 width, u32 height);
 
     void init_voxel_render(const World& world);
     void init_model_render();
     void init_debug_render();
     void init_text_render();
+    void prepare_text_geometry(std::vector<TextVertex>& vertices, std::vector<u32>& indices);
 
     void draw_debug(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control);
     void draw_voxels(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control);
     void draw_models(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control, const Population& population);
-    void draw_text(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control, u32 width, u32 height);
+    void draw_text(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, u32 width, u32 height);
 
     void load_block_textures();
     void load_actor_textures();
@@ -185,7 +214,6 @@ private:
     u32 drawable_width {};
     u32 drawable_height {};
     u32 debug_vertex_count {};
-    u32 text_vertex_count {};
 
     DebugRender debug_render {};
     VoxelRender voxel_render {};

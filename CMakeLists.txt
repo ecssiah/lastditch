@@ -23,13 +23,26 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
 set(SDL_OPENGL OFF CACHE BOOL "" FORCE)
 set(SDL_OPENGLES OFF CACHE BOOL "" FORCE)
 
+set(SDLTTF_VENDORED ON CACHE BOOL "" FORCE)
+set(SDLTTF_HARFBUZZ OFF CACHE BOOL "" FORCE)
+set(SDLTTF_PLUTOSVG OFF CACHE BOOL "" FORCE)
+set(SDLTTF_SAMPLES OFF CACHE BOOL "" FORCE)
+set(SDLTTF_INSTALL OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL3-3.4.14
+        EXCLUDE_FROM_ALL
+)
+
+add_subdirectory(
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL3_ttf-3.2.2
         EXCLUDE_FROM_ALL
 )
 
@@ -38,6 +51,7 @@ add_executable(lastditch src/lastditch.cpp)
 target_link_libraries(
         lastditch
         PRIVATE
+        SDL3_ttf::SDL3_ttf
         SDL3::SDL3
 )
 

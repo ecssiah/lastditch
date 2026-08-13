@@ -7,10 +7,11 @@
 
 class Control;
 
-struct TextVertex
+struct TextLabel
 {
-    f32 position[2] {};
-    f32 uv[2] {};
+    std::string text {};
+    f32 x {};
+    f32 y {};
 };
 
 class Screen
@@ -18,11 +19,11 @@ class Screen
 public:
     void update(const Control& control);
 
-    [[nodiscard]] const std::vector<TextVertex>& vertices() const { return text_vertices; }
+    const std::vector<TextLabel>& labels() const { return text_labels; }
 
 private:
     void draw_text(const std::string& text, f32 x, f32 y);
     void draw_debug_info(const Control& control);
 
-    std::vector<TextVertex> text_vertices {};
+    std::vector<TextLabel> text_labels {};
 };
