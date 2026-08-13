@@ -1,0 +1,105 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct Object
+{
+    float4x4 model;
+};
+
+struct Camera
+{
+    float4x4 projection;
+    float4x4 view;
+};
+
+struct main0_out
+{
+    float2 _entryPointOutput_uv [[user(locn0)]];
+    uint _entryPointOutput_block_type [[user(locn1)]];
+    float4 gl_Position [[position]];
+};
+
+struct main0_in
+{
+    uint input_vertex [[attribute(0)]];
+    uint input_face [[attribute(1)]];
+};
+
+vertex main0_out main0(main0_in in [[stage_in]], constant Camera& _134 [[buffer(0)]], constant Object& _127 [[buffer(1)]])
+{
+    main0_out out = {};
+    float _211 = float(in.input_vertex & 63u);
+    float _216 = float((in.input_vertex >> 6u) & 63u);
+    float _221 = float((in.input_vertex >> 12u) & 255u);
+    float3 _222 = float3(_211, _216, _221);
+    uint _226 = (in.input_face >> 8u) & 7u;
+    float3 _382;
+    do
+    {
+        if (_226 == 0u)
+        {
+            _382 = float3(0.0, 1.0, 0.0);
+            break;
+        }
+        if (_226 == 1u)
+        {
+            _382 = float3(0.0, -1.0, 0.0);
+            break;
+        }
+        if (_226 == 2u)
+        {
+            _382 = float3(-1.0, 0.0, 0.0);
+            break;
+        }
+        if (_226 == 3u)
+        {
+            _382 = float3(1.0, 0.0, 0.0);
+            break;
+        }
+        if (_226 == 4u)
+        {
+            _382 = float3(1.0, 0.0, 0.0);
+            break;
+        }
+        _382 = float3(1.0, 0.0, 0.0);
+        break;
+    } while(false);
+    float3 _383;
+    do
+    {
+        if (_226 == 0u)
+        {
+            _383 = float3(0.0, 0.0, 1.0);
+            break;
+        }
+        if (_226 == 1u)
+        {
+            _383 = float3(0.0, 0.0, 1.0);
+            break;
+        }
+        if (_226 == 2u)
+        {
+            _383 = float3(0.0, 0.0, 1.0);
+            break;
+        }
+        if (_226 == 3u)
+        {
+            _383 = float3(0.0, 0.0, 1.0);
+            break;
+        }
+        if (_226 == 4u)
+        {
+            _383 = float3(0.0, 1.0, 0.0);
+            break;
+        }
+        _383 = float3(0.0, -1.0, 0.0);
+        break;
+    } while(false);
+    out.gl_Position = _134.projection * (_134.view * (_127.model * float4(_211, _216, _221, 1.0)));
+    out._entryPointOutput_uv = float2(dot(_222, _382), dot(_222, _383));
+    out._entryPointOutput_block_type = (in.input_face & 255u) - 1u;
+    return out;
+}
+

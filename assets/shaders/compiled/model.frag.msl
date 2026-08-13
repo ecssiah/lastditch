@@ -1,0 +1,29 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct Layer
+{
+    int texture_layer;
+    packed_float3 padding;
+};
+
+struct main0_out
+{
+    float4 _entryPointOutput [[color(0)]];
+};
+
+struct main0_in
+{
+    float2 input_uv [[user(locn0)]];
+};
+
+fragment main0_out main0(main0_in in [[stage_in]], constant Layer& _33 [[buffer(0)]], texture2d_array<float> actor_texture [[texture(0)]], sampler actor_sampler [[sampler(0)]])
+{
+    main0_out out = {};
+    float3 _72 = float3(in.input_uv, float(_33.texture_layer));
+    out._entryPointOutput = actor_texture.sample(actor_sampler, _72.xy, uint(rint(_72.z)));
+    return out;
+}
+

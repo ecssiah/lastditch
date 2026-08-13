@@ -1,0 +1,36 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct Object
+{
+    float4x4 model;
+};
+
+struct Camera
+{
+    float4x4 projection;
+    float4x4 view;
+};
+
+struct main0_out
+{
+    float2 _entryPointOutput_uv [[user(locn0)]];
+    float4 gl_Position [[position]];
+};
+
+struct main0_in
+{
+    float3 input_position [[attribute(0)]];
+    float2 input_uv [[attribute(2)]];
+};
+
+vertex main0_out main0(main0_in in [[stage_in]], constant Camera& _39 [[buffer(0)]], constant Object& _32 [[buffer(1)]])
+{
+    main0_out out = {};
+    out.gl_Position = _39.projection * (_39.view * (_32.model * float4(in.input_position, 1.0)));
+    out._entryPointOutput_uv = in.input_uv;
+    return out;
+}
+

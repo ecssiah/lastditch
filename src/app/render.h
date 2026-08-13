@@ -1,109 +1,75 @@
 #pragma once
 
+#include <cstddef>
+#include <string>
 #include <vector>
 
-#include "glad/gl.h"
+#include <SDL3/SDL_gpu.h>
 
 #include "constants.h"
+#include "cell.h"
+#include "debug.h"
 #include "direction.h"
+#include "nation.h"
 #include "screen.h"
+#include "core/color.h"
 #include "core/config.h"
 #include "core/geometry.h"
 #include "core/types.h"
 #include "platform/platform.h"
 
+class Control;
+class Population;
+class World;
+
 constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][COORDINATES_PER_VERTEX]
 {
-    {
-        { 1, 0, 0 },
-        { 1, 1, 0 },
-        { 1, 1, 1 },
-        { 1, 0, 1 },
-    },
-    {
-        { 0, 1, 0 },
-        { 0, 0, 0 },
-        { 0, 0, 1 },
-        { 0, 1, 1 },
-    },
-    {
-        { 1, 1, 0 },
-        { 0, 1, 0 },
-        { 0, 1, 1 },
-        { 1, 1, 1 },
-    },
-    {
-        { 0, 0, 0 },
-        { 1, 0, 0 },
-        { 1, 0, 1 },
-        { 0, 0, 1 },
-    },
-    {
-        { 0, 0, 1 },
-        { 1, 0, 1 },
-        { 1, 1, 1 },
-        { 0, 1, 1 },
-    },
-    {
-        { 0, 1, 0 },
-        { 1, 1, 0 },
-        { 1, 0, 0 },
-        { 0, 0, 0 },
-    },
+    { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 1, 1 }, { 1, 0, 1 } },
+    { { 0, 1, 0 }, { 0, 0, 0 }, { 0, 0, 1 }, { 0, 1, 1 } },
+    { { 1, 1, 0 }, { 0, 1, 0 }, { 0, 1, 1 }, { 1, 1, 1 } },
+    { { 0, 0, 0 }, { 1, 0, 0 }, { 1, 0, 1 }, { 0, 0, 1 } },
+    { { 0, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, { 0, 1, 1 } },
+    { { 0, 1, 0 }, { 1, 1, 0 }, { 1, 0, 0 }, { 0, 0, 0 } },
 };
 
 constexpr s32 VERTEX_INDEX_ARRAY[6] { 0, 1, 2, 0, 2, 3 };
 
-constexpr f32 VOXEL_UV_PROJECTION_ARRAY[2 * FACE_COUNT_PER_VOXEL][COORDINATES_PER_VERTEX]
-{
-    { +0, +1, +0 }, { +0, +0, +1 },
-    { +0, -1, +0 }, { +0, +0, +1 },
-    { -1, +0, +0 }, { +0, +0, +1 },
-    { +1, +0, +0 }, { +0, +0, +1 },
-    { +1, +0, +0 }, { +0, +1, +0 },
-    { +1, +0, +0 }, { +0, -1, +0 },
-};
-
 struct VoxelVertex
 {
-    s32 vertex {};
-    s32 face {};
+    u32 vertex {};
+    u32 face {};
+};
+
+struct ModelVertex
+{
+    f32 position[3] {};
+    f32 normal[3] {};
+    f32 uv[2] {};
+};
+
+struct DebugVertex
+{
+    f32 position[3] {};
+    f32 color[3] {};
 };
 
 struct VoxelGpuData
 {
     Vec3 position {};
-
-    GLuint vao_id {};
-    GLuint vbo_id {};
-
-    std::vector<VoxelVertex> voxel_vertex_vector {};
-};
-
-struct ModelVertex
-{
-    f32 a_position[3]   {};
-    f32 a_normal[3]     {};
-    f32 a_uv[2]         {};
+    SDL_GPUBuffer* buffer {};
+    std::vector<VoxelVertex> vertices {};
 };
 
 struct ModelGpuData
 {
-    Vec3 position {};
-    Vec3 rotation {};
-
     s32 texture_layer {};
-
-    GLuint vao_id {};
-    GLuint vbo_id {};
-
-    std::vector<ModelVertex> model_vertex_vector {};
+    SDL_GPUBuffer* buffer {};
+    std::vector<ModelVertex> vertices {};
 };
 
 struct SectorQuad
 {
     IVec3 local_coordinate {};
-
     Direction direction {};
     BlockType block_type {};
 };
@@ -111,88 +77,49 @@ struct SectorQuad
 struct SectorMesh
 {
     s32 sector_index {};
-
-    std::vector<SectorQuad> sector_quad_vector {};
+    std::vector<SectorQuad> quads {};
 };
 
-struct TextVertex
+struct DynamicGpuBuffer
 {
-    f32 position[2] {};
-    f32 uv[2]       {};
+    SDL_GPUBuffer* buffer {};
+    SDL_GPUTransferBuffer* transfer {};
+    size_t capacity {};
 };
 
-struct DebugVertex
+struct DebugRender
 {
-    f32 position[3] {};
-    f32 color[3]    {};
+    SDL_GPUGraphicsPipeline* pipeline {};
+    DynamicGpuBuffer vertices {};
 };
 
-struct DebugGpuData
+struct VoxelRender
 {
-    GLuint vao_id {};
-    GLuint vbo_id {};
-
-    std::vector<DebugVertex> debug_vertex_vector {};
+    SDL_GPUGraphicsPipeline* pipeline {};
+    SDL_GPUTexture* texture {};
+    SDL_GPUSampler* sampler {};
+    ConfigData block_config {};
+    u8 block_type_layers[BLOCK_TYPE_COUNT] {};
+    std::vector<SectorMesh> meshes {};
+    std::vector<VoxelGpuData> gpu_data {};
 };
 
-class DebugRender
+struct ModelRender
 {
-public:
-    GLuint program_id {};
-
-    GLint projection_location {};
-    GLint view_location {};
-    GLint model_location {};
-
-    std::vector<DebugGpuData> debug_gpu_data_vector {};
+    SDL_GPUGraphicsPipeline* pipeline {};
+    SDL_GPUTexture* texture {};
+    SDL_GPUSampler* sampler {};
+    ConfigData actor_config {};
+    u8 nation_type_layers[NATION_TYPE_COUNT] {};
+    std::vector<ModelGpuData> gpu_data {};
 };
 
-class VoxelRender
+struct TextRender
 {
-public:
-    GLuint program_id {};
-
-    GLuint texture_array_id {};
-
-    GLint texture_sampler_location {};
-
-    GLint normal_table_location {};
-    GLint uv_projection_table_location {};
-
-    GLint projection_location {};
-    GLint view_location {};
-    GLint model_location {};
-
-    ConfigData block_config_data {};
-
-    u8 block_type_layer_array[BLOCK_TYPE_COUNT] {};
-
-    vector<SectorMesh> sector_mesh_vector {};
-    vector<VoxelGpuData> voxel_gpu_data_vector {};
-};
-
-class ModelRender
-{
-public:
-    ModelGpuData& get_model_gpu_data(const NationType& nation_type);
-
-    GLuint program_id {};
-
-    GLuint texture_array_id {};
-
-    GLint texture_sampler_location {};
-
-    GLint projection_location {};
-    GLint view_location {};
-    GLint model_location {};
-
-    GLint texture_layer_location {};
-
-    ConfigData actor_config_data {};
-
-    u8 nation_type_layer_array[NATION_TYPE_COUNT] {};
-
-    vector<ModelGpuData> model_gpu_data_vector {};
+    SDL_GPUGraphicsPipeline* pipeline {};
+    SDL_GPUTexture* texture {};
+    SDL_GPUSampler* sampler {};
+    DynamicGpuBuffer vertices {};
 };
 
 class Render
@@ -200,44 +127,68 @@ class Render
 public:
     void init(const Platform& platform, const Control& control, const World& world);
     void update(const Control& control, const Population& population);
-
-    static GLuint compile_shader(GLenum type, const char* filepath);
-
-    static const char* get_gl_error_string(GLenum err);
-    static void check_gl_error(const char* label);
+    void quit();
 
     Debug debug {};
     Screen screen {};
+    Color clear_color { 0.32f, 0.42f, 0.52f };
+
+private:
+    SDL_GPUShader* load_shader(const std::string& name, SDL_GPUShaderStage stage, u32 samplers, u32 uniforms);
+
+    SDL_GPUGraphicsPipeline* create_pipeline(
+        const std::string& name,
+        SDL_GPUPrimitiveType primitive,
+        const SDL_GPUVertexBufferDescription& buffer_description,
+        const std::vector<SDL_GPUVertexAttribute>& attributes,
+        bool depth,
+        bool cull,
+        bool blend,
+        u32 fragment_samplers,
+        u32 vertex_uniforms,
+        u32 fragment_uniforms = 0
+    );
+
+    SDL_GPUBuffer* create_static_buffer(const void* data, size_t size);
+    SDL_GPUTexture* create_texture_array(
+        u32 width,
+        u32 height,
+        u32 layers,
+        const std::vector<std::string>& paths,
+        bool flip_vertical
+    );
+    void upload_dynamic_buffer(DynamicGpuBuffer& target, const void* data, size_t size, SDL_GPUCommandBuffer* commands);
+    void recreate_depth_texture(u32 width, u32 height);
+
+    void init_voxel_render(const World& world);
+    void init_model_render();
+    void init_debug_render();
+    void init_text_render();
+
+    void draw_debug(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control);
+    void draw_voxels(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control);
+    void draw_models(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control, const Population& population);
+    void draw_text(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control, u32 width, u32 height);
+
+    void load_block_textures();
+    void load_actor_textures();
+    void load_model_data(s32 nation_type_index);
+    void generate_sector_mesh(const World& world, s32 sector_index);
+    static void emit_sector_face(const SectorQuad& quad, VoxelGpuData& gpu_data);
+    static VoxelGpuData convert_sector_mesh(const SectorMesh& mesh);
+
+    SDL_Window* window {};
+    SDL_GPUDevice* device {};
+    SDL_GPUTexture* depth_texture {};
+    SDL_GPUTextureFormat depth_format { SDL_GPU_TEXTUREFORMAT_INVALID };
+    SDL_GPUShaderFormat shader_format {};
+    u32 drawable_width {};
+    u32 drawable_height {};
+    u32 debug_vertex_count {};
+    u32 text_vertex_count {};
 
     DebugRender debug_render {};
     VoxelRender voxel_render {};
     ModelRender model_render {};
-
-    Color clear_color { 0.32f, 0.42f, 0.52f };
-
-private:
-    static void upload_debug_gpu_data(DebugGpuData& debug_gpu_data);
-    static void load_texture_array_layer(const string& texture_path, GLint layer_index);
-
-    static void emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data);
-    static VoxelGpuData convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh);
-    static void upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data);
-    static void upload_model_gpu_data(ModelGpuData& model_gpu_data);
-
-    void init_glad(const Platform& platform);
-
-    void init_debug_render(const Control& control);
-    void init_voxel_render(const Control& control, const World& world);
-    void init_model_render(const Control& control);
-
-    void update_debug_render(const Control& control);
-    void update_voxel_render(const Control& control);
-    void update_model_render(const Control& control, const Population& population);
-
-    void load_block_texture_directory();
-    void load_actor_texture_directory();
-
-    void load_model_gpu_data(s32 nation_type_index);
-
-    void generate_sector_mesh(const World& world, s32 sector_index);
+    TextRender text_render {};
 };

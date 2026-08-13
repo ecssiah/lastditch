@@ -1,948 +1,872 @@
 #include "render.h"
 
+#include <algorithm>
 #include <cassert>
+#include <cstdio>
+#include <cstring>
 #include <format>
 #include <fstream>
+#include <iterator>
 
-#include "glad/gl.h"
-#include "stb_image.h"
+#include <SDL3/SDL_surface.h>
 
 #include "actor.h"
 #include "control.h"
-#include "debug.h"
 #include "population.h"
 #include "world.h"
-#include "core/config.h"
 #include "core/log.h"
-#include "core/types.h"
 
 using namespace std;
 
-ModelGpuData&
-ModelRender::get_model_gpu_data(const NationType &nation_type)
+namespace
 {
-    const s32 nation_type_index { static_cast<s32>(nation_type) };
+struct CameraUniform
+{
+    Mat4 projection {};
+    Mat4 view {};
+};
 
-    return model_gpu_data_vector[nation_type_index];
+struct ObjectUniform
+{
+    Mat4 model {};
+};
+
+struct LayerUniform
+{
+    s32 layer {};
+    s32 padding[3] {};
+};
+
+vector<u8> read_binary_file(const string& path)
+{
+    ifstream stream { path, ios::binary };
+    assert(stream.is_open());
+    return { istreambuf_iterator<char>(stream), istreambuf_iterator<char>() };
 }
 
-const char*
-Render::get_gl_error_string(GLenum err)
+size_t grown_capacity(size_t required)
 {
-    switch (err)
+    size_t capacity { 256 };
+    while (capacity < required)
     {
-        case GL_INVALID_ENUM:                           return "GL_INVALID_ENUM";
-        case GL_INVALID_VALUE:                          return "GL_INVALID_VALUE";
-        case GL_INVALID_OPERATION:                      return "GL_INVALID_OPERATION";
-        case GL_OUT_OF_MEMORY:                          return "GL_OUT_OF_MEMORY";
-        case GL_INVALID_FRAMEBUFFER_OPERATION:          return "GL_INVALID_FRAMEBUFFER_OPERATION";
-        default:                                        return "UNKNOWN_ERROR";
+        capacity *= 2;
     }
+    return capacity;
+}
 }
 
-void
-Render::check_gl_error(const char* label)
+SDL_GPUShader* Render::load_shader(
+    const string& name,
+    const SDL_GPUShaderStage stage,
+    const u32 samplers,
+    const u32 uniforms
+)
 {
-    GLenum err {};
-
-    while ((err = glGetError()) != GL_NO_ERROR)
+    string extension {};
+    SDL_GPUShaderFormat selected_format {};
+    if (shader_format & SDL_GPU_SHADERFORMAT_MSL)
     {
-        LOG_ERROR(
-            "GL ERROR [%s]: %s (0x%x)\n",
-            label,
-            get_gl_error_string(err),
-            err
-        );
+        extension = "msl";
+        selected_format = SDL_GPU_SHADERFORMAT_MSL;
     }
-}
-
-void
-Render::upload_debug_gpu_data(DebugGpuData& debug_gpu_data)
-{
-    if (debug_gpu_data.vao_id == 0)
+    else if (shader_format & SDL_GPU_SHADERFORMAT_DXIL)
     {
-        glGenVertexArrays(1, &debug_gpu_data.vao_id);
-        glGenBuffers(1, &debug_gpu_data.vbo_id);
-
-        glBindVertexArray(debug_gpu_data.vao_id);
-        glBindBuffer(GL_ARRAY_BUFFER, debug_gpu_data.vbo_id);
-
-        glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GLFW_FALSE,
-            sizeof(DebugVertex),
-            reinterpret_cast<void*>(offsetof(DebugVertex, position))
-        );
-
-        glVertexAttribPointer(
-            1,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            sizeof(DebugVertex),
-            reinterpret_cast<void*>(offsetof(DebugVertex, color))
-        );
-
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
+        extension = "dxil";
+        selected_format = SDL_GPU_SHADERFORMAT_DXIL;
     }
     else
     {
-        glBindVertexArray(debug_gpu_data.vao_id);
-        glBindBuffer(GL_ARRAY_BUFFER, debug_gpu_data.vbo_id);
+        extension = "spv";
+        selected_format = SDL_GPU_SHADERFORMAT_SPIRV;
     }
 
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(debug_gpu_data.debug_vertex_vector.size() * sizeof(DebugVertex)),
-        debug_gpu_data.debug_vertex_vector.data(),
-        GL_DYNAMIC_DRAW
-    );
-
-    glBindVertexArray(0);
+    const string path { format("assets/shaders/compiled/{}.{}", name, extension) };
+    const vector<u8> code { read_binary_file(path) };
+    const SDL_GPUShaderCreateInfo info {
+        .code_size = code.size(),
+        .code = code.data(),
+        .entrypoint = nullptr,
+        .format = selected_format,
+        .stage = stage,
+        .num_samplers = samplers,
+        .num_uniform_buffers = uniforms,
+    };
+    SDL_GPUShader* shader { SDL_CreateGPUShader(device, &info) };
+    if (!shader)
+    {
+        LOG_ERROR("Failed to create shader %s: %s", path.c_str(), SDL_GetError());
+    }
+    assert(shader);
+    return shader;
 }
 
-void
-Render::load_texture_array_layer(const string& texture_path, const GLint layer_index)
+SDL_GPUGraphicsPipeline* Render::create_pipeline(
+    const string& name,
+    const SDL_GPUPrimitiveType primitive,
+    const SDL_GPUVertexBufferDescription& buffer_description,
+    const vector<SDL_GPUVertexAttribute>& attributes,
+    const bool depth,
+    const bool cull,
+    const bool blend,
+    const u32 fragment_samplers,
+    const u32 vertex_uniforms,
+    const u32 fragment_uniforms
+)
 {
-    int width {};
-    int height {};
-    int channels {};
-
-    stbi_set_flip_vertically_on_load(true);
-
-    const unsigned char* pixel_data_array {
-        stbi_load(
-            texture_path.c_str(),
-            &width,
-            &height,
-            &channels,
-            4
-        )
+    SDL_GPUShader* vertex_shader {
+        load_shader(format("{}.vert", name), SDL_GPU_SHADERSTAGE_VERTEX, 0, vertex_uniforms)
+    };
+    SDL_GPUShader* fragment_shader {
+        load_shader(format("{}.frag", name), SDL_GPU_SHADERSTAGE_FRAGMENT, fragment_samplers, fragment_uniforms)
     };
 
-    assert(pixel_data_array);
-
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTexSubImage3D(
-        GL_TEXTURE_2D_ARRAY,
-        0,
-        0,
-        0,
-        layer_index,
-        width,
-        height,
-        1,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        pixel_data_array
-    );
-
-    LOG_INFO("Loaded texture: %s", texture_path.c_str());
-}
-
-void
-Render::load_block_texture_directory()
-{
-    glGenTextures(1, &voxel_render.texture_array_id);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
-
-    glTexImage3D(
-        GL_TEXTURE_2D_ARRAY,
-        0,
-        GL_RGBA8,
-        BLOCK_TEXTURE_SIZE,
-        BLOCK_TEXTURE_SIZE,
-        BLOCK_TYPE_COUNT,
-        0,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        nullptr
-    );
-
-    assert(voxel_render.block_config_data.entry_vector.size() <= BLOCK_TYPE_COUNT);
-
-    for (size_t layer_index { 0 }; layer_index < voxel_render.block_config_data.entry_vector.size(); ++layer_index)
+    SDL_GPUColorTargetDescription color_target {
+        .format = SDL_GetGPUSwapchainTextureFormat(device, window),
+    };
+    if (blend)
     {
-        const ConfigEntry& config_entry { voxel_render.block_config_data.entry_vector[layer_index] };
-
-        const s32 block_type_index { World::block_type_index_from_string(config_entry.key) };
-
-        assert(block_type_index >= 0);
-        assert(block_type_index < BLOCK_TYPE_COUNT);
-
-        string texture_path { format("assets/textures/block/{}", config_entry.value) };
-
-        voxel_render.block_type_layer_array[block_type_index] = layer_index;
-
-        load_texture_array_layer(texture_path, static_cast<GLint>(layer_index));
+        color_target.blend_state = {
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+            .color_blend_op = SDL_GPU_BLENDOP_ADD,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+            .alpha_blend_op = SDL_GPU_BLENDOP_ADD,
+            .enable_blend = true,
+        };
     }
+
+    const SDL_GPUGraphicsPipelineCreateInfo info {
+        .vertex_shader = vertex_shader,
+        .fragment_shader = fragment_shader,
+        .vertex_input_state = {
+            .vertex_buffer_descriptions = &buffer_description,
+            .num_vertex_buffers = 1,
+            .vertex_attributes = attributes.data(),
+            .num_vertex_attributes = static_cast<u32>(attributes.size()),
+        },
+        .primitive_type = primitive,
+        .rasterizer_state = {
+            .fill_mode = SDL_GPU_FILLMODE_FILL,
+            .cull_mode = cull ? SDL_GPU_CULLMODE_BACK : SDL_GPU_CULLMODE_NONE,
+            .front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
+            .enable_depth_clip = true,
+        },
+        .multisample_state = { .sample_count = SDL_GPU_SAMPLECOUNT_1 },
+        .depth_stencil_state = {
+            .compare_op = SDL_GPU_COMPAREOP_LESS,
+            .enable_depth_test = depth,
+            .enable_depth_write = depth,
+        },
+        .target_info = {
+            .color_target_descriptions = &color_target,
+            .num_color_targets = 1,
+            .depth_stencil_format = depth_format,
+            .has_depth_stencil_target = true,
+        },
+    };
+
+    SDL_GPUGraphicsPipeline* pipeline { SDL_CreateGPUGraphicsPipeline(device, &info) };
+    SDL_ReleaseGPUShader(device, vertex_shader);
+    SDL_ReleaseGPUShader(device, fragment_shader);
+    if (!pipeline)
+    {
+        LOG_ERROR("Failed to create %s pipeline: %s", name.c_str(), SDL_GetError());
+    }
+    assert(pipeline);
+    return pipeline;
 }
 
-void
-Render::load_actor_texture_directory()
+SDL_GPUBuffer* Render::create_static_buffer(const void* data, const size_t size)
 {
-    glGenTextures(1, &model_render.texture_array_id);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
+    assert(size > 0 && size <= UINT32_MAX);
+    const SDL_GPUBufferCreateInfo buffer_info {
+        .usage = SDL_GPU_BUFFERUSAGE_VERTEX,
+        .size = static_cast<u32>(size),
+    };
+    SDL_GPUBuffer* buffer { SDL_CreateGPUBuffer(device, &buffer_info) };
+    assert(buffer);
 
-    glTexImage3D(
-        GL_TEXTURE_2D_ARRAY,
-        0,
-        GL_RGBA8,
-        ACTOR_TEXTURE_SIZE,
-        ACTOR_TEXTURE_SIZE,
-        BLOCK_TYPE_COUNT,
-        0,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        nullptr
-    );
+    const SDL_GPUTransferBufferCreateInfo transfer_info {
+        .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+        .size = static_cast<u32>(size),
+    };
+    SDL_GPUTransferBuffer* transfer { SDL_CreateGPUTransferBuffer(device, &transfer_info) };
+    assert(transfer);
+    void* mapped { SDL_MapGPUTransferBuffer(device, transfer, false) };
+    assert(mapped);
+    memcpy(mapped, data, size);
+    SDL_UnmapGPUTransferBuffer(device, transfer);
 
-    assert(model_render.actor_config_data.entry_vector.size() <= NATION_TYPE_COUNT);
+    SDL_GPUCommandBuffer* commands { SDL_AcquireGPUCommandBuffer(device) };
+    SDL_GPUCopyPass* copy { SDL_BeginGPUCopyPass(commands) };
+    const SDL_GPUTransferBufferLocation source { .transfer_buffer = transfer };
+    const SDL_GPUBufferRegion destination { .buffer = buffer, .size = static_cast<u32>(size) };
+    SDL_UploadToGPUBuffer(copy, &source, &destination, false);
+    SDL_EndGPUCopyPass(copy);
+    const bool submitted { SDL_SubmitGPUCommandBuffer(commands) };
+    if (!submitted) LOG_ERROR("GPU buffer upload submission failed: %s", SDL_GetError());
+    assert(submitted);
+    SDL_ReleaseGPUTransferBuffer(device, transfer);
+    return buffer;
+}
 
-    for (size_t layer_index { 0 }; layer_index < model_render.actor_config_data.entry_vector.size(); ++layer_index)
+SDL_GPUTexture* Render::create_texture_array(
+    const u32 width,
+    const u32 height,
+    const u32 layers,
+    const vector<string>& paths,
+    const bool flip_vertical
+)
+{
+    assert(paths.size() == layers);
+    const SDL_GPUTextureCreateInfo texture_info {
+        .type = layers == 1 ? SDL_GPU_TEXTURETYPE_2D : SDL_GPU_TEXTURETYPE_2D_ARRAY,
+        .format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+        .usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
+        .width = width,
+        .height = height,
+        .layer_count_or_depth = layers,
+        .num_levels = 1,
+        .sample_count = SDL_GPU_SAMPLECOUNT_1,
+    };
+    SDL_GPUTexture* texture { SDL_CreateGPUTexture(device, &texture_info) };
+    assert(texture);
+
+    const size_t layer_size { static_cast<size_t>(width) * height * 4 };
+    const size_t total_size { layer_size * layers };
+    const SDL_GPUTransferBufferCreateInfo transfer_info {
+        .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+        .size = static_cast<u32>(total_size),
+    };
+    SDL_GPUTransferBuffer* transfer { SDL_CreateGPUTransferBuffer(device, &transfer_info) };
+    assert(transfer);
+    auto* mapped { static_cast<u8*>(SDL_MapGPUTransferBuffer(device, transfer, false)) };
+    assert(mapped);
+
+    for (u32 layer { 0 }; layer < layers; ++layer)
     {
-        const ConfigEntry& config_entry { model_render.actor_config_data.entry_vector[layer_index]};
+        SDL_Surface* loaded { SDL_LoadPNG(paths[layer].c_str()) };
+        if (!loaded)
+        {
+            LOG_ERROR("Failed to load texture %s: %s", paths[layer].c_str(), SDL_GetError());
+        }
+        assert(loaded);
 
-        const s32 nation_type_index { find_nation_type_index(config_entry.key) };
+        SDL_Surface* surface { SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) };
+        SDL_DestroySurface(loaded);
+        if (!surface)
+        {
+            LOG_ERROR("Failed to convert texture %s to RGBA32: %s", paths[layer].c_str(), SDL_GetError());
+        }
+        assert(surface);
 
-        assert(nation_type_index >= 0 && nation_type_index < NATION_TYPE_COUNT);
+        if (surface->w != static_cast<int>(width) || surface->h != static_cast<int>(height))
+        {
+            LOG_ERROR(
+                "Texture %s has dimensions %dx%d; expected %ux%u",
+                paths[layer].c_str(),
+                surface->w,
+                surface->h,
+                width,
+                height
+            );
+        }
+        assert(surface->w == static_cast<int>(width) && surface->h == static_cast<int>(height));
 
-        model_render.nation_type_layer_array[nation_type_index] = layer_index;
+        if (flip_vertical && !SDL_FlipSurface(surface, SDL_FLIP_VERTICAL))
+        {
+            LOG_ERROR("Failed to flip texture %s: %s", paths[layer].c_str(), SDL_GetError());
+            assert(false);
+        }
 
-        string texture_path {
-            format(
-                "assets/textures/model/{}",
-                config_entry.value
-            )
+        const size_t row_size { static_cast<size_t>(width) * 4 };
+        assert(surface->pitch >= static_cast<int>(row_size));
+        const bool must_unlock { SDL_MUSTLOCK(surface) };
+        if (must_unlock && !SDL_LockSurface(surface))
+        {
+            LOG_ERROR("Failed to lock texture %s: %s", paths[layer].c_str(), SDL_GetError());
+            assert(false);
+        }
+        const size_t source_pitch { static_cast<size_t>(surface->pitch) };
+        const auto* pixels { static_cast<const u8*>(surface->pixels) };
+        for (u32 row { 0 }; row < height; ++row)
+        {
+            memcpy(mapped + layer * layer_size + row * row_size, pixels + row * source_pitch, row_size);
+        }
+        if (must_unlock) SDL_UnlockSurface(surface);
+        SDL_DestroySurface(surface);
+        LOG_INFO("Loaded texture: %s", paths[layer].c_str());
+    }
+    SDL_UnmapGPUTransferBuffer(device, transfer);
+
+    SDL_GPUCommandBuffer* commands { SDL_AcquireGPUCommandBuffer(device) };
+    SDL_GPUCopyPass* copy { SDL_BeginGPUCopyPass(commands) };
+    for (u32 layer { 0 }; layer < layers; ++layer)
+    {
+        const SDL_GPUTextureTransferInfo source {
+            .transfer_buffer = transfer,
+            .offset = static_cast<u32>(layer * layer_size),
+            .pixels_per_row = width,
+            .rows_per_layer = height,
+        };
+        const SDL_GPUTextureRegion destination {
+            .texture = texture,
+            .layer = layer,
+            .w = width,
+            .h = height,
+            .d = 1,
+        };
+        SDL_UploadToGPUTexture(copy, &source, &destination, false);
+    }
+    SDL_EndGPUCopyPass(copy);
+    const bool submitted { SDL_SubmitGPUCommandBuffer(commands) };
+    if (!submitted) LOG_ERROR("GPU texture upload submission failed: %s", SDL_GetError());
+    assert(submitted);
+    SDL_ReleaseGPUTransferBuffer(device, transfer);
+    return texture;
+}
+
+void Render::upload_dynamic_buffer(
+    DynamicGpuBuffer& target,
+    const void* data,
+    const size_t size,
+    SDL_GPUCommandBuffer* commands
+)
+{
+    if (size == 0)
+    {
+        return;
+    }
+    if (target.capacity < size)
+    {
+        if (target.buffer)
+        {
+            SDL_ReleaseGPUBuffer(device, target.buffer);
+        }
+
+        if (target.transfer)
+        {
+            SDL_ReleaseGPUTransferBuffer(device, target.transfer);
+        }
+
+        target.capacity = grown_capacity(size);
+
+        const SDL_GPUBufferCreateInfo buffer_info {
+            .usage = SDL_GPU_BUFFERUSAGE_VERTEX,
+            .size = static_cast<u32>(target.capacity),
         };
 
-        load_texture_array_layer(texture_path, static_cast<GLint>(layer_index));
+        const SDL_GPUTransferBufferCreateInfo transfer_info {
+            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+            .size = static_cast<u32>(target.capacity),
+        };
+
+        target.buffer = SDL_CreateGPUBuffer(device, &buffer_info);
+        target.transfer = SDL_CreateGPUTransferBuffer(device, &transfer_info);
+
+        assert(target.buffer && target.transfer);
     }
+
+    void* mapped { SDL_MapGPUTransferBuffer(device, target.transfer, true) };
+
+    assert(mapped);
+
+    memcpy(mapped, data, size);
+
+    SDL_UnmapGPUTransferBuffer(device, target.transfer);
+    SDL_GPUCopyPass* copy { SDL_BeginGPUCopyPass(commands) };
+    const SDL_GPUTransferBufferLocation source { .transfer_buffer = target.transfer };
+    const SDL_GPUBufferRegion destination { .buffer = target.buffer, .size = static_cast<u32>(size) };
+    SDL_UploadToGPUBuffer(copy, &source, &destination, true);
+    SDL_EndGPUCopyPass(copy);
 }
 
-void
-Render::load_model_gpu_data(const s32 nation_type_index)
+void Render::recreate_depth_texture(const u32 width, const u32 height)
 {
-    ModelGpuData model_gpu_data {
-        .texture_layer = model_render.nation_type_layer_array[nation_type_index],
+    if (depth_texture)
+    {
+        SDL_ReleaseGPUTexture(device, depth_texture);
+    }
+
+    const SDL_GPUTextureCreateInfo info {
+        .type = SDL_GPU_TEXTURETYPE_2D,
+        .format = depth_format,
+        .usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET,
+        .width = width,
+        .height = height,
+        .layer_count_or_depth = 1,
+        .num_levels = 1,
+        .sample_count = SDL_GPU_SAMPLECOUNT_1,
     };
 
-    ifstream ifs { "assets/model/actor.obj" };
+    depth_texture = SDL_CreateGPUTexture(device, &info);
+    assert(depth_texture);
+    drawable_width = width;
+    drawable_height = height;
+}
 
-    assert(ifs.is_open());
+void Render::load_block_textures()
+{
+    voxel_render.block_config.load("config/block.ini");
+    const size_t layer_count { voxel_render.block_config.entry_vector.size() };
+    assert(layer_count > 0 && layer_count <= BLOCK_TYPE_COUNT);
+    vector<string> paths(layer_count);
+    for (size_t layer { 0 }; layer < layer_count; ++layer)
+    {
+        const ConfigEntry& entry { voxel_render.block_config.entry_vector[layer] };
+        const s32 block_index { World::block_type_index_from_string(entry.key) };
+        assert(block_index >= 0 && block_index < BLOCK_TYPE_COUNT);
+        voxel_render.block_type_layers[block_index] = static_cast<u8>(layer);
+        paths[layer] = format("assets/textures/block/{}", entry.value);
+    }
+    voxel_render.texture = create_texture_array(BLOCK_TEXTURE_SIZE, BLOCK_TEXTURE_SIZE, paths.size(), paths, true);
+}
 
+void Render::load_actor_textures()
+{
+    model_render.actor_config.load("config/actor.ini");
+    const size_t layer_count { model_render.actor_config.entry_vector.size() };
+    assert(layer_count > 0 && layer_count <= NATION_TYPE_COUNT);
+    vector<string> paths(layer_count);
+    for (size_t layer { 0 }; layer < layer_count; ++layer)
+    {
+        const ConfigEntry& entry { model_render.actor_config.entry_vector[layer] };
+        const s32 nation_index { find_nation_type_index(entry.key) };
+        assert(nation_index >= 0 && nation_index < NATION_TYPE_COUNT);
+        model_render.nation_type_layers[nation_index] = static_cast<u8>(layer);
+        paths[layer] = format("assets/textures/model/{}", entry.value);
+    }
+    model_render.texture = create_texture_array(ACTOR_TEXTURE_SIZE, ACTOR_TEXTURE_SIZE, paths.size(), paths, true);
+}
+
+void Render::load_model_data(const s32 nation_type_index)
+{
+    ModelGpuData data { .texture_layer = model_render.nation_type_layers[nation_type_index] };
+    ifstream stream { "assets/model/actor.obj" };
+    assert(stream.is_open());
     string line {};
+    vector<Vec3> positions {};
+    vector<Vec3> normals {};
+    vector<Vec2> uvs {};
 
-    vector<Vec3> position_vector {};
-    vector<Vec3> normal_vector {};
-    vector<Vec2> uv_vector {};
-
-    while (getline(ifs, line))
+    while (getline(stream, line))
     {
         if (line.starts_with("v "))
         {
-            Vec3 position {};
-
-            const s32 scan_result {
-                sscanf(
-                    line.c_str(),
-                    "v %f %f %f",
-                    &position.x,
-                    &position.y,
-                    &position.z
-                )
-            };
-
-            assert(scan_result == 3);
-
-            position_vector.push_back(position);
+            Vec3 value {};
+            const s32 scanned { sscanf(line.c_str(), "v %f %f %f", &value.x, &value.y, &value.z) };
+            if (scanned != 3) continue;
+            assert(scanned == 3);
+            positions.push_back(value);
         }
         else if (line.starts_with("vn "))
         {
-            Vec3 normal {};
-
-            const s32 normal_scan {
-                sscanf(
-                    line.c_str(),
-                    "vn %f %f %f",
-                    &normal[0],
-                    &normal[1],
-                    &normal[2]
-                )
-            };
-
-            assert(normal_scan == 3);
-
-            normal_vector.push_back(normal);
+            Vec3 value {};
+            const s32 scanned { sscanf(line.c_str(), "vn %f %f %f", &value.x, &value.y, &value.z) };
+            if (scanned != 3) continue;
+            assert(scanned == 3);
+            normals.push_back(value);
         }
         else if (line.starts_with("vt "))
         {
-            Vec2 uv {};
-
-            const s32 uv_scan {
-                sscanf(
-                    line.c_str(),
-                    "vt %f %f",
-                    &uv[0],
-                    &uv[1]
-                )
-            };
-
-            assert(uv_scan == 2);
-
-            uv_vector.push_back(uv);
+            Vec2 value {};
+            const s32 scanned { sscanf(line.c_str(), "vt %f %f", &value.x, &value.y) };
+            if (scanned != 2) continue;
+            assert(scanned == 2);
+            uvs.push_back(value);
         }
         else if (line.starts_with("f "))
         {
-            s32 position_index_array[3] {};
-            s32 normal_index_array[3] {};
-            s32 uv_index_array[3] {};
-
-            const s32 scan_result = {
-                sscanf(
-                    line.c_str(),
-                    "f %d/%d/%d %d/%d/%d %d/%d/%d",
-                    &position_index_array[0],
-                    &uv_index_array[0],
-                    &normal_index_array[0],
-                    &position_index_array[1],
-                    &uv_index_array[1],
-                    &normal_index_array[1],
-                    &position_index_array[2],
-                    &uv_index_array[2],
-                    &normal_index_array[2]
-                )
-            };
-
-            assert(scan_result == 9);
-
-            for (s32 model_vertex_index { 0 }; model_vertex_index < 3; model_vertex_index++)
+            s32 p[3] {};
+            s32 n[3] {};
+            s32 uv[3] {};
+            const s32 scanned { sscanf(
+                line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d",
+                &p[0], &uv[0], &n[0], &p[1], &uv[1], &n[1], &p[2], &uv[2], &n[2]
+            ) };
+            if (scanned != 9) continue;
+            assert(scanned == 9);
+            for (s32 index { 0 }; index < 3; ++index)
             {
-                ModelVertex model_vertex {};
-
-                const s32 position_index { position_index_array[model_vertex_index] - 1 };
-                const s32 normal_index { normal_index_array[model_vertex_index] - 1 };
-                const s32 uv_index { uv_index_array[model_vertex_index] - 1 };
-
-                assert(position_index >= 0);
-                assert(position_index < static_cast<s32>(position_vector.size()));
-                assert(normal_index >= 0);
-                assert(normal_index < static_cast<s32>(normal_vector.size()));
-                assert(uv_index >= 0);
-                assert(uv_index < static_cast<s32>(uv_vector.size()));
-
-                model_vertex.a_position[0] = position_vector[position_index].x;
-                model_vertex.a_position[1] = position_vector[position_index].y;
-                model_vertex.a_position[2] = position_vector[position_index].z;
-
-                model_vertex.a_normal[0] = normal_vector[normal_index].x;
-                model_vertex.a_normal[1] = normal_vector[normal_index].y;
-                model_vertex.a_normal[2] = normal_vector[normal_index].z;
-
-                model_vertex.a_uv[0] = uv_vector[uv_index].x;
-                model_vertex.a_uv[1] = uv_vector[uv_index].y;
-
-                model_gpu_data.model_vertex_vector.push_back(model_vertex);
+                const Vec3& position { positions[p[index] - 1] };
+                const Vec3& normal { normals[n[index] - 1] };
+                const Vec2& texture_uv { uvs[uv[index] - 1] };
+                data.vertices.push_back({
+                    { position.x, position.y, position.z },
+                    { normal.x, normal.y, normal.z },
+                    { texture_uv.x, texture_uv.y },
+                });
             }
         }
     }
-
-    model_render.model_gpu_data_vector[nation_type_index] = model_gpu_data;
+    data.buffer = create_static_buffer(data.vertices.data(), data.vertices.size() * sizeof(ModelVertex));
+    model_render.gpu_data[nation_type_index] = std::move(data);
 }
 
-void
-Render::generate_sector_mesh(const World& world, const s32 sector_index)
+void Render::generate_sector_mesh(const World& world, const s32 sector_index)
 {
-    SectorMesh sector_mesh {
-        .sector_index = sector_index,
-    };
+    SectorMesh mesh { .sector_index = sector_index };
+    const IVec2 sector { World::sector_index_to_coordinate(sector_index) };
+    const IVec3 origin { sector.x * SECTOR_SIZE_IN_CELLS, sector.y * SECTOR_SIZE_IN_CELLS, 0 };
 
-    const IVec2 sector_coordinate { World::sector_index_to_coordinate(sector_index) };
-
-    const IVec3 sector_cell_coordinate {
-        sector_coordinate.x * SECTOR_SIZE_IN_CELLS,
-        sector_coordinate.y * SECTOR_SIZE_IN_CELLS,
-        0,
-    };
-
-    for (s32 cell_z { 0 }; cell_z < SECTOR_HEIGHT_IN_CELLS; ++cell_z)
+    for (s32 z { 0 }; z < SECTOR_HEIGHT_IN_CELLS; ++z)
+    for (s32 y { origin.y }; y < origin.y + SECTOR_SIZE_IN_CELLS; ++y)
+    for (s32 x { origin.x }; x < origin.x + SECTOR_SIZE_IN_CELLS; ++x)
     {
-        for (s32 cell_y { sector_cell_coordinate.y }; cell_y < sector_cell_coordinate.y + SECTOR_SIZE_IN_CELLS; ++cell_y)
+        if (!World::cell_coordinate_is_valid(x, y, z)) continue;
+        const Cell& cell { world.cell_array[World::cell_coordinate_to_index(x, y, z)] };
+        if (cell.block_type == BlockType::None) continue;
+        u8 mask { cell.direction_mask };
+        while (mask)
         {
-            for (s32 cell_x { sector_cell_coordinate.x }; cell_x < sector_cell_coordinate.x + SECTOR_SIZE_IN_CELLS; ++cell_x)
-            {
-                if (!World::cell_coordinate_is_valid(cell_x, cell_y, cell_z))
-                {
-                    continue;
-                }
-
-                const s32 cell_index { World::cell_coordinate_to_index(cell_x, cell_y, cell_z) };
-                const Cell& cell { world.cell_array[cell_index] };
-
-                if (cell.block_type == BlockType::None)
-                {
-                    continue;
-                }
-
-                u8 test_direction_mask { cell.direction_mask };
-
-                while (test_direction_mask)
-                {
-                    const Direction direction { get_direction_from_mask(test_direction_mask) };
-
-                    SectorQuad sector_quad {
-                        .local_coordinate = {
-                            cell_x - sector_cell_coordinate.x,
-                            cell_y - sector_cell_coordinate.y,
-                            cell_z,
-                        },
-                        .direction = direction,
-                        .block_type = cell.block_type,
-                    };
-
-                    sector_mesh.sector_quad_vector.push_back(sector_quad);
-
-                    test_direction_mask &= test_direction_mask - 1;
-                }
-            }
+            mesh.quads.push_back({
+                .local_coordinate = { x - origin.x, y - origin.y, z },
+                .direction = get_direction_from_mask(mask),
+                .block_type = cell.block_type,
+            });
+            mask &= mask - 1;
         }
     }
-
-    voxel_render.sector_mesh_vector.push_back(sector_mesh);
+    voxel_render.meshes.push_back(std::move(mesh));
 }
 
-void
-Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& voxel_gpu_data)
+void Render::emit_sector_face(const SectorQuad& quad, VoxelGpuData& gpu_data)
 {
-    for (s32 vertex_index { 0 }; vertex_index < 6; ++vertex_index)
+    for (s32 index { 0 }; index < 6; ++index)
     {
-        const s32 direction_index { static_cast<s32>(sector_quad.direction) };
-        const s32 block_type_index { static_cast<s32>(sector_quad.block_type) };
-
-        const IVec3 vertex_position {
-            VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]][0],
-            VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]][1],
-            VOXEL_VERTEX_ARRAY[direction_index][VERTEX_INDEX_ARRAY[vertex_index]][2],
-        };
-
-        const IVec3 vertex_world_position { sector_quad.local_coordinate + vertex_position };
-
-        const u32 vertex_bitpacked {
-            (vertex_world_position.x & 63u) << 0u |
-            (vertex_world_position.y & 63u) << 6u |
-            (vertex_world_position.z & 255u) << 12u
-        };
-
-        const u32 face_bitpacked {
-            (block_type_index & 255u) << 0u |
-            (direction_index & 7u) << 8u
-        };
-
-        const VoxelVertex voxel_vertex {
-            .vertex = static_cast<s32>(vertex_bitpacked),
-            .face = static_cast<s32>(face_bitpacked),
-        };
-
-        voxel_gpu_data.voxel_vertex_vector.push_back(voxel_vertex);
+        const s32 direction { static_cast<s32>(quad.direction) };
+        const s32 block { static_cast<s32>(quad.block_type) };
+        const auto& source { VOXEL_VERTEX_ARRAY[direction][VERTEX_INDEX_ARRAY[index]] };
+        const IVec3 position { quad.local_coordinate + IVec3 { source[0], source[1], source[2] } };
+        gpu_data.vertices.push_back({
+            .vertex = static_cast<u32>((position.x & 63u) | ((position.y & 63u) << 6u) | ((position.z & 255u) << 12u)),
+            .face = static_cast<u32>((block & 255u) | ((direction & 7u) << 8u)),
+        });
     }
 }
 
-VoxelGpuData
-Render::convert_sector_mesh_to_voxel_gpu_data(const SectorMesh& sector_mesh)
+VoxelGpuData Render::convert_sector_mesh(const SectorMesh& mesh)
 {
-    const IVec2 sector_coordinate { World::sector_index_to_coordinate(sector_mesh.sector_index) };
-
-    VoxelGpuData voxel_gpu_data {
+    const IVec2 coordinate { World::sector_index_to_coordinate(mesh.sector_index) };
+    VoxelGpuData data {
         .position = {
-            static_cast<f32>(sector_coordinate.x) * SECTOR_SIZE_IN_CELLS,
-            static_cast<f32>(sector_coordinate.y) * SECTOR_SIZE_IN_CELLS,
+            static_cast<f32>(coordinate.x * SECTOR_SIZE_IN_CELLS),
+            static_cast<f32>(coordinate.y * SECTOR_SIZE_IN_CELLS),
             0.0f,
-        }
+        },
     };
-
-    for (const SectorQuad& sector_quad : sector_mesh.sector_quad_vector)
-    {
-        emit_sector_face(sector_quad, voxel_gpu_data);
-    }
-
-    return voxel_gpu_data;
+    for (const SectorQuad& quad : mesh.quads) emit_sector_face(quad, data);
+    return data;
 }
 
-void
-Render::upload_voxel_gpu_data(VoxelGpuData& voxel_gpu_data)
+void Render::init_voxel_render(const World& world)
 {
-    if (voxel_gpu_data.vao_id == 0)
+    const SDL_GPUVertexBufferDescription description {
+        .slot = 0, .pitch = sizeof(VoxelVertex), .input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+    };
+    const vector<SDL_GPUVertexAttribute> attributes {
+        { .location = 0, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_UINT, .offset = offsetof(VoxelVertex, vertex) },
+        { .location = 1, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_UINT, .offset = offsetof(VoxelVertex, face) },
+    };
+    voxel_render.pipeline = create_pipeline("sector", SDL_GPU_PRIMITIVETYPE_TRIANGLELIST, description, attributes, true, true, false, 1, 2);
+
+    const SDL_GPUSamplerCreateInfo sampler_info {
+        .min_filter = SDL_GPU_FILTER_NEAREST, .mag_filter = SDL_GPU_FILTER_NEAREST,
+        .mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
+        .address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
+        .address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
+        .address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
+    };
+    voxel_render.sampler = SDL_CreateGPUSampler(device, &sampler_info);
+    assert(voxel_render.sampler);
+    load_block_textures();
+
+    for (s32 sector { 0 }; sector < WORLD_AREA_IN_SECTORS; ++sector) generate_sector_mesh(world, sector);
+    for (const SectorMesh& mesh : voxel_render.meshes)
     {
-        glGenVertexArrays(1, &voxel_gpu_data.vao_id);
-        glGenBuffers(1, &voxel_gpu_data.vbo_id);
-
-        glBindVertexArray(voxel_gpu_data.vao_id);
-        glBindBuffer(GL_ARRAY_BUFFER, voxel_gpu_data.vbo_id);
-
-        glVertexAttribIPointer(
-            0,
-            1,
-            GL_UNSIGNED_INT,
-            sizeof(VoxelVertex),
-            reinterpret_cast<void*>(offsetof(VoxelVertex, vertex))
-        );
-
-        glVertexAttribIPointer(
-            1,
-            1,
-            GL_UNSIGNED_INT,
-            sizeof(VoxelVertex),
-            reinterpret_cast<void*>(offsetof(VoxelVertex, face))
-        );
-
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-    }
-    else
-    {
-        glBindVertexArray(voxel_gpu_data.vao_id);
-        glBindBuffer(GL_ARRAY_BUFFER, voxel_gpu_data.vbo_id);
-    }
-
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(voxel_gpu_data.voxel_vertex_vector.size() * sizeof(VoxelVertex)),
-        voxel_gpu_data.voxel_vertex_vector.data(),
-        GL_DYNAMIC_DRAW
-    );
-
-    glBindVertexArray(0);
-}
-
-void
-Render::upload_model_gpu_data(ModelGpuData& model_gpu_data)
-{
-    if (model_gpu_data.vao_id == 0)
-    {
-        glGenVertexArrays(1, &model_gpu_data.vao_id);
-        glGenBuffers(1, &model_gpu_data.vbo_id);
-
-        glBindVertexArray(model_gpu_data.vao_id);
-        glBindBuffer(GL_ARRAY_BUFFER, model_gpu_data.vbo_id);
-
-        glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            sizeof(ModelVertex),
-            reinterpret_cast<void*>(offsetof(ModelVertex, a_position))
-        );
-
-        glVertexAttribPointer(
-            1,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            sizeof(ModelVertex),
-            reinterpret_cast<void*>(offsetof(ModelVertex, a_normal))
-        );
-
-        glVertexAttribPointer(
-            2,
-            2,
-            GL_FLOAT,
-            GL_FALSE,
-            sizeof(ModelVertex),
-            reinterpret_cast<void*>(offsetof(ModelVertex, a_uv))
-        );
-
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-    }
-    else
-    {
-        glBindVertexArray(model_gpu_data.vao_id);
-        glBindBuffer(GL_ARRAY_BUFFER, model_gpu_data.vbo_id);
-    }
-
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(model_gpu_data.model_vertex_vector.size() * sizeof(ModelVertex)),
-        model_gpu_data.model_vertex_vector.data(),
-        GL_DYNAMIC_DRAW
-    );
-
-    glBindVertexArray(0);
-}
-
-void
-Render::init_glad(const Platform& platform)
-{
-    const s32 glad_load_gl_result { gladLoadGL(glfwGetProcAddress) };
-
-    assert(glad_load_gl_result != 0);
-
-    const auto [framebuffer_width, framebuffer_height] { platform.get_framebuffer_size() };
-
-    glViewport(0, 0, framebuffer_width, framebuffer_height);
-}
-
-void
-Render::init_debug_render(const Control& control)
-{
-    const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/debug.vert") };
-    const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/debug.frag") };
-
-    debug_render.program_id = glCreateProgram();
-
-    glAttachShader(debug_render.program_id, vert_shader);
-    glAttachShader(debug_render.program_id, frag_shader);
-
-    glLinkProgram(debug_render.program_id);
-
-    glUseProgram(debug_render.program_id);
-
-    debug_render.projection_location = glGetUniformLocation(debug_render.program_id, "u_projection_matrix");
-    debug_render.view_location = glGetUniformLocation(debug_render.program_id, "u_view_matrix");
-    debug_render.model_location = glGetUniformLocation(debug_render.program_id, "u_model_matrix");
-
-    glUniformMatrix4fv(
-        debug_render.projection_location,
-        1,
-        GL_FALSE,
-        control.projection_matrix[0]
-    );
-
-    glDeleteShader(vert_shader);
-    glDeleteShader(frag_shader);
-}
-
-void
-Render::init_voxel_render(const Control& control, const World& world)
-{
-    const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/sector.vert") };
-    const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/sector.frag") };
-
-    voxel_render.program_id = glCreateProgram();
-
-    glAttachShader(voxel_render.program_id, vert_shader);
-    glAttachShader(voxel_render.program_id, frag_shader);
-
-    glLinkProgram(voxel_render.program_id);
-
-    glEnable(GL_DEPTH_TEST);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
-
-    glUseProgram(voxel_render.program_id);
-
-    voxel_render.texture_sampler_location = glGetUniformLocation(voxel_render.program_id, "u_texture_sampler");
-
-    glUniform1i(voxel_render.texture_sampler_location, 0);
-
-    voxel_render.normal_table_location = glGetUniformLocation(voxel_render.program_id, "u_normal_table");
-
-    glUniform3fv(voxel_render.normal_table_location, DIRECTION_COUNT, &DIRECTION_NORMAL_ARRAY[0]);
-
-    voxel_render.uv_projection_table_location = glGetUniformLocation(
-        voxel_render.program_id,
-        "u_uv_projection_table"
-    );
-
-    glUniform3fv(voxel_render.uv_projection_table_location, 2 * DIRECTION_COUNT, &VOXEL_UV_PROJECTION_ARRAY[0][0]);
-
-    voxel_render.projection_location = glGetUniformLocation(voxel_render.program_id, "u_projection_matrix");
-    voxel_render.view_location = glGetUniformLocation(voxel_render.program_id, "u_view_matrix");
-    voxel_render.model_location = glGetUniformLocation(voxel_render.program_id, "u_model_matrix");
-
-    glUniformMatrix4fv(
-        voxel_render.projection_location,
-        1, 
-        GL_FALSE,
-        control.projection_matrix[0]
-    );
-
-    glDeleteShader(vert_shader);
-    glDeleteShader(frag_shader);
-
-    voxel_render.block_config_data.load("config/block.ini");
-
-    load_block_texture_directory();
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
-
-    for (s32 sector_index { 0 }; sector_index < WORLD_AREA_IN_SECTORS; ++sector_index)
-    {
-        generate_sector_mesh(world, sector_index);
-    }
-
-    for (const SectorMesh& sector_mesh : voxel_render.sector_mesh_vector)
-    {
-        VoxelGpuData voxel_gpu_data { convert_sector_mesh_to_voxel_gpu_data(sector_mesh) };
-
-        voxel_render.voxel_gpu_data_vector.push_back(voxel_gpu_data);
-    }
-
-    for (VoxelGpuData& voxel_gpu_data : voxel_render.voxel_gpu_data_vector)
-    {
-        upload_voxel_gpu_data(voxel_gpu_data);
+        VoxelGpuData data { convert_sector_mesh(mesh) };
+        if (!data.vertices.empty())
+        {
+            data.buffer = create_static_buffer(data.vertices.data(), data.vertices.size() * sizeof(VoxelVertex));
+        }
+        voxel_render.gpu_data.push_back(std::move(data));
     }
 }
 
-void
-Render::init_model_render(const Control& control)
+void Render::init_model_render()
 {
-    const GLuint vert_shader { compile_shader(GL_VERTEX_SHADER, "assets/shaders/model.vert") };
-    const GLuint frag_shader { compile_shader(GL_FRAGMENT_SHADER, "assets/shaders/model.frag") };
+    const SDL_GPUVertexBufferDescription description {
+        .slot = 0, .pitch = sizeof(ModelVertex), .input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+    };
+    const vector<SDL_GPUVertexAttribute> attributes {
+        { .location = 0, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, .offset = offsetof(ModelVertex, position) },
+        { .location = 1, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, .offset = offsetof(ModelVertex, normal) },
+        { .location = 2, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2, .offset = offsetof(ModelVertex, uv) },
+    };
+    model_render.pipeline = create_pipeline("model", SDL_GPU_PRIMITIVETYPE_TRIANGLELIST, description, attributes, true, true, false, 1, 2, 1);
+    const SDL_GPUSamplerCreateInfo sampler_info {
+        .min_filter = SDL_GPU_FILTER_NEAREST, .mag_filter = SDL_GPU_FILTER_NEAREST,
+        .mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
+        .address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
+        .address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
+        .address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
+    };
+    model_render.sampler = SDL_CreateGPUSampler(device, &sampler_info);
+    assert(model_render.sampler);
+    load_actor_textures();
+    model_render.gpu_data.resize(NATION_TYPE_COUNT);
+    for (s32 index { 0 }; index < NATION_TYPE_COUNT; ++index) load_model_data(index);
+}
 
-    model_render.program_id = glCreateProgram();
+void Render::init_debug_render()
+{
+    const SDL_GPUVertexBufferDescription description {
+        .slot = 0, .pitch = sizeof(DebugVertex), .input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+    };
+    const vector<SDL_GPUVertexAttribute> attributes {
+        { .location = 0, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, .offset = offsetof(DebugVertex, position) },
+        { .location = 1, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, .offset = offsetof(DebugVertex, color) },
+    };
+    debug_render.pipeline = create_pipeline("debug", SDL_GPU_PRIMITIVETYPE_LINELIST, description, attributes, true, false, false, 0, 2);
+}
 
-    glAttachShader(model_render.program_id, vert_shader);
-    glAttachShader(model_render.program_id, frag_shader);
+void Render::init_text_render()
+{
+    const SDL_GPUVertexBufferDescription description {
+        .slot = 0, .pitch = sizeof(TextVertex), .input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+    };
+    const vector<SDL_GPUVertexAttribute> attributes {
+        { .location = 0, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2, .offset = offsetof(TextVertex, position) },
+        { .location = 1, .buffer_slot = 0, .format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2, .offset = offsetof(TextVertex, uv) },
+    };
+    text_render.pipeline = create_pipeline("text", SDL_GPU_PRIMITIVETYPE_TRIANGLELIST, description, attributes, false, false, true, 1, 1);
+    const SDL_GPUSamplerCreateInfo sampler_info {
+        .min_filter = SDL_GPU_FILTER_NEAREST, .mag_filter = SDL_GPU_FILTER_NEAREST,
+        .mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
+        .address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+        .address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+        .address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+    };
+    text_render.sampler = SDL_CreateGPUSampler(device, &sampler_info);
+    assert(text_render.sampler);
+    text_render.texture = create_texture_array(64, 96, 1, { "assets/textures/font/null_terminator.png" }, false);
+}
 
-    glLinkProgram(model_render.program_id);
+void Render::init(const Platform& platform, const Control&, const World& world)
+{
+    window = platform.window();
+    constexpr SDL_GPUShaderFormat formats {
+        SDL_GPU_SHADERFORMAT_MSL | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_SPIRV
+    };
+#ifdef NDEBUG
+    constexpr bool debug_mode { false };
+#else
+    constexpr bool debug_mode { true };
+#endif
+    device = SDL_CreateGPUDevice(formats, debug_mode, nullptr);
+    assert(device && "SDL_CreateGPUDevice failed");
+    const bool claimed { SDL_ClaimWindowForGPUDevice(device, window) };
+    if (!claimed) LOG_ERROR("Failed to claim SDL window for GPU device: %s", SDL_GetError());
+    assert(claimed);
+    shader_format = SDL_GetGPUShaderFormats(device);
 
-    glEnable(GL_DEPTH_TEST);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
-
-    model_render.actor_config_data.load("config/actor.ini");
-
-    load_actor_texture_directory();
-
-    glUseProgram(model_render.program_id);
-
-    model_render.texture_sampler_location = glGetUniformLocation(model_render.program_id, "u_texture_sampler");
-
-    glUniform1i(model_render.texture_sampler_location, 0);
-
-    model_render.texture_layer_location = glGetUniformLocation(model_render.program_id, "u_texture_layer");
-
-    model_render.projection_location = glGetUniformLocation(model_render.program_id, "u_projection_matrix");
-    model_render.view_location = glGetUniformLocation(model_render.program_id, "u_view_matrix");
-    model_render.model_location = glGetUniformLocation(model_render.program_id, "u_model_matrix");
-
-    glUniformMatrix4fv(
-        model_render.projection_location,
-        1, 
-        GL_FALSE,
-        control.projection_matrix[0]
-    );
-
-    glDeleteShader(vert_shader);
-    glDeleteShader(frag_shader);
-
-    model_render.model_gpu_data_vector.resize(static_cast<s32>(NationType::COUNT));
-
-    for (s32 nation_type_index { 0 }; nation_type_index < static_cast<s32>(NationType::COUNT); ++nation_type_index)
+    depth_format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT;
+    if (!SDL_GPUTextureSupportsFormat(device, depth_format, SDL_GPU_TEXTURETYPE_2D, SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET))
     {
-        load_model_gpu_data(nation_type_index);
+        depth_format = SDL_GPU_TEXTUREFORMAT_D24_UNORM;
+    }
+    assert(SDL_GPUTextureSupportsFormat(device, depth_format, SDL_GPU_TEXTURETYPE_2D, SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET));
 
-        upload_model_gpu_data(model_render.model_gpu_data_vector[nation_type_index]);
+    const auto [width, height] { platform.get_framebuffer_size() };
+    recreate_depth_texture(width, height);
+    init_debug_render();
+    init_voxel_render(world);
+    init_model_render();
+    init_text_render();
+    debug.init(world);
+    LOG_INFO("SDL_GPU renderer initialized with %s", SDL_GetGPUDeviceDriver(device));
+}
+
+void Render::draw_debug(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control)
+{
+    if (debug_vertex_count == 0) return;
+    const CameraUniform camera { control.projection_matrix, control.view_matrix };
+    const ObjectUniform object { Mat4 { 1.0f } };
+    SDL_PushGPUVertexUniformData(commands, 0, &camera, sizeof(camera));
+    SDL_PushGPUVertexUniformData(commands, 1, &object, sizeof(object));
+    SDL_BindGPUGraphicsPipeline(pass, debug_render.pipeline);
+    const SDL_GPUBufferBinding binding { .buffer = debug_render.vertices.buffer };
+    SDL_BindGPUVertexBuffers(pass, 0, &binding, 1);
+    SDL_DrawGPUPrimitives(pass, debug_vertex_count, 1, 0, 0);
+}
+
+void Render::draw_voxels(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control)
+{
+    const CameraUniform camera { control.projection_matrix, control.view_matrix };
+    SDL_PushGPUVertexUniformData(commands, 0, &camera, sizeof(camera));
+    SDL_BindGPUGraphicsPipeline(pass, voxel_render.pipeline);
+    const SDL_GPUTextureSamplerBinding texture { voxel_render.texture, voxel_render.sampler };
+    SDL_BindGPUFragmentSamplers(pass, 0, &texture, 1);
+    for (const VoxelGpuData& data : voxel_render.gpu_data)
+    {
+        if (!data.buffer) continue;
+        Mat4 model { 1.0f };
+        model = model.translate(data.position);
+        const ObjectUniform object { model };
+        SDL_PushGPUVertexUniformData(commands, 1, &object, sizeof(object));
+        const SDL_GPUBufferBinding binding { .buffer = data.buffer };
+        SDL_BindGPUVertexBuffers(pass, 0, &binding, 1);
+        SDL_DrawGPUPrimitives(pass, data.vertices.size(), 1, 0, 0);
     }
 }
 
-void
-Render::update_debug_render(const Control& control)
+void Render::draw_models(
+    SDL_GPURenderPass* pass,
+    SDL_GPUCommandBuffer* commands,
+    const Control& control,
+    const Population& population
+)
 {
-    glUseProgram(debug_render.program_id);
-
-    glUniformMatrix4fv(
-        debug_render.view_location,
-        1, 
-        GL_FALSE, 
-        control.view_matrix[0]
-    );
-
-    glEnable(GL_DEPTH_TEST);
-
-    DebugGpuData debug_gpu_data {};
-    
-    for (const DebugLine& debug_line : debug.line_vector)
-    {
-        const DebugVertex debug_vertex_a {
-            { debug_line.a.x, debug_line.a.y, debug_line.a.z },
-            { debug_line.color.r, debug_line.color.g, debug_line.color.b },
-        };
-
-        const DebugVertex debug_vertex_b {
-            { debug_line.b.x, debug_line.b.y, debug_line.b.z },
-            { debug_line.color.r, debug_line.color.g, debug_line.color.b },
-        };
-
-        debug_gpu_data.debug_vertex_vector.push_back(debug_vertex_a);
-        debug_gpu_data.debug_vertex_vector.push_back(debug_vertex_b);
-    }
-
-    upload_debug_gpu_data(debug_gpu_data);
-
-    Mat4 model_matrix { 1.0f };
-
-    glUniformMatrix4fv(
-        debug_render.model_location,
-        1, 
-        GL_FALSE, 
-        model_matrix[0]
-    );
-
-    glBindVertexArray(debug_gpu_data.vao_id);
-    glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(debug_gpu_data.debug_vertex_vector.size()));
-    glBindVertexArray(0);
-}
-
-void
-Render::update_voxel_render(const Control& control)
-{
-    glUseProgram(voxel_render.program_id);
-
-    glUniformMatrix4fv(
-        voxel_render.view_location,
-        1, 
-        GL_FALSE, 
-        control.view_matrix[0]
-    );
-
-    glEnable(GL_DEPTH_TEST);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, voxel_render.texture_array_id);
-
-    for (const VoxelGpuData& voxel_gpu_data : voxel_render.voxel_gpu_data_vector)
-    {
-        Mat4 model_matrix { 1.0f };
-        model_matrix = model_matrix.translate(voxel_gpu_data.position);
-
-        glUniformMatrix4fv(
-            voxel_render.model_location,
-            1, 
-            GL_FALSE, 
-            model_matrix[0]
-        );
-
-        glBindVertexArray(voxel_gpu_data.vao_id);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(voxel_gpu_data.voxel_vertex_vector.size()));
-        glBindVertexArray(0);
-    }
-}
-
-void
-Render::update_model_render(const Control& control, const Population& population)
-{
-    glUseProgram(model_render.program_id);
-
-    glUniformMatrix4fv(
-        model_render.view_location,
-        1, 
-        GL_FALSE, 
-        control.view_matrix[0]
-    );
-
-    glEnable(GL_DEPTH_TEST);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, model_render.texture_array_id);
-
+    const CameraUniform camera { control.projection_matrix, control.view_matrix };
+    SDL_PushGPUVertexUniformData(commands, 0, &camera, sizeof(camera));
+    SDL_BindGPUGraphicsPipeline(pass, model_render.pipeline);
+    const SDL_GPUTextureSamplerBinding texture { model_render.texture, model_render.sampler };
+    SDL_BindGPUFragmentSamplers(pass, 0, &texture, 1);
     for (const Actor& actor : population.actor_vector)
     {
-        const ModelGpuData& model_gpu_data { model_render.get_model_gpu_data(actor.nation_type) };
-
-        Mat4 model_matrix { 1.0f };
-        model_matrix = model_matrix.translate(actor.position);
-        model_matrix = model_matrix.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
-
-        glUniformMatrix4fv(
-            model_render.model_location,
-            1,
-            GL_FALSE,
-            model_matrix[0]
-        );
-
-        glUniform1i(model_render.texture_layer_location, model_gpu_data.texture_layer);
-
-        glBindVertexArray(model_gpu_data.vao_id);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model_gpu_data.model_vertex_vector.size()));
-        glBindVertexArray(0);
+        const ModelGpuData& data { model_render.gpu_data[static_cast<s32>(actor.nation_type)] };
+        Mat4 model { 1.0f };
+        model = model.translate(actor.position);
+        model = model.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
+        const ObjectUniform object { model };
+        const LayerUniform layer { data.texture_layer };
+        SDL_PushGPUVertexUniformData(commands, 1, &object, sizeof(object));
+        SDL_PushGPUFragmentUniformData(commands, 0, &layer, sizeof(layer));
+        const SDL_GPUBufferBinding binding { .buffer = data.buffer };
+        SDL_BindGPUVertexBuffers(pass, 0, &binding, 1);
+        SDL_DrawGPUPrimitives(pass, data.vertices.size(), 1, 0, 0);
     }
 }
 
-void 
-Render::init(const Platform& platform, const Control& control, const World& world)
+void Render::draw_text(
+    SDL_GPURenderPass* pass,
+    SDL_GPUCommandBuffer* commands,
+    const Control&,
+    const u32 width,
+    const u32 height
+)
 {
-    init_glad(platform);
-
-    init_debug_render(control);
-    init_voxel_render(control, world);
-    init_model_render(control);
-
-    debug.init(world);
-    screen.init(platform);
-
-    LOG_INFO("RENDER INIT");
+    if (text_vertex_count == 0) return;
+    const Mat4 projection { get_orthographic_matrix(
+        { 0.0f, 0.0f }, { static_cast<f32>(width), static_cast<f32>(height) }, 0.0f, 1.0f
+    ) };
+    SDL_PushGPUVertexUniformData(commands, 0, &projection, sizeof(projection));
+    SDL_BindGPUGraphicsPipeline(pass, text_render.pipeline);
+    const SDL_GPUTextureSamplerBinding texture { text_render.texture, text_render.sampler };
+    SDL_BindGPUFragmentSamplers(pass, 0, &texture, 1);
+    const SDL_GPUBufferBinding binding { .buffer = text_render.vertices.buffer };
+    SDL_BindGPUVertexBuffers(pass, 0, &binding, 1);
+    SDL_DrawGPUPrimitives(pass, text_vertex_count, 1, 0, 0);
 }
 
-void 
-Render::update(const Control& control, const Population& population)
+void Render::update(const Control& control, const Population& population)
 {
-    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    update_debug_render(control);
-    update_voxel_render(control);
-    update_model_render(control, population);
-
-    debug.update();
-    screen.update(control);
-}
-
-GLuint
-Render::compile_shader(const GLenum type, const char* filepath)
-{
-    ifstream ifs { filepath };
-    
-    assert(ifs.is_open());
-    
-    const string source_string {
-        std::istreambuf_iterator(ifs),
-        std::istreambuf_iterator<char>()
-    };
-    
-    const char* source_ptr { source_string.c_str() };
-    
-    const GLuint shader_id { glCreateShader(type) };
-
-    glShaderSource(shader_id, 1, &source_ptr, nullptr);
-    glCompileShader(shader_id);
-
-    GLint success {};
-    glGetShaderiv(shader_id, GL_COMPILE_STATUS, &success);
-
-    if (!success)
+    SDL_GPUCommandBuffer* commands { SDL_AcquireGPUCommandBuffer(device) };
+    assert(commands);
+    SDL_GPUTexture* swapchain {};
+    u32 width {};
+    u32 height {};
+    if (!SDL_WaitAndAcquireGPUSwapchainTexture(commands, window, &swapchain, &width, &height))
     {
-        GLchar info[512] {};
-
-        glGetShaderInfoLog(shader_id, 512, nullptr, info);
-
-        LOG_ERROR(
-            "Shader compile error (%s):\n%s\n",
-            filepath,
-            info
-        );
+        LOG_ERROR("Failed to acquire swapchain texture: %s", SDL_GetError());
+        SDL_CancelGPUCommandBuffer(commands);
+        return;
+    }
+    if (!swapchain || width == 0 || height == 0)
+    {
+        // A command buffer that acquired the swapchain must be submitted,
+        // even when SDL reports that the drawable is temporarily unavailable.
+        SDL_SubmitGPUCommandBuffer(commands);
+        return;
+    }
+    if (width != drawable_width || height != drawable_height)
+    {
+        recreate_depth_texture(width, height);
     }
 
-    return shader_id;
+    vector<DebugVertex> debug_vertices {};
+    debug_vertices.reserve(debug.line_vector.size() * 2);
+    for (const DebugLine& line : debug.line_vector)
+    {
+        debug_vertices.push_back({ { line.a.x, line.a.y, line.a.z }, { line.color.r, line.color.g, line.color.b } });
+        debug_vertices.push_back({ { line.b.x, line.b.y, line.b.z }, { line.color.r, line.color.g, line.color.b } });
+    }
+    debug_vertex_count = debug_vertices.size();
+    upload_dynamic_buffer(debug_render.vertices, debug_vertices.data(), debug_vertices.size() * sizeof(DebugVertex), commands);
+
+    screen.update(control);
+    text_vertex_count = screen.vertices().size();
+    upload_dynamic_buffer(text_render.vertices, screen.vertices().data(), screen.vertices().size() * sizeof(TextVertex), commands);
+
+    const SDL_GPUColorTargetInfo color_target {
+        .texture = swapchain,
+        .clear_color = { clear_color.r, clear_color.g, clear_color.b, clear_color.a },
+        .load_op = SDL_GPU_LOADOP_CLEAR,
+        .store_op = SDL_GPU_STOREOP_STORE,
+    };
+    const SDL_GPUDepthStencilTargetInfo depth_target {
+        .texture = depth_texture,
+        .clear_depth = 1.0f,
+        .load_op = SDL_GPU_LOADOP_CLEAR,
+        .store_op = SDL_GPU_STOREOP_DONT_CARE,
+        .stencil_load_op = SDL_GPU_LOADOP_DONT_CARE,
+        .stencil_store_op = SDL_GPU_STOREOP_DONT_CARE,
+        .cycle = true,
+    };
+    SDL_GPURenderPass* pass { SDL_BeginGPURenderPass(commands, &color_target, 1, &depth_target) };
+    assert(pass);
+    draw_debug(pass, commands, control);
+    draw_voxels(pass, commands, control);
+    draw_models(pass, commands, control, population);
+    draw_text(pass, commands, control, width, height);
+    SDL_EndGPURenderPass(pass);
+    const bool submitted { SDL_SubmitGPUCommandBuffer(commands) };
+    if (!submitted) LOG_ERROR("GPU frame submission failed: %s", SDL_GetError());
+    assert(submitted);
+    debug.update();
+}
+
+void Render::quit()
+{
+    if (!device) return;
+    SDL_WaitForGPUIdle(device);
+
+    for (VoxelGpuData& data : voxel_render.gpu_data)
+        if (data.buffer) SDL_ReleaseGPUBuffer(device, data.buffer);
+    for (ModelGpuData& data : model_render.gpu_data)
+        if (data.buffer) SDL_ReleaseGPUBuffer(device, data.buffer);
+
+    if (debug_render.vertices.buffer) SDL_ReleaseGPUBuffer(device, debug_render.vertices.buffer);
+    if (debug_render.vertices.transfer) SDL_ReleaseGPUTransferBuffer(device, debug_render.vertices.transfer);
+    if (text_render.vertices.buffer) SDL_ReleaseGPUBuffer(device, text_render.vertices.buffer);
+    if (text_render.vertices.transfer) SDL_ReleaseGPUTransferBuffer(device, text_render.vertices.transfer);
+
+    if (debug_render.pipeline) SDL_ReleaseGPUGraphicsPipeline(device, debug_render.pipeline);
+    if (voxel_render.pipeline) SDL_ReleaseGPUGraphicsPipeline(device, voxel_render.pipeline);
+    if (model_render.pipeline) SDL_ReleaseGPUGraphicsPipeline(device, model_render.pipeline);
+    if (text_render.pipeline) SDL_ReleaseGPUGraphicsPipeline(device, text_render.pipeline);
+
+    if (voxel_render.texture) SDL_ReleaseGPUTexture(device, voxel_render.texture);
+    if (model_render.texture) SDL_ReleaseGPUTexture(device, model_render.texture);
+    if (text_render.texture) SDL_ReleaseGPUTexture(device, text_render.texture);
+    if (depth_texture) SDL_ReleaseGPUTexture(device, depth_texture);
+    if (voxel_render.sampler) SDL_ReleaseGPUSampler(device, voxel_render.sampler);
+    if (model_render.sampler) SDL_ReleaseGPUSampler(device, model_render.sampler);
+    if (text_render.sampler) SDL_ReleaseGPUSampler(device, text_render.sampler);
+
+    SDL_ReleaseWindowFromGPUDevice(device, window);
+    SDL_DestroyGPUDevice(device);
+    device = nullptr;
+    window = nullptr;
 }

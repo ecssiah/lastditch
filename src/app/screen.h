@@ -1,33 +1,28 @@
 #pragma once
 
-#include <glad/gl.h>
+#include <string>
+#include <vector>
 
-#include "population.h"
-#include "platform/platform.h"
+#include "core/types.h"
 
 class Control;
+
+struct TextVertex
+{
+    f32 position[2] {};
+    f32 uv[2] {};
+};
 
 class Screen
 {
 public:
-    Screen() = default;
-
-    void init(const Platform& platform);
     void update(const Control& control);
 
+    [[nodiscard]] const std::vector<TextVertex>& vertices() const { return text_vertices; }
+
 private:
-    void load_textures(const string& textures_path);
-    void draw_text(const string& text, f32 x, f32 y);
+    void draw_text(const std::string& text, f32 x, f32 y);
     void draw_debug_info(const Control& control);
 
-    GLuint program_id {};
-
-    GLuint vao_id {};
-    GLuint vbo_id {};
-
-    GLuint font_texture_id {};
-
-    GLint u_font_texture_sampler_location {};
-
-    GLint u_projection_location {};
+    std::vector<TextVertex> text_vertices {};
 };

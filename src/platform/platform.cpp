@@ -2,214 +2,211 @@
 
 #include <algorithm>
 #include <cassert>
-#include <utility>
 
 #include "app/constants.h"
+#include "core/log.h"
 
-using namespace std;
-
-void
-Platform::init()
+namespace
 {
-    init_glfw();
-    init_buttons();
+ButtonType button_from_scancode(const SDL_Scancode scancode)
+{
+    switch (scancode)
+    {
+        case SDL_SCANCODE_A:      return ButtonType::A;
+        case SDL_SCANCODE_D:      return ButtonType::D;
+        case SDL_SCANCODE_E:      return ButtonType::E;
+        case SDL_SCANCODE_ESCAPE: return ButtonType::Escape;
+        case SDL_SCANCODE_Q:      return ButtonType::Q;
+        case SDL_SCANCODE_S:      return ButtonType::S;
+        case SDL_SCANCODE_SPACE:  return ButtonType::Space;
+        case SDL_SCANCODE_TAB:    return ButtonType::Tab;
+        case SDL_SCANCODE_W:      return ButtonType::W;
+        default:                  return ButtonType::None;
+    }
+}
 
+ButtonType button_from_mouse(const u8 button)
+{
+    switch (button)
+    {
+        case SDL_BUTTON_LEFT:   return ButtonType::Mouse_1;
+        case SDL_BUTTON_RIGHT:  return ButtonType::Mouse_2;
+        case SDL_BUTTON_MIDDLE: return ButtonType::Mouse_3;
+        default:                return ButtonType::None;
+    }
+}
+}
+
+void Platform::init()
+{
+    const bool initialized { SDL_Init(SDL_INIT_VIDEO) };
+    if (!initialized)
+    {
+        LOG_ERROR("SDL initialization failed: %s", SDL_GetError());
+    }
+    assert(initialized && "SDL_Init failed");
+
+    sdl_window = SDL_CreateWindow(
+        "Last Ditch",
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
+    );
+    assert(sdl_window && "SDL_CreateWindow failed");
+
+    const bool relative_mode { SDL_SetWindowRelativeMouseMode(sdl_window, true) };
+    if (!relative_mode)
+    {
+        LOG_ERROR("SDL relative mouse mode failed: %s", SDL_GetError());
+    }
+
+    update_framebuffer_size();
     active = true;
+    time_previous_ns = SDL_GetTicksNS();
 }
 
-void
-Platform::init_glfw()
+void Platform::quit()
 {
-    const int glfw_result { glfwInit() };
-
-    assert(glfw_result != 0);
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
-#endif
-
-    window_width = WINDOW_WIDTH;
-    window_height = WINDOW_HEIGHT;
-    aspect_ratio = WINDOW_ASPECT_RATIO;
-
-    glfw_window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Last Ditch", nullptr, nullptr);
-
-    assert(glfw_window != nullptr);
-
-    glfwMakeContextCurrent(glfw_window);
-
-    glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (sdl_window)
+    {
+        SDL_DestroyWindow(sdl_window);
+        sdl_window = nullptr;
+    }
+    SDL_Quit();
 }
 
-void
-Platform::update_time()
+void Platform::set_button(const ButtonType button, const bool down)
 {
-    time_current = glfwGetTime();
-
-    delta_time = time_previous > 0.0 ? static_cast<f32>(time_current - time_previous) : 0.0f;
-
-    time_previous = time_current;
+    if (button != ButtonType::None)
+    {
+        current_button_array[static_cast<s32>(button)] = down;
+    }
 }
 
-void
-Platform::begin_frame()
+void Platform::clear_buttons()
+{
+    current_button_array.fill(false);
+}
+
+void Platform::handle_event(const SDL_Event& event)
+{
+    switch (event.type)
+    {
+        case SDL_EVENT_QUIT:
+        case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+            active = false;
+            break;
+
+        case SDL_EVENT_KEY_DOWN:
+        case SDL_EVENT_KEY_UP:
+            if (!event.key.repeat)
+            {
+                set_button(button_from_scancode(event.key.scancode), event.key.down);
+            }
+            break;
+
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+            set_button(button_from_mouse(event.button.button), event.button.down);
+            break;
+
+        case SDL_EVENT_MOUSE_MOTION:
+            if (!ignore_pointer_delta)
+            {
+                pointer_delta_x += event.motion.xrel;
+                pointer_delta_y += event.motion.yrel;
+            }
+            break;
+
+        case SDL_EVENT_WINDOW_FOCUS_LOST:
+            clear_buttons();
+            ignore_pointer_delta = true;
+            break;
+
+        case SDL_EVENT_WINDOW_FOCUS_GAINED:
+            ignore_pointer_delta = true;
+            break;
+
+        case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+        case SDL_EVENT_WINDOW_RESIZED:
+            update_framebuffer_size();
+            break;
+
+        default:
+            break;
+    }
+}
+
+void Platform::update_time()
+{
+    const u64 time_current_ns { SDL_GetTicksNS() };
+    delta_time = static_cast<f64>(time_current_ns - time_previous_ns) / 1'000'000'000.0;
+    time_previous_ns = time_current_ns;
+    frame_time = std::min<f64>(delta_time, FRAME_TIME_MAX);
+}
+
+void Platform::begin_frame()
 {
     update_time();
+    previous_button_array = current_button_array;
+    pointer_delta_x = 0.0;
+    pointer_delta_y = 0.0;
 
-    glfwPollEvents();
-
-    update_buttons();
-    update_pointer();
-
-    frame_time = min<f64>(delta_time,FRAME_TIME_MAX);
-}
-
-void
-Platform::end_frame()
-{
-    if (button_is_pressed(ButtonType::Escape))
+    SDL_Event event {};
+    while (SDL_PollEvent(&event))
     {
-        glfwSetWindowShouldClose(glfw_window, 1);
-
-        active = false;
+        handle_event(event);
     }
 
-    glfwSwapBuffers(glfw_window);
-}
-
-void
-Platform::quit()
-{
-    glfwTerminate();
-}
-
-pair<s32, s32>
-Platform::get_framebuffer_size() const
-{
-    s32 framebuffer_width {};
-    s32 framebuffer_height {};
-
-    glfwGetFramebufferSize(glfw_window, &framebuffer_width, &framebuffer_height);
-
-    return {framebuffer_width, framebuffer_height};
-}
-
-void
-Platform::init_buttons()
-{
-    for (s32 button_index { 0 }; button_index < static_cast<s32>(ButtonType::COUNT); ++button_index)
-    {
-        current_button_array[button_index] = false;
-        previous_button_array[button_index] = false;
-    }
-
-    for (auto& glfw_key_index : glfw_key_array)
-    {
-        glfw_key_index = ButtonType::None;
-    }
-
-    for (auto& glfw_button_index : glfw_button_array)
-    {
-        glfw_button_index = ButtonType::None;
-    }
-
-    glfw_key_array[GLFW_KEY_A] = ButtonType::A;
-    glfw_key_array[GLFW_KEY_D] = ButtonType::D;
-    glfw_key_array[GLFW_KEY_E] = ButtonType::E;
-    glfw_key_array[GLFW_KEY_ESCAPE] = ButtonType::Escape;
-    glfw_key_array[GLFW_KEY_Q] = ButtonType::Q;
-    glfw_key_array[GLFW_KEY_S] = ButtonType::S;
-    glfw_key_array[GLFW_KEY_SPACE] = ButtonType::Space;
-    glfw_key_array[GLFW_KEY_TAB] = ButtonType::Tab;
-    glfw_key_array[GLFW_KEY_W] = ButtonType::W;
-
-    glfw_button_array[GLFW_MOUSE_BUTTON_LEFT] = ButtonType::Mouse_1;
-    glfw_button_array[GLFW_MOUSE_BUTTON_RIGHT] = ButtonType::Mouse_2;
-    glfw_button_array[GLFW_MOUSE_BUTTON_MIDDLE] = ButtonType::Mouse_3;
-}
-
-void
-Platform::update_buttons()
-{
-    for (s32 button_index { 0 }; button_index < static_cast<s32>(ButtonType::COUNT); ++button_index)
-    {
-        previous_button_array[button_index] = current_button_array[button_index];
-        current_button_array[button_index] = false;
-    }
-
-    for (s32 glfw_key_index { 0 }; glfw_key_index < GLFW_KEY_LAST + 1; ++glfw_key_index)
-    {
-        const ButtonType button { glfw_key_array[glfw_key_index] };
-        const s32 button_index { static_cast<s32>(button) };
-
-        if (button == ButtonType::None)
-        {
-            continue;
-        }
-
-        current_button_array[button_index] = glfwGetKey(glfw_window, glfw_key_index) == GLFW_PRESS;
-    }
-
-    for (s32 glfw_button_index { 0 }; glfw_button_index < GLFW_MOUSE_BUTTON_LAST + 1; ++glfw_button_index)
-    {
-        const ButtonType button { glfw_button_array[glfw_button_index] };
-        const s32 button_index { static_cast<s32>(button) };
-
-        if (button == ButtonType::None)
-        {
-            continue;
-        }
-
-        current_button_array[button_index] = glfwGetMouseButton(glfw_window, glfw_button_index) == GLFW_PRESS;
-    }
-}
-
-void
-Platform::update_pointer()
-{
-    pointer_previous_x = pointer_current_x;
-    pointer_previous_y = pointer_current_y;
-
-    glfwGetCursorPos(glfw_window, &pointer_current_x, &pointer_current_y);
-
-    if (ignore_delta == true)
+    if (ignore_pointer_delta)
     {
         pointer_delta_x = 0.0;
         pointer_delta_y = 0.0;
-
-        ignore_delta = false;
+        ignore_pointer_delta = false;
     }
-    else
+
+    if (button_is_pressed(ButtonType::Escape))
     {
-        pointer_delta_x = static_cast<f32>(pointer_current_x - pointer_previous_x);
-        pointer_delta_y = static_cast<f32>(pointer_current_y - pointer_previous_y);
+        active = false;
     }
 }
 
-b32
-Platform::button_is_down(ButtonType button) const
+void Platform::update_framebuffer_size()
 {
-    const s32 button_index { static_cast<s32>(button) };
-
-    return current_button_array[button_index];
+    int width {};
+    int height {};
+    if (SDL_GetWindowSizeInPixels(sdl_window, &width, &height))
+    {
+        window_width = width;
+        window_height = height;
+        if (height > 0)
+        {
+            aspect_ratio = static_cast<f32>(width) / static_cast<f32>(height);
+        }
+    }
 }
 
-b32
-Platform::button_is_pressed(ButtonType button) const
+std::pair<s32, s32> Platform::get_framebuffer_size() const
 {
-    const s32 button_index { static_cast<s32>(button) };
-
-    return current_button_array[button_index] && !previous_button_array[button_index];
+    int width {};
+    int height {};
+    SDL_GetWindowSizeInPixels(sdl_window, &width, &height);
+    return { width, height };
 }
 
-b32
-Platform::button_is_released(ButtonType button) const
+b32 Platform::button_is_down(const ButtonType button) const
 {
-    const s32 button_index { static_cast<s32>(button) };
+    return current_button_array[static_cast<s32>(button)];
+}
 
-    return !current_button_array[button_index] && previous_button_array[button_index];
+b32 Platform::button_is_pressed(const ButtonType button) const
+{
+    const s32 index { static_cast<s32>(button) };
+    return current_button_array[index] && !previous_button_array[index];
+}
+
+b32 Platform::button_is_released(const ButtonType button) const
+{
+    const s32 index { static_cast<s32>(button) };
+    return !current_button_array[index] && previous_button_array[index];
 }

@@ -1,7 +1,10 @@
 #pragma once
 
 #include <array>
-#include "GLFW/glfw3.h"
+#include <utility>
+
+#include <SDL3/SDL.h>
+
 #include "core/types.h"
 
 constexpr s32 WINDOW_WIDTH  { 1024 };
@@ -34,15 +37,14 @@ public:
 
     void init();
     void quit();
-
     void begin_frame();
-    void end_frame();
 
-    std::pair<s32, s32> get_framebuffer_size() const;
+    [[nodiscard]] SDL_Window* window() const { return sdl_window; }
+    [[nodiscard]] std::pair<s32, s32> get_framebuffer_size() const;
 
-    b32 button_is_down(ButtonType button) const;
-    b32 button_is_pressed(ButtonType button) const;
-    b32 button_is_released(ButtonType button) const;
+    [[nodiscard]] b32 button_is_down(ButtonType button) const;
+    [[nodiscard]] b32 button_is_pressed(ButtonType button) const;
+    [[nodiscard]] b32 button_is_released(ButtonType button) const;
 
     b32 active { true };
 
@@ -54,36 +56,19 @@ public:
 
     s32 window_width { WINDOW_WIDTH };
     s32 window_height { WINDOW_HEIGHT };
-
     f32 aspect_ratio { WINDOW_ASPECT_RATIO };
 
-    f64 time_current { 0.0 };
-    f64 time_previous { 0.0 };
+private:
+    void handle_event(const SDL_Event& event);
+    void set_button(ButtonType button, bool down);
+    void update_time();
+    void update_framebuffer_size();
+    void clear_buttons();
 
-    f64 pointer_current_x { 0.0 };
-    f64 pointer_current_y { 0.0 };
-
-    f64 pointer_previous_x { 0.0 };
-    f64 pointer_previous_y { 0.0 };
-
-    GLFWwindow* glfw_window { nullptr };
-
-    std::array<ButtonType, GLFW_KEY_LAST + 1> glfw_key_array {};
-    std::array<ButtonType, GLFW_MOUSE_BUTTON_LAST + 1> glfw_button_array {};
+    SDL_Window* sdl_window { nullptr };
+    u64 time_previous_ns {};
+    bool ignore_pointer_delta { true };
 
     std::array<b32, static_cast<s32>(ButtonType::COUNT)> current_button_array {};
     std::array<b32, static_cast<s32>(ButtonType::COUNT)> previous_button_array {};
-
-private:
-    void init_glfw();
-    void init_buttons();
-
-    void update_buttons();
-    void update_pointer();
-
-    void update_time();
-
-    b32 ignore_delta { true };
 };
-
-

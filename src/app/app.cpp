@@ -33,16 +33,15 @@ App::update()
 
     control.update(platform, population);
     render.update(control, population);
-
-    platform.end_frame();
 }
 
 void
 App::quit()
 {
-    Log::quit();
-
+    render.quit();
     platform.quit();
+
+    Log::quit();
 }
 
 b32

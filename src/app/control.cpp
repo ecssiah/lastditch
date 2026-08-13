@@ -27,6 +27,13 @@ Control::init(const Population& population)
 void
 Control::update(const Platform& platform, Population& population)
 {
+    projection_matrix = get_projection_matrix(
+        to_radians(60.0f),
+        platform.aspect_ratio,
+        0.1f,
+        1000.0f
+    );
+
     if (platform.button_is_released(ButtonType::Tab))
     {
         if (actor_id == -1)

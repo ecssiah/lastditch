@@ -488,10 +488,10 @@ Mat4 get_orthographic_matrix(const Vec2& min, const Vec2& max, const f32 near, c
     Mat4 result {};
     result[0][0] = 2.0f / (max.x - min.x);
     result[1][1] = -2.0f / (max.y - min.y);
-    result[2][2] = -2.0f / (far - near);
+    result[2][2] = 1.0f / (near - far);
     result[3][0] = -(max.x + min.x) / (max.x - min.x);
     result[3][1] = (max.y + min.y) / (max.y - min.y);
-    result[3][2] = -(far + near) / (far - near);
+    result[3][2] = near / (near - far);
     result[3][3] = 1.0f;
     
     return result;
@@ -505,9 +505,10 @@ get_projection_matrix(const f32 fov_y, const f32 aspect, const f32 near, const f
     Mat4 result {};
     result[0][0] = 1.0f / (aspect * tan_half_fov_y);
     result[1][1] = 1.0f / (tan_half_fov_y);
-    result[2][2] = -(far + near) / (far - near);
+    // Right-handed, zero-to-one depth range used by SDL_GPU.
+    result[2][2] = far / (near - far);
     result[2][3] = -1.0f;
-    result[3][2] = -(2.0f * far * near) / (far - near);
+    result[3][2] = (far * near) / (near - far);
 
     return result;
 }

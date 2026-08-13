@@ -6,6 +6,8 @@ project(
         LANGUAGES C CXX
 )
 
+include(CTest)
+
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -21,25 +23,13 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_library(OPENGL_FRAMEWORK OpenGL)
-find_library(COCOA_FRAMEWORK Cocoa)
-find_library(IOKIT_FRAMEWORK IOKit)
-find_library(COREVIDEO_FRAMEWORK CoreVideo)
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw-3.4)
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
+set(SDL_OPENGL OFF CACHE BOOL "" FORCE)
+set(SDL_OPENGLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL3-3.4.14
-        EXCLUDE_FROM_ALL
-)
-
-add_subdirectory(
-        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL3_image-3.4.4
-        EXCLUDE_FROM_ALL
-)
-
-add_subdirectory(
-        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/SDL3_ttf-3.1.0
         EXCLUDE_FROM_ALL
 )
 
@@ -54,33 +44,12 @@ target_link_libraries(
 target_include_directories(
         lastditch
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glad/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/stb/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-
-target_link_libraries(
-        lastditch
-        PRIVATE
-        glfw
-)
-
-if (APPLE)
-        target_link_libraries(
-                lastditch
-                PRIVATE
-                ${OPENGL_FRAMEWORK}
-                ${COCOA_FRAMEWORK}
-                ${IOKIT_FRAMEWORK}
-                ${COREVIDEO_FRAMEWORK}
-        )
-endif ()
 
 target_sources(
         lastditch
         PRIVATE
-        vendor/glad/src/gl.c
-        vendor/stb/src/stb_image.c
         src/app/actor.h
         src/app/app.cpp
         src/app/app.h
@@ -121,13 +90,6 @@ target_sources(
         src/platform/platform.h
 )
 
-target_compile_definitions(
-        lastditch
-        PRIVATE
-        GLFW_INCLUDE_NONE
-        GL_SILENCE_DEPRECATION
-)
-
 target_compile_options(
         lastditch
         PRIVATE
@@ -135,6 +97,26 @@ target_compile_options(
         -Wextra
         -Wno-missing-braces
 )
+
+add_custom_target(
+        shaders
+        COMMAND
+                ${CMAKE_CURRENT_SOURCE_DIR}/scripts/compile_shaders.sh
+                ${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders
+                ${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders/compiled
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Regenerating SDL_GPU shader artifacts"
+)
+
+if (BUILD_TESTING)
+        add_executable(
+                projection_test
+                tests/projection_test.cpp
+                src/core/geometry.cpp
+        )
+        target_include_directories(projection_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+        add_test(NAME projection_depth_range COMMAND projection_test)
+endif ()
 
 add_custom_command(
         TARGET
