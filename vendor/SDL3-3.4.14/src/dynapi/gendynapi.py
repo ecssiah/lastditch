@@ -34,10 +34,9 @@ import dataclasses
 import json
 import logging
 import os
-from pathlib import Path
 import pprint
 import re
-
+from pathlib import Path
 
 SDL_ROOT = Path(__file__).resolve().parents[2]
 

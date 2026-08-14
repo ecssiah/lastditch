@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 import os
-from argparse import ArgumentParser
-from pathlib import Path
 import re
 import shutil
 import sys
 import textwrap
-
+from argparse import ArgumentParser
+from pathlib import Path
 
 SDL_ROOT = Path(__file__).resolve().parents[1]
 

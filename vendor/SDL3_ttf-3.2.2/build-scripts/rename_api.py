@@ -9,6 +9,7 @@ import pathlib
 import pprint
 import re
 import sys
+
 from rename_symbols import create_regex_from_replacements, replace_symbols_in_path
 
 SDL_ROOT = pathlib.Path(__file__).resolve().parents[1]

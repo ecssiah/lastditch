@@ -5,9 +5,9 @@
 #
 # This code is explicitly into the public domain.
 
-import sys
 import os
 import re
+import sys
 
 SRC_FILE_LIST = []
 USED_COMPONENT = {}

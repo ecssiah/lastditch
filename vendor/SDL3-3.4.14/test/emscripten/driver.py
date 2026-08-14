@@ -5,17 +5,15 @@ import contextlib
 import logging
 import os
 import pathlib
+import selenium.common.exceptions
 import shlex
 import sys
 import time
-from typing import Optional
 import urllib.parse
-
 from selenium import webdriver
-import selenium.common.exceptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 

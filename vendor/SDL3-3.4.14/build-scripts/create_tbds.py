@@ -3,12 +3,11 @@
 import argparse
 import dataclasses
 import enum
-from pathlib import Path
 import json
 import subprocess
 import sys
 import tempfile
-
+from pathlib import Path
 
 SDL_ROOT = Path(__file__).resolve().parents[1]
 

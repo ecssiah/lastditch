@@ -27,12 +27,42 @@ struct TTF_TextEngine;
 
 constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][COORDINATES_PER_VERTEX]
 {
-    { { 1, 0, 0 }, { 1, 1, 0 }, { 1, 1, 1 }, { 1, 0, 1 } },
-    { { 0, 1, 0 }, { 0, 0, 0 }, { 0, 0, 1 }, { 0, 1, 1 } },
-    { { 1, 1, 0 }, { 0, 1, 0 }, { 0, 1, 1 }, { 1, 1, 1 } },
-    { { 0, 0, 0 }, { 1, 0, 0 }, { 1, 0, 1 }, { 0, 0, 1 } },
-    { { 0, 0, 1 }, { 1, 0, 1 }, { 1, 1, 1 }, { 0, 1, 1 } },
-    { { 0, 1, 0 }, { 1, 1, 0 }, { 1, 0, 0 }, { 0, 0, 0 } },
+    {
+        { 1, 0, 0 },
+        { 1, 1, 0 },
+        { 1, 1, 1 },
+        { 1, 0, 1 }
+    },
+    {
+        { 0, 1, 0 },
+        { 0, 0, 0 },
+        { 0, 0, 1 },
+        { 0, 1, 1 }
+    },
+    {
+        { 1, 1, 0 },
+        { 0, 1, 0 },
+        { 0, 1, 1 },
+        { 1, 1, 1 }
+    },
+    {
+        { 0, 0, 0 },
+        { 1, 0, 0 },
+        { 1, 0, 1 },
+        { 0, 0, 1 }
+    },
+    {
+        { 0, 0, 1 },
+        { 1, 0, 1 },
+        { 1, 1, 1 },
+        { 0, 1, 1 }
+    },
+    {
+        { 0, 1, 0 },
+        { 1, 1, 0 },
+        { 1, 0, 0 },
+        { 0, 0, 0 }
+    },
 };
 
 constexpr s32 VERTEX_INDEX_ARRAY[6] { 0, 1, 2, 0, 2, 3 };
@@ -66,14 +96,16 @@ struct VoxelGpuData
 {
     Vec3 position {};
     SDL_GPUBuffer* buffer {};
-    std::vector<VoxelVertex> vertices {};
+
+    std::vector<VoxelVertex> voxel_vertex_vector {};
 };
 
 struct ModelGpuData
 {
     s32 texture_layer {};
     SDL_GPUBuffer* buffer {};
-    std::vector<ModelVertex> vertices {};
+
+    std::vector<ModelVertex> model_vertex_vector {};
 };
 
 struct SectorQuad
@@ -86,7 +118,8 @@ struct SectorQuad
 struct SectorMesh
 {
     s32 sector_index {};
-    std::vector<SectorQuad> quads {};
+
+    std::vector<SectorQuad> sector_quad_vector {};
 };
 
 struct DynamicGpuBuffer
@@ -99,7 +132,8 @@ struct DynamicGpuBuffer
 struct DebugRender
 {
     SDL_GPUGraphicsPipeline* pipeline {};
-    DynamicGpuBuffer vertices {};
+
+    DynamicGpuBuffer dynamic_gpu_buffer {};
 };
 
 struct VoxelRender
@@ -108,9 +142,11 @@ struct VoxelRender
     SDL_GPUTexture* texture {};
     SDL_GPUSampler* sampler {};
     ConfigData block_config {};
+
     u8 block_type_layers[BLOCK_TYPE_COUNT] {};
-    std::vector<SectorMesh> meshes {};
-    std::vector<VoxelGpuData> gpu_data {};
+
+    std::vector<SectorMesh> sector_mesh_vector {};
+    std::vector<VoxelGpuData> voxel_gpu_data_vector {};
 };
 
 struct ModelRender
@@ -120,19 +156,23 @@ struct ModelRender
     SDL_GPUSampler* sampler {};
     ConfigData actor_config {};
     u8 nation_type_layers[NATION_TYPE_COUNT] {};
-    std::vector<ModelGpuData> gpu_data {};
+
+    std::vector<ModelGpuData> model_gpu_data_vector {};
 };
 
 struct TextRender
 {
     SDL_GPUGraphicsPipeline* pipeline {};
     SDL_GPUSampler* sampler {};
-    DynamicGpuBuffer vertices {};
-    DynamicGpuBuffer indices {};
+
+    DynamicGpuBuffer gpu_vertex_buffer {};
+    DynamicGpuBuffer gpu_index_buffer {};
+
     TTF_Font* font {};
     TTF_TextEngine* engine {};
-    std::vector<TTF_Text*> texts {};
-    std::vector<std::string> values {};
+
+    std::vector<TTF_Text*> ttf_text_vector {};
+    std::vector<std::string> text_vector {};
 
     struct DrawBatch
     {
@@ -141,6 +181,7 @@ struct TextRender
         u32 first_index {};
         s32 vertex_offset {};
     };
+
     std::vector<DrawBatch> batches {};
 };
 
@@ -162,7 +203,7 @@ private:
         const std::string& name,
         SDL_GPUPrimitiveType primitive,
         const SDL_GPUVertexBufferDescription& buffer_description,
-        const std::vector<SDL_GPUVertexAttribute>& attributes,
+        const std::vector<SDL_GPUVertexAttribute>& gpu_vertex_attributes_vector,
         bool depth,
         bool cull,
         bool blend,
@@ -172,13 +213,15 @@ private:
     );
 
     SDL_GPUBuffer* create_static_buffer(const void* data, size_t size);
+
     SDL_GPUTexture* create_texture_array(
         u32 width,
         u32 height,
         u32 layers,
-        const std::vector<std::string>& paths,
+        const std::vector<std::string>& path_vector,
         bool flip_vertical
     );
+
     void upload_dynamic_buffer(
         DynamicGpuBuffer& target,
         const void* data,
@@ -186,13 +229,15 @@ private:
         SDL_GPUBufferUsageFlags usage,
         SDL_GPUCommandBuffer* commands
     );
+
     void recreate_depth_texture(u32 width, u32 height);
 
     void init_voxel_render(const World& world);
     void init_model_render();
     void init_debug_render();
     void init_text_render();
-    void prepare_text_geometry(std::vector<TextVertex>& vertices, std::vector<u32>& indices);
+
+    void prepare_text_geometry(std::vector<TextVertex>& text_vertex_vector, std::vector<u32>& index_vector);
 
     void draw_debug(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control);
     void draw_voxels(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control);
@@ -202,7 +247,9 @@ private:
     void load_block_textures();
     void load_actor_textures();
     void load_model_data(s32 nation_type_index);
+
     void generate_sector_mesh(const World& world, s32 sector_index);
+
     static void emit_sector_face(const SectorQuad& quad, VoxelGpuData& gpu_data);
     static VoxelGpuData convert_sector_mesh(const SectorMesh& mesh);
 

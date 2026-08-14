@@ -4,7 +4,6 @@ import argparse
 import functools
 import logging
 import os
-from pathlib import Path
 import re
 import shutil
 import subprocess
@@ -12,6 +11,7 @@ import tempfile
 import textwrap
 import urllib.request
 import zipfile
+from pathlib import Path
 
 # Update both variables when updating the GDK
 GIT_REF = "June_2024_Update_1"

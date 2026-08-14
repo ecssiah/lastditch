@@ -8,9 +8,8 @@ Rather, modify release-info.json.
 
 import argparse
 import collections
-import dataclasses
-from collections.abc import Callable
 import contextlib
+import dataclasses
 import datetime
 import fnmatch
 import glob
@@ -19,7 +18,6 @@ import json
 import logging
 import multiprocessing
 import os
-from pathlib import Path
 import platform
 import re
 import shlex
@@ -31,7 +29,8 @@ import tempfile
 import textwrap
 import typing
 import zipfile
-
+from collections.abc import Callable
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 GIT_HASH_FILENAME = ".git-hash"

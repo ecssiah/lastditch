@@ -2,12 +2,12 @@
 
 # Based on http/server.py from Python
 
-from argparse import ArgumentParser
 import contextlib
-from http.server import SimpleHTTPRequestHandler
-from http.server import ThreadingHTTPServer
 import os
 import socket
+from argparse import ArgumentParser
+from http.server import SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer
 
 
 class MyHTTPRequestHandler(SimpleHTTPRequestHandler):

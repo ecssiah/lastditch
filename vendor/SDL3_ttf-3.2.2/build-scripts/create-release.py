@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 import argparse
-from pathlib import Path
 import json
 import logging
 import re
 import subprocess
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
