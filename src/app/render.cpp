@@ -68,18 +68,19 @@ SDL_GPUShader* Render::load_shader(const string& name, const SDL_GPUShaderStage 
         extension = "msl";
         selected_format = SDL_GPU_SHADERFORMAT_MSL;
     }
-    else if (shader_format & SDL_GPU_SHADERFORMAT_DXIL)
-    {
-        extension = "dxil";
-        selected_format = SDL_GPU_SHADERFORMAT_DXIL;
-    }
-    else
+    else if (shader_format & SDL_GPU_SHADERFORMAT_SPIRV)
     {
         extension = "spv";
         selected_format = SDL_GPU_SHADERFORMAT_SPIRV;
     }
+    else
+    {
+        extension = "dxil";
+        selected_format = SDL_GPU_SHADERFORMAT_DXIL;
+    }
 
     const string path { format("assets/shaders/compiled/{}.{}", name, extension) };
+
     const vector<u8> code { read_binary_file(path) };
 
     const SDL_GPUShaderCreateInfo info {

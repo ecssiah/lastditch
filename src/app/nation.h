@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdexcept>
+#include <string_view>
 #include "core/geometry.h"
 #include "core/types.h"
 

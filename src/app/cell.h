@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include "core/types.h"
 
 enum class BlockType : u8

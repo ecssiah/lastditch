@@ -1,5 +1,6 @@
 #include "log.h"
 
+#include <cstring>
 #include <cstdlib>
 #include <cstdio>
 #include <cstdarg>
@@ -38,7 +39,12 @@ Log::message(LogLevel log_level, const char* file, int line, const char* fmt, ..
 {
     const time_t now { time(nullptr) };
     tm tm_info {};
+
+#ifdef _WIN32
+    localtime_s(&tm_info, &now);
+#else
     localtime_r(&now, &tm_info);
+#endif
 
     char file_timestamp_buffer[11] {};
     strftime(file_timestamp_buffer, sizeof(file_timestamp_buffer), "%Y_%m_%d", &tm_info);
