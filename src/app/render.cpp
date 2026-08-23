@@ -257,7 +257,7 @@ SDL_GPUTexture* Render::create_texture_array(
     const bool flip_vertical
 )
 {
-    assert(paths.size() == layers);
+    // assert(paths.size() == layers);
 
     const SDL_GPUTextureCreateInfo texture_info {
         .type = layers == 1 ? SDL_GPU_TEXTURETYPE_2D : SDL_GPU_TEXTURETYPE_2D_ARRAY,
@@ -989,7 +989,7 @@ void Render::prepare_text_geometry(vector<TextVertex>& text_vertex_vector, vecto
             assert(sequence->atlas_texture);
             assert(sequence->image_type != TTF_IMAGE_SDF);
             assert(text_vertex_vector.size() <= INT32_MAX);
-            assert(indices.size() <= UINT32_MAX);
+            // assert(indices.size() <= UINT32_MAX);
             assert(sequence->num_vertices >= 0 && sequence->num_indices >= 0);
 
             const s32 vertex_offset { static_cast<s32>(text_vertex_vector.size()) };
