@@ -13,6 +13,8 @@ App::init()
     world.init();
     population.init();
 
+    action.init(world);
+
     control.init(population);
     render.init(platform, control, world);
 }
@@ -26,7 +28,7 @@ App::update()
 
     while (simulation_time >= FIXED_FRAME_TIME_64)
     {
-        work.update(world, population);
+        action.update(world, population);
 
         simulation_time -= FIXED_FRAME_TIME_64;
     }

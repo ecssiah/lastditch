@@ -1,13 +1,12 @@
 #pragma once
 
-#include <cstddef>
 #include <string>
 #include <vector>
 
 #include <SDL3/SDL_gpu.h>
 
-#include "constants.h"
 #include "cell.h"
+#include "constants.h"
 #include "debug.h"
 #include "direction.h"
 #include "nation.h"

@@ -990,7 +990,6 @@ void Render::prepare_text_geometry(vector<TextVertex>& text_vertex_vector, vecto
             assert(sequence->atlas_texture);
             assert(sequence->image_type != TTF_IMAGE_SDF);
             assert(text_vertex_vector.size() <= INT32_MAX);
-            // assert(indices.size() <= UINT32_MAX);
             assert(sequence->num_vertices >= 0 && sequence->num_indices >= 0);
 
             const s32 vertex_offset { static_cast<s32>(text_vertex_vector.size()) };

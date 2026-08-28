@@ -1,4 +1,4 @@
-#include "work.h"
+#include "action.h"
 
 #include <algorithm>
 #include "actor.h"
@@ -7,12 +7,12 @@
 
 using namespace std;
 
-const vector<Job> JOB_VECTOR
+const vector<Work> WORK_VECTOR
 {
     {
         .frequency = 4,
         .phase = 0,
-        .job_callback = [](World&, Population& population)
+        .work_callback = [](World&, Population& population)
         {
             for (Actor& actor : population.actor_vector)
             {
@@ -67,7 +67,7 @@ const vector<Job> JOB_VECTOR
     {
         .frequency = 1,
         .phase = 0,
-        .job_callback = [](World& world, Population& population)
+        .work_callback = [](World& world, Population& population)
         {
             for (Actor& actor : population.actor_vector)
             {
@@ -85,21 +85,27 @@ const vector<Job> JOB_VECTOR
 };
 
 void
-Work::update(World& world, Population& population)
+Action::init(World& world)
+{
+    navigation.init(world);
+}
+
+void
+Action::update(World& world, Population& population)
 {
     ++tick_count;
 
-    for (const Job& job : JOB_VECTOR)
+    for (const Work& work : WORK_VECTOR)
     {
-        if (is_due(job))
+        if (is_due(work))
         {
-            job.job_callback(world, population);
+            work.work_callback(world, population);
         }
     }
 }
 
 b32
-Work::is_due(const Job &job) const
+Action::is_due(const Work &work) const
 {
-    return (tick_count + job.phase) % job.frequency == 0;
+    return (tick_count + work.phase) % work.frequency == 0;
 }

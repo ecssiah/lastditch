@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include "population.h"
-#include "work.h"
+#include "action.h"
 #include "core/log.h"
 #include "platform/platform.h"
 

@@ -5,7 +5,7 @@
 #include "actor.h"
 #include "physics.h"
 #include "world.h"
-#include "work.h"
+#include "action.h"
 #include "core/geometry.h"
 #include "core/log.h"
 #include "core/types.h"

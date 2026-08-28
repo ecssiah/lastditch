@@ -2,7 +2,7 @@
 
 #include "population.h"
 #include "render.h"
-#include "work.h"
+#include "action.h"
 #include "world.h"
 #include "platform/platform.h"
 
@@ -24,7 +24,7 @@ private:
 
     Platform platform {};
 
-    Work work {};
+    Action action {};
 
     World world {};
     Population population {};

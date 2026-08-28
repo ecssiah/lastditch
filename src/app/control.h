@@ -6,7 +6,7 @@
 class Actor;
 class Platform;
 class Population;
-class Work;
+struct Work;
 
 struct Inputs
 {

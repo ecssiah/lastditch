@@ -85,8 +85,8 @@ target_sources(
         src/app/render.h
         src/app/screen.cpp
         src/app/screen.h
-        src/app/work.cpp
-        src/app/work.h
+        src/app/action.cpp
+        src/app/action.h
         src/app/world.cpp
         src/app/world.h
         src/core/color.h

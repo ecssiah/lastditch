@@ -11,24 +11,25 @@
 class Population;
 class World;
 
-using JobCallback = std::function<void(World&, Population&)>;
+using WorkCallback = std::function<void(World&, Population&)>;
 
-struct Job
+struct Work
 {
     s32 frequency   { 1 };
     s32 phase       { 0 };
 
-    JobCallback job_callback {};
+    WorkCallback work_callback {};
 };
 
-extern const std::vector<Job> JOB_VECTOR;
+extern const std::vector<Work> WORK_VECTOR;
 
-class Work
+class Action
 {
 public:
+    void init(World& world);
     void update(World& world, Population& population);
 
-    b32 is_due(const Job& job) const;
+    b32 is_due(const Work& job) const;
 
     Random random { WORK_SEED };
     Navigation navigation {};
@@ -36,5 +37,5 @@ public:
 private:
     u64 tick_count { 0 };
 
-    std::vector<Job> job_vector;
+    std::vector<Work> job_vector;
 };
