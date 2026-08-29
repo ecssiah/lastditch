@@ -89,7 +89,9 @@ public:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
-    std::vector<std::vector<Area>> floor_area_vector { FLOOR_COUNT };
+    std::vector<std::vector<Area>> area_vector { FLOOR_COUNT };
+    std::vector<std::vector<Link>> link_vector { FLOOR_COUNT };
+
     std::vector<Border> border_vector {};
 
 private:
@@ -132,5 +134,7 @@ private:
     void calculate_area_borders(s32 floor_number);
 
     IdGenerator area_id_generator {};
-    IdGenerator edge_id_generator {};
+    IdGenerator link_id_generator {};
+
+    IdGenerator border_id_generator {};
 };

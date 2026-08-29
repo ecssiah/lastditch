@@ -12,7 +12,7 @@ const vector<Work> WORK_VECTOR
     {
         .frequency = 4,
         .phase = 0,
-        .work_callback = [](World&, Population& population)
+        .work_function = [](World&, Population& population)
         {
             for (Actor& actor : population.actor_vector)
             {
@@ -67,7 +67,7 @@ const vector<Work> WORK_VECTOR
     {
         .frequency = 1,
         .phase = 0,
-        .work_callback = [](World& world, Population& population)
+        .work_function = [](World& world, Population& population)
         {
             for (Actor& actor : population.actor_vector)
             {
@@ -99,7 +99,7 @@ Action::update(World& world, Population& population)
     {
         if (is_due(work))
         {
-            work.work_callback(world, population);
+            work.work_function(world, population);
         }
     }
 }

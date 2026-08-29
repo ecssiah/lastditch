@@ -11,9 +11,9 @@ using PathId = s32;
 enum class PathStatus : u8
 {
     Pending,
-    Ready,
     Unreachable,
     Cancelled,
+    Ready,
 };
 
 struct NavigationPath

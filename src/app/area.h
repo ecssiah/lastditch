@@ -24,16 +24,18 @@ struct Area
     s32 floor_number { 0 };
     IBounds2 bounds {};
 
+    std::vector<s32> link_id_vector {};
     std::vector<s32> border_id_vector {};
 };
 
 struct Link
 {
-    IVec3 position {};
+    s32 id { -1 };
 
     s32 area_1_id { -1 };
     s32 area_2_id { -1 };
 
+    IVec3 position {};
     Axis axis {};
 };
 
@@ -49,6 +51,4 @@ struct Border
 
     Axis axis {};
     IBounds3 bounds {};
-
-    std::vector<Link> link_vector {};
 };

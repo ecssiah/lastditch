@@ -779,10 +779,10 @@ World::get_content_block_type_vector(const s32 content_level)
 void
 World::place_area(const Area& area)
 {
-    vector<Area>& area_vector { floor_area_vector[area.floor_number] };
+    vector<Area>& area_vector_floor { area_vector[area.floor_number] };
     vector<Area> new_area_vector {};
 
-    for (auto iterator { area_vector.begin() }; iterator != area_vector.end();)
+    for (auto iterator { area_vector_floor.begin() }; iterator != area_vector_floor.end();)
     {
         if (overlaps(iterator->bounds, area.bounds))
         {
@@ -800,7 +800,7 @@ World::place_area(const Area& area)
                 new_area_vector.push_back(new_area);
             }
 
-            iterator = area_vector.erase(iterator);
+            iterator = area_vector_floor.erase(iterator);
         }
         else
         {
@@ -808,21 +808,21 @@ World::place_area(const Area& area)
         }
     }
 
-    area_vector.insert(
-        area_vector.end(),
+    area_vector_floor.insert(
+        area_vector_floor.end(),
         make_move_iterator(new_area_vector.begin()),
         make_move_iterator(new_area_vector.end())
     );
 
-    area_vector.push_back(area);
+    area_vector_floor.push_back(area);
 }
 
 void
 World::place_content(const s32 floor_number)
 {
-    const vector<Area>& area_vector { floor_area_vector[floor_number] };
+    const vector<Area>& area_vector_floor { area_vector[floor_number] };
 
-    for (const Area& area : area_vector)
+    for (const Area& area : area_vector_floor)
     {
         if (area.area_type != AreaType::Room)
         {
@@ -868,7 +868,7 @@ World::layout_roof_areas()
 {
     constexpr s32 roof_area_size { TOWER_SIZE / 8 };
 
-    vector<Area>& area_vector { floor_area_vector[TOWER_FLOOR_COUNT] };
+    vector<Area>& area_vector_floor { area_vector[TOWER_FLOOR_COUNT] };
 
     for (s32 area_y { TOWER_BORDER }; area_y < TOWER_SIZE + TOWER_BORDER; area_y += roof_area_size)
     {
@@ -884,7 +884,7 @@ World::layout_roof_areas()
                 }
             };
 
-            area_vector.push_back(roof_area);
+            area_vector_floor.push_back(roof_area);
         }
     }
 }
@@ -930,7 +930,7 @@ World::layout_tower_areas()
 {
     for (s32 floor_number { 0 }; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        vector<Area>& area_vector { floor_area_vector[floor_number] };
+        vector<Area>& area_vector_floor { area_vector[floor_number] };
 
         constexpr IVec2 quadrant1_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
         constexpr IVec2 quadrant1_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
@@ -972,10 +972,10 @@ World::layout_tower_areas()
             .bounds = { quadrant4_origin,quadrant4_origin + quadrant4_size },
         };
 
-        area_vector.push_back(area_quadrant_1);
-        area_vector.push_back(area_quadrant_2);
-        area_vector.push_back(area_quadrant_3);
-        area_vector.push_back(area_quadrant_4);
+        area_vector_floor.push_back(area_quadrant_1);
+        area_vector_floor.push_back(area_quadrant_2);
+        area_vector_floor.push_back(area_quadrant_3);
+        area_vector_floor.push_back(area_quadrant_4);
 
         for (s32 iteration { 0 }; iteration < AREA_EXPANSION_ITERATIONS; ++iteration)
         {
@@ -984,11 +984,11 @@ World::layout_tower_areas()
             constexpr s32 axis_x_value { static_cast<size_t>(Axis::X) };
             constexpr s32 axis_y_value { static_cast<size_t>(Axis::Y) };
 
-            s32 initial_area_count { static_cast<s32>(area_vector.size()) };
+            s32 initial_area_count { static_cast<s32>(area_vector_floor.size()) };
 
             for (s32 area_index { 0 }; area_index < initial_area_count; )
             {
-                const Area area_copy { area_vector[area_index] };
+                const Area area_copy { area_vector_floor[area_index] };
                 const IVec2 area_size { area_copy.bounds.size() };
 
                 const Axis axis_split { area_size[axis_x_value] > area_size[axis_y_value] ? Axis::X : Axis::Y };
@@ -1011,7 +1011,7 @@ World::layout_tower_areas()
                     areas_to_add_vector.push_back(area_a);
                     areas_to_add_vector.push_back(area_b);
 
-                    area_vector.erase(area_vector.begin() + area_index);
+                    area_vector_floor.erase(area_vector_floor.begin() + area_index);
                     --initial_area_count;
                 }
                 else
@@ -1022,7 +1022,7 @@ World::layout_tower_areas()
 
             for (const Area& area : areas_to_add_vector)
             {
-                area_vector.push_back(area);
+                area_vector_floor.push_back(area);
             }
         }
 
@@ -1052,7 +1052,7 @@ World::layout_tower_areas()
                 .bounds = {section_origin, section_origin + section_size},
             };
 
-            area_vector.push_back(section_area);
+            area_vector_floor.push_back(section_area);
         }
     }
 }
@@ -1717,9 +1717,9 @@ World::construct_wireframe(const Area& area)
 void
 World::construct_areas(const s32 floor_number)
 {
-    const vector<Area>& area_vector { floor_area_vector[floor_number] };
+    const vector<Area>& area_vector_floor { area_vector[floor_number] };
 
-    for (const Area& area : area_vector)
+    for (const Area& area : area_vector_floor)
     {
         switch (area.area_type)
         {
@@ -1743,11 +1743,17 @@ World::construct_areas(const s32 floor_number)
 void
 World::construct_doors()
 {
-    for (const Border& border : border_vector)
+    for (s32 floor_number { 0 }; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        for (const Link& link : border.link_vector)
+        const vector<Area>& area_vector_floor { area_vector[floor_number] };
+        const vector<Link>& link_vector_floor { link_vector[floor_number] };
+
+        for (const Link& link : link_vector_floor)
         {
-            if (border.area_a_type != AreaType::Room && border.area_b_type != AreaType::Room)
+            const Area& area_a { area_vector_floor[link.area_1_id] };
+            const Area& area_b { area_vector_floor[link.area_2_id] };
+
+            if (area_a.area_type != AreaType::Room && area_b.area_type != AreaType::Room)
             {
                 continue;
             }
@@ -1921,7 +1927,7 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
     if (border.bounds.size().x > 0 && border.bounds.size().y > 0)
     {
-        border.id = edge_id_generator.next();
+        border.id = border_id_generator.next();
     }
 
     return border;
@@ -1930,17 +1936,18 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 void
 World::calculate_area_borders(const s32 floor_number)
 {
-    vector<Area>& area_vector { floor_area_vector[floor_number] };
+    vector<Area>& area_vector_floor { area_vector[floor_number] };
+    vector<Link>& link_vector_floor { link_vector[floor_number] };
 
-    const s32 area_count { static_cast<s32>(area_vector.size()) };
+    const s32 area_count { static_cast<s32>(area_vector_floor.size()) };
 
     for (s32 left_index { 0 }; left_index < area_count; ++left_index)
     {
-        Area& left_area { area_vector[left_index] };
+        Area& left_area { area_vector_floor[left_index] };
 
         for (s32 right_index { left_index + 1 }; right_index < area_count; ++right_index)
         {
-            Area& right_area { area_vector[right_index] };
+            Area& right_area { area_vector_floor[right_index] };
 
             Border border { calculate_border(left_area, right_area) };
 
@@ -1952,32 +1959,40 @@ World::calculate_area_borders(const s32 floor_number)
                 if (border.axis == Axis::X)
                 {
                     const Link link {
+                        .id = link_id_generator.next(),
+                        .area_1_id = left_area.id,
+                        .area_2_id = right_area.id,
                         .position = {
                             border.bounds.position().x + border.bounds.size().x / 2,
                             border.bounds.position().y,
                             border.bounds.position().z,
                         },
-                        .area_1_id = left_area.id,
-                        .area_2_id = right_area.id,
                         .axis = border.axis,
                     };
 
-                    border.link_vector.push_back(link);
+                    link_vector_floor.push_back(link);
+
+                    left_area.link_id_vector.push_back(link.id);
+                    right_area.link_id_vector.push_back(link.id);
                 }
                 else if (border.axis == Axis::Y)
                 {
                     const Link link {
+                        .id = link_id_generator.next(),
+                        .area_1_id = left_area.id,
+                        .area_2_id = right_area.id,
                         .position = {
                             border.bounds.position().x,
                             border.bounds.position().y + border.bounds.size().y / 2,
                             border.bounds.position().z,
                         },
-                        .area_1_id = left_area.id,
-                        .area_2_id = right_area.id,
                         .axis = border.axis,
                     };
 
-                    border.link_vector.push_back(link);
+                    link_vector_floor.push_back(link);
+
+                    left_area.link_id_vector.push_back(link.id);
+                    right_area.link_id_vector.push_back(link.id);
                 }
 
                 border_vector.push_back(border);

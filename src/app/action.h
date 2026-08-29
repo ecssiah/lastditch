@@ -11,14 +11,14 @@
 class Population;
 class World;
 
-using WorkCallback = std::function<void(World&, Population&)>;
+using WorkFunction = std::function<void(World&, Population&)>;
 
 struct Work
 {
     s32 frequency   { 1 };
     s32 phase       { 0 };
 
-    WorkCallback work_callback {};
+    WorkFunction work_function {};
 };
 
 extern const std::vector<Work> WORK_VECTOR;
@@ -36,6 +36,4 @@ public:
 
 private:
     u64 tick_count { 0 };
-
-    std::vector<Work> job_vector;
 };
