@@ -29,34 +29,37 @@ Debug::init(const World& world)
 
                 add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, Color::Red);
 
-                for (const s32 link_id : area.link_id_vector)
-                {
-                    const vector<Link>& link_vector { world.link_vector[area.floor_number] };
-                    const Link& link { link_vector[link_id] };
-
-                    LOG_INFO("%d %d", link.position.x, link.position.y);
-
-                    const Vec3 link_position { link.position };
-
-                    if (link.axis == Axis::X)
-                    {
-                        const Bounds3 link_bounds {
-                            { link_position.x, link_position.y, link_position.z + 1 },
-                            { link_position.x + 1, link_position.y + 2, link_position.z + 3 },
-                        };
-
-                        add_box(link_bounds.min, link_bounds.max, Color::Cyan);
-                    }
-                    else if (link.axis == Axis::Y)
-                    {
-                        const Bounds3 link_bounds {
-                            { link_position.x, link_position.y, link_position.z + 1 },
-                            { link_position.x + 2, link_position.y + 1, link_position.z + 3 },
-                        };
-
-                        add_box(link_bounds.min, link_bounds.max, Color::Cyan);
-                    }
-                }
+                // TODO: Fix Link Debug
+                // for (const LinkID link_id : area.area_link_set)
+                // {
+                //     const vector<Link>& link_vector { world.link_vector[area.floor_number] };
+                //     const Link& link { link_vector[link_id] };
+                //
+                //     const Vec3 link_position {
+                //         static_cast<f32>(link.position.x),
+                //         static_cast<f32>(link.position.y),
+                //         static_cast<f32>(World::get_height(area.floor_number))
+                //     };
+                //
+                //     if (link.axis == Axis::X)
+                //     {
+                //         const Bounds3 link_bounds {
+                //             { link_position.x, link_position.y, link_position.z + 1 },
+                //             { link_position.x + 1, link_position.y + 2, link_position.z + 3 },
+                //         };
+                //
+                //         add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                //     }
+                //     else if (link.axis == Axis::Y)
+                //     {
+                //         const Bounds3 link_bounds {
+                //             { link_position.x, link_position.y, link_position.z + 1 },
+                //             { link_position.x + 2, link_position.y + 1, link_position.z + 3 },
+                //         };
+                //
+                //         add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                //     }
+                // }
             }
         }
     }

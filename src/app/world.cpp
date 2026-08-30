@@ -296,9 +296,9 @@ World::init()
     layout_bear_territory();
     layout_lion_territory();
 
-    for (s32 floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
+    for (s32 floor_number { 0 }; floor_number < FLOOR_COUNT; ++floor_number)
     {
-        calculate_area_borders(floor_number);
+        calculate_link_vector(floor_number);
 
         construct_areas(floor_number);
         construct_doors();
@@ -486,6 +486,12 @@ s32
 World::get_floor(const s32 z)
 {
     return z / FLOOR_SIZE_Z;
+}
+
+s32
+World::get_height(s32 floor_number)
+{
+    return floor_number * FLOOR_SIZE_Z;
 }
 
 s32
@@ -791,7 +797,7 @@ World::place_area(const Area& area)
             for (const IBounds2& bounds : bounds_vector)
             {
                 const Area new_area {
-                    .id = area_id_generator.next(),
+                    .area_id = area_id_generator.next(),
                     .area_type = iterator->area_type,
                     .floor_number = iterator->floor_number,
                     .bounds = bounds,
@@ -875,7 +881,7 @@ World::layout_roof_areas()
         for (s32 area_x { TOWER_BORDER }; area_x < TOWER_SIZE + TOWER_BORDER; area_x += roof_area_size)
         {
             const Area roof_area {
-                .id = area_id_generator.next(),
+                .area_id = area_id_generator.next(),
                 .area_type = AreaType::Free,
                 .floor_number = TOWER_FLOOR_COUNT,
                 .bounds = {
@@ -906,7 +912,7 @@ World::layout_elevator_areas()
         }
 
         Area elevator_shaft {
-            .id = area_id_generator.next(),
+            .area_id = area_id_generator.next(),
             .area_type = area_type,
             .floor_number = floor_number,
             .bounds = {
@@ -936,7 +942,7 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant1_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
 
         Area area_quadrant_1 {
-            .id = area_id_generator.next(),
+            .area_id = area_id_generator.next(),
             .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = { quadrant1_origin,quadrant1_origin + quadrant1_size },
@@ -946,7 +952,7 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant2_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant2)] };
 
         Area area_quadrant_2 {
-            .id = area_id_generator.next(),
+            .area_id = area_id_generator.next(),
             .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = { quadrant2_origin,quadrant2_origin + quadrant2_size },
@@ -956,7 +962,7 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant3_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant3)] };
 
         Area area_quadrant_3 {
-            .id = area_id_generator.next(),
+            .area_id = area_id_generator.next(),
             .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = { quadrant3_origin,quadrant3_origin + quadrant3_size },
@@ -966,7 +972,7 @@ World::layout_tower_areas()
         constexpr IVec2 quadrant4_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant4)] };
 
         Area area_quadrant_4 {
-            .id = area_id_generator.next(),
+            .area_id = area_id_generator.next(),
             .area_type = AreaType::Room,
             .floor_number = floor_number,
             .bounds = { quadrant4_origin,quadrant4_origin + quadrant4_size },
@@ -1001,11 +1007,11 @@ World::layout_tower_areas()
                     const s32 split_size { area_size[axis_split_value] / 2 + split_offset };
 
                     Area area_a { area_copy };
-                    area_a.id = area_id_generator.next();
+                    area_a.area_id = area_id_generator.next();
                     area_a.bounds.max[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
 
                     Area area_b { area_copy };
-                    area_b.id = area_id_generator.next();
+                    area_b.area_id = area_id_generator.next();
                     area_b.bounds.min[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
 
                     areas_to_add_vector.push_back(area_a);
@@ -1046,7 +1052,7 @@ World::layout_tower_areas()
             const IVec2 section_size { SECTION_SIZE_ARRAY[section_index] };
 
             const Area section_area {
-                .id = area_id_generator.next(),
+                .area_id = area_id_generator.next(),
                 .area_type = AreaType::Free,
                 .floor_number = floor_number,
                 .bounds = {section_origin, section_origin + section_size},
@@ -1069,7 +1075,7 @@ World::layout_wolf_territory()
     constexpr s32 temple_pillar_offset { 2 };
 
     const Area temple_area {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1137,7 +1143,7 @@ World::layout_wolf_territory()
     };
 
     const Area platform_area {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1185,7 +1191,7 @@ World::layout_eagle_territory()
     constexpr s32 temple_pillar_offset { 2 };
 
     const Area temple_area {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1253,7 +1259,7 @@ World::layout_eagle_territory()
     };
 
     const Area platform_area {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1301,7 +1307,7 @@ World::layout_bear_territory()
     constexpr s32 temple_pillar_offset { 2 };
 
     const Area temple_area {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1369,7 +1375,7 @@ World::layout_bear_territory()
     };
 
     const Area platform_area {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1417,7 +1423,7 @@ World::layout_lion_territory()
     constexpr s32 temple_pillar_offset { 2 };
 
     const Area temple_area {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1485,7 +1491,7 @@ World::layout_lion_territory()
     };
 
     const Area platform_area {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
         .bounds = {
@@ -1531,7 +1537,7 @@ World::layout_test_area()
     };
 
     const Area test_room1 {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
         .bounds = {
@@ -1541,7 +1547,7 @@ World::layout_test_area()
     };
 
     const Area test_room2 {
-        .id = area_id_generator.next(),
+        .area_id = area_id_generator.next(),
         .area_type = AreaType::Wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
         .bounds = {
@@ -1761,7 +1767,7 @@ World::construct_doors()
             if (link.axis == Axis::X)
             {
                 set_block_type_cube(
-                    link.position.x, link.position.y, link.position.z + 1,
+                    link.position.x, link.position.y, get_height(area_a.floor_number) + 1,
                     1, 2, 2,
                     BlockType::None
                 );
@@ -1769,7 +1775,7 @@ World::construct_doors()
             else if (link.axis == Axis::Y)
             {
                 set_block_type_cube(
-                    link.position.x, link.position.y, link.position.z + 1,
+                    link.position.x, link.position.y, get_height(area_a.floor_number) + 1,
                     2, 1, 2,
                     BlockType::None
                 );
@@ -1838,10 +1844,8 @@ Border
 World::calculate_border(const Area& area_left, const Area& area_right)
 {
     Border border {
-        .area_a_id = area_left.id,
-        .area_b_id = area_right.id,
-        .area_a_type = area_left.area_type,
-        .area_b_type = area_right.area_type,
+        .area_1_id = area_left.area_id,
+        .area_2_id = area_right.area_id,
     };
 
     if (area_left.bounds.max.x == area_right.bounds.min.x)
@@ -1857,11 +1861,9 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
             border.bounds.min.x = boundary_x - 1;
             border.bounds.min.y = overlap_y_min;
-            border.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
             border.bounds.max.x = boundary_x + 1;
             border.bounds.max.y = overlap_y_max;
-            border.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.min.x == area_right.bounds.max.x)
@@ -1877,11 +1879,9 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
             border.bounds.min.x = boundary_x - 1;
             border.bounds.min.y = overlap_y_min;
-            border.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
             border.bounds.max.x = boundary_x + 1;
             border.bounds.max.y = overlap_y_max;
-            border.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.max.y == area_right.bounds.min.y)
@@ -1897,11 +1897,9 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
             border.bounds.min.x = overlap_x_min;
             border.bounds.min.y = boundary_y - 1;
-            border.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
             border.bounds.max.x = overlap_x_max;
             border.bounds.max.y = boundary_y + 1;
-            border.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
     else if (area_left.bounds.min.y == area_right.bounds.max.y)
@@ -1917,86 +1915,78 @@ World::calculate_border(const Area& area_left, const Area& area_right)
 
             border.bounds.min.x = overlap_x_min;
             border.bounds.min.y = boundary_y - 1;
-            border.bounds.min.z = area_left.floor_number * FLOOR_SIZE_Z;
 
             border.bounds.max.x = overlap_x_max;
             border.bounds.max.y = boundary_y + 1;
-            border.bounds.max.z = (area_left.floor_number + 1) * FLOOR_SIZE_Z - 1;
         }
     }
 
     if (border.bounds.size().x > 0 && border.bounds.size().y > 0)
     {
-        border.id = border_id_generator.next();
+        border.border_id = border_id_generator.next();
     }
 
     return border;
 }
 
+Link
+World::calculate_link(const Border &border)
+{
+    if (border.border_id != -1)
+    {
+        if (border.axis == Axis::X)
+        {
+            return {
+                .link_id = link_id_generator.next(),
+                .area_1_id = border.area_1_id,
+                .area_2_id = border.area_2_id,
+                .axis = border.axis,
+                .position = {
+                    border.bounds.position().x + border.bounds.size().x / 2,
+                    border.bounds.position().y,
+                },
+            };
+        }
+        else if (border.axis == Axis::Y)
+        {
+            return {
+                .link_id = link_id_generator.next(),
+                .area_1_id = border.area_1_id,
+                .area_2_id = border.area_2_id,
+                .axis = border.axis,
+                .position = {
+                    border.bounds.position().x,
+                    border.bounds.position().y + border.bounds.size().y / 2,
+                }
+            };
+        }
+    }
+}
+
 void
-World::calculate_area_borders(const s32 floor_number)
+World::calculate_link_vector(const s32 floor_number)
 {
     vector<Area>& area_vector_floor { area_vector[floor_number] };
     vector<Link>& link_vector_floor { link_vector[floor_number] };
 
     const s32 area_count { static_cast<s32>(area_vector_floor.size()) };
 
-    for (s32 left_index { 0 }; left_index < area_count; ++left_index)
+    for (s32 index1 { 0 }; index1 < area_count; ++index1)
     {
-        Area& left_area { area_vector_floor[left_index] };
+        Area& area1 { area_vector_floor[index1] };
 
-        for (s32 right_index { left_index + 1 }; right_index < area_count; ++right_index)
+        for (s32 index2 { index1 + 1 }; index2 < area_count; ++index2)
         {
-            Area& right_area { area_vector_floor[right_index] };
+            Area& area2 { area_vector_floor[index2] };
 
-            Border border { calculate_border(left_area, right_area) };
+            const Border border { calculate_border(area1, area2) };
+            const Link link { calculate_link(border) };
 
-            if (border.id != -1)
-            {
-                left_area.border_id_vector.push_back(border.id);
-                right_area.border_id_vector.push_back(border.id);
+            link_vector_floor.push_back(link);
 
-                if (border.axis == Axis::X)
-                {
-                    const Link link {
-                        .id = link_id_generator.next(),
-                        .area_1_id = left_area.id,
-                        .area_2_id = right_area.id,
-                        .position = {
-                            border.bounds.position().x + border.bounds.size().x / 2,
-                            border.bounds.position().y,
-                            border.bounds.position().z,
-                        },
-                        .axis = border.axis,
-                    };
-
-                    link_vector_floor.push_back(link);
-
-                    left_area.link_id_vector.push_back(link.id);
-                    right_area.link_id_vector.push_back(link.id);
-                }
-                else if (border.axis == Axis::Y)
-                {
-                    const Link link {
-                        .id = link_id_generator.next(),
-                        .area_1_id = left_area.id,
-                        .area_2_id = right_area.id,
-                        .position = {
-                            border.bounds.position().x,
-                            border.bounds.position().y + border.bounds.size().y / 2,
-                            border.bounds.position().z,
-                        },
-                        .axis = border.axis,
-                    };
-
-                    link_vector_floor.push_back(link);
-
-                    left_area.link_id_vector.push_back(link.id);
-                    right_area.link_id_vector.push_back(link.id);
-                }
-
-                border_vector.push_back(border);
-            }
+            area1.area_link_set.insert(link.link_id);
+            area2.area_link_set.insert(link.link_id);
         }
+
     }
 }

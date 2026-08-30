@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_set>
+
 #include "direction.h"
 #include "core/geometry.h"
 #include "core/types.h"
@@ -16,39 +18,39 @@ enum class AreaType : u8
     COUNT,
 };
 
+using AreaID = s32;
+using LinkID = s32;
+
 struct Area
 {
-    s32 id { -1 };
+    AreaID area_id { -1 };
 
     AreaType area_type { AreaType::Free };
+
     s32 floor_number { 0 };
     IBounds2 bounds {};
 
-    std::vector<s32> link_id_vector {};
-    std::vector<s32> border_id_vector {};
+    std::unordered_set<AreaID> area_link_set {};
 };
 
 struct Link
 {
-    s32 id { -1 };
+    LinkID link_id { -1 };
 
-    s32 area_1_id { -1 };
-    s32 area_2_id { -1 };
+    AreaID area_1_id { -1 };
+    AreaID area_2_id { -1 };
 
-    IVec3 position {};
     Axis axis {};
+    IVec2 position {};
 };
 
 struct Border
 {
-    s32 id { -1 };
+    s32 border_id { -1 };
 
-    s32 area_a_id { -1 };
-    s32 area_b_id { -1 };
-
-    AreaType area_a_type { AreaType::Free };
-    AreaType area_b_type { AreaType::Free };
+    s32 area_1_id { -1 };
+    s32 area_2_id { -1 };
 
     Axis axis {};
-    IBounds3 bounds {};
+    IBounds2 bounds {};
 };

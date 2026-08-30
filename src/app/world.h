@@ -73,6 +73,7 @@ public:
     static IVec3 position_to_cell_coordinate(f32 x, f32 y, f32 z);
 
     static s32 get_floor(s32 z);
+    static s32 get_height(s32 floor_number);
     static s32 get_stride(Direction direction);
 
     static s32 block_type_index_from_string(const std::string& block_type_string);
@@ -131,7 +132,9 @@ private:
     void calculate_direction_masks();
 
     Border calculate_border(const Area& area_left, const Area& area_right);
-    void calculate_area_borders(s32 floor_number);
+    Link calculate_link(const Border& border);
+
+    void calculate_link_vector(s32 floor_number);
 
     IdGenerator area_id_generator {};
     IdGenerator link_id_generator {};
