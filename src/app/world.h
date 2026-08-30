@@ -2,6 +2,7 @@
 
 #include <array>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "area.h"
@@ -90,10 +91,8 @@ public:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
-    std::vector<std::vector<Area>> area_vector { FLOOR_COUNT };
-    std::vector<std::vector<Link>> link_vector { FLOOR_COUNT };
-
-    std::vector<Border> border_vector {};
+    std::vector<std::unordered_map<AreaID, Area>> area_map_vector {};
+    std::vector<std::unordered_map<LinkID, Link>> link_map_vector {};
 
 private:
     void init_cell_array();
@@ -138,6 +137,4 @@ private:
 
     IdGenerator area_id_generator {};
     IdGenerator link_id_generator {};
-
-    IdGenerator border_id_generator {};
 };
