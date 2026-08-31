@@ -9,6 +9,7 @@
 
 #include <SDL3/SDL_surface.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <toml++/toml.hpp>
 
 #include "actor.h"
 #include "control.h"
@@ -486,7 +487,7 @@ void Render::recreate_depth_texture(const u32 width, const u32 height)
     drawable_height = height;
 }
 
-void Render::load_block_textures()
+void Render::load_face_textures()
 {
     voxel_render.block_config.load("config/block.ini");
 
@@ -504,10 +505,10 @@ void Render::load_block_textures()
 
         voxel_render.block_type_layers[block_index] = static_cast<u8>(layer);
 
-        paths[layer] = format("assets/textures/block/{}", entry.value);
+        paths[layer] = format("assets/textures/face/{}", entry.value);
     }
 
-    voxel_render.texture = create_texture_array(BLOCK_TEXTURE_SIZE, BLOCK_TEXTURE_SIZE, paths.size(), paths, true);
+    voxel_render.texture = create_texture_array(FACE_TEXTURE_SIZE, FACE_TEXTURE_SIZE, paths.size(), paths, true);
 }
 
 void Render::load_actor_textures()
@@ -613,14 +614,14 @@ void Render::load_model_data(const s32 nation_type_index)
 void Render::generate_sector_mesh(const World& world, const s32 sector_index)
 {
     SectorMesh mesh { .sector_index = sector_index };
-    const IVec2 sector { World::sector_index_to_coordinate(sector_index) };
-    const IVec3 origin { sector.x * SECTOR_SIZE_IN_CELLS, sector.y * SECTOR_SIZE_IN_CELLS, 0 };
+    const IVec2 sector_coordinate { World::sector_index_to_coordinate(sector_index) };
+    const IVec3 sector_origin { sector_coordinate.x * SECTOR_SIZE_IN_CELLS, sector_coordinate.y * SECTOR_SIZE_IN_CELLS, 0 };
 
     for (s32 z { 0 }; z < SECTOR_HEIGHT_IN_CELLS; ++z)
     {
-        for (s32 y { origin.y }; y < origin.y + SECTOR_SIZE_IN_CELLS; ++y)
+        for (s32 y { sector_origin.y }; y < sector_origin.y + SECTOR_SIZE_IN_CELLS; ++y)
         {
-            for (s32 x { origin.x }; x < origin.x + SECTOR_SIZE_IN_CELLS; ++x)
+            for (s32 x { sector_origin.x }; x < sector_origin.x + SECTOR_SIZE_IN_CELLS; ++x)
             {
                 if (!World::cell_coordinate_is_valid(x, y, z))
                 {
@@ -638,11 +639,16 @@ void Render::generate_sector_mesh(const World& world, const s32 sector_index)
 
                 while (mask)
                 {
-                    mesh.sector_quad_vector.push_back({
-                        .local_coordinate = { x - origin.x, y - origin.y, z },
-                        .direction = get_direction_from_mask(mask),
-                        .block_type = cell.block_type,
-                    });
+                    const Direction direction { get_direction_from_mask(mask) };
+                    const FaceType face_type { get_face_type(cell, direction) };
+
+                    const SectorQuad sector_quad {
+                        .local_coordinate = { x - sector_origin.x, y - sector_origin.y, z },
+                        .direction = direction,
+                        .face_type = face_type,
+                    };
+
+                    mesh.sector_quad_vector.push_back(sector_quad);
 
                     mask &= mask - 1;
                 }
@@ -735,7 +741,7 @@ void Render::init_voxel_render(const World& world)
     voxel_render.sampler = SDL_CreateGPUSampler(device, &sampler_info);
     assert(voxel_render.sampler);
 
-    load_block_textures();
+    load_face_textures();
 
     for (s32 sector { 0 }; sector < WORLD_AREA_IN_SECTORS; ++sector)
     {

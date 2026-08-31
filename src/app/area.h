@@ -15,6 +15,7 @@ enum class AreaType : u8
     ElevatorBase,
     Temple,
     Wireframe,
+    Platform,
     COUNT,
 };
 
@@ -29,6 +30,7 @@ struct Area
 
     s32 floor_number { 0 };
     IBounds2 bounds {};
+    Direction direction { Direction::North };
 
     std::unordered_set<AreaID> area_link_set {};
 };

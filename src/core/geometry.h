@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "types.h"
+#include "app/direction.h"
 
 enum class Axis : u8
 {
@@ -361,3 +362,6 @@ f32 interpolate_to(f32 current, f32 target, f32 speed, f32 delta_time);
 Vec3 interpolate_to(const Vec3& current, const Vec3& target, f32 speed, f32 delta_time);
 
 Vec2 direction_from_angle(f32 rotation_degrees);
+
+IVec2 rotate_point(IVec2 point, IVec2 pivot, Direction direction);
+

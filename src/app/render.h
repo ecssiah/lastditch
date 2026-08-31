@@ -111,7 +111,7 @@ struct SectorQuad
 {
     IVec3 local_coordinate {};
     Direction direction {};
-    BlockType block_type {};
+    FaceType face_type {};
 };
 
 struct SectorMesh
@@ -140,9 +140,10 @@ struct VoxelRender
     SDL_GPUGraphicsPipeline* pipeline {};
     SDL_GPUTexture* texture {};
     SDL_GPUSampler* sampler {};
+
     ConfigData block_config {};
 
-    u8 block_type_layers[BLOCK_TYPE_COUNT] {};
+    u8 block_type_layers[FACE_TYPE_COUNT] {};
 
     std::vector<SectorMesh> sector_mesh_vector {};
     std::vector<VoxelGpuData> voxel_gpu_data_vector {};
@@ -243,7 +244,7 @@ private:
     void draw_models(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control& control, const Population& population);
     void draw_text(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, u32 width, u32 height);
 
-    void load_block_textures();
+    void load_face_textures();
     void load_actor_textures();
     void load_model_data(s32 nation_type_index);
 

@@ -1,0 +1,17 @@
+[textures]
+Compass = [
+    "East",
+    "West",
+    "North",
+    "South",
+    "Up",
+    "Down",
+]
+Stone = [
+    "Carved1",
+    "Carved1",
+    "Carved1",
+    "Carved1",
+    "Carved1",
+    "Carved1",
+]

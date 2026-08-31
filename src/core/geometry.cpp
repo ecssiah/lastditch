@@ -1,5 +1,6 @@
 #include "geometry.h"
 
+#include <cassert>
 #include <cmath>
 
 #include "app/constants.h"
@@ -578,6 +579,30 @@ direction_from_angle(const f32 rotation_degrees)
         sin(to_radians(rotation_degrees)),
     };
 }
+
+IVec2
+rotate_point(const IVec2 point, const IVec2 pivot, const Direction direction)
+{
+    const IVec2 position { point - pivot };
+
+    switch (direction)
+    {
+        case Direction::North:
+            return pivot + IVec2 { position.x, position.y };
+        case Direction::West:
+            return pivot + IVec2 { -position.y, position.x };
+        case Direction::South:
+            return pivot + IVec2 { -position.x, -position.y };
+        case Direction::East:
+            return pivot + IVec2 { position.y, -position.x };
+        default:
+            assert(false && "Invalid direction for rotation");
+    }
+
+    std::unreachable();
+}
+
+
 
 Vec3 
 get_forward(const Vec3& rotation)

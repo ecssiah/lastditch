@@ -103,7 +103,7 @@ private:
     void init_cell_array();
 
     static s32 get_content_level(s32 z);
-    static std::vector<BlockType> get_content_block_type_vector(s32 content_level);
+    static std::vector<FaceType> get_content_block_type_vector(s32 content_level);
 
     void place_area(const Area& area);
     void place_content(s32 floor_number);
@@ -115,15 +115,18 @@ private:
     void layout_eagle_territory();
     void layout_bear_territory();
     void layout_lion_territory();
+
     void layout_test_area();
 
-    void set_block_type(s32 x, s32 y, s32 z, BlockType block_type);
-    void set_block_type_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
-    void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
-    void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+    void set_block_type(s32 x, s32 y, s32 z, FaceType block_type);
+    void set_block_type_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, FaceType block_type);
+    void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, FaceType block_type);
+    void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, FaceType block_type);
 
     void construct_room(const Area& area);
     void construct_elevator(const Area& area);
+    void construct_temple(const Area& area);
+    void construct_platform(const Area& area);
     void construct_wireframe(const Area& area);
 
     void construct_tower();

@@ -46,6 +46,16 @@ add_subdirectory(
         EXCLUDE_FROM_ALL
 )
 
+include(FetchContent)
+
+FetchContent_Declare(
+        tomlplusplus
+        GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+        GIT_TAG        v3.4.0
+)
+
+FetchContent_MakeAvailable(tomlplusplus)
+
 add_executable(lastditch src/lastditch.cpp)
 
 target_link_libraries(
@@ -53,6 +63,7 @@ target_link_libraries(
         PRIVATE
         SDL3_ttf::SDL3_ttf
         SDL3::SDL3
+        tomlplusplus::tomlplusplus
 )
 
 target_include_directories(
