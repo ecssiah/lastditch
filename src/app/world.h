@@ -91,8 +91,8 @@ public:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
-    std::vector<std::unordered_map<AreaID, Area>> area_map_vector {};
-    std::vector<std::unordered_map<LinkID, Link>> link_map_vector {};
+    std::array<std::unordered_map<AreaID, Area>, FLOOR_COUNT> area_map_vector {};
+    std::array<std::unordered_map<LinkID, Link>, FLOOR_COUNT> link_map_vector {};
 
 private:
     void init_cell_array();
@@ -122,9 +122,9 @@ private:
     void construct_wireframe(const Area& area);
 
     void construct_tower();
-    void construct_areas(s32 floor_number);
 
-    void construct_doors();
+    void construct_areas(s32 floor_number);
+    void construct_doors(s32 floor_number);
 
     u8 get_direction_mask(s32 x, s32 y, s32 z);
 
