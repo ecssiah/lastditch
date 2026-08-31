@@ -1,5 +1,7 @@
 #include "debug.h"
 
+#include <ranges>
+
 #include "world.h"
 
 void
@@ -11,7 +13,7 @@ Debug::init(const World& world)
         {
             const unordered_map<AreaID, Area>& area_map { world.area_map_vector[floor_number] };
 
-            for (const auto& [area_id, area]: area_map)
+            for (const Area& area: area_map | views::values)
             {
                 const IBounds3 area_bounds {
                     {

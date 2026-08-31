@@ -296,7 +296,20 @@ World::init()
     layout_bear_territory();
     layout_lion_territory();
 
-    for (s32 floor_number { 0 }; floor_number < FLOOR_COUNT; ++floor_number)
+    for (s32 floor_number { 0 }; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
+    {
+        calculate_link_vector(floor_number);
+
+        construct_areas(floor_number);
+        construct_doors(floor_number);
+
+        if (PLACE_ROOM_CONTENT)
+        {
+            place_content(floor_number);
+        }
+    }
+
+    for (s32 floor_number { TOWER_FLOOR_COUNT }; floor_number < FLOOR_COUNT; ++floor_number)
     {
         calculate_link_vector(floor_number);
 

@@ -86,10 +86,15 @@ public:
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
     Random random { WORLD_SEED };
-
     Physics physics {};
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
+
+    std::unordered_map<AreaID, Area> area_map_upper {};
+    std::unordered_map<LinkID, Link> link_map_upper {};
+
+    std::unordered_map<AreaID, Area> area_map_lower {};
+    std::unordered_map<LinkID, Link> link_map_lower {};
 
     std::array<std::unordered_map<AreaID, Area>, FLOOR_COUNT> area_map_vector {};
     std::array<std::unordered_map<LinkID, Link>, FLOOR_COUNT> link_map_vector {};
