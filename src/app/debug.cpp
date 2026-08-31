@@ -1,66 +1,65 @@
 #include "debug.h"
 
 #include "world.h"
-#include "core/log.h"
 
 void
 Debug::init(const World& world)
 {
     if (DEBUG_SHOW_AREAS)
     {
-        // for (const s32 floor_number : DEBUG_FLOOR_ARRAY)
-        // {
-        //     const vector<Area>& area_vector { world.area_vector[floor_number] };
-        //
-        //     for (const Area& area : area_vector)
-        //     {
-        //         const IBounds3 area_bounds {
-        //             {
-        //                 area.bounds.min.x,
-        //                 area.bounds.min.y,
-        //                 area.floor_number * FLOOR_SIZE_Z
-        //             },
-        //             {
-        //                 area.bounds.max.x,
-        //                 area.bounds.max.y,
-        //                 area.floor_number * FLOOR_SIZE_Z + 2
-        //             },
-        //         };
-        //
-        //         add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, Color::Red);
-        //
-        //         for (const LinkID link_id : area.area_link_set)
-        //         {
-        //             const vector<Link>& link_vector { world.link_vector[area.floor_number] };
-        //             const Link& link { link_vector[link_id] };
-        //
-        //             const Vec3 link_position {
-        //                 static_cast<f32>(link.position.x),
-        //                 static_cast<f32>(link.position.y),
-        //                 static_cast<f32>(World::get_height(area.floor_number))
-        //             };
-        //
-        //             if (link.axis == Axis::X)
-        //             {
-        //                 const Bounds3 link_bounds {
-        //                     { link_position.x, link_position.y, link_position.z + 1 },
-        //                     { link_position.x + 1, link_position.y + 2, link_position.z + 3 },
-        //                 };
-        //
-        //                 add_box(link_bounds.min, link_bounds.max, Color::Cyan);
-        //             }
-        //             else if (link.axis == Axis::Y)
-        //             {
-        //                 const Bounds3 link_bounds {
-        //                     { link_position.x, link_position.y, link_position.z + 1 },
-        //                     { link_position.x + 2, link_position.y + 1, link_position.z + 3 },
-        //                 };
-        //
-        //                 add_box(link_bounds.min, link_bounds.max, Color::Cyan);
-        //             }
-        //         }
-        //     }
-        // }
+        for (const s32 floor_number : DEBUG_FLOOR_ARRAY)
+        {
+            const unordered_map<AreaID, Area>& area_map { world.area_map_vector[floor_number] };
+
+            for (const auto& [area_id, area]: area_map)
+            {
+                const IBounds3 area_bounds {
+                    {
+                        area.bounds.min.x,
+                        area.bounds.min.y,
+                        area.floor_number * FLOOR_SIZE_Z
+                    },
+                    {
+                        area.bounds.max.x,
+                        area.bounds.max.y,
+                        area.floor_number * FLOOR_SIZE_Z + 2
+                    },
+                };
+
+                add_box(Vec3 { area_bounds.min }, Vec3 { area_bounds.max }, Color::Red);
+
+                for (const LinkID link_id : area.area_link_set)
+                {
+                    const unordered_map<LinkID, Link>& link_map { world.link_map_vector[area.floor_number] };
+                    const Link& link { link_map.at(link_id) };
+
+                    const Vec3 link_position {
+                        static_cast<f32>(link.position.x),
+                        static_cast<f32>(link.position.y),
+                        static_cast<f32>(World::get_height(area.floor_number))
+                    };
+
+                    if (link.axis == Axis::X)
+                    {
+                        const Bounds3 link_bounds {
+                            { link_position.x, link_position.y, link_position.z + 1 },
+                            { link_position.x + 1, link_position.y + 2, link_position.z + 3 },
+                        };
+
+                        add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                    }
+                    else if (link.axis == Axis::Y)
+                    {
+                        const Bounds3 link_bounds {
+                            { link_position.x, link_position.y, link_position.z + 1 },
+                            { link_position.x + 2, link_position.y + 1, link_position.z + 3 },
+                        };
+
+                        add_box(link_bounds.min, link_bounds.max, Color::Cyan);
+                    }
+                }
+            }
+        }
     }
 }
 
