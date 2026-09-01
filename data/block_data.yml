@@ -1,0 +1,40 @@
+version: 1
+
+face_types:
+    - none
+    - carved
+    - east
+    - west
+    - north
+    - south
+    - up
+    - down
+    - bear_symbol
+    - eagle_symbol
+    - lion_symbol
+    - wolf_symbol
+
+block_types:
+    none:
+        face_types:
+            - none
+    compass:
+        face_types:
+            - east
+            - west
+            - north
+            - south
+            - up
+            - down
+    bear_symbol:
+        face_types:
+            - bear_symbol
+    eagle_symbol:
+        face_types:
+            - eagle_symbol
+    lion_symbol:
+        face_types:
+            - lion_symbol
+    wolf_symbol:
+        face_types:
+            - wolf_symbol

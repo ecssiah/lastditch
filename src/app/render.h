@@ -69,7 +69,7 @@ constexpr s32 VERTEX_INDEX_ARRAY[6] { 0, 1, 2, 0, 2, 3 };
 struct VoxelVertex
 {
     u32 vertex {};
-    u32 face {};
+    u32 face_type {};
 };
 
 struct ModelVertex

@@ -499,7 +499,7 @@ void Render::load_face_textures()
     {
         const ConfigEntry& entry { voxel_render.block_config.entry_vector[layer] };
 
-        const s32 block_index { World::block_type_index_from_string(entry.key) };
+        const s32 block_index { World::face_type_index_from_string(entry.key) };
         assert(block_index >= 0 && block_index < BLOCK_TYPE_COUNT);
 
         voxel_render.block_type_layers[block_index] = static_cast<u8>(layer);
@@ -629,7 +629,7 @@ void Render::generate_sector_mesh(const World& world, const s32 sector_index)
 
                 const Cell& cell { world.cell_array[World::cell_coordinate_to_index(x, y, z)] };
 
-                if (cell.block_type == BlockType::None)
+                if (cell.block_type == BlockType::none)
                 {
                     continue;
                 }
@@ -639,7 +639,7 @@ void Render::generate_sector_mesh(const World& world, const s32 sector_index)
                 while (mask)
                 {
                     const Direction direction { get_direction_from_mask(mask) };
-                    const FaceType face_type { FaceType::None };
+                    const FaceType face_type { FaceType::none };
 
                     const SectorQuad sector_quad {
                         .local_coordinate = { x - sector_origin.x, y - sector_origin.y, z },
@@ -658,19 +658,28 @@ void Render::generate_sector_mesh(const World& world, const s32 sector_index)
     voxel_render.sector_mesh_vector.push_back(std::move(mesh));
 }
 
-void Render::emit_sector_face(const SectorQuad& quad, VoxelGpuData& gpu_data)
+void Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& gpu_data)
 {
     for (s32 index { 0 }; index < 6; ++index)
     {
-        const s32 direction { static_cast<s32>(quad.direction) };
-        const s32 block { static_cast<s32>(quad.block_type) };
+        const s32 direction { static_cast<s32>(sector_quad.direction) };
+        const s32 face_type { static_cast<s32>(sector_quad.face_type) };
         const auto& source { VOXEL_VERTEX_ARRAY[direction][VERTEX_INDEX_ARRAY[index]] };
-        const IVec3 position { quad.local_coordinate + IVec3 { source[0], source[1], source[2] } };
+        const IVec3 position { sector_quad.local_coordinate + IVec3 { source[0], source[1], source[2] } };
 
-        gpu_data.voxel_vertex_vector.push_back({
-            .vertex = static_cast<u32>((position.x & 63u) | ((position.y & 63u) << 6u) | ((position.z & 255u) << 12u)),
-            .face = static_cast<u32>((block & 255u) | ((direction & 7u) << 8u)),
-        });
+        const VoxelVertex voxel_vertex {
+            .vertex = static_cast<u32>(
+                (position.x & 63u) |
+                ((position.y & 63u) << 6u) |
+                ((position.z & 255u) << 12u)
+            ),
+            .face_type = static_cast<u32>(
+                (face_type & 255u) |
+                ((direction & 7u) << 8u)
+            ),
+        };
+
+        gpu_data.voxel_vertex_vector.push_back(voxel_vertex);
     }
 }
 
@@ -713,7 +722,7 @@ void Render::init_voxel_render(const World& world)
             .location = 1,
             .buffer_slot = 0,
             .format = SDL_GPU_VERTEXELEMENTFORMAT_UINT,
-            .offset = offsetof(VoxelVertex, face)
+            .offset = offsetof(VoxelVertex, face_type)
         },
     };
 

@@ -77,7 +77,7 @@ public:
     static s32 get_height(s32 floor_number);
     static s32 get_stride(Direction direction);
 
-    static s32 block_type_index_from_string(const std::string& block_type_string);
+    static s32 face_type_index_from_string(const std::string& face_type_string);
 
     Cell& get_cell(s32 x, s32 y, s32 z);
     const Cell& get_cell(s32 x, s32 y, s32 z) const;
@@ -103,7 +103,7 @@ private:
     void init_cell_array();
 
     static s32 get_content_level(s32 z);
-    static std::vector<FaceType> get_content_block_type_vector(s32 content_level);
+    static std::vector<BlockType> get_content_block_type_vector(s32 content_level);
 
     void place_area(const Area& area);
     void place_content(s32 floor_number);
@@ -118,10 +118,10 @@ private:
 
     void layout_test_area();
 
-    void set_block_type(s32 x, s32 y, s32 z, FaceType block_type);
-    void set_block_type_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, FaceType block_type);
-    void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, FaceType block_type);
-    void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, FaceType block_type);
+    void set_block_type(s32 x, s32 y, s32 z, BlockType block_type);
+    void set_block_type_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+    void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+    void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
 
     void construct_room(const Area& area);
     void construct_elevator(const Area& area);

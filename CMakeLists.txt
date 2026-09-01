@@ -6,8 +6,6 @@ project(
         LANGUAGES C CXX
 )
 
-include(CTest)
-
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -46,39 +44,68 @@ add_subdirectory(
         EXCLUDE_FROM_ALL
 )
 
-# Code Generation
-find_package(Ruby REQUIRED)
+if(WIN32)
+        set(
+                PROJECT_PYTHON_EXECUTABLE
+                "${CMAKE_CURRENT_SOURCE_DIR}/.venv/Scripts/python.exe"
+        )
+else()
+        set(
+                PROJECT_PYTHON_EXECUTABLE
+                "${CMAKE_CURRENT_SOURCE_DIR}/.venv/bin/python"
+        )
+endif()
 
-set(BLOCK_DATA_FILE "${PROJECT_SOURCE_DIR}/data/blocks.yml")
-set(BLOCK_GENERATOR "${PROJECT_SOURCE_DIR}/tools/generation/block_data.rb")
-set(GENERATED_INCLUDE_DIR "${PROJECT_BINARY_DIR}/generated/include")
-set(GENERATED_BLOCK_HEADER "${GENERATED_INCLUDE_DIR}/lastditch/block_data.generated.hpp")
+if(NOT EXISTS "${PROJECT_PYTHON_EXECUTABLE}")
+        message(FATAL_ERROR
+                "The project Python environment does not exist.\n"
+                "Run tools/bootstrap.sh before configuring the project."
+        )
+endif()
+
+set(
+        Python3_EXECUTABLE
+        "${PROJECT_PYTHON_EXECUTABLE}"
+        CACHE FILEPATH
+        "Python interpreter used for code generation"
+        FORCE
+)
+
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
+set(BLOCK_DATA_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/data/block_data.yml")
+set(BLOCK_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_block_data.py")
+set(BLOCK_DATA_GENERATED_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(BLOCK_DATA_GENERATED_HEADER "${BLOCK_DATA_GENERATED_DIRECTORY}/block_data.generated.h")
 
 add_custom_command(
-        OUTPUT "${GENERATED_BLOCK_HEADER}"
+        OUTPUT "${BLOCK_DATA_GENERATED_HEADER}"
 
         COMMAND
         "${CMAKE_COMMAND}" -E make_directory
-        "${GENERATED_INCLUDE_DIR}/lastditch"
+        "${BLOCK_DATA_GENERATED_DIRECTORY}"
 
         COMMAND
-        "${Ruby_EXECUTABLE}"
-        "${BLOCK_GENERATOR}"
-        "${BLOCK_DATA_FILE}"
-        "${GENERATED_BLOCK_HEADER}"
+        "${Python3_EXECUTABLE}"
+        "${BLOCK_DATA_GENERATOR}"
+        "${BLOCK_DATA_CONFIG}"
+        "${BLOCK_DATA_GENERATED_HEADER}"
 
         DEPENDS
-        "${BLOCK_GENERATOR}"
-        "${BLOCK_DATA_FILE}"
+        "${BLOCK_DATA_GENERATOR}"
+        "${BLOCK_DATA_CONFIG}"
 
-        COMMENT "Generating block face definitions"
         VERBATIM
 )
 
 add_executable(lastditch src/lastditch.cpp)
 
-add_custom_target(generate_block_faces DEPENDS "${GENERATED_BLOCK_HEADER}")
-add_dependencies(lastditch generate_block_faces)
+add_custom_target(
+        generate_block_types
+        DEPENDS "${BLOCK_DATA_GENERATED_HEADER}"
+)
+
+add_dependencies(lastditch generate_block_types)
 
 target_link_libraries(
         lastditch
@@ -90,14 +117,14 @@ target_link_libraries(
 target_include_directories(
         lastditch
         PRIVATE
-        "${GENERATED_INCLUDE_DIR}"
+        "${BLOCK_DATA_GENERATED_DIRECTORY}"
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_sources(
         lastditch
         PRIVATE
-        "${GENERATED_BLOCK_HEADER}"
+        "${BLOCK_DATA_GENERATED_HEADER}"
         src/app/actor.h
         src/app/app.cpp
         src/app/app.h
@@ -149,22 +176,12 @@ target_compile_options(
 add_custom_target(
         shaders
         COMMAND
-        tools/scripts/compile_shaders.sh
+        tools/compile_shaders.sh
                 ${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders
                 ${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders/compiled
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Regenerating SDL_GPU shader artifacts"
 )
-
-if (BUILD_TESTING)
-        add_executable(
-                projection_test
-                tests/projection_test.cpp
-                src/core/geometry.cpp
-        )
-        target_include_directories(projection_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-        add_test(NAME projection_depth_range COMMAND projection_test)
-endif ()
 
 add_custom_command(
         TARGET
@@ -176,6 +193,6 @@ add_custom_command(
                 $<TARGET_FILE_DIR:lastditch>/assets
         COMMAND
                 ${CMAKE_COMMAND} -E copy_directory
-                ${CMAKE_SOURCE_DIR}/config
-                $<TARGET_FILE_DIR:lastditch>/config
+                ${CMAKE_SOURCE_DIR}/data
+                $<TARGET_FILE_DIR:lastditch>/data
 )

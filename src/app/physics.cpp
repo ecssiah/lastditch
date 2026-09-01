@@ -149,7 +149,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
 
                 const Cell& cell { world.get_cell(x, y, z) };
 
-                if (cell.block_type == FaceType::None)
+                if (cell.block_type == BlockType::none)
                 {
                     continue;
                 }
