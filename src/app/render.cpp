@@ -9,7 +9,6 @@
 
 #include <SDL3/SDL_surface.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <toml++/toml.hpp>
 
 #include "actor.h"
 #include "control.h"
@@ -640,7 +639,7 @@ void Render::generate_sector_mesh(const World& world, const s32 sector_index)
                 while (mask)
                 {
                     const Direction direction { get_direction_from_mask(mask) };
-                    const FaceType face_type { get_face_type(cell, direction) };
+                    const FaceType face_type { FaceType::None };
 
                     const SectorQuad sector_quad {
                         .local_coordinate = { x - sector_origin.x, y - sector_origin.y, z },

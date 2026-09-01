@@ -1,0 +1,17 @@
+blocks:
+    compass: [
+        east,
+        west,
+        north,
+        south,
+        up,
+        down,
+    ]
+    stone: [
+        carved1,
+        carved1,
+        carved1,
+        carved1,
+        carved1,
+        carved1,
+    ]

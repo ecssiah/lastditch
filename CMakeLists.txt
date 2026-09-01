@@ -46,35 +46,58 @@ add_subdirectory(
         EXCLUDE_FROM_ALL
 )
 
-include(FetchContent)
+# Code Generation
+find_package(Ruby REQUIRED)
 
-FetchContent_Declare(
-        tomlplusplus
-        GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
-        GIT_TAG        v3.4.0
+set(BLOCK_DATA_FILE "${PROJECT_SOURCE_DIR}/data/blocks.yml")
+set(BLOCK_GENERATOR "${PROJECT_SOURCE_DIR}/tools/generation/block_data.rb")
+set(GENERATED_INCLUDE_DIR "${PROJECT_BINARY_DIR}/generated/include")
+set(GENERATED_BLOCK_HEADER "${GENERATED_INCLUDE_DIR}/lastditch/block_data.generated.hpp")
+
+add_custom_command(
+        OUTPUT "${GENERATED_BLOCK_HEADER}"
+
+        COMMAND
+        "${CMAKE_COMMAND}" -E make_directory
+        "${GENERATED_INCLUDE_DIR}/lastditch"
+
+        COMMAND
+        "${Ruby_EXECUTABLE}"
+        "${BLOCK_GENERATOR}"
+        "${BLOCK_DATA_FILE}"
+        "${GENERATED_BLOCK_HEADER}"
+
+        DEPENDS
+        "${BLOCK_GENERATOR}"
+        "${BLOCK_DATA_FILE}"
+
+        COMMENT "Generating block face definitions"
+        VERBATIM
 )
 
-FetchContent_MakeAvailable(tomlplusplus)
-
 add_executable(lastditch src/lastditch.cpp)
+
+add_custom_target(generate_block_faces DEPENDS "${GENERATED_BLOCK_HEADER}")
+add_dependencies(lastditch generate_block_faces)
 
 target_link_libraries(
         lastditch
         PRIVATE
         SDL3_ttf::SDL3_ttf
         SDL3::SDL3
-        tomlplusplus::tomlplusplus
 )
 
 target_include_directories(
         lastditch
         PRIVATE
+        "${GENERATED_INCLUDE_DIR}"
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_sources(
         lastditch
         PRIVATE
+        "${GENERATED_BLOCK_HEADER}"
         src/app/actor.h
         src/app/app.cpp
         src/app/app.h
@@ -126,7 +149,7 @@ target_compile_options(
 add_custom_target(
         shaders
         COMMAND
-                ${CMAKE_CURRENT_SOURCE_DIR}/scripts/compile_shaders.sh
+        tools/scripts/compile_shaders.sh
                 ${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders
                 ${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders/compiled
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
