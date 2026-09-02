@@ -21,7 +21,7 @@ public:
     s32 id { -1 };
 
     ActorType actor_type { ActorType::None };
-    NationType nation_type { NationType::Wolf };
+    NationType nation_type { NationType::wolf };
 
     f32 move_speed { ACTOR_DEFAULT_MOVE_SPEED };
     f32 turn_speed { ACTOR_DEFAULT_TURN_SPEED };

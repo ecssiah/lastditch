@@ -1,8 +1,8 @@
 #pragma once
 
+#include "block_data.generated.h"
 #include "constants.h"
 #include "core/types.h"
-#include "block_data.generated.h"
 
 struct Cell
 {

@@ -29,7 +29,7 @@ private:
 
     std::array<Nation, NATION_TYPE_COUNT> nation_array {
         Nation {
-            .nation_type = NationType::Wolf,
+            .nation_type = NationType::wolf,
             .home_coordinate = {
                 WORLD_CENTER_S32 + NATION_HOME_OFFSET,
                 WORLD_CENTER_S32,
@@ -37,7 +37,7 @@ private:
             },
         },
         Nation {
-            .nation_type = NationType::Eagle,
+            .nation_type = NationType::eagle,
             .home_coordinate = {
                 WORLD_CENTER_S32 - NATION_HOME_OFFSET,
                 WORLD_CENTER_S32,
@@ -45,7 +45,7 @@ private:
             },
         },
         Nation {
-            .nation_type = NationType::Lion,
+            .nation_type = NationType::lion,
             .home_coordinate = {
                 WORLD_CENTER_S32,
                 WORLD_CENTER_S32 - NATION_HOME_OFFSET,
@@ -53,7 +53,7 @@ private:
             },
         },
         Nation {
-            .nation_type = NationType::Bear,
+            .nation_type = NationType::bear,
             .home_coordinate = {
                 WORLD_CENTER_S32,
                 WORLD_CENTER_S32 + NATION_HOME_OFFSET,

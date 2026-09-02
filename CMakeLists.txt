@@ -75,15 +75,18 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 set(BLOCK_DATA_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/data/block_data.yml")
 set(BLOCK_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_block_data.py")
-set(BLOCK_DATA_GENERATED_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated")
-set(BLOCK_DATA_GENERATED_HEADER "${BLOCK_DATA_GENERATED_DIRECTORY}/block_data.generated.h")
+set(DATA_GENERATED_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(BLOCK_DATA_GENERATED_HEADER "${DATA_GENERATED_DIRECTORY}/block_data.generated.h")
+set(ACTOR_DATA_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/data/actor_data.yml")
+set(ACTOR_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_actor_data.py")
+set(ACTOR_DATA_GENERATED_HEADER "${DATA_GENERATED_DIRECTORY}/actor_data.generated.h")
 
 add_custom_command(
         OUTPUT "${BLOCK_DATA_GENERATED_HEADER}"
 
         COMMAND
         "${CMAKE_COMMAND}" -E make_directory
-        "${BLOCK_DATA_GENERATED_DIRECTORY}"
+        "${DATA_GENERATED_DIRECTORY}"
 
         COMMAND
         "${Python3_EXECUTABLE}"
@@ -98,6 +101,26 @@ add_custom_command(
         VERBATIM
 )
 
+add_custom_command(
+        OUTPUT "${ACTOR_DATA_GENERATED_HEADER}"
+
+        COMMAND
+        "${CMAKE_COMMAND}" -E make_directory
+        "${DATA_GENERATED_DIRECTORY}"
+
+        COMMAND
+        "${Python3_EXECUTABLE}"
+        "${ACTOR_DATA_GENERATOR}"
+        "${ACTOR_DATA_CONFIG}"
+        "${ACTOR_DATA_GENERATED_HEADER}"
+
+        DEPENDS
+        "${ACTOR_DATA_GENERATOR}"
+        "${ACTOR_DATA_CONFIG}"
+
+        VERBATIM
+)
+
 add_executable(lastditch src/lastditch.cpp)
 
 add_custom_target(
@@ -105,7 +128,12 @@ add_custom_target(
         DEPENDS "${BLOCK_DATA_GENERATED_HEADER}"
 )
 
-add_dependencies(lastditch generate_block_types)
+add_custom_target(
+        generate_actor_types
+        DEPENDS "${ACTOR_DATA_GENERATED_HEADER}"
+)
+
+add_dependencies(lastditch generate_block_types generate_actor_types)
 
 target_link_libraries(
         lastditch
@@ -117,13 +145,14 @@ target_link_libraries(
 target_include_directories(
         lastditch
         PRIVATE
-        "${BLOCK_DATA_GENERATED_DIRECTORY}"
+        "${DATA_GENERATED_DIRECTORY}"
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_sources(
         lastditch
         PRIVATE
+        "${ACTOR_DATA_GENERATED_HEADER}"
         "${BLOCK_DATA_GENERATED_HEADER}"
         src/app/actor.h
         src/app/app.cpp
@@ -151,8 +180,6 @@ target_sources(
         src/app/world.cpp
         src/app/world.h
         src/core/color.h
-        src/core/config.cpp
-        src/core/config.h
         src/core/geometry.cpp
         src/core/geometry.h
         src/core/id.h

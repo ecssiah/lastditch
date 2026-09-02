@@ -2,17 +2,48 @@ version: 1
 
 face_types:
     - none
-    - carved
-    - east
-    - west
-    - north
-    - south
-    - up
-    - down
+    - direction_east
+    - direction_west
+    - direction_north
+    - direction_south
+    - direction_up
+    - direction_down
     - bear_symbol
     - eagle_symbol
     - lion_symbol
     - wolf_symbol
+    - bear_stone
+    - eagle_stone
+    - lion_stone
+    - wolf_stone
+    - carved1
+    - carved2
+    - carved3
+    - carved4
+    - caution1
+    - caution2
+    - caution3
+    - caution4
+    - metal1
+    - metal2
+    - metal3
+    - metal4
+    - metal5
+    - panel1
+    - panel2
+    - panel3
+    - panel4
+    - server1
+    - server2
+    - server3
+    - server4
+    - server5
+    - server6
+    - server7
+    - smooth1
+    - smooth2
+    - smooth3
+    - smooth4
 
 block_types:
     none:
@@ -20,21 +51,137 @@ block_types:
             - none
     compass:
         face_types:
-            - east
-            - west
-            - north
-            - south
-            - up
-            - down
+            - direction_east
+            - direction_west
+            - direction_north
+            - direction_south
+            - direction_up
+            - direction_down
+    carved1:
+        face_types:
+            - carved1
+    carved2:
+        face_types:
+            - carved2
+    carved3:
+        face_types:
+            - carved3
+    carved4:
+        face_types:
+            - carved4
+    caution1:
+        face_types:
+            - caution1
+    caution2:
+        face_types:
+            - caution2
+    caution3:
+        face_types:
+            - caution3
+    caution4:
+        face_types:
+            - caution4
+    metal1:
+        face_types:
+            - metal1
+    metal2:
+        face_types:
+            - metal2
+    metal3:
+        face_types:
+            - metal3
+    metal4:
+        face_types:
+            - metal4
+    metal5:
+        face_types:
+            - metal5
+    panel1:
+        face_types:
+            - panel1
+    panel2:
+        face_types:
+            - panel2
+    panel3:
+        face_types:
+            - panel3
+    panel4:
+        face_types:
+            - panel4
+    server1:
+        face_types:
+            - server1
+    server2:
+        face_types:
+            - server2
+    server3:
+        face_types:
+            - server3
+    server4:
+        face_types:
+            - server4
+    server5:
+        face_types:
+            - server5
+    server6:
+        face_types:
+            - server6
+    server7:
+        face_types:
+            - server7
+    smooth1:
+        face_types:
+            - smooth1
+    smooth2:
+        face_types:
+            - smooth2
+    smooth3:
+        face_types:
+            - smooth3
+    smooth4:
+        face_types:
+            - smooth4
     bear_symbol:
         face_types:
             - bear_symbol
+            - bear_symbol
+            - bear_symbol
+            - bear_symbol
+            - bear_stone
+            - bear_stone
     eagle_symbol:
         face_types:
             - eagle_symbol
+            - eagle_symbol
+            - eagle_symbol
+            - eagle_symbol
+            - eagle_stone
+            - eagle_stone
     lion_symbol:
         face_types:
             - lion_symbol
+            - lion_symbol
+            - lion_symbol
+            - lion_symbol
+            - lion_stone
+            - lion_stone
     wolf_symbol:
         face_types:
             - wolf_symbol
+            - wolf_symbol
+            - wolf_symbol
+            - wolf_symbol
+            - wolf_stone
+            - wolf_stone
+    bear_stone:
+        face_types:
+            - bear_stone
+    eagle_stone:
+        face_types:
+            - eagle_stone
+    lion_stone:
+        face_types:
+            - lion_stone
+    wolf_stone:
+        face_types:
+            - wolf_stone

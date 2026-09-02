@@ -488,23 +488,18 @@ void Render::recreate_depth_texture(const u32 width, const u32 height)
 
 void Render::load_face_textures()
 {
-    voxel_render.block_config.load("config/block.ini");
-
-    const size_t layer_count { voxel_render.block_config.entry_vector.size() };
-    assert(layer_count > 0 && layer_count <= BLOCK_TYPE_COUNT);
+    const size_t layer_count { FACE_TYPE_COUNT - 1 };
+    assert(layer_count > 0);
 
     vector<string> paths(layer_count);
 
     for (size_t layer { 0 }; layer < layer_count; ++layer)
     {
-        const ConfigEntry& entry { voxel_render.block_config.entry_vector[layer] };
-
-        const s32 block_index { World::face_type_index_from_string(entry.key) };
-        assert(block_index >= 0 && block_index < BLOCK_TYPE_COUNT);
-
-        voxel_render.block_type_layers[block_index] = static_cast<u8>(layer);
-
-        paths[layer] = format("assets/textures/face/{}", entry.value);
+        const FaceType face_type { static_cast<FaceType>(layer + 1) };
+        paths[layer] = format(
+            "assets/textures/block/{}.png",
+            get_face_type_string(face_type)
+        );
     }
 
     voxel_render.texture = create_texture_array(FACE_TEXTURE_SIZE, FACE_TEXTURE_SIZE, paths.size(), paths, true);
@@ -512,22 +507,18 @@ void Render::load_face_textures()
 
 void Render::load_actor_textures()
 {
-    model_render.actor_config.load("config/actor.ini");
-
-    const size_t layer_count { model_render.actor_config.entry_vector.size() };
-    assert(layer_count > 0 && layer_count <= NATION_TYPE_COUNT);
+    const size_t layer_count { NATION_TYPE_COUNT };
+    assert(layer_count > 0);
 
     vector<string> paths(layer_count);
 
     for (size_t layer { 0 }; layer < layer_count; ++layer)
     {
-        const ConfigEntry& entry { model_render.actor_config.entry_vector[layer] };
-
-        const s32 nation_index { find_nation_type_index(entry.key) };
-        assert(nation_index >= 0 && nation_index < NATION_TYPE_COUNT);
-
-        model_render.nation_type_layers[nation_index] = static_cast<u8>(layer);
-        paths[layer] = format("assets/textures/model/{}", entry.value);
+        const NationType nation_type { static_cast<NationType>(layer) };
+        paths[layer] = format(
+            "assets/textures/actor/{}.png",
+            get_actor_data(nation_type).texture_name
+        );
     }
 
     model_render.texture = create_texture_array(ACTOR_TEXTURE_SIZE, ACTOR_TEXTURE_SIZE, paths.size(), paths, true);
@@ -535,7 +526,7 @@ void Render::load_actor_textures()
 
 void Render::load_model_data(const s32 nation_type_index)
 {
-    ModelGpuData data { .texture_layer = model_render.nation_type_layers[nation_type_index] };
+    ModelGpuData data { .texture_layer = nation_type_index };
 
     ifstream stream { "assets/model/actor.obj" };
     assert(stream.is_open());
@@ -639,15 +630,20 @@ void Render::generate_sector_mesh(const World& world, const s32 sector_index)
                 while (mask)
                 {
                     const Direction direction { get_direction_from_mask(mask) };
-                    const FaceType face_type { FaceType::none };
-
-                    const SectorQuad sector_quad {
-                        .local_coordinate = { x - sector_origin.x, y - sector_origin.y, z },
-                        .direction = direction,
-                        .face_type = face_type,
+                    const FaceType face_type {
+                        cell.face_type_array[static_cast<size_t>(direction)]
                     };
 
-                    mesh.sector_quad_vector.push_back(sector_quad);
+                    if (face_type != FaceType::none)
+                    {
+                        const SectorQuad sector_quad {
+                            .local_coordinate = { x - sector_origin.x, y - sector_origin.y, z },
+                            .direction = direction,
+                            .face_type = face_type,
+                        };
+
+                        mesh.sector_quad_vector.push_back(sector_quad);
+                    }
 
                     mask &= mask - 1;
                 }
@@ -826,7 +822,7 @@ void Render::init_model_render()
     load_actor_textures();
     model_render.model_gpu_data_vector.resize(NATION_TYPE_COUNT);
 
-    for (s32 index { 0 }; index < NATION_TYPE_COUNT; ++index)
+    for (s32 index { 0 }; index < static_cast<s32>(NATION_TYPE_COUNT); ++index)
     {
         load_model_data(index);
     }

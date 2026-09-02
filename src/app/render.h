@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-
 #include <SDL3/SDL_gpu.h>
 
 #include "cell.h"
@@ -12,7 +11,6 @@
 #include "nation.h"
 #include "screen.h"
 #include "core/color.h"
-#include "core/config.h"
 #include "core/geometry.h"
 #include "core/types.h"
 #include "platform/platform.h"
@@ -141,10 +139,6 @@ struct VoxelRender
     SDL_GPUTexture* texture {};
     SDL_GPUSampler* sampler {};
 
-    ConfigData block_config {};
-
-    u8 block_type_layers[FACE_TYPE_COUNT] {};
-
     std::vector<SectorMesh> sector_mesh_vector {};
     std::vector<VoxelGpuData> voxel_gpu_data_vector {};
 };
@@ -154,8 +148,6 @@ struct ModelRender
     SDL_GPUGraphicsPipeline* pipeline {};
     SDL_GPUTexture* texture {};
     SDL_GPUSampler* sampler {};
-    ConfigData actor_config {};
-    u8 nation_type_layers[NATION_TYPE_COUNT] {};
 
     std::vector<ModelGpuData> model_gpu_data_vector {};
 };

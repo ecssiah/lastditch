@@ -35,7 +35,7 @@ Population::init_judge()
     const Actor judge {
         .id = judge_id,
         .actor_type = ActorType::Judge,
-        .nation_type = NationType::Lion,
+        .nation_type = NationType::lion,
         .move_speed = JUDGE_DEFAULT_MOVE_SPEED,
         .turn_speed = JUDGE_DEFAULT_TURN_SPEED,
         .position = { WORLD_CENTER_F32 - NATION_HOME_OFFSET, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
@@ -55,7 +55,7 @@ Population::init_judge()
 
     LOG_INFO(
         "Generated %s judge, ID: %i, at (%.1f %.1f %.1f)",
-        get_nation_type_string(judge.nation_type),
+        get_nation_type_string(judge.nation_type).data(),
         judge_id,
         judge.position.x,
         judge.position.y,
@@ -105,7 +105,7 @@ Population::init_agents()
 
             LOG_INFO(
                 "Generated %s agent, ID: %i, at (%.1f %.1f %.1f)",
-                get_nation_type_string(nation.nation_type),
+                get_nation_type_string(nation.nation_type).data(),
                 agent.id,
                 agent.position.x,
                 agent.position.y,
