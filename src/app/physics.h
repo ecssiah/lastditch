@@ -1,6 +1,5 @@
 #pragma once
 
-#include "constants.h"
 #include "core/geometry.h"
 #include "core/types.h"
 

@@ -5,6 +5,11 @@
 
 #include "types.h"
 
+class IVec2;
+class IVec3;
+class Vec2;
+class Vec3;
+
 enum class Direction : u8
 {
     East,
@@ -18,8 +23,7 @@ enum class Direction : u8
 
 constexpr s32 DIRECTION_COUNT { static_cast<s32>(Direction::COUNT) };
 
-constexpr std::array
-DIRECTION_NORMAL_ARRAY
+constexpr std::array DIRECTION_NORMAL_ARRAY
 {
     +1.0f, +0.0f, +0.0f,
     -1.0f, +0.0f, +0.0f,
@@ -38,11 +42,6 @@ enum class Axis : u8
 };
 
 constexpr s32 AXIS_COUNT { static_cast<s32>(Axis::COUNT) };
-
-class IVec2;
-class IVec3;
-class Vec2;
-class Vec3;
 
 class Vec2
 {
@@ -211,7 +210,7 @@ public:
     {
 
     }
-    
+
     constexpr s32&
     operator[](const s32 index)
     {
@@ -255,7 +254,7 @@ public:
     {
 
     }
-    
+
     constexpr s32&
     operator[](const s32 index)
     {

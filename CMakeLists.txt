@@ -47,19 +47,19 @@ add_subdirectory(
 if(WIN32)
         set(
                 PROJECT_PYTHON_EXECUTABLE
-                "${CMAKE_CURRENT_SOURCE_DIR}/.venv/Scripts/python.exe"
+                "${CMAKE_CURRENT_SOURCE_DIR}/tools/.venv/Scripts/python.exe"
         )
 else()
         set(
                 PROJECT_PYTHON_EXECUTABLE
-                "${CMAKE_CURRENT_SOURCE_DIR}/.venv/bin/python"
+                "${CMAKE_CURRENT_SOURCE_DIR}/tools/.venv/bin/python"
         )
 endif()
 
 if(NOT EXISTS "${PROJECT_PYTHON_EXECUTABLE}")
         message(FATAL_ERROR
                 "The project Python environment does not exist.\n"
-                "Run tools/bootstrap.sh before configuring the project."
+                "Run tools/scripts/bootstrap.sh before configuring the project."
         )
 endif()
 
@@ -74,11 +74,11 @@ set(
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 set(BLOCK_DATA_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/data/block_data.yml")
-set(BLOCK_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_block_data.py")
+set(BLOCK_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/python/generate_block_data.py")
 set(DATA_GENERATED_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(BLOCK_DATA_GENERATED_HEADER "${DATA_GENERATED_DIRECTORY}/block_data.generated.h")
 set(ACTOR_DATA_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/data/actor_data.yml")
-set(ACTOR_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_actor_data.py")
+set(ACTOR_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/python/generate_actor_data.py")
 set(ACTOR_DATA_GENERATED_HEADER "${DATA_GENERATED_DIRECTORY}/actor_data.generated.h")
 
 add_custom_command(
@@ -203,9 +203,9 @@ target_compile_options(
 add_custom_target(
         shaders
         COMMAND
-        tools/compile_shaders.sh
-                ${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders
-                ${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders/compiled
+        "${CMAKE_CURRENT_SOURCE_DIR}/tools/scripts/compile_shaders.sh"
+                "${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders"
+                "${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders/compiled"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Regenerating SDL_GPU shader artifacts"
 )
