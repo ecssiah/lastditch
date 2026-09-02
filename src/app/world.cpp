@@ -322,10 +322,15 @@ World::init()
         }
     }
 
-    set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::bear_symbol);
-    set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::wolf_symbol);
-    set_block_type(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::lion_symbol);
-    set_block_type(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::eagle_symbol);
+    set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_bear);
+    set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_wolf);
+    set_block_type(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_lion);
+    set_block_type(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_eagle);
+
+    set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_bear);
+    set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_wolf);
+    set_block_type(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_lion);
+    set_block_type(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_eagle);
 
     set_block_type(WORLD_CENTER_S32, WORLD_CENTER_S32, ROOF_Z + 4, BlockType::compass);
 
@@ -1123,7 +1128,7 @@ World::layout_wolf_territory()
     set_block_type_cube(
         temple_origin.x, temple_origin.y, temple_origin.z,
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
-        BlockType::wolf_stone
+        BlockType::stone_wolf
     );
 
     set_block_type_cube(
@@ -1135,7 +1140,7 @@ World::layout_wolf_territory()
     set_block_type_cube(
         temple_origin.x, temple_origin.y, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
-        BlockType::wolf_stone
+        BlockType::stone_wolf
     );
 
     set_block_type_cube(
@@ -1147,19 +1152,19 @@ World::layout_wolf_territory()
     set_block_type_cube(
         temple_origin.x + temple_pillar_offset, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::wolf_symbol
+        BlockType::symbol_wolf
     );
 
     set_block_type_cube(
         temple_origin.x + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::wolf_symbol
+        BlockType::symbol_wolf
     );
 
     set_block_type_cube(
         temple_origin.x + temple_pillar_offset, temple_origin.y + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::wolf_symbol
+        BlockType::symbol_wolf
     );
 
     set_block_type_cube(
@@ -1167,7 +1172,7 @@ World::layout_wolf_territory()
         temple_origin.y + TEMPLE_SIZE_X - temple_pillar_offset - 1,
         temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::wolf_symbol
+        BlockType::symbol_wolf
     );
 
     const IVec3 platform_origin {
@@ -1215,7 +1220,7 @@ World::layout_eagle_territory()
     set_block_type_cube(
         temple_origin.x, temple_origin.y, temple_origin.z,
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
-        BlockType::eagle_stone
+        BlockType::stone_eagle
     );
 
     set_block_type_cube(
@@ -1227,7 +1232,7 @@ World::layout_eagle_territory()
     set_block_type_cube(
         temple_origin.x, temple_origin.y, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_Y, TEMPLE_SIZE_X, 1,
-        BlockType::eagle_stone
+        BlockType::stone_eagle
     );
 
     set_block_type_cube(
@@ -1239,19 +1244,19 @@ World::layout_eagle_territory()
     set_block_type_cube(
         temple_origin.x + temple_pillar_offset, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::eagle_symbol
+        BlockType::symbol_eagle
     );
 
     set_block_type_cube(
         temple_origin.x + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::eagle_symbol
+        BlockType::symbol_eagle
     );
 
     set_block_type_cube(
         temple_origin.x + temple_pillar_offset, temple_origin.y + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::eagle_symbol
+        BlockType::symbol_eagle
     );
 
     set_block_type_cube(
@@ -1259,7 +1264,7 @@ World::layout_eagle_territory()
         temple_origin.y + TEMPLE_SIZE_X - temple_pillar_offset - 1,
         temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::eagle_symbol
+        BlockType::symbol_eagle
     );
 
     const IVec3 platform_origin {
@@ -1331,7 +1336,7 @@ World::layout_bear_territory()
     set_block_type_cube(
         temple_origin.x, temple_origin.y, temple_origin.z,
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
-        BlockType::bear_stone
+        BlockType::stone_bear
     );
 
     set_block_type_cube(
@@ -1343,7 +1348,7 @@ World::layout_bear_territory()
     set_block_type_cube(
         temple_origin.x, temple_origin.y, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
-        BlockType::bear_stone
+        BlockType::stone_bear
     );
 
     set_block_type_cube(
@@ -1355,19 +1360,19 @@ World::layout_bear_territory()
     set_block_type_cube(
         temple_origin.x + temple_pillar_offset, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::bear_symbol
+        BlockType::symbol_bear
     );
 
     set_block_type_cube(
         temple_origin.x + temple_pillar_offset, temple_origin.y + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::bear_symbol
+        BlockType::symbol_bear
     );
 
     set_block_type_cube(
         temple_origin.x + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::bear_symbol
+        BlockType::symbol_bear
     );
 
     set_block_type_cube(
@@ -1375,7 +1380,7 @@ World::layout_bear_territory()
         temple_origin.y + TEMPLE_SIZE_Y - temple_pillar_offset - 1,
         temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::bear_symbol
+        BlockType::symbol_bear
     );
 
     const IVec3 platform_origin {
@@ -1447,7 +1452,7 @@ World::layout_lion_territory()
     set_block_type_cube(
         temple_origin.x, temple_origin.y, temple_origin.z,
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
-        BlockType::lion_stone
+        BlockType::stone_lion
     );
 
     set_block_type_cube(
@@ -1459,7 +1464,7 @@ World::layout_lion_territory()
     set_block_type_cube(
         temple_origin.x, temple_origin.y, temple_origin.z + FLOOR_SIZE_Z - 1,
         TEMPLE_SIZE_X, TEMPLE_SIZE_Y, 1,
-        BlockType::lion_stone
+        BlockType::stone_lion
     );
 
     set_block_type_cube(
@@ -1471,19 +1476,19 @@ World::layout_lion_territory()
     set_block_type_cube(
         temple_origin.x + temple_pillar_offset, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::lion_symbol
+        BlockType::symbol_lion
     );
 
     set_block_type_cube(
         temple_origin.x + temple_pillar_offset, temple_origin.y + TEMPLE_SIZE_Y - temple_pillar_offset - 1, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::lion_symbol
+        BlockType::symbol_lion
     );
 
     set_block_type_cube(
         temple_origin.x + TEMPLE_SIZE_X - temple_pillar_offset - 1, temple_origin.y + temple_pillar_offset, temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::lion_symbol
+        BlockType::symbol_lion
     );
 
     set_block_type_cube(
@@ -1491,7 +1496,7 @@ World::layout_lion_territory()
         temple_origin.y + TEMPLE_SIZE_Y - temple_pillar_offset - 1,
         temple_origin.z + 1,
         1, 1, FLOOR_SIZE_Z - 1,
-        BlockType::lion_symbol
+        BlockType::symbol_lion
     );
 
     const IVec3 platform_origin {

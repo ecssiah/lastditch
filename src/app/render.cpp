@@ -55,6 +55,18 @@ size_t grown_capacity(size_t required)
     }
     return capacity;
 }
+
+u32 encoded_face_texture_index(const FaceType face_type)
+{
+    assert(face_type != FaceType::none);
+
+    const u32 face_type_index { static_cast<u32>(face_type) };
+    const u32 none_index { static_cast<u32>(FaceType::none) };
+    const u32 texture_layer { face_type_index < none_index ? face_type_index : face_type_index - 1 };
+
+    // The sector shader expects a one-based value and subtracts one before sampling.
+    return texture_layer + 1;
+}
 }
 
 SDL_GPUShader* Render::load_shader(const string& name, const SDL_GPUShaderStage stage, const u32 samplers, const u32 uniforms)
@@ -491,17 +503,24 @@ void Render::load_face_textures()
     const size_t layer_count { FACE_TYPE_COUNT - 1 };
     assert(layer_count > 0);
 
-    vector<string> paths(layer_count);
+    vector<string> paths {};
+    paths.reserve(layer_count);
 
-    for (size_t layer { 0 }; layer < layer_count; ++layer)
+    for (size_t face_type_index { 0 }; face_type_index < FACE_TYPE_COUNT; ++face_type_index)
     {
-        const FaceType face_type { static_cast<FaceType>(layer + 1) };
-        paths[layer] = format(
+        const FaceType face_type { static_cast<FaceType>(face_type_index) };
+        if (face_type == FaceType::none)
+        {
+            continue;
+        }
+
+        paths.push_back(format(
             "assets/textures/block/{}.png",
             get_face_type_string(face_type)
-        );
+        ));
     }
 
+    assert(paths.size() == layer_count);
     voxel_render.texture = create_texture_array(FACE_TEXTURE_SIZE, FACE_TEXTURE_SIZE, paths.size(), paths, true);
 }
 
@@ -659,7 +678,7 @@ void Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& gpu_d
     for (s32 index { 0 }; index < 6; ++index)
     {
         const s32 direction { static_cast<s32>(sector_quad.direction) };
-        const s32 face_type { static_cast<s32>(sector_quad.face_type) };
+        const u32 face_texture_index { encoded_face_texture_index(sector_quad.face_type) };
         const auto& source { VOXEL_VERTEX_ARRAY[direction][VERTEX_INDEX_ARRAY[index]] };
         const IVec3 position { sector_quad.local_coordinate + IVec3 { source[0], source[1], source[2] } };
 
@@ -670,7 +689,7 @@ void Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& gpu_d
                 ((position.z & 255u) << 12u)
             ),
             .face_type = static_cast<u32>(
-                (face_type & 255u) |
+                (face_texture_index & 255u) |
                 ((direction & 7u) << 8u)
             ),
         };

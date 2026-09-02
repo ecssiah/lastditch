@@ -1,21 +1,6 @@
 version: 1
 
 face_types:
-    - none
-    - direction_east
-    - direction_west
-    - direction_north
-    - direction_south
-    - direction_up
-    - direction_down
-    - bear_symbol
-    - eagle_symbol
-    - lion_symbol
-    - wolf_symbol
-    - bear_stone
-    - eagle_stone
-    - lion_stone
-    - wolf_stone
     - carved1
     - carved2
     - carved3
@@ -24,11 +9,26 @@ face_types:
     - caution2
     - caution3
     - caution4
+    - direction_down
+    - direction_east
+    - direction_north
+    - direction_south
+    - direction_up
+    - direction_west
+    - engraved1
+    - engraved2
+    - engraved3
+    - engraved4
     - metal1
     - metal2
     - metal3
     - metal4
     - metal5
+    - ornate1
+    - ornate2
+    - ornate3
+    - ornate4
+    - none
     - panel1
     - panel2
     - panel3
@@ -44,19 +44,24 @@ face_types:
     - smooth2
     - smooth3
     - smooth4
+    - stone_bear
+    - stone_eagle
+    - stone_lion
+    - stone_wolf
+    - symbol_bear
+    - symbol_eagle
+    - symbol_lion
+    - symbol_wolf
+    - text_bear
+    - text_eagle
+    - text_lion
+    - text_wolf
+    - vent1
+    - vent2
+    - vent3
+    - vent4
 
 block_types:
-    none:
-        face_types:
-            - none
-    compass:
-        face_types:
-            - direction_east
-            - direction_west
-            - direction_north
-            - direction_south
-            - direction_up
-            - direction_down
     carved1:
         face_types:
             - carved1
@@ -81,6 +86,26 @@ block_types:
     caution4:
         face_types:
             - caution4
+    compass:
+        face_types:
+            - direction_east
+            - direction_west
+            - direction_north
+            - direction_south
+            - direction_up
+            - direction_down
+    engraved1:
+        face_types:
+            - engraved1
+    engraved2:
+        face_types:
+            - engraved2
+    engraved3:
+        face_types:
+            - engraved3
+    engraved4:
+        face_types:
+            - engraved4
     metal1:
         face_types:
             - metal1
@@ -96,6 +121,21 @@ block_types:
     metal5:
         face_types:
             - metal5
+    ornate1:
+        face_types:
+            - ornate1
+    ornate2:
+        face_types:
+            - ornate2
+    ornate3:
+        face_types:
+            - ornate3
+    ornate4:
+        face_types:
+            - ornate4
+    none:
+        face_types:
+            - none
     panel1:
         face_types:
             - panel1
@@ -141,47 +181,91 @@ block_types:
     smooth4:
         face_types:
             - smooth4
-    bear_symbol:
+    stone_bear:
         face_types:
-            - bear_symbol
-            - bear_symbol
-            - bear_symbol
-            - bear_symbol
-            - bear_stone
-            - bear_stone
-    eagle_symbol:
+            - stone_bear
+    stone_eagle:
         face_types:
-            - eagle_symbol
-            - eagle_symbol
-            - eagle_symbol
-            - eagle_symbol
-            - eagle_stone
-            - eagle_stone
-    lion_symbol:
+            - stone_eagle
+    stone_lion:
         face_types:
-            - lion_symbol
-            - lion_symbol
-            - lion_symbol
-            - lion_symbol
-            - lion_stone
-            - lion_stone
-    wolf_symbol:
+            - stone_lion
+    stone_wolf:
         face_types:
-            - wolf_symbol
-            - wolf_symbol
-            - wolf_symbol
-            - wolf_symbol
-            - wolf_stone
-            - wolf_stone
-    bear_stone:
+            - stone_wolf
+    symbol_bear:
         face_types:
-            - bear_stone
-    eagle_stone:
+            - symbol_bear
+            - symbol_bear
+            - symbol_bear
+            - symbol_bear
+            - stone_bear
+            - stone_bear
+    symbol_eagle:
         face_types:
-            - eagle_stone
-    lion_stone:
+            - symbol_eagle
+            - symbol_eagle
+            - symbol_eagle
+            - symbol_eagle
+            - stone_eagle
+            - stone_eagle
+    symbol_lion:
         face_types:
-            - lion_stone
-    wolf_stone:
+            - symbol_lion
+            - symbol_lion
+            - symbol_lion
+            - symbol_lion
+            - stone_lion
+            - stone_lion
+    symbol_wolf:
         face_types:
-            - wolf_stone
+            - symbol_wolf
+            - symbol_wolf
+            - symbol_wolf
+            - symbol_wolf
+            - stone_wolf
+            - stone_wolf
+    text_bear:
+        face_types:
+            - text_bear
+            - text_bear
+            - text_bear
+            - text_bear
+            - stone_bear
+            - stone_bear
+    text_eagle:
+        face_types:
+            - text_eagle
+            - text_eagle
+            - text_eagle
+            - text_eagle
+            - stone_eagle
+            - stone_eagle
+    text_lion:
+        face_types:
+            - text_lion
+            - text_lion
+            - text_lion
+            - text_lion
+            - stone_lion
+            - stone_lion
+    text_wolf:
+        face_types:
+            - text_wolf
+            - text_wolf
+            - text_wolf
+            - text_wolf
+            - stone_wolf
+            - stone_wolf
+    vent1:
+        face_types:
+            - vent1
+    vent2:
+        face_types:
+            - vent2
+    vent3:
+        face_types:
+            - vent3
+    vent4:
+        face_types:
+            - vent4

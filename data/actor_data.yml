@@ -1,11 +1,11 @@
 version: 1
 
 nation_types:
-    wolf:
-        texture: agent_wolf
+    bear:
+        texture: agent_bear
     eagle:
         texture: agent_eagle
     lion:
         texture: agent_lion
-    bear:
-        texture: agent_bear
+    wolf:
+        texture: agent_wolf

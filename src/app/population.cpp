@@ -38,7 +38,7 @@ Population::init_judge()
         .nation_type = NationType::lion,
         .move_speed = JUDGE_DEFAULT_MOVE_SPEED,
         .turn_speed = JUDGE_DEFAULT_TURN_SPEED,
-        .position = { WORLD_CENTER_F32 - NATION_HOME_OFFSET, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
+        .position = { WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
         .rotation = { 0.0f, 0.0f, 90.0f },
         .velocity = { 0.0f, 0.0f, 0.0f },
         .position_target = { WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },

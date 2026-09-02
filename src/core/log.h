@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <filesystem>
-#include <string>
 
 #include "types.h"
 
@@ -33,7 +32,6 @@ private:
     static constexpr const char* log_level_to_string(LogLevel level);
 
     inline static std::ofstream            ld_log_file {};
+    inline static std::ofstream            ld_repository_log_file {};
     inline static std::filesystem::path    ld_log_directory {};
-    inline static std::string              ld_current_day_string {};
 };
-
