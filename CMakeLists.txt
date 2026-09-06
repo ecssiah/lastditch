@@ -59,7 +59,8 @@ endif()
 if(NOT EXISTS "${PROJECT_PYTHON_EXECUTABLE}")
         message(FATAL_ERROR
                 "The project Python environment does not exist.\n"
-                "Run tools/scripts/bootstrap.sh before configuring the project."
+                "Run python3 tools/bootstrap.py (macOS/Linux) or "
+                "py -3 tools/bootstrap.py (Windows) before configuring the project."
         )
 endif()
 
