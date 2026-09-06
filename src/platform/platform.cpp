@@ -6,38 +6,8 @@
 #include "app/constants.h"
 #include "core/log.h"
 
-namespace
-{
-ButtonType button_from_scancode(const SDL_Scancode scancode)
-{
-    switch (scancode)
-    {
-        case SDL_SCANCODE_A:      return ButtonType::A;
-        case SDL_SCANCODE_D:      return ButtonType::D;
-        case SDL_SCANCODE_E:      return ButtonType::E;
-        case SDL_SCANCODE_ESCAPE: return ButtonType::Escape;
-        case SDL_SCANCODE_Q:      return ButtonType::Q;
-        case SDL_SCANCODE_S:      return ButtonType::S;
-        case SDL_SCANCODE_SPACE:  return ButtonType::Space;
-        case SDL_SCANCODE_TAB:    return ButtonType::Tab;
-        case SDL_SCANCODE_W:      return ButtonType::W;
-        default:                  return ButtonType::None;
-    }
-}
-
-ButtonType button_from_mouse(const u8 button)
-{
-    switch (button)
-    {
-        case SDL_BUTTON_LEFT:   return ButtonType::Mouse_1;
-        case SDL_BUTTON_RIGHT:  return ButtonType::Mouse_2;
-        case SDL_BUTTON_MIDDLE: return ButtonType::Mouse_3;
-        default:                return ButtonType::None;
-    }
-}
-}
-
-void Platform::init()
+void
+Platform::init()
 {
     const bool initialized { SDL_Init(SDL_INIT_VIDEO) };
 
@@ -64,12 +34,25 @@ void Platform::init()
         LOG_ERROR("SDL relative mouse mode failed: %s", SDL_GetError());
     }
 
+    const char* sdl_base_path_string { SDL_GetBasePath() };
+
+    if (!sdl_base_path_string)
+    {
+        LOG_ERROR("SDL base path retrieval failed: %s", SDL_GetError());
+    }
+
+    const auto filesystem_base_path { std::filesystem::path { reinterpret_cast<const char8_t*>(sdl_base_path_string) } };
+
+    std::filesystem::current_path(filesystem_base_path);
+
     update_framebuffer_size();
+
     active = true;
     time_previous_ns = SDL_GetTicksNS();
 }
 
-void Platform::quit()
+void
+Platform::quit()
 {
     if (sdl_window)
     {
@@ -80,7 +63,8 @@ void Platform::quit()
     SDL_Quit();
 }
 
-void Platform::set_button(const ButtonType button, const bool down)
+void
+Platform::set_button(const ButtonType button, const bool down)
 {
     if (button != ButtonType::None)
     {
@@ -88,12 +72,45 @@ void Platform::set_button(const ButtonType button, const bool down)
     }
 }
 
-void Platform::clear_buttons()
+void
+Platform::clear_buttons()
 {
     current_button_array.fill(false);
 }
 
-void Platform::handle_event(const SDL_Event& event)
+ButtonType
+Platform::button_from_scancode(const SDL_Scancode scancode)
+{
+    switch (scancode)
+    {
+        case SDL_SCANCODE_A:        return ButtonType::A;
+        case SDL_SCANCODE_D:        return ButtonType::D;
+        case SDL_SCANCODE_E:        return ButtonType::E;
+        case SDL_SCANCODE_ESCAPE:   return ButtonType::Escape;
+        case SDL_SCANCODE_Q:        return ButtonType::Q;
+        case SDL_SCANCODE_S:        return ButtonType::S;
+        case SDL_SCANCODE_SPACE:    return ButtonType::Space;
+        case SDL_SCANCODE_TAB:      return ButtonType::Tab;
+        case SDL_SCANCODE_W:        return ButtonType::W;
+        default:                    return ButtonType::None;
+    }
+}
+
+ButtonType
+Platform::button_from_mouse(const u8 button)
+{
+    switch (button)
+    {
+        case SDL_BUTTON_LEFT:       return ButtonType::Mouse_1;
+        case SDL_BUTTON_RIGHT:      return ButtonType::Mouse_2;
+        case SDL_BUTTON_MIDDLE:     return ButtonType::Mouse_3;
+        default:                    return ButtonType::None;
+    }
+}
+
+
+void
+Platform::handle_event(const SDL_Event& event)
 {
     switch (event.type)
     {
@@ -142,7 +159,8 @@ void Platform::handle_event(const SDL_Event& event)
     }
 }
 
-void Platform::update_time()
+void
+Platform::update_time()
 {
     const u64 time_current_ns { SDL_GetTicksNS() };
     delta_time = static_cast<f64>(time_current_ns - time_previous_ns) / 1'000'000'000.0;
@@ -150,7 +168,8 @@ void Platform::update_time()
     frame_time = std::min<f64>(delta_time, FRAME_TIME_MAX);
 }
 
-void Platform::begin_frame()
+void
+Platform::begin_frame()
 {
     update_time();
     previous_button_array = current_button_array;
@@ -176,7 +195,8 @@ void Platform::begin_frame()
     }
 }
 
-void Platform::update_framebuffer_size()
+void
+Platform::update_framebuffer_size()
 {
     int width {};
     int height {};
@@ -191,7 +211,8 @@ void Platform::update_framebuffer_size()
     }
 }
 
-std::pair<s32, s32> Platform::get_framebuffer_size() const
+std::pair<s32, s32>
+Platform::get_framebuffer_size() const
 {
     int width {};
     int height {};
@@ -199,18 +220,21 @@ std::pair<s32, s32> Platform::get_framebuffer_size() const
     return { width, height };
 }
 
-b32 Platform::button_is_down(const ButtonType button) const
+b32
+Platform::button_is_down(const ButtonType button) const
 {
     return current_button_array[static_cast<s32>(button)];
 }
 
-b32 Platform::button_is_pressed(const ButtonType button) const
+b32
+Platform::button_is_pressed(const ButtonType button) const
 {
     const s32 index { static_cast<s32>(button) };
     return current_button_array[index] && !previous_button_array[index];
 }
 
-b32 Platform::button_is_released(const ButtonType button) const
+b32
+Platform::button_is_released(const ButtonType button) const
 {
     const s32 index { static_cast<s32>(button) };
     return !current_button_array[index] && previous_button_array[index];

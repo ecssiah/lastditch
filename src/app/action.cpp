@@ -43,7 +43,7 @@ const vector<Work> WORK_VECTOR
                                 360.0f
                             );
 
-                            const Vec2 direction { direction_from_angle(actor.rotation_target.z) };
+                            const Vec2 direction { get_direction_from_angle(actor.rotation_target.z) };
 
                             actor.velocity = {
                                 direction.x * actor.move_speed,

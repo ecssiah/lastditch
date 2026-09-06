@@ -6,9 +6,8 @@
 class Actor;
 class Platform;
 class Population;
-struct Work;
 
-struct Inputs
+struct Input
 {
     Vec3 move   { 0.0f };
     Vec2 rotate { 0.0f };
@@ -23,7 +22,7 @@ public:
 
     s32 actor_id { -1 };
 
-    Inputs inputs {};
+    Input input {};
 
     Vec3 position { 0.0f };
     Vec3 rotation { 0.0f };

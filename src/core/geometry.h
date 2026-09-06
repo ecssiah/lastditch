@@ -55,17 +55,13 @@ public:
         :
         x { s },
         y { s }
-    {
-
-    }
+    {}
 
     constexpr Vec2(const f32 x, const f32 y)
         :
         x { x },
         y { y }
-    {
-
-    }
+    {}
 
     explicit Vec2(const IVec2& vec);
 
@@ -118,27 +114,21 @@ public:
         x { s },
         y { s },
         z { s }
-    {
-
-    }
+    {}
 
     constexpr Vec3(const f32 x, const f32 y, const f32 z)
         :
         x { x },
         y { y },
         z { z }
-    {
-
-    }
+    {}
 
     explicit constexpr Vec3(const f32 vec[4])
         :
         x { vec[0] },
         y { vec[1] },
         z { vec[2] }
-    {
-
-    }
+    {}
 
     explicit Vec3(const IVec3& vec);
 
@@ -199,17 +189,13 @@ public:
         :
         x { s },
         y { s }
-    {
-
-    }
+    {}
 
     constexpr IVec2(const s32 x, const s32 y)
         :
         x { x },
         y { y }
-    {
-
-    }
+    {}
 
     constexpr s32&
     operator[](const s32 index)
@@ -242,18 +228,14 @@ public:
         x { s },
         y { s },
         z { s }
-    {
-
-    }
+    {}
 
     constexpr IVec3(const s32 x, const s32 y, const s32 z)
         :
         x { x },
         y { y },
         z { z }
-    {
-
-    }
+    {}
 
     constexpr s32&
     operator[](const s32 index)
@@ -359,13 +341,13 @@ public:
 };
 
 constexpr f32
-to_radians(const f32 degrees)
+to_radians(f32 degrees)
 {
     return degrees * std::numbers::pi_v<f32> / 180.0f;
 }
 
 constexpr f32
-to_degrees(const f32 radians)
+to_degrees(f32 radians)
 {
     return radians * 180.0f / std::numbers::pi_v<f32>;
 }
@@ -382,66 +364,10 @@ Vec3 get_up(const Vec3& rotation);
 f32 interpolate_to(f32 current, f32 target, f32 speed, f32 delta_time);
 Vec3 interpolate_to(const Vec3& current, const Vec3& target, f32 speed, f32 delta_time);
 
-Vec2 direction_from_angle(f32 rotation_degrees);
+Vec2 get_direction_from_angle(f32 rotation_degrees);
+Direction get_direction_opposite(const Direction& direction);
+Vec3 get_direction_normal(const Direction& direction);
+std::string_view get_direction_string(Direction direction);
+Direction get_direction_from_mask(const u8 mask);
 
-constexpr Direction
-get_direction_opposite(const Direction& direction)
-{
-    switch (direction)
-    {
-        case Direction::East:   return Direction::West;
-        case Direction::West:   return Direction::East;
-        case Direction::North:  return Direction::South;
-        case Direction::South:  return Direction::North;
-        case Direction::Up:     return Direction::Down;
-        case Direction::Down:   return Direction::Up;
-        default:                throw std::invalid_argument("invalid direction");
-    }
-}
-
-constexpr Vec3
-get_direction_normal(const Direction& direction)
-{
-    const s32 direction_index { 3 * static_cast<s32>(direction) };
-
-    return {
-        DIRECTION_NORMAL_ARRAY[direction_index + 0],
-        DIRECTION_NORMAL_ARRAY[direction_index + 1],
-        DIRECTION_NORMAL_ARRAY[direction_index + 2]
-    };
-}
-
-constexpr std::string_view
-get_direction_string(Direction direction)
-{
-    switch (direction)
-    {
-        case Direction::East:   return "West";
-        case Direction::West:   return "East";
-        case Direction::North:  return "South";
-        case Direction::South:  return "North";
-        case Direction::Up:     return "Down";
-        case Direction::Down:   return "Up";
-        default:                throw std::invalid_argument("invalid direction");
-    }
-}
-
-constexpr Direction
-get_direction_from_mask(const u8 mask)
-{
-    if (mask == 0)
-    {
-        throw std::invalid_argument("empty direction mask");
-    }
-
-    const s32 index { __builtin_ctz(static_cast<unsigned>(mask)) };
-
-    if (index >= DIRECTION_COUNT)
-    {
-        throw std::invalid_argument("invalid direction mask");
-    }
-
-    return static_cast<Direction>(index);
-}
-
-IVec2 rotate_point(IVec2 point, IVec2 pivot, Direction direction);
+IVec2 rotate_point_by_direction(IVec2 point, IVec2 pivot, Direction direction);

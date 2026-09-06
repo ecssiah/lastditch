@@ -505,8 +505,7 @@ get_projection_matrix(const f32 fov_y, const f32 aspect, const f32 near, const f
     
     Mat4 result {};
     result[0][0] = 1.0f / (aspect * tan_half_fov_y);
-    result[1][1] = 1.0f / (tan_half_fov_y);
-    // Right-handed, zero-to-one depth range used by SDL_GPU.
+    result[1][1] = 1.0f / tan_half_fov_y;
     result[2][2] = far / (near - far);
     result[2][3] = -1.0f;
     result[3][2] = (far * near) / (near - far);
@@ -572,7 +571,7 @@ interpolate_to(const Vec3& current, const Vec3& target, const f32 speed, const f
 }
 
 Vec2
-direction_from_angle(const f32 rotation_degrees)
+get_direction_from_angle(const f32 rotation_degrees)
 {
     return {
         cos(to_radians(rotation_degrees)),
@@ -580,8 +579,68 @@ direction_from_angle(const f32 rotation_degrees)
     };
 }
 
+Direction
+get_direction_opposite(const Direction& direction)
+{
+    switch (direction)
+    {
+        case Direction::East:   return Direction::West;
+        case Direction::West:   return Direction::East;
+        case Direction::North:  return Direction::South;
+        case Direction::South:  return Direction::North;
+        case Direction::Up:     return Direction::Down;
+        case Direction::Down:   return Direction::Up;
+        default:                throw std::invalid_argument("invalid direction");
+    }
+}
+
+Vec3
+get_direction_normal(const Direction& direction)
+{
+    const s32 direction_index { 3 * static_cast<s32>(direction) };
+
+    return {
+        DIRECTION_NORMAL_ARRAY[direction_index + 0],
+        DIRECTION_NORMAL_ARRAY[direction_index + 1],
+        DIRECTION_NORMAL_ARRAY[direction_index + 2]
+    };
+}
+
+std::string_view
+get_direction_string(const Direction direction)
+{
+    switch (direction)
+    {
+        case Direction::East:   return "West";
+        case Direction::West:   return "East";
+        case Direction::North:  return "South";
+        case Direction::South:  return "North";
+        case Direction::Up:     return "Down";
+        case Direction::Down:   return "Up";
+        default:                throw std::invalid_argument("invalid direction");
+    }
+}
+
+Direction
+get_direction_from_mask(const u8 mask)
+{
+    if (mask == 0)
+    {
+        throw std::invalid_argument("empty direction mask");
+    }
+
+    const s32 index { __builtin_ctz(static_cast<unsigned>(mask)) };
+
+    if (index >= DIRECTION_COUNT)
+    {
+        throw std::invalid_argument("invalid direction mask");
+    }
+
+    return static_cast<Direction>(index);
+}
+
 IVec2
-rotate_point(const IVec2 point, const IVec2 pivot, const Direction direction)
+rotate_point_by_direction(const IVec2 point, const IVec2 pivot, const Direction direction)
 {
     const IVec2 position { point - pivot };
 

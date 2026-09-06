@@ -65,6 +65,9 @@ private:
     void update_framebuffer_size();
     void clear_buttons();
 
+    static ButtonType button_from_scancode(SDL_Scancode scancode);
+    static ButtonType button_from_mouse(u8 button);
+
     SDL_Window* sdl_window { nullptr };
     u64 time_previous_ns {};
     bool ignore_pointer_delta { true };

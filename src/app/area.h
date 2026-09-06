@@ -2,7 +2,6 @@
 
 #include <unordered_set>
 
-#include "direction.h"
 #include "core/geometry.h"
 #include "core/types.h"
 

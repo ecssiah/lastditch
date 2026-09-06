@@ -76,49 +76,49 @@ Control::update(const Platform& platform, Population& population)
 void
 Control::gather_inputs(const Platform& platform)
 {
-    inputs = {};
+    input = {};
 
     if (platform.button_is_down(ButtonType::A))
     {
-        inputs.move.x -= 1.0f;
+        input.move.x -= 1.0f;
     }
 
     if (platform.button_is_down(ButtonType::D))
     {
-        inputs.move.x += 1.0f;
+        input.move.x += 1.0f;
     }
 
     if (platform.button_is_down(ButtonType::W))
     {
-        inputs.move.y += 1.0f;
+        input.move.y += 1.0f;
     }
 
     if (platform.button_is_down(ButtonType::S))
     {
-        inputs.move.y -= 1.0f;
+        input.move.y -= 1.0f;
     }
 
-    inputs.move = inputs.move.normalize();
+    input.move = input.move.normalize();
 
     if (platform.button_is_down(ButtonType::E))
     {
-        inputs.move.z += 1.0f;
+        input.move.z += 1.0f;
     }
 
     if (platform.button_is_down(ButtonType::Q))
     {
-        inputs.move.z -= 1.0f;
+        input.move.z -= 1.0f;
     }
 
     if (abs(platform.pointer_delta_x) > EPSILON || abs(platform.pointer_delta_y) > EPSILON)
     {
-        inputs.rotate.x = static_cast<f32>(platform.pointer_delta_x);
-        inputs.rotate.y = static_cast<f32>(platform.pointer_delta_y);
+        input.rotate.x = static_cast<f32>(platform.pointer_delta_x);
+        input.rotate.y = static_cast<f32>(platform.pointer_delta_y);
     }
 
     if (platform.button_is_pressed(ButtonType::Space))
     {
-        inputs.jump = 1.0f;
+        input.jump = 1.0f;
     }
 }
 
@@ -126,17 +126,17 @@ void
 Control::drive()
 {
     const Vec3 direction {
-        inputs.move.x * get_right(rotation) +
-        inputs.move.y * get_forward(rotation) +
-        inputs.move.z * Vec3::unit_z()
+        input.move.x * get_right(rotation) +
+        input.move.y * get_forward(rotation) +
+        input.move.z * Vec3::unit_z()
     };
 
     const Vec3 velocity { DEBUG_CONTROL_SPEED * direction };
 
     position = position + FIXED_FRAME_TIME_32 * velocity;
 
-    rotation.z -= CAMERA_SENSITIVITY_X * inputs.rotate.x;
-    rotation.x -= CAMERA_SENSITIVITY_Y * inputs.rotate.y;
+    rotation.z -= CAMERA_SENSITIVITY_X * input.rotate.x;
+    rotation.x -= CAMERA_SENSITIVITY_Y * input.rotate.y;
 
     if (rotation.x > CAMERA_PITCH_LIMIT)
     {
@@ -161,8 +161,8 @@ Control::drive_actor(Actor& actor) const
         0.0f
     };
 
-    const Vec3 velocity_right { inputs.move.x * right };
-    const Vec3 velocity_forward { inputs.move.y * forward_xy };
+    const Vec3 velocity_right { input.move.x * right };
+    const Vec3 velocity_forward { input.move.y * forward_xy };
 
     const Vec3 velocity {
         actor.move_speed * (velocity_right + velocity_forward).normalize()
@@ -171,8 +171,8 @@ Control::drive_actor(Actor& actor) const
     actor.velocity.x = velocity.x;
     actor.velocity.y = velocity.y;
 
-    actor.rotation_target.z -= CAMERA_SENSITIVITY_X * inputs.rotate.x;
-    actor.rotation_target.x -= CAMERA_SENSITIVITY_Y * inputs.rotate.y;
+    actor.rotation_target.z -= CAMERA_SENSITIVITY_X * input.rotate.x;
+    actor.rotation_target.x -= CAMERA_SENSITIVITY_Y * input.rotate.y;
 
     if (actor.rotation_target.x > CAMERA_PITCH_LIMIT)
     {
@@ -184,7 +184,7 @@ Control::drive_actor(Actor& actor) const
         actor.rotation_target.x = -CAMERA_PITCH_LIMIT;
     }
 
-    if (inputs.jump == 1.0f && actor.is_grounded)
+    if (input.jump == 1.0f && actor.is_grounded)
     {
         actor.velocity.z = ACTOR_DEFAULT_JUMP_SPEED;
     }
