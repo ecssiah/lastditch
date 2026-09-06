@@ -200,15 +200,53 @@ target_compile_options(
         -Wno-missing-braces
 )
 
-add_custom_target(
-        shaders
-        COMMAND
-        "${CMAKE_CURRENT_SOURCE_DIR}/tools/scripts/compile_shaders.sh"
-                "${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders"
-                "${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders/compiled"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Regenerating SDL_GPU shader artifacts"
+set(SHADER_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders")
+set(SHADER_OUTPUT_DIRECTORY "${SHADER_SOURCE_DIRECTORY}/compiled")
+set(SHADER_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/tools/python/compile_shaders.py")
+
+file(
+        GLOB SHADER_SOURCES
+        CONFIGURE_DEPENDS
+        "${SHADER_SOURCE_DIRECTORY}/*.vert.hlsl"
+        "${SHADER_SOURCE_DIRECTORY}/*.frag.hlsl"
 )
+
+set(SHADER_OUTPUTS)
+
+foreach(SHADER_SOURCE IN LISTS SHADER_SOURCES)
+        get_filename_component(SHADER_FILENAME "${SHADER_SOURCE}" NAME)
+        string(REGEX REPLACE "\\.hlsl$" "" SHADER_NAME "${SHADER_FILENAME}")
+
+        set(SHADER_SPIRV "${SHADER_OUTPUT_DIRECTORY}/${SHADER_NAME}.spv")
+        set(SHADER_MSL "${SHADER_OUTPUT_DIRECTORY}/${SHADER_NAME}.msl")
+        set(SHADER_DXIL "${SHADER_OUTPUT_DIRECTORY}/${SHADER_NAME}.dxil")
+
+        add_custom_command(
+                OUTPUT
+                "${SHADER_SPIRV}"
+                "${SHADER_MSL}"
+
+                BYPRODUCTS "${SHADER_DXIL}"
+
+                COMMAND
+                "${Python3_EXECUTABLE}"
+                "${SHADER_COMPILER}"
+                "${SHADER_SOURCE_DIRECTORY}"
+                "${SHADER_OUTPUT_DIRECTORY}"
+                "${SHADER_SOURCE}"
+
+                DEPENDS
+                "${SHADER_COMPILER}"
+                "${SHADER_SOURCE}"
+
+                COMMENT "Compiling SDL_GPU shader ${SHADER_FILENAME}"
+                VERBATIM
+        )
+
+        list(APPEND SHADER_OUTPUTS "${SHADER_SPIRV}" "${SHADER_MSL}")
+endforeach()
+
+add_custom_target(shaders DEPENDS ${SHADER_OUTPUTS})
 
 add_custom_command(
         TARGET
