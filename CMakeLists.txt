@@ -74,6 +74,8 @@ set(
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
+set(DATA_GENERATED_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
 set(BLOCK_DATA_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/data/block_data.yml")
 set(BLOCK_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/python/generate_block_data.py")
 set(BLOCK_DATA_GENERATED_HEADER "${DATA_GENERATED_DIRECTORY}/block_data.generated.h")
@@ -81,8 +83,6 @@ set(BLOCK_DATA_GENERATED_HEADER "${DATA_GENERATED_DIRECTORY}/block_data.generate
 set(ACTOR_DATA_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/data/actor_data.yml")
 set(ACTOR_DATA_GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/tools/python/generate_actor_data.py")
 set(ACTOR_DATA_GENERATED_HEADER "${DATA_GENERATED_DIRECTORY}/actor_data.generated.h")
-
-set(DATA_GENERATED_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 add_custom_command(
         OUTPUT "${BLOCK_DATA_GENERATED_HEADER}"

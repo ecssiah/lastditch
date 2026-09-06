@@ -139,10 +139,11 @@ def generate_header(config: Configuration) -> str:
         "",
         "#include <array>",
         "#include <cstddef>",
-        "#include <cstdint>",
         "#include <string_view>",
+        '#include "core/types.h"',
         "",
-        "enum class NationType : std::uint16_t {",
+        "enum class NationType : u16",
+        "{",
     ])
 
     for nation in config.nation_types:
@@ -151,21 +152,22 @@ def generate_header(config: Configuration) -> str:
     lines.extend([
         "};",
         "",
-        f"inline constexpr std::size_t NATION_TYPE_COUNT = "
-        f"{len(config.nation_types)};",
+        f"inline constexpr s32 NATION_TYPE_COUNT {{ {len(config.nation_types)} }};",
         "",
-        "struct ActorData {",
+        "struct ActorData",
+        "{",
         "    std::string_view texture_name;",
         "};",
         "",
         "inline constexpr",
-        "std::array<ActorData, NATION_TYPE_COUNT> actor_data{{",
+        "std::array<ActorData, NATION_TYPE_COUNT> actor_data",
+        "{{",
     ])
 
     for nation in config.nation_types:
         lines.extend([
             f"    // NationType::{nation.name}",
-            f'    ActorData{{ .texture_name = "{nation.texture}" }},',
+            f'    ActorData {{ .texture_name = "{nation.texture}" }},',
         ])
 
     lines.extend([
@@ -173,7 +175,7 @@ def generate_header(config: Configuration) -> str:
         "",
         "[[nodiscard]]",
         "inline constexpr std::string_view",
-        "get_nation_type_string(NationType type) noexcept",
+        "get_nation_type_string(const NationType type) noexcept",
         "{",
         "    switch (type)",
         "    {",
@@ -192,7 +194,7 @@ def generate_header(config: Configuration) -> str:
         "",
         "[[nodiscard]]",
         "inline constexpr const ActorData&",
-        "get_actor_data(NationType type) noexcept",
+        "get_actor_data(const NationType type) noexcept",
         "{",
         "    return actor_data[static_cast<std::size_t>(type)];",
         "}",

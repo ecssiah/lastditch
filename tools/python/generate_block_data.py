@@ -189,10 +189,11 @@ def generate_header(config: Configuration) -> str:
         "",
         "#include <array>",
         "#include <cstddef>",
-        "#include <cstdint>",
         "#include <string_view>",
+        '#include "core/types.h"',
         "",
-        "enum class FaceType : std::uint16_t {",
+        "enum class FaceType : u16",
+        "{",
     ])
 
     for face_name in config.face_types:
@@ -201,7 +202,8 @@ def generate_header(config: Configuration) -> str:
     lines.extend([
         "};",
         "",
-        "enum class BlockType : std::uint16_t {",
+        "enum class BlockType : u16",
+        "{",
     ])
 
     for block in config.block_types:
@@ -212,7 +214,7 @@ def generate_header(config: Configuration) -> str:
         "",
         "[[nodiscard]]",
         "inline constexpr std::string_view",
-        "get_face_type_string(FaceType type) noexcept",
+        "get_face_type_string(const FaceType type) noexcept",
         "{",
         "    switch (type)",
         "    {",
@@ -231,7 +233,7 @@ def generate_header(config: Configuration) -> str:
         "",
         "[[nodiscard]]",
         "inline constexpr std::string_view",
-        "get_block_type_string(BlockType type) noexcept",
+        "get_block_type_string(const BlockType type) noexcept",
         "{",
         "    switch (type)",
         "    {",
@@ -248,24 +250,24 @@ def generate_header(config: Configuration) -> str:
         "    return {};",
         "}",
         "",
-        f"inline constexpr std::size_t FACE_TYPE_COUNT = "
-        f"{len(config.face_types)};",
+        f"inline constexpr s32 FACE_TYPE_COUNT {{ {len(config.face_types)} }};",
         "",
-        f"inline constexpr std::size_t BLOCK_TYPE_COUNT = "
-        f"{len(config.block_types)};",
+        f"inline constexpr s32 BLOCK_TYPE_COUNT {{ {len(config.block_types)} }};",
         "",
-        "struct BlockData {",
+        "struct BlockData",
+        "{",
         "    std::array<FaceType, 6> face_type_array;",
         "};",
         "",
         "inline constexpr "
-        "std::array<BlockData, BLOCK_TYPE_COUNT> block_types{{",
+        "std::array<BlockData, BLOCK_TYPE_COUNT> block_types",
+        "{{",
     ])
 
     for block in config.block_types:
         lines.extend([
             f"    // BlockType::{block.name}",
-            "    BlockData{",
+            "    BlockData {",
             "        .face_type_array = {",
         ])
 
@@ -281,7 +283,7 @@ def generate_header(config: Configuration) -> str:
         "}};",
         "",
         "[[nodiscard]]",
-        "inline constexpr const BlockData& get_block_data(BlockType type) noexcept",
+        "inline constexpr const BlockData& get_block_data(const BlockType type) noexcept",
         "{",
         "    return block_types[static_cast<std::size_t>(type)];",
         "}",

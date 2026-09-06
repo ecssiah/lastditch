@@ -1,7 +1,4 @@
-#include <filesystem>
 #include <memory>
-
-#include <SDL3/SDL_filesystem.h>
 
 #include "app/app.h"
 

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <exception>
 #include <iterator>
+#include <ranges>
 
 #include "actor.h"
 #include "area.h"
@@ -322,18 +323,6 @@ World::init()
         }
     }
 
-    set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_bear);
-    set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_wolf);
-    set_block_type(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_lion);
-    set_block_type(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_eagle);
-
-    set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_bear);
-    set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_wolf);
-    set_block_type(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_lion);
-    set_block_type(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_eagle);
-
-    set_block_type(WORLD_CENTER_S32, WORLD_CENTER_S32, ROOF_Z + 4, BlockType::compass);
-
     calculate_direction_masks();
 
     LOG_INFO("WORLD INIT");
@@ -342,7 +331,8 @@ World::init()
 b32
 World::cell_coordinate_is_valid(const s32 x, const s32 y, const s32 z)
 {
-    const b32 is_valid {
+    const b32 is_valid
+    {
         x >= 0 && x < static_cast<s32>(WORLD_SIZE_IN_CELLS) &&
         y >= 0 && y < static_cast<s32>(WORLD_SIZE_IN_CELLS) &&
         z >= 0 && z < static_cast<s32>(SECTOR_HEIGHT_IN_CELLS)
@@ -354,7 +344,8 @@ World::cell_coordinate_is_valid(const s32 x, const s32 y, const s32 z)
 b32
 World::sector_coordinate_is_valid(const s32 x, const s32 y)
 {
-    const b32 is_valid {
+    const b32 is_valid
+    {
         x >= 0 && x < static_cast<s32>(WORLD_SIZE_IN_SECTORS) &&
         y >= 0 && y < static_cast<s32>(WORLD_SIZE_IN_SECTORS)
     };
@@ -371,7 +362,8 @@ World::sector_coordinate_to_index(const IVec2 sector_coordinate)
 IVec2
 World::sector_index_to_coordinate(const s32 sector_index)
 {
-    return {
+    return
+    {
         sector_index % WORLD_SIZE_IN_SECTORS,
         sector_index / WORLD_SIZE_IN_SECTORS,
     };
@@ -402,7 +394,8 @@ World::cell_index_to_coordinate(s32 cell_index)
 IVec2
 World::cell_coordinate_to_sector_coordinate(const s32 x, const s32 y)
 {
-    return {
+    return
+    {
         x >> SECTOR_SIZE_IN_CELLS_LOG2,
         y >> SECTOR_SIZE_IN_CELLS_LOG2,
     };
@@ -420,7 +413,8 @@ World::cell_coordinate_to_sector_index(const s32 x, const s32 y)
 IVec3
 World::cell_coordinate_to_local_coordinate(const s32 x, const s32 y, const s32 z)
 {
-    return {
+    return
+    {
         x & SECTOR_SIZE_IN_CELLS - 1,
         y & SECTOR_SIZE_IN_CELLS - 1,
         z,
@@ -432,7 +426,8 @@ World::cell_coordinate_to_local_index(const s32 x, const s32 y, const s32 z)
 {
     const IVec3 local_coordinate { cell_coordinate_to_local_coordinate(x, y, z) };
 
-    const s32 local_index {
+    const s32 local_index
+    {
         (local_coordinate.x << (0 * SECTOR_SIZE_IN_CELLS_LOG2)) +
         (local_coordinate.y << (1 * SECTOR_SIZE_IN_CELLS_LOG2)) +
         (local_coordinate.z << (2 * SECTOR_SIZE_IN_CELLS_LOG2))
@@ -444,7 +439,8 @@ World::cell_coordinate_to_local_index(const s32 x, const s32 y, const s32 z)
 Vec3
 World::cell_coordinate_to_position(const s32 x, const s32 y, const s32 z)
 {
-    return {
+    return
+    {
         static_cast<f32>(x),
         static_cast<f32>(y),
         static_cast<f32>(z),
@@ -454,7 +450,8 @@ World::cell_coordinate_to_position(const s32 x, const s32 y, const s32 z)
 IVec3
 World::position_to_cell_coordinate(const f32 x, const f32 y, const f32 z)
 {
-    return {
+    return
+    {
         static_cast<s32>(floorf(x)),
         static_cast<s32>(floorf(y)),
         static_cast<s32>(floorf(z)),
@@ -486,7 +483,8 @@ World::is_clear(const s32 x, const s32 y, const s32 z, const u8 direction_mask)
 
             const Vec3 direction_normal { get_direction_normal(direction) };
 
-            const IVec3 neighbor_position {
+            const IVec3 neighbor_position
+            {
                 x + static_cast<s32>(direction_normal.x),
                 y + static_cast<s32>(direction_normal.y),
                 z + static_cast<s32>(direction_normal.z),
@@ -568,7 +566,8 @@ World::construct_tower()
 {
     for (s32 floor_number { 0 }; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        const IVec3 floor_origin {
+        const IVec3 floor_origin
+        {
             TOWER_BORDER,
             TOWER_BORDER,
             floor_number * FLOOR_SIZE_Z,
@@ -760,7 +759,8 @@ World::get_content_block_type_vector(const s32 content_level)
 {
     if (content_level == 1)
     {
-        return {
+        return
+        {
             BlockType::server1,
             BlockType::server2,
             BlockType::server3,
@@ -769,7 +769,8 @@ World::get_content_block_type_vector(const s32 content_level)
 
     if (content_level == 2)
     {
-        return {
+        return
+        {
             BlockType::server1,
             BlockType::server2,
             BlockType::server3,
@@ -780,7 +781,8 @@ World::get_content_block_type_vector(const s32 content_level)
 
     if (content_level == 3)
     {
-        return {
+        return
+        {
             BlockType::server3,
             BlockType::server4,
             BlockType::server5,
@@ -861,7 +863,8 @@ World::place_content(const s32 floor_number)
 
         for (s32 stack_index { 0 }; stack_index < stack_count; ++stack_index)
         {
-            const IVec2 stack_position {
+            const IVec2 stack_position
+            {
                 area.bounds.min.x + 1 + random.uniform(0, area_bounds_size.x - 3),
                 area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 3)
             };
@@ -929,7 +932,8 @@ World::layout_elevator_areas()
 
         const AreaID elevator_area_id { area_id_generator.next() };
 
-        Area elevator_shaft {
+        const Area elevator_shaft
+        {
             .area_id = elevator_area_id,
             .area_type = area_type,
             .floor_number = floor_number,
@@ -1028,10 +1032,9 @@ World::layout_tower_areas()
                 const Area area_copy { iterator->second };
                 const IVec2 area_size { area_copy.bounds.size() };
 
-                const Axis axis_split {
-                    area_size[axis_x_value] > area_size[axis_y_value]
-                        ? Axis::X
-                        : Axis::Y
+                const Axis axis_split
+                {
+                    area_size[axis_x_value] > area_size[axis_y_value] ? Axis::X : Axis::Y
                 };
 
                 const s32 axis_split_value { static_cast<s32>(axis_split) };
@@ -1070,14 +1073,16 @@ World::layout_tower_areas()
         {
             const SectionType section_type { static_cast<SectionType>(section_index) };
 
-            const b32 quadrant_section {
+            const b32 quadrant_section
+            {
                 section_type == SectionType::Quadrant1 ||
                 section_type == SectionType::Quadrant2 ||
                 section_type == SectionType::Quadrant3 ||
                 section_type == SectionType::Quadrant4
             };
 
-            if (quadrant_section) {
+            if (quadrant_section)
+            {
                 continue;
             }
 
@@ -1092,7 +1097,7 @@ World::layout_tower_areas()
                     .area_id = section_area_id,
                     .area_type = AreaType::Free,
                     .floor_number = floor_number,
-                    .bounds = {
+                    .bounds ={
                         section_origin,
                         section_origin + section_size
                     },
@@ -1105,7 +1110,8 @@ World::layout_tower_areas()
 void
 World::layout_wolf_territory()
 {
-    const IVec3 temple_origin {
+    constexpr IVec3 temple_origin
+    {
         TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         ROOF_Z,
@@ -1113,11 +1119,12 @@ World::layout_wolf_territory()
 
     constexpr s32 temple_pillar_offset { 2 };
 
-    const Area temple_area {
+    const Area temple_area
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
-        .bounds = {
+        .bounds ={
             { temple_origin.x, temple_origin.y },
             { temple_origin.x + TEMPLE_SIZE_Y, temple_origin.y + TEMPLE_SIZE_X }
         },
@@ -1175,13 +1182,15 @@ World::layout_wolf_territory()
         BlockType::symbol_wolf
     );
 
-    const IVec3 platform_origin {
+    constexpr IVec3 platform_origin
+    {
         TOWER_BORDER + TOWER_SIZE,
         WORLD_CENTER_S32 - PLATFORM_SIZE_X / 2,
         ROOF_Z,
     };
 
-    const Area platform_area {
+    const Area platform_area
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Platform,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1197,7 +1206,8 @@ World::layout_wolf_territory()
 void
 World::layout_eagle_territory()
 {
-    const IVec3 temple_origin {
+    const IVec3 temple_origin
+    {
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         ROOF_Z,
@@ -1205,7 +1215,8 @@ World::layout_eagle_territory()
 
     constexpr s32 temple_pillar_offset { 2 };
 
-    const Area temple_area {
+    const Area temple_area
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1267,13 +1278,15 @@ World::layout_eagle_territory()
         BlockType::symbol_eagle
     );
 
-    const IVec3 platform_origin {
+    constexpr IVec3 platform_origin
+    {
         TOWER_BORDER - PLATFORM_SIZE_Y,
         WORLD_CENTER_S32 - PLATFORM_SIZE_X / 2,
         ROOF_Z,
     };
 
-    const Area platform_area {
+    const Area platform_area
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1313,7 +1326,8 @@ World::layout_eagle_territory()
 void
 World::layout_bear_territory()
 {
-    const IVec3 temple_origin {
+    constexpr IVec3 temple_origin
+    {
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         ROOF_Z,
@@ -1321,7 +1335,8 @@ World::layout_bear_territory()
 
     constexpr s32 temple_pillar_offset { 2 };
 
-    const Area temple_area {
+    const Area temple_area
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1383,13 +1398,15 @@ World::layout_bear_territory()
         BlockType::symbol_bear
     );
 
-    const IVec3 platform_origin {
+    constexpr IVec3 platform_origin
+    {
         WORLD_CENTER_S32 - PLATFORM_SIZE_X / 2,
         TOWER_BORDER + TOWER_SIZE,
         ROOF_Z,
     };
 
-    const Area platform_area {
+    const Area platform_area
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1429,7 +1446,8 @@ World::layout_bear_territory()
 void
 World::layout_lion_territory()
 {
-    const IVec3 temple_origin {
+    constexpr IVec3 temple_origin
+    {
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
         TOWER_SIZE - TEMPLE_BORDER_OFFSET,
         ROOF_Z,
@@ -1437,7 +1455,8 @@ World::layout_lion_territory()
 
     constexpr s32 temple_pillar_offset { 2 };
 
-    const Area temple_area {
+    const Area temple_area
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1499,13 +1518,15 @@ World::layout_lion_territory()
         BlockType::symbol_lion
     );
 
-    const IVec3 platform_origin {
+    const IVec3 platform_origin
+    {
         WORLD_CENTER_S32 - PLATFORM_SIZE_X / 2,
         TOWER_BORDER - PLATFORM_SIZE_Y,
         ROOF_Z,
     };
 
-    const Area platform_area {
+    const Area platform_area
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Free,
         .floor_number = ROOF_FLOOR_NUMBER,
@@ -1545,13 +1566,27 @@ World::layout_lion_territory()
 void
 World::layout_test_area()
 {
-    const IVec3 test_area_position {
+    set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_bear);
+    set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_wolf);
+    set_block_type(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_lion);
+    set_block_type(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_eagle);
+
+    set_block_type(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_bear);
+    set_block_type(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_wolf);
+    set_block_type(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_lion);
+    set_block_type(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_eagle);
+
+    set_block_type(WORLD_CENTER_S32, WORLD_CENTER_S32, ROOF_Z + 4, BlockType::compass);
+
+    constexpr IVec3 test_area_position
+    {
         WORLD_CENTER_S32 - 20,
         WORLD_CENTER_S32 + 20,
         TOWER_FLOOR_COUNT * FLOOR_SIZE_Z,
     };
 
-    const Area test_room1 {
+    const Area test_room1
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
@@ -1561,7 +1596,8 @@ World::layout_test_area()
         },
     };
 
-    const Area test_room2 {
+    const Area test_room2
+    {
         .area_id = area_id_generator.next(),
         .area_type = AreaType::Wireframe,
         .floor_number = TOWER_FLOOR_COUNT,
@@ -1612,7 +1648,8 @@ World::set_block_type_box(const s32 x, const s32 y, const s32 z, const s32 size_
         {
             for (s32 cell_x { x }; cell_x < max.x; ++cell_x)
             {
-                const b32 at_boundary {
+                const b32 at_boundary
+                {
                     cell_x == x || cell_x == max.x - 1 ||
                     cell_y == y || cell_y == max.y - 1 ||
                     cell_z == z || cell_z == max.z - 1
@@ -1777,7 +1814,7 @@ World::construct_areas(const s32 floor_number)
 {
     const unordered_map<AreaID, Area>& area_map { area_map_vector[floor_number] };
 
-    for (const auto& [area_id, area] : area_map)
+    for (const auto &area: area_map | views::values)
     {
         switch (area.area_type)
         {
@@ -1807,7 +1844,7 @@ World::construct_doors(const s32 floor_number)
     const unordered_map<AreaID, Area>& area_map { area_map_vector[floor_number] };
     const unordered_map<LinkID, Link>& link_map { link_map_vector[floor_number] };
 
-    for (const auto& [link_id, link] : link_map)
+    for (const auto &link: link_map | views::values)
     {
         const Area& area_1 { area_map.at(link.area_1_id) };
         const Area& area_2 { area_map.at(link.area_2_id) };
@@ -1837,7 +1874,7 @@ World::construct_doors(const s32 floor_number)
 }
 
 u8
-World::get_direction_mask(const s32 x, const s32 y, const s32 z)
+World::get_direction_mask(const s32 x, const s32 y, const s32 z) const
 {
     u8 direction_mask { 0 };
     const s32 cell_index { cell_coordinate_to_index(x, y, z) };
@@ -1846,13 +1883,15 @@ World::get_direction_mask(const s32 x, const s32 y, const s32 z)
     {
         const s32 offset { direction_index * 3 };
 
-        const IVec3 neighbor_position {
+        const IVec3 neighbor_position
+        {
             x + static_cast<s32>(DIRECTION_NORMAL_ARRAY[offset + 0]),
             y + static_cast<s32>(DIRECTION_NORMAL_ARRAY[offset + 1]),
             z + static_cast<s32>(DIRECTION_NORMAL_ARRAY[offset + 2]),
         };
 
-        const b32 valid_neighbor {
+        const b32 valid_neighbor
+        {
             cell_coordinate_is_valid(neighbor_position.x, neighbor_position.y, neighbor_position.z)
         };
 
@@ -1895,7 +1934,8 @@ World::calculate_direction_masks()
 Border
 World::calculate_border(const Area& area_left, const Area& area_right)
 {
-    Border border {
+    Border border
+    {
         .area_1_id = area_left.area_id,
         .area_2_id = area_right.area_id,
     };
@@ -1981,7 +2021,8 @@ World::calculate_link(const Border& border)
 {
     if (border.axis == Axis::X)
     {
-        return {
+        return
+        {
             .link_id = link_id_generator.next(),
             .area_1_id = border.area_1_id,
             .area_2_id = border.area_2_id,
@@ -1994,12 +2035,13 @@ World::calculate_link(const Border& border)
     }
     else if (border.axis == Axis::Y)
     {
-        return {
+        return
+        {
             .link_id = link_id_generator.next(),
             .area_1_id = border.area_1_id,
             .area_2_id = border.area_2_id,
             .axis = border.axis,
-            .position = {
+            .position ={
                 border.bounds.position().x,
                 border.bounds.position().y + border.bounds.size().y / 2,
             }

@@ -134,11 +134,11 @@ private:
     void construct_areas(s32 floor_number);
     void construct_doors(s32 floor_number);
 
-    u8 get_direction_mask(s32 x, s32 y, s32 z);
+    u8 get_direction_mask(s32 x, s32 y, s32 z) const;
 
     void calculate_direction_masks();
 
-    Border calculate_border(const Area& area_left, const Area& area_right);
+    static Border calculate_border(const Area& area_left, const Area& area_right);
     Link calculate_link(const Border& border);
 
     void calculate_link_vector(s32 floor_number);
