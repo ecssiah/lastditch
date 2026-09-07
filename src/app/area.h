@@ -10,7 +10,7 @@ enum class AreaType : u8
     Free,
     Room,
     ElevatorTop,
-    Elevator,
+    ElevatorMid,
     ElevatorBase,
     Temple,
     Wireframe,

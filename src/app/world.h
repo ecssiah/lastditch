@@ -115,24 +115,30 @@ private:
     void layout_eagle_territory();
     void layout_bear_territory();
     void layout_lion_territory();
-
     void layout_test_area();
 
-    void set_block_type(s32 x, s32 y, s32 z, BlockType block_type);
-    void set_block_type_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
-    void set_block_type_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
-    void set_block_type_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+    void layout_tower();
+    void layout_roof();
 
+    void set_block(s32 x, s32 y, s32 z, BlockType block_type);
+    void set_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+    void set_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+    void set_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
+
+    void construct_frame();
     void construct_room(const Area& area);
-    void construct_elevator(const Area& area);
+    void construct_elevator_top(const Area& area);
+    void construct_elevator_mid(const Area& area);
+    void construct_elevator_base(const Area& area);
     void construct_temple(const Area& area);
     void construct_platform(const Area& area);
     void construct_wireframe(const Area& area);
 
-    void construct_tower();
-
     void construct_areas(s32 floor_number);
     void construct_doors(s32 floor_number);
+
+    void construct_tower();
+    void construct_roof();
 
     u8 get_direction_mask(s32 x, s32 y, s32 z) const;
 
