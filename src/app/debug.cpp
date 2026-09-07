@@ -11,10 +11,12 @@ Debug::init(const World& world)
     {
         for (const s32 floor_number : DEBUG_FLOOR_ARRAY)
         {
-            const unordered_map<AreaID, Area>& area_map { world.area_map_vector[floor_number] };
+            const unordered_set<AreaID>& area_id_set { world.area_id_vector[floor_number] };
 
-            for (const Area& area: area_map | views::values)
+            for (const AreaID area_id : area_id_set)
             {
+                const Area& area { world.area_map.at(area_id) };
+
                 const IBounds3 area_bounds {
                     {
                         area.bounds.min.x,
@@ -32,8 +34,7 @@ Debug::init(const World& world)
 
                 for (const LinkID link_id : area.area_link_set)
                 {
-                    const unordered_map<LinkID, Link>& link_map { world.link_map_vector[area.floor_number] };
-                    const Link& link { link_map.at(link_id) };
+                    const Link& link { world.link_map.at(link_id) };
 
                     const Vec3 link_position {
                         static_cast<f32>(link.position.x),

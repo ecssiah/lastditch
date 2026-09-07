@@ -285,10 +285,11 @@ World::init()
 
     init_cell_array();
 
-    construct_frame();
+    construct_tower_frame();
 
     layout_tower_areas();
     layout_roof_areas();
+
     layout_elevator_areas();
     layout_test_area();
 
@@ -297,26 +298,10 @@ World::init()
     layout_bear_territory();
     layout_lion_territory();
 
-    for (s32 floor_number { 0 }; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
-    {
-        calculate_link_vector(floor_number);
+    calculate_links();
 
-        construct_areas(floor_number);
-        construct_doors(floor_number);
-
-        if (PLACE_ROOM_CONTENT)
-        {
-            place_content(floor_number);
-        }
-    }
-
-    for (s32 floor_number { TOWER_FLOOR_COUNT }; floor_number < FLOOR_COUNT; ++floor_number)
-    {
-        calculate_link_vector(floor_number);
-
-        construct_areas(floor_number);
-        construct_doors(floor_number);
-    }
+    construct_areas();
+    construct_doors();
 
     calculate_direction_masks();
 
@@ -557,7 +542,7 @@ World::get_cell(const s32 x, const s32 y, const s32 z) const
 }
 
 void
-World::construct_frame()
+World::construct_tower_frame()
 {
     for (s32 floor_number { 0 }; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
@@ -790,16 +775,94 @@ World::get_content_block_type_vector(const s32 content_level)
 }
 
 void
-World::place_area(const Area& area)
+World::add_area(Area area)
 {
-    unordered_map<AreaID, Area> new_area_map {};
-    unordered_map<AreaID, Area>& area_map { area_map_vector[area.floor_number] };
+    const AreaID area_id { area.area_id };
+    const s32 floor_number { area.floor_number };
+
+    const auto [iterator, was_inserted] = area_map.emplace(area_id, std::move(area));
+
+    assert(was_inserted);
+
+    area_id_vector[floor_number].insert(area_id);
+}
+
+void
+World::remove_area(const AreaID area_id)
+{
+    const auto iterator { area_map.find(area_id) };
+    assert(iterator != area_map.end());
+
+    const s32 floor_number { iterator->second.floor_number };
+
+    const size_t erased { area_id_vector[floor_number].erase(area_id) };
+    assert(erased == 1);
+
+    area_map.erase(iterator);
+}
+
+void
+World::add_link(Link link)
+{
+    const LinkID link_id { link.link_id };
+
+    const auto area_1_iterator { area_map.find(link.area_1_id) };
+    const auto area_2_iterator { area_map.find(link.area_2_id) };
+
+    assert(area_1_iterator != area_map.end());
+    assert(area_2_iterator != area_map.end());
+    assert(area_1_iterator != area_2_iterator);
+
+    Area& area_1 { area_1_iterator->second };
+    Area& area_2 { area_2_iterator->second };
+
+    assert(area_1.floor_number == area_2.floor_number);
+
+    const s32 floor_number { area_1.floor_number };
+    const bool was_inserted { link_map.emplace(link_id, std::move(link)).second };
+
+    assert(was_inserted);
+
+    area_1.area_link_set.insert(link_id);
+    area_2.area_link_set.insert(link_id);
+    link_id_vector[floor_number].insert(link_id);
+}
+
+void
+World::remove_link(const LinkID link_id)
+{
+    const auto link_iterator { link_map.find(link_id) };
+    assert(link_iterator != link_map.end());
+
+    const Link& link { link_iterator->second };
+    Area& area_1 { area_map.at(link.area_1_id) };
+    Area& area_2 { area_map.at(link.area_2_id) };
+
+    assert(area_1.floor_number == area_2.floor_number);
+
+    const s32 floor_number { area_1.floor_number };
+
+    const size_t area_1_erased { area_1.area_link_set.erase(link_id) };
+    const size_t area_2_erased { area_2.area_link_set.erase(link_id) };
+    const size_t floor_erased { link_id_vector[floor_number].erase(link_id) };
+
+    assert(area_1_erased == 1);
+    assert(area_2_erased == 1);
+    assert(floor_erased == 1);
+
+    link_map.erase(link_iterator);
+}
+
+void
+World::place_area(Area area)
+{
+    vector<Area> new_area_vector {};
 
     for (auto iterator { area_map.begin() }; iterator != area_map.end();)
     {
         const auto& test_area { iterator->second };
 
-        if (!overlaps(test_area.bounds, area.bounds))
+        if (test_area.floor_number != area.floor_number || !overlaps(test_area.bounds, area.bounds))
         {
             ++iterator;
             continue;
@@ -811,8 +874,7 @@ World::place_area(const Area& area)
         {
             const AreaID area_id { area_id_generator.next() };
 
-            new_area_map.emplace(
-                area_id,
+            new_area_vector.emplace_back(
                 Area {
                     .area_id = area_id,
                     .area_type = test_area.area_type,
@@ -822,60 +884,64 @@ World::place_area(const Area& area)
             );
         }
 
-        iterator = area_map.erase(iterator);
+        const AreaID test_area_id { test_area.area_id };
+        ++iterator;
+        remove_area(test_area_id);
     }
 
-    area_map.merge(new_area_map);
+    for (Area& new_area : new_area_vector)
+    {
+        add_area(std::move(new_area));
+    }
 
-    const AreaID area_id { area.area_id };
-    area_map.insert_or_assign(area_id, std::move(area));
+    add_area(std::move(area));
 }
 
 void
 World::place_content(const s32 floor_number)
 {
-    const unordered_map<AreaID, Area>& area_map { area_map_vector[floor_number] };
-
-    for (const auto& [area_id, area] : area_map)
-    {
-        if (area.area_type != AreaType::Room)
-        {
-            continue;
-        }
-
-        const s32 content_level { get_content_level(floor_number * FLOOR_SIZE_Z) };
-
-        if (content_level == 0)
-        {
-            continue;
-        }
-
-        const vector content_block_type_vector { get_content_block_type_vector(content_level) };
-
-        const IVec2 area_bounds_size { area.bounds.size() };
-
-        const s32 stack_count { area_bounds_size.x * area_bounds_size.y / 14 };
-
-        for (s32 stack_index { 0 }; stack_index < stack_count; ++stack_index)
-        {
-            const IVec2 stack_position
-            {
-                area.bounds.min.x + 1 + random.uniform(0, area_bounds_size.x - 3),
-                area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 3)
-            };
-
-            const s32 stack_size_z { random.uniform(0, FLOOR_SIZE_Z - 6) };
-
-            const s32 block_type_index { random.uniform(0, static_cast<s32>(content_block_type_vector.size()) - 1) };
-            const BlockType content_block_type { content_block_type_vector[block_type_index] };
-
-            set_cube(
-                stack_position.x, stack_position.y, floor_number * FLOOR_SIZE_Z + 1,
-                1, 1, stack_size_z,
-                content_block_type
-            );
-        }
-    }
+    // const unordered_map<AreaID, Area>& area_map { area_map_vector[floor_number] };
+    //
+    // for (const auto& area: area_map | views::values)
+    // {
+    //     if (area.area_type != AreaType::Room)
+    //     {
+    //         continue;
+    //     }
+    //
+    //     const s32 content_level { get_content_level(floor_number * FLOOR_SIZE_Z) };
+    //
+    //     if (content_level == 0)
+    //     {
+    //         continue;
+    //     }
+    //
+    //     const vector content_block_type_vector { get_content_block_type_vector(content_level) };
+    //
+    //     const IVec2 area_bounds_size { area.bounds.size() };
+    //
+    //     const s32 stack_count { area_bounds_size.x * area_bounds_size.y / 14 };
+    //
+    //     for (s32 stack_index { 0 }; stack_index < stack_count; ++stack_index)
+    //     {
+    //         const IVec2 stack_position
+    //         {
+    //             area.bounds.min.x + 1 + random.uniform(0, area_bounds_size.x - 3),
+    //             area.bounds.min.y + 1 + random.uniform(0, area_bounds_size.y - 3)
+    //         };
+    //
+    //         const s32 stack_size_z { random.uniform(0, FLOOR_SIZE_Z - 6) };
+    //
+    //         const s32 block_type_index { random.uniform(0, static_cast<s32>(content_block_type_vector.size()) - 1) };
+    //         const BlockType content_block_type { content_block_type_vector[block_type_index] };
+    //
+    //         set_cube(
+    //             stack_position.x, stack_position.y, floor_number * FLOOR_SIZE_Z + 1,
+    //             1, 1, stack_size_z,
+    //             content_block_type
+    //         );
+    //     }
+    // }
 }
 
 void
@@ -883,30 +949,25 @@ World::layout_roof_areas()
 {
     constexpr s32 roof_area_size { TOWER_SIZE / 8 };
 
-    unordered_map<AreaID, Area>& area_map { area_map_vector[TOWER_FLOOR_COUNT] };
-
     for (s32 area_y { TOWER_BORDER }; area_y < TOWER_SIZE + TOWER_BORDER; area_y += roof_area_size)
     {
         for (s32 area_x { TOWER_BORDER }; area_x < TOWER_SIZE + TOWER_BORDER; area_x += roof_area_size)
         {
             const AreaID area_id { area_id_generator.next() };
 
-            area_map.emplace(
-                area_id,
+            add_area(
                 Area {
                     .area_id = area_id,
                     .area_type = AreaType::Free,
                     .floor_number = TOWER_FLOOR_COUNT,
                     .bounds = {
-                        {area_x, area_y},
-                        {area_x + roof_area_size, area_y + roof_area_size},
+                        { area_x, area_y },
+                        { area_x + roof_area_size, area_y + roof_area_size },
                     }
                 }
             );
         }
     }
-
-
 }
 
 void
@@ -944,7 +1005,14 @@ World::layout_elevator_areas()
             },
         };
 
-        place_area(elevator_shaft);
+        if (floor_number < TOWER_FLOOR_COUNT)
+        {
+            place_area(elevator_shaft);
+        }
+        else
+        {
+            place_area(elevator_shaft);
+        }
     }
 }
 
@@ -953,15 +1021,12 @@ World::layout_tower_areas()
 {
     for (s32 floor_number { 0 }; floor_number < TOWER_FLOOR_COUNT; ++floor_number)
     {
-        unordered_map<AreaID, Area>& area_map { area_map_vector[floor_number] };
-
         constexpr IVec2 quadrant1_origin { SECTION_ORIGIN_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
         constexpr IVec2 quadrant1_size { SECTION_SIZE_ARRAY[static_cast<u8>(SectionType::Quadrant1)] };
 
         const AreaID quadrant1_area_id { area_id_generator.next() };
 
-        area_map.emplace(
-            quadrant1_area_id,
+        add_area(
             Area {
                 .area_id = quadrant1_area_id,
                 .area_type = AreaType::Room,
@@ -975,8 +1040,7 @@ World::layout_tower_areas()
 
         const AreaID quadrant2_area_id { area_id_generator.next() };
 
-        area_map.emplace(
-            quadrant2_area_id,
+        add_area(
             Area {
                 .area_id = quadrant2_area_id,
                 .area_type = AreaType::Room,
@@ -990,8 +1054,7 @@ World::layout_tower_areas()
 
         const AreaID quadrant3_area_id { area_id_generator.next() };
 
-        area_map.emplace(
-            quadrant3_area_id,
+        add_area(
             Area {
                 .area_id = quadrant3_area_id,
                 .area_type = AreaType::Room,
@@ -1005,8 +1068,7 @@ World::layout_tower_areas()
 
         const AreaID quadrant4_area_id { area_id_generator.next() };
 
-        area_map.emplace(
-            quadrant4_area_id,
+        add_area(
             Area {
                 .area_id = quadrant4_area_id,
                 .area_type = AreaType::Room,
@@ -1017,7 +1079,7 @@ World::layout_tower_areas()
 
         for (s32 iteration { 0 }; iteration < AREA_EXPANSION_ITERATIONS; ++iteration)
         {
-            unordered_map<AreaID, Area> areas_to_add_map {};
+            vector<Area> new_area_vector {};
 
             constexpr s32 axis_x_value { static_cast<s32>(Axis::X) };
             constexpr s32 axis_y_value { static_cast<s32>(Axis::Y) };
@@ -1025,6 +1087,13 @@ World::layout_tower_areas()
             for (auto iterator = area_map.begin(); iterator != area_map.end(); )
             {
                 const Area area_copy { iterator->second };
+
+                if (area_copy.floor_number != floor_number)
+                {
+                    ++iterator;
+                    continue;
+                }
+
                 const IVec2 area_size { area_copy.bounds.size() };
 
                 const Axis axis_split
@@ -1055,13 +1124,18 @@ World::layout_tower_areas()
                 area2.area_id = area2_id;
                 area2.bounds.min[axis_split_value] = area_copy.bounds.min[axis_split_value] + split_size;
 
-                areas_to_add_map.emplace(area1_id, std::move(area1));
-                areas_to_add_map.emplace(area2_id, std::move(area2));
+                new_area_vector.emplace_back(std::move(area1));
+                new_area_vector.emplace_back(std::move(area2));
 
-                iterator = area_map.erase(iterator);
+                const AreaID area_id { iterator->first };
+                ++iterator;
+                remove_area(area_id);
             }
 
-            area_map.merge(areas_to_add_map);
+            for (Area& new_area : new_area_vector)
+            {
+                add_area(std::move(new_area));
+            }
         }
 
         for (s32 section_index { 0 }; section_index < SECTION_TYPE_COUNT; ++section_index)
@@ -1086,8 +1160,7 @@ World::layout_tower_areas()
 
             const AreaID section_area_id { area_id_generator.next() };
 
-            area_map.emplace(
-                section_area_id,
+            add_area(
                 Area {
                     .area_id = section_area_id,
                     .area_type = AreaType::Free,
@@ -1559,6 +1632,34 @@ World::layout_lion_territory()
 }
 
 void
+World::calculate_links()
+{
+    for (s32 floor_number { 0 }; floor_number < FLOOR_COUNT; ++floor_number)
+    {
+        const auto& area_id_set { area_id_vector[floor_number] };
+
+        for (auto first { area_id_set.begin() }; first != area_id_set.end(); ++first)
+        {
+            for (auto second { std::next(first) }; second != area_id_set.end(); ++second)
+            {
+                const Area& area_1 { area_map.at(*first) };
+                const Area& area_2 { area_map.at(*second) };
+
+                assert(area_1.floor_number == floor_number);
+                assert(area_2.floor_number == floor_number);
+
+                const Border border { calculate_border(area_1, area_2) };
+
+                if (border.bounds.size().x > 0 && border.bounds.size().y > 0)
+                {
+                    add_link(calculate_link(border));
+                }
+            }
+        }
+    }
+}
+
+void
 World::layout_test_area()
 {
     set_block(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_bear);
@@ -1726,7 +1827,6 @@ World::construct_room(const Area& area)
     );
 }
 
-
 void
 World::construct_elevator_top(const Area& area)
 {
@@ -1756,7 +1856,6 @@ World::construct_elevator_top(const Area& area)
         BlockType::none
     );
 }
-
 
 void
 World::construct_elevator_mid(const Area& area)
@@ -1872,11 +1971,35 @@ World::construct_wireframe(const Area& area)
     );
 }
 
-
 void
-World::construct_areas(const s32 floor_number)
+World::construct_areas()
 {
-    const unordered_map<AreaID, Area>& area_map { area_map_vector[floor_number] };
+    for (const auto &area: area_map | views::values)
+    {
+        switch (area.area_type)
+        {
+            case AreaType::Room:
+                construct_room(area);
+                break;
+            case AreaType::ElevatorTop:
+                construct_elevator_top(area);
+                break;
+            case AreaType::ElevatorMid:
+                construct_elevator_mid(area);
+                break;
+            case AreaType::ElevatorBase:
+                construct_elevator_base(area);
+                break;
+            case AreaType::Platform:
+                construct_platform(area);
+                break;
+            case AreaType::Wireframe:
+                construct_wireframe(area);
+                break;
+            default:
+                break;
+        }
+    }
 
     for (const auto &area: area_map | views::values)
     {
@@ -1907,11 +2030,8 @@ World::construct_areas(const s32 floor_number)
 }
 
 void
-World::construct_doors(const s32 floor_number)
+World::construct_doors()
 {
-    const unordered_map<AreaID, Area>& area_map { area_map_vector[floor_number] };
-    const unordered_map<LinkID, Link>& link_map { link_map_vector[floor_number] };
-
     for (const auto& link: link_map | views::values)
     {
         const Area& area_1 { area_map.at(link.area_1_id) };
@@ -2128,32 +2248,4 @@ World::calculate_link(const Border& border)
 
     assert(false && "Invalid border for link calculation");
     abort();
-}
-
-void
-World::calculate_link_vector(const s32 floor_number)
-{
-    unordered_map<AreaID, Area>& area_map { area_map_vector[floor_number] };
-    unordered_map<LinkID, Link>& link_map { link_map_vector[floor_number] };
-
-    for (auto first = area_map.begin(); first != area_map.end(); ++first)
-    {
-        for (auto second = std::next(first); second != area_map.end(); ++second)
-        {
-            auto& [area_id1, area1] = *first;
-            auto& [area_id2, area2] = *second;
-
-            const Border border { calculate_border(area1, area2) };
-
-            if (border.bounds.size().x > 0 && border.bounds.size().y > 0)
-            {
-                const Link link { calculate_link(border) };
-
-                area1.area_link_set.insert(link.link_id);
-                area2.area_link_set.insert(link.link_id);
-
-                link_map.insert({ link.link_id, link });
-            }
-        }
-    }
 }

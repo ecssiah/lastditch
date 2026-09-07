@@ -31,7 +31,7 @@ struct Area
     IBounds2 bounds {};
     Direction direction { Direction::North };
 
-    std::unordered_set<AreaID> area_link_set {};
+    std::unordered_set<LinkID> area_link_set {};
 };
 
 struct Link

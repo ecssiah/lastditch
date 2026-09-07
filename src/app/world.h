@@ -90,14 +90,11 @@ public:
 
     std::array<Cell, WORLD_VOLUME_IN_CELLS> cell_array {};
 
-    std::unordered_map<AreaID, Area> area_map_upper {};
-    std::unordered_map<LinkID, Link> link_map_upper {};
+    std::unordered_map<AreaID, Area> area_map {};
+    std::unordered_map<LinkID, Link> link_map {};
 
-    std::unordered_map<AreaID, Area> area_map_lower {};
-    std::unordered_map<LinkID, Link> link_map_lower {};
-
-    std::array<std::unordered_map<AreaID, Area>, FLOOR_COUNT> area_map_vector {};
-    std::array<std::unordered_map<LinkID, Link>, FLOOR_COUNT> link_map_vector {};
+    std::array<std::unordered_set<AreaID>, FLOOR_COUNT> area_id_vector {};
+    std::array<std::unordered_set<LinkID>, FLOOR_COUNT> link_id_vector {};
 
 private:
     void init_cell_array();
@@ -105,7 +102,13 @@ private:
     static s32 get_content_level(s32 z);
     static std::vector<BlockType> get_content_block_type_vector(s32 content_level);
 
-    void place_area(const Area& area);
+    void add_area(Area area);
+    void remove_area(AreaID area_id);
+
+    void add_link(Link link);
+    void remove_link(LinkID link_id);
+
+    void place_area(Area area);
     void place_content(s32 floor_number);
 
     void layout_roof_areas();
@@ -125,7 +128,8 @@ private:
     void set_cube(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
     void set_wireframe(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
 
-    void construct_frame();
+    void construct_tower_frame();
+
     void construct_room(const Area& area);
     void construct_elevator_top(const Area& area);
     void construct_elevator_mid(const Area& area);
@@ -134,8 +138,8 @@ private:
     void construct_platform(const Area& area);
     void construct_wireframe(const Area& area);
 
-    void construct_areas(s32 floor_number);
-    void construct_doors(s32 floor_number);
+    void construct_areas();
+    void construct_doors();
 
     void construct_tower();
     void construct_roof();
@@ -147,7 +151,7 @@ private:
     static Border calculate_border(const Area& area_left, const Area& area_right);
     Link calculate_link(const Border& border);
 
-    void calculate_link_vector(s32 floor_number);
+    void calculate_links();
 
     IdGenerator area_id_generator {};
     IdGenerator link_id_generator {};
