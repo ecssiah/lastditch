@@ -1,11 +1,11 @@
 #pragma once
 
-#include "nation.h"
+#include "data/nation.h"
 #include "world.h"
 #include "core/id.h"
 #include "core/random.h"
 
-class Actor;
+struct Actor;
 class World;
 
 class Population

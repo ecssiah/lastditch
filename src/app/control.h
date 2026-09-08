@@ -1,18 +1,12 @@
 #pragma once
 
 #include "core/geometry.h"
+#include "data/inputs.h"
 #include "platform/platform.h"
 
-class Actor;
+struct Actor;
 class Platform;
 class Population;
-
-struct Input
-{
-    Vec3 move   { 0.0f };
-    Vec2 rotate { 0.0f };
-    f32 jump    { 0.0f };
-};
 
 class Control
 {
@@ -22,7 +16,7 @@ public:
 
     s32 actor_id { -1 };
 
-    Input input {};
+    Inputs input {};
 
     Vec3 position { 0.0f };
     Vec3 rotation { 0.0f };

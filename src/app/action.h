@@ -1,25 +1,13 @@
 #pragma once
 
-#include <functional>
-#include "actor.h"
-#include "constants.h"
+#include "data/actor.h"
+#include "data/constants.h"
 #include "control.h"
 #include "navigation.h"
 #include "core/random.h"
 #include "core/types.h"
 
-class Population;
-class World;
-
-using WorkFunction = std::function<void(World&, Population&)>;
-
-struct Work
-{
-    s32 frequency   { 1 };
-    s32 phase       { 0 };
-
-    WorkFunction work_function {};
-};
+struct Work;
 
 extern const std::vector<Work> WORK_VECTOR;
 

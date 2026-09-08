@@ -1,9 +1,21 @@
 #pragma once
 
-#include <unordered_set>
-
 #include "core/geometry.h"
 #include "core/types.h"
+
+using AreaID = s32;
+using LinkID = s32;
+
+struct Border
+{
+    s32 border_id { -1 };
+
+    s32 area_1_id { -1 };
+    s32 area_2_id { -1 };
+
+    Axis axis {};
+    IBounds2 bounds {};
+};
 
 enum class AreaType : u8
 {
@@ -18,9 +30,6 @@ enum class AreaType : u8
     COUNT,
 };
 
-using AreaID = s32;
-using LinkID = s32;
-
 struct Area
 {
     AreaID area_id { -1 };
@@ -29,7 +38,6 @@ struct Area
 
     s32 floor_number { 0 };
     IBounds2 bounds {};
-    Direction direction { Direction::North };
 
     std::unordered_set<LinkID> area_link_set {};
 };
@@ -43,15 +51,4 @@ struct Link
 
     Axis axis {};
     IVec2 position {};
-};
-
-struct Border
-{
-    s32 border_id { -1 };
-
-    s32 area_1_id { -1 };
-    s32 area_2_id { -1 };
-
-    Axis axis {};
-    IBounds2 bounds {};
 };

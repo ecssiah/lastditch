@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "actor.h"
+#include "data/actor.h"
 #include "world.h"
 #include "core/types.h"
 
@@ -63,13 +63,13 @@ Physics::update_actor(World& world, Actor& actor)
 }
 
 Bounds3
-Physics::get_box_collider_bounds(const BoxCollider& box_collider, const Vec3& position)
+Physics::get_collider_bounds(const Collider& collider, const Vec3& position)
 {
     constexpr f32 world_size { WORLD_SIZE_IN_CELLS };
     
     return {
-        max(position - box_collider.radius, Vec3{ 0.0f }),
-        min(position + box_collider.radius, Vec3{ world_size }),
+        max(position - collider.radius, Vec3{ 0.0f }),
+        min(position + collider.radius, Vec3{ world_size }),
     };
 }
 
@@ -98,7 +98,7 @@ Physics::resolve_axis_collisions(World& world, Actor& actor, Axis axis, const f3
         return;
     }
 
-    Bounds3 actor_bounds { get_box_collider_bounds(actor.box_collider, actor.position) };
+    Bounds3 actor_bounds { get_collider_bounds(actor.box_collider, actor.position) };
     Bounds3 swept_bounds {};
     
     for (s32 axis_index { 0 }; axis_index < AXIS_COUNT; ++axis_index)

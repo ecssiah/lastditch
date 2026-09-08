@@ -1,8 +1,8 @@
 #pragma once
 
+#include "collider.h"
 #include "constants.h"
 #include "nation.h"
-#include "physics.h"
 #include "core/geometry.h"
 #include "core/types.h"
 
@@ -16,9 +16,8 @@ enum class ActorType : u8
 
 constexpr s32 ACTOR_TYPE_COUNT { static_cast<s32>(ActorType::COUNT) };
 
-class Actor
+struct Actor
 {
-public:
     s32 id { -1 };
 
     ActorType actor_type { ActorType::None };
@@ -34,7 +33,7 @@ public:
     Vec3 position_target {};
     Vec3 rotation_target {};
 
-    BoxCollider box_collider {};
+    Collider box_collider {};
 
     b32 is_grounded { false };
 

@@ -6,11 +6,9 @@
 #include <format>
 #include <fstream>
 #include <iterator>
-
 #include <SDL3/SDL_surface.h>
 #include <SDL3_ttf/SDL_ttf.h>
-
-#include "actor.h"
+#include "data/actor.h"
 #include "control.h"
 #include "population.h"
 #include "world.h"
@@ -521,7 +519,7 @@ void Render::load_face_textures()
     }
 
     assert(paths.size() == layer_count);
-    voxel_render.texture = create_texture_array(FACE_TEXTURE_SIZE, FACE_TEXTURE_SIZE, paths.size(), paths, true);
+    voxel_context.texture = create_texture_array(FACE_TEXTURE_SIZE, FACE_TEXTURE_SIZE, paths.size(), paths, true);
 }
 
 void Render::load_actor_textures()
@@ -540,7 +538,7 @@ void Render::load_actor_textures()
         );
     }
 
-    model_render.texture = create_texture_array(ACTOR_TEXTURE_SIZE, ACTOR_TEXTURE_SIZE, paths.size(), paths, true);
+    model_context.texture = create_texture_array(ACTOR_TEXTURE_SIZE, ACTOR_TEXTURE_SIZE, paths.size(), paths, true);
 }
 
 void Render::load_model_data(const s32 nation_type_index)
@@ -617,7 +615,7 @@ void Render::load_model_data(const s32 nation_type_index)
         }
     }
     data.buffer = create_static_buffer(data.model_vertex_vector.data(), data.model_vertex_vector.size() * sizeof(ModelVertex));
-    model_render.model_gpu_data_vector[nation_type_index] = std::move(data);
+    model_context.model_gpu_data_vector[nation_type_index] = std::move(data);
 }
 
 void Render::generate_sector_mesh(const World& world, const s32 sector_index)
@@ -648,7 +646,7 @@ void Render::generate_sector_mesh(const World& world, const s32 sector_index)
 
                 while (mask)
                 {
-                    const Direction direction { get_direction_from_mask(mask) };
+                    const Direction direction { World::get_direction_from_mask(mask) };
 
                     const FaceType face_type {
                         cell.face_type_array[static_cast<size_t>(direction)]
@@ -671,7 +669,7 @@ void Render::generate_sector_mesh(const World& world, const s32 sector_index)
         }
     }
 
-    voxel_render.sector_mesh_vector.push_back(std::move(mesh));
+    voxel_context.sector_mesh_vector.push_back(std::move(mesh));
 }
 
 void Render::emit_sector_face(const SectorQuad& sector_quad, VoxelGpuData& gpu_data)
@@ -742,7 +740,7 @@ void Render::init_voxel_render(const World& world)
         },
     };
 
-    voxel_render.pipeline = create_pipeline(
+    voxel_context.pipeline = create_pipeline(
         "sector",
         SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
         description,
@@ -762,8 +760,8 @@ void Render::init_voxel_render(const World& world)
         .address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
     };
 
-    voxel_render.sampler = SDL_CreateGPUSampler(device, &sampler_info);
-    assert(voxel_render.sampler);
+    voxel_context.sampler = SDL_CreateGPUSampler(device, &sampler_info);
+    assert(voxel_context.sampler);
 
     load_face_textures();
 
@@ -772,7 +770,7 @@ void Render::init_voxel_render(const World& world)
         generate_sector_mesh(world, sector);
     }
 
-    for (const SectorMesh& mesh : voxel_render.sector_mesh_vector)
+    for (const SectorMesh& mesh : voxel_context.sector_mesh_vector)
     {
         VoxelGpuData data { convert_sector_mesh(mesh) };
 
@@ -781,7 +779,7 @@ void Render::init_voxel_render(const World& world)
             data.buffer = create_static_buffer(data.voxel_vertex_vector.data(), data.voxel_vertex_vector.size() * sizeof(VoxelVertex));
         }
 
-        voxel_render.voxel_gpu_data_vector.push_back(std::move(data));
+        voxel_context.voxel_gpu_data_vector.push_back(std::move(data));
     }
 }
 
@@ -814,7 +812,7 @@ void Render::init_model_render()
         },
     };
 
-    model_render.pipeline = create_pipeline(
+    model_context.pipeline = create_pipeline(
         "model",
         SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
         description,
@@ -836,11 +834,11 @@ void Render::init_model_render()
         .address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
     };
 
-    model_render.sampler = SDL_CreateGPUSampler(device, &sampler_info);
-    assert(model_render.sampler);
+    model_context.sampler = SDL_CreateGPUSampler(device, &sampler_info);
+    assert(model_context.sampler);
 
     load_actor_textures();
-    model_render.model_gpu_data_vector.resize(NATION_TYPE_COUNT);
+    model_context.model_gpu_data_vector.resize(NATION_TYPE_COUNT);
 
     for (s32 index { 0 }; index < static_cast<s32>(NATION_TYPE_COUNT); ++index)
     {
@@ -871,7 +869,7 @@ void Render::init_debug_render()
         },
     };
 
-    debug_render.pipeline = create_pipeline(
+    debug_context.pipeline = create_pipeline(
         "debug",
         SDL_GPU_PRIMITIVETYPE_LINELIST,
         description,
@@ -907,7 +905,7 @@ void Render::init_text_render()
         },
     };
 
-    text_render.pipeline = create_pipeline(
+    text_context.pipeline = create_pipeline(
         "text",
         SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
         description,
@@ -928,9 +926,9 @@ void Render::init_text_render()
         .address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
     };
 
-    text_render.sampler = SDL_CreateGPUSampler(device, &sampler_info);
+    text_context.sampler = SDL_CreateGPUSampler(device, &sampler_info);
 
-    assert(text_render.sampler);
+    assert(text_context.sampler);
 
     const bool initialized { TTF_Init() };
 
@@ -941,32 +939,32 @@ void Render::init_text_render()
 
     assert(initialized);
 
-    text_render.font = TTF_OpenFont("assets/fonts/Prompt-Regular.ttf", 22.0f);
+    text_context.font = TTF_OpenFont("assets/fonts/Prompt-Regular.ttf", 22.0f);
 
-    if (!text_render.font)
+    if (!text_context.font)
     {
         LOG_ERROR("Failed to open HUD font: %s", SDL_GetError());
     }
 
-    assert(text_render.font);
+    assert(text_context.font);
 
-    text_render.engine = TTF_CreateGPUTextEngine(device);
+    text_context.engine = TTF_CreateGPUTextEngine(device);
 
-    if (!text_render.engine)
+    if (!text_context.engine)
     {
         LOG_ERROR("Failed to create SDL_ttf GPU text engine: %s", SDL_GetError());
     }
 
-    assert(text_render.engine);
+    assert(text_context.engine);
 }
 
 void Render::prepare_text_geometry(vector<TextVertex>& text_vertex_vector, vector<u32>& index_vector)
 {
     const vector<TextLabel>& labels { screen.labels() };
 
-    while (text_render.ttf_text_vector.size() < labels.size())
+    while (text_context.ttf_text_vector.size() < labels.size())
     {
-        TTF_Text* text { TTF_CreateText(text_render.engine, text_render.font, "", 0) };
+        TTF_Text* text { TTF_CreateText(text_context.engine, text_context.font, "", 0) };
 
         if (!text)
         {
@@ -975,25 +973,25 @@ void Render::prepare_text_geometry(vector<TextVertex>& text_vertex_vector, vecto
 
         assert(text);
 
-        text_render.ttf_text_vector.push_back(text);
-        text_render.text_vector.emplace_back();
+        text_context.ttf_text_vector.push_back(text);
+        text_context.text_vector.emplace_back();
     }
 
-    while (text_render.ttf_text_vector.size() > labels.size())
+    while (text_context.ttf_text_vector.size() > labels.size())
     {
-        TTF_DestroyText(text_render.ttf_text_vector.back());
-        text_render.ttf_text_vector.pop_back();
-        text_render.text_vector.pop_back();
+        TTF_DestroyText(text_context.ttf_text_vector.back());
+        text_context.ttf_text_vector.pop_back();
+        text_context.text_vector.pop_back();
     }
 
-    text_render.batches.clear();
+    text_context.batches.clear();
 
     for (size_t label_index { 0 }; label_index < labels.size(); ++label_index)
     {
         const TextLabel& label { labels[label_index] };
-        TTF_Text* text { text_render.ttf_text_vector[label_index] };
+        TTF_Text* text { text_context.ttf_text_vector[label_index] };
 
-        if (text_render.text_vector[label_index] != label.text)
+        if (text_context.text_vector[label_index] != label.text)
         {
             const bool updated { TTF_SetTextString(text, label.text.c_str(), 0) };
 
@@ -1004,7 +1002,7 @@ void Render::prepare_text_geometry(vector<TextVertex>& text_vertex_vector, vecto
 
             assert(updated);
 
-            text_render.text_vector[label_index] = label.text;
+            text_context.text_vector[label_index] = label.text;
         }
 
         TTF_GPUAtlasDrawSequence* sequence { TTF_GetGPUTextDrawData(text) };
@@ -1043,14 +1041,15 @@ void Render::prepare_text_geometry(vector<TextVertex>& text_vertex_vector, vecto
                 index_vector.push_back(static_cast<u32>(sequence->indices[index]));
             }
 
-            TextRender::DrawBatch draw_batch {
-                sequence->atlas_texture,
-                static_cast<u32>(sequence->num_indices),
-                first_index,
-                vertex_offset,
+            const DrawBatch draw_batch
+            {
+                .index_count = static_cast<u32>(sequence->num_indices),
+                .first_index = first_index,
+                .vertex_offset = vertex_offset,
+                .texture = sequence->atlas_texture,
             };
 
-            text_render.batches.push_back(draw_batch);
+            text_context.batches.push_back(draw_batch);
         }
     }
 }
@@ -1117,10 +1116,10 @@ void Render::draw_debug(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands,
 
     SDL_PushGPUVertexUniformData(commands, 0, &camera, sizeof(camera));
     SDL_PushGPUVertexUniformData(commands, 1, &object, sizeof(object));
-    SDL_BindGPUGraphicsPipeline(pass, debug_render.pipeline);
+    SDL_BindGPUGraphicsPipeline(pass, debug_context.pipeline);
 
     const SDL_GPUBufferBinding binding {
-        .buffer = debug_render.dynamic_gpu_buffer.buffer
+        .buffer = debug_context.dynamic_gpu_buffer.buffer
     };
 
     SDL_BindGPUVertexBuffers(pass, 0, &binding, 1);
@@ -1132,13 +1131,13 @@ void Render::draw_voxels(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands
     const CameraUniform camera { control.projection_matrix, control.view_matrix };
 
     SDL_PushGPUVertexUniformData(commands, 0, &camera, sizeof(camera));
-    SDL_BindGPUGraphicsPipeline(pass, voxel_render.pipeline);
+    SDL_BindGPUGraphicsPipeline(pass, voxel_context.pipeline);
 
-    const SDL_GPUTextureSamplerBinding texture { voxel_render.texture, voxel_render.sampler };
+    const SDL_GPUTextureSamplerBinding texture { voxel_context.texture, voxel_context.sampler };
 
     SDL_BindGPUFragmentSamplers(pass, 0, &texture, 1);
 
-    for (const VoxelGpuData& data : voxel_render.voxel_gpu_data_vector)
+    for (const VoxelGpuData& data : voxel_context.voxel_gpu_data_vector)
     {
         if (!data.buffer)
         {
@@ -1164,15 +1163,15 @@ void Render::draw_models(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands
     const CameraUniform camera { control.projection_matrix, control.view_matrix };
 
     SDL_PushGPUVertexUniformData(commands, 0, &camera, sizeof(camera));
-    SDL_BindGPUGraphicsPipeline(pass, model_render.pipeline);
+    SDL_BindGPUGraphicsPipeline(pass, model_context.pipeline);
 
-    const SDL_GPUTextureSamplerBinding texture { model_render.texture, model_render.sampler };
+    const SDL_GPUTextureSamplerBinding texture { model_context.texture, model_context.sampler };
 
     SDL_BindGPUFragmentSamplers(pass, 0, &texture, 1);
 
     for (const Actor& actor : population.actor_vector)
     {
-        const ModelGpuData& data { model_render.model_gpu_data_vector[static_cast<s32>(actor.nation_type)] };
+        const ModelGpuData& data { model_context.model_gpu_data_vector[static_cast<s32>(actor.nation_type)] };
 
         Mat4 model { 1.0f };
         model = model.translate(actor.position);
@@ -1193,7 +1192,7 @@ void Render::draw_models(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands
 
 void Render::draw_text(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const u32 width, const u32 height)
 {
-    if (text_render.batches.empty())
+    if (text_context.batches.empty())
     {
         return;
     }
@@ -1208,17 +1207,17 @@ void Render::draw_text(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, 
     };
 
     SDL_PushGPUVertexUniformData(commands, 0, &projection, sizeof(projection));
-    SDL_BindGPUGraphicsPipeline(pass, text_render.pipeline);
+    SDL_BindGPUGraphicsPipeline(pass, text_context.pipeline);
 
-    const SDL_GPUBufferBinding vertex_binding { .buffer = text_render.gpu_vertex_buffer.buffer };
-    const SDL_GPUBufferBinding index_binding { .buffer = text_render.gpu_index_buffer.buffer };
+    const SDL_GPUBufferBinding vertex_binding { .buffer = text_context.gpu_vertex_buffer.buffer };
+    const SDL_GPUBufferBinding index_binding { .buffer = text_context.gpu_index_buffer.buffer };
 
     SDL_BindGPUVertexBuffers(pass, 0, &vertex_binding, 1);
     SDL_BindGPUIndexBuffer(pass, &index_binding, SDL_GPU_INDEXELEMENTSIZE_32BIT);
 
-    for (const TextRender::DrawBatch& batch : text_render.batches)
+    for (const DrawBatch& batch : text_context.batches)
     {
-        const SDL_GPUTextureSamplerBinding texture { batch.texture, text_render.sampler };
+        const SDL_GPUTextureSamplerBinding texture { batch.texture, text_context.sampler };
 
         SDL_BindGPUFragmentSamplers(pass, 0, &texture, 1);
         SDL_DrawGPUIndexedPrimitives(pass, batch.index_count, 1, batch.first_index, batch.vertex_offset, 0);
@@ -1274,7 +1273,7 @@ void Render::update(const Control& control, const Population& population)
     debug_vertex_count = debug_vertices.size();
 
     upload_dynamic_buffer(
-        debug_render.dynamic_gpu_buffer,
+        debug_context.dynamic_gpu_buffer,
         debug_vertices.data(),
         debug_vertices.size() * sizeof(DebugVertex),
         SDL_GPU_BUFFERUSAGE_VERTEX,
@@ -1282,7 +1281,7 @@ void Render::update(const Control& control, const Population& population)
     );
 
     upload_dynamic_buffer(
-        text_render.gpu_vertex_buffer,
+        text_context.gpu_vertex_buffer,
         text_vertices.data(),
         text_vertices.size() * sizeof(TextVertex),
         SDL_GPU_BUFFERUSAGE_VERTEX,
@@ -1290,7 +1289,7 @@ void Render::update(const Control& control, const Population& population)
     );
 
     upload_dynamic_buffer(
-        text_render.gpu_index_buffer,
+        text_context.gpu_index_buffer,
         text_indices.data(),
         text_indices.size() * sizeof(u32),
         SDL_GPU_BUFFERUSAGE_INDEX,
@@ -1346,34 +1345,34 @@ void Render::quit()
 
     SDL_WaitForGPUIdle(device);
 
-    for (TTF_Text* text : text_render.ttf_text_vector)
+    for (TTF_Text* text : text_context.ttf_text_vector)
     {
         TTF_DestroyText(text);
     }
 
-    text_render.ttf_text_vector.clear();
-    text_render.text_vector.clear();
-    text_render.batches.clear();
+    text_context.ttf_text_vector.clear();
+    text_context.text_vector.clear();
+    text_context.batches.clear();
 
-    if (text_render.engine)
+    if (text_context.engine)
     {
-        TTF_DestroyGPUTextEngine(text_render.engine);
+        TTF_DestroyGPUTextEngine(text_context.engine);
     }
 
-    if (text_render.font)
+    if (text_context.font)
     {
-        TTF_CloseFont(text_render.font);
+        TTF_CloseFont(text_context.font);
     }
 
-    text_render.engine = nullptr;
-    text_render.font = nullptr;
+    text_context.engine = nullptr;
+    text_context.font = nullptr;
 
     if (TTF_WasInit())
     {
         TTF_Quit();
     }
 
-    for (VoxelGpuData& data : voxel_render.voxel_gpu_data_vector)
+    for (VoxelGpuData& data : voxel_context.voxel_gpu_data_vector)
     {
         if (data.buffer)
         {
@@ -1381,7 +1380,7 @@ void Render::quit()
         }
     }
 
-    for (ModelGpuData& data : model_render.model_gpu_data_vector)
+    for (ModelGpuData& data : model_context.model_gpu_data_vector)
     {
         if (data.buffer)
         {
@@ -1389,64 +1388,64 @@ void Render::quit()
         }
     }
 
-    if (debug_render.dynamic_gpu_buffer.buffer)
+    if (debug_context.dynamic_gpu_buffer.buffer)
     {
-        SDL_ReleaseGPUBuffer(device, debug_render.dynamic_gpu_buffer.buffer);
+        SDL_ReleaseGPUBuffer(device, debug_context.dynamic_gpu_buffer.buffer);
     }
 
-    if (debug_render.dynamic_gpu_buffer.transfer)
+    if (debug_context.dynamic_gpu_buffer.transfer)
     {
-        SDL_ReleaseGPUTransferBuffer(device, debug_render.dynamic_gpu_buffer.transfer);
+        SDL_ReleaseGPUTransferBuffer(device, debug_context.dynamic_gpu_buffer.transfer);
     }
 
-    if (text_render.gpu_vertex_buffer.buffer)
+    if (text_context.gpu_vertex_buffer.buffer)
     {
-        SDL_ReleaseGPUBuffer(device, text_render.gpu_vertex_buffer.buffer);
+        SDL_ReleaseGPUBuffer(device, text_context.gpu_vertex_buffer.buffer);
     }
 
-    if (text_render.gpu_vertex_buffer.transfer)
+    if (text_context.gpu_vertex_buffer.transfer)
     {
-        SDL_ReleaseGPUTransferBuffer(device, text_render.gpu_vertex_buffer.transfer);
+        SDL_ReleaseGPUTransferBuffer(device, text_context.gpu_vertex_buffer.transfer);
     }
 
-    if (text_render.gpu_index_buffer.buffer)
+    if (text_context.gpu_index_buffer.buffer)
     {
-        SDL_ReleaseGPUBuffer(device, text_render.gpu_index_buffer.buffer);
+        SDL_ReleaseGPUBuffer(device, text_context.gpu_index_buffer.buffer);
     }
 
-    if (text_render.gpu_index_buffer.transfer)
+    if (text_context.gpu_index_buffer.transfer)
     {
-        SDL_ReleaseGPUTransferBuffer(device, text_render.gpu_index_buffer.transfer);
+        SDL_ReleaseGPUTransferBuffer(device, text_context.gpu_index_buffer.transfer);
     }
 
-    if (debug_render.pipeline)
+    if (debug_context.pipeline)
     {
-        SDL_ReleaseGPUGraphicsPipeline(device, debug_render.pipeline);
+        SDL_ReleaseGPUGraphicsPipeline(device, debug_context.pipeline);
     }
 
-    if (voxel_render.pipeline)
+    if (voxel_context.pipeline)
     {
-        SDL_ReleaseGPUGraphicsPipeline(device, voxel_render.pipeline);
+        SDL_ReleaseGPUGraphicsPipeline(device, voxel_context.pipeline);
     }
 
-    if (model_render.pipeline)
+    if (model_context.pipeline)
     {
-        SDL_ReleaseGPUGraphicsPipeline(device, model_render.pipeline);
+        SDL_ReleaseGPUGraphicsPipeline(device, model_context.pipeline);
     }
 
-    if (text_render.pipeline)
+    if (text_context.pipeline)
     {
-        SDL_ReleaseGPUGraphicsPipeline(device, text_render.pipeline);
+        SDL_ReleaseGPUGraphicsPipeline(device, text_context.pipeline);
     }
 
-    if (voxel_render.texture)
+    if (voxel_context.texture)
     {
-        SDL_ReleaseGPUTexture(device, voxel_render.texture);
+        SDL_ReleaseGPUTexture(device, voxel_context.texture);
     }
 
-    if (model_render.texture)
+    if (model_context.texture)
     {
-        SDL_ReleaseGPUTexture(device, model_render.texture);
+        SDL_ReleaseGPUTexture(device, model_context.texture);
     }
 
     if (depth_texture)
@@ -1454,19 +1453,19 @@ void Render::quit()
         SDL_ReleaseGPUTexture(device, depth_texture);
     }
 
-    if (voxel_render.sampler)
+    if (voxel_context.sampler)
     {
-        SDL_ReleaseGPUSampler(device, voxel_render.sampler);
+        SDL_ReleaseGPUSampler(device, voxel_context.sampler);
     }
 
-    if (model_render.sampler)
+    if (model_context.sampler)
     {
-        SDL_ReleaseGPUSampler(device, model_render.sampler);
+        SDL_ReleaseGPUSampler(device, model_context.sampler);
     }
 
-    if (text_render.sampler)
+    if (text_context.sampler)
     {
-        SDL_ReleaseGPUSampler(device, text_render.sampler);
+        SDL_ReleaseGPUSampler(device, text_context.sampler);
     }
 
     SDL_ReleaseWindowFromGPUDevice(device, window);

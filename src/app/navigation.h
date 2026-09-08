@@ -1,30 +1,10 @@
 #pragma once
 
-#include <vector>
-
 #include "core/geometry.h"
 #include "core/types.h"
+#include "data/path.h"
 
 class World;
-
-using PathId = s32;
-
-enum class PathStatus : u8
-{
-    Pending,
-    Unreachable,
-    Cancelled,
-    Ready,
-};
-
-struct NavigationPath
-{
-    PathId id { -1 };
-    PathStatus status { PathStatus::Pending };
-
-    s32 waypoint_index { 0 };
-    std::vector<IVec3> waypoint_vector {};
-};
 
 class Navigation
 {
@@ -35,5 +15,5 @@ public:
     PathId request_path(IVec3 start, IVec3 end);
     void cancel_path(PathId path_id);
 
-    const NavigationPath& get_path(PathId path_id) const;
+    const Path& get_path(PathId path_id) const;
 };

@@ -3,18 +3,18 @@
 #include <string>
 #include <vector>
 #include <SDL3/SDL_gpu.h>
-
-#include "cell.h"
-#include "constants.h"
+#include "data/cell.h"
+#include "data/constants.h"
 #include "debug.h"
-#include "direction.h"
-#include "nation.h"
 #include "screen.h"
 #include "core/color.h"
-#include "core/geometry.h"
 #include "core/types.h"
+#include "data/render/context.h"
 #include "platform/platform.h"
 
+struct SectorQuad;
+struct TextVertex;
+struct SectorMesh;
 class Control;
 class Population;
 class World;
@@ -63,119 +63,6 @@ constexpr s32 VOXEL_VERTEX_ARRAY[FACE_COUNT_PER_VOXEL][VERTEX_COUNT_PER_FACE][CO
 };
 
 constexpr s32 VERTEX_INDEX_ARRAY[6] { 0, 1, 2, 0, 2, 3 };
-
-struct VoxelVertex
-{
-    u32 vertex {};
-    u32 face_type {};
-};
-
-struct ModelVertex
-{
-    f32 position[3] {};
-    f32 normal[3] {};
-    f32 uv[2] {};
-};
-
-struct DebugVertex
-{
-    f32 position[3] {};
-    f32 color[3] {};
-};
-
-struct TextVertex
-{
-    f32 position[2] {};
-    f32 uv[2] {};
-};
-
-struct VoxelGpuData
-{
-    Vec3 position {};
-    SDL_GPUBuffer* buffer {};
-
-    std::vector<VoxelVertex> voxel_vertex_vector {};
-};
-
-struct ModelGpuData
-{
-    s32 texture_layer {};
-    SDL_GPUBuffer* buffer {};
-
-    std::vector<ModelVertex> model_vertex_vector {};
-};
-
-struct SectorQuad
-{
-    IVec3 local_coordinate {};
-    Direction direction {};
-    FaceType face_type {};
-};
-
-struct SectorMesh
-{
-    s32 sector_index {};
-
-    std::vector<SectorQuad> sector_quad_vector {};
-};
-
-struct DynamicGpuBuffer
-{
-    SDL_GPUBuffer* buffer {};
-    SDL_GPUTransferBuffer* transfer {};
-    size_t capacity {};
-};
-
-struct DebugRender
-{
-    SDL_GPUGraphicsPipeline* pipeline {};
-
-    DynamicGpuBuffer dynamic_gpu_buffer {};
-};
-
-struct VoxelRender
-{
-    SDL_GPUGraphicsPipeline* pipeline {};
-    SDL_GPUTexture* texture {};
-    SDL_GPUSampler* sampler {};
-
-    std::vector<SectorMesh> sector_mesh_vector {};
-    std::vector<VoxelGpuData> voxel_gpu_data_vector {};
-};
-
-struct ModelRender
-{
-    SDL_GPUGraphicsPipeline* pipeline {};
-    SDL_GPUTexture* texture {};
-    SDL_GPUSampler* sampler {};
-
-    std::vector<ModelGpuData> model_gpu_data_vector {};
-};
-
-struct TextRender
-{
-    SDL_GPUGraphicsPipeline* pipeline {};
-    SDL_GPUSampler* sampler {};
-
-    DynamicGpuBuffer gpu_vertex_buffer {};
-    DynamicGpuBuffer gpu_index_buffer {};
-
-    TTF_Font* font {};
-    TTF_TextEngine* engine {};
-
-    std::vector<TTF_Text*> ttf_text_vector {};
-    std::vector<std::string> text_vector {};
-
-    struct DrawBatch
-    {
-        SDL_GPUTexture* texture {};
-        u32 index_count {};
-        u32 first_index {};
-        s32 vertex_offset {};
-    };
-
-    std::vector<DrawBatch> batches {};
-};
 
 class Render
 {
@@ -254,8 +141,8 @@ private:
     u32 drawable_height {};
     u32 debug_vertex_count {};
 
-    DebugRender debug_render {};
-    VoxelRender voxel_render {};
-    ModelRender model_render {};
-    TextRender text_render {};
+    DebugContext debug_context {};
+    VoxelContext voxel_context {};
+    ModelContext model_context {};
+    TextContext text_context {};
 };

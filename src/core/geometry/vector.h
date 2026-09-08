@@ -1,0 +1,219 @@
+#pragma once
+
+#include "core/types.h"
+
+class IVec2;
+class IVec3;
+class Vec2;
+class Vec3;
+
+class Vec2
+{
+public:
+    f32 x { 0.0f };
+    f32 y { 0.0f };
+
+    constexpr Vec2() = default;
+
+    explicit constexpr Vec2(const f32 s)
+        :
+        x { s },
+        y { s }
+    {}
+
+    constexpr Vec2(const f32 x, const f32 y)
+        :
+        x { x },
+        y { y }
+    {}
+
+    explicit Vec2(const IVec2& vec);
+
+    constexpr f32&
+    operator[](const s32 index)
+    {
+        return (&x)[index];
+    }
+
+    constexpr const f32&
+    operator[](const s32 index) const
+    {
+        return (&x)[index];
+    }
+
+    static constexpr Vec2
+    unit_x()
+    {
+        return { 1.0f, 0.0f };
+    }
+
+    static constexpr Vec2
+    unit_y()
+    {
+        return { 0.0f, 1.0f };
+    }
+
+    f32 get_length() const;
+    f32 get_length_squared() const;
+    Vec2 normalize() const;
+
+    friend Vec2 operator+(const Vec2& lhs, const Vec2& rhs);
+    friend Vec2 operator-(const Vec2& lhs, const Vec2& rhs);
+    friend Vec2 operator*(f32 scalar, const Vec2& a);
+
+    friend f32 dot(const Vec2& lhs, const Vec2& rhs);
+};
+
+class Vec3
+{
+public:
+    f32 x { 0.0f };
+    f32 y { 0.0f };
+    f32 z { 0.0f };
+
+    constexpr Vec3() = default;
+
+    explicit constexpr Vec3(const f32 s)
+        :
+        x { s },
+        y { s },
+        z { s }
+    {}
+
+    constexpr Vec3(const f32 x, const f32 y, const f32 z)
+        :
+        x { x },
+        y { y },
+        z { z }
+    {}
+
+    explicit constexpr Vec3(const f32 vec[4])
+        :
+        x { vec[0] },
+        y { vec[1] },
+        z { vec[2] }
+    {}
+
+    explicit Vec3(const IVec3& vec);
+
+    constexpr f32&
+    operator[](const s32 index)
+    {
+        return (&x)[index];
+    }
+
+    constexpr const f32&
+    operator[](const s32 index) const
+    {
+        return (&x)[index];
+    }
+
+    static constexpr Vec3
+    unit_x()
+    {
+        return { 1.0f, 0.0f, 0.0f };
+    }
+
+    static constexpr Vec3
+    unit_y()
+    {
+        return { 0.0f, 1.0f, 0.0f };
+    }
+
+    static constexpr Vec3
+    unit_z()
+    {
+        return { 0.0f, 0.0f, 1.0f };
+    }
+
+    f32 get_length() const;
+    f32 get_length_squared() const;
+    Vec3 normalize() const;
+
+    friend Vec3 max(const Vec3& lhs, const Vec3& rhs);
+    friend Vec3 min(const Vec3& lhs, const Vec3& rhs);
+
+    friend f32 dot(const Vec3& lhs, const Vec3& rhs);
+    friend Vec3 cross(const Vec3& lhs, const Vec3& rhs);
+
+    friend Vec3 operator+(const Vec3& lhs, const Vec3& rhs);
+    friend Vec3 operator-(const Vec3& lhs, const Vec3& rhs);
+    friend Vec3 operator*(f32 lhs, const Vec3& rhs);
+};
+
+class IVec2
+{
+public:
+    s32 x { 0 };
+    s32 y { 0 };
+
+    constexpr IVec2() = default;
+
+    explicit constexpr IVec2(const s32 s)
+        :
+        x { s },
+        y { s }
+    {}
+
+    constexpr IVec2(const s32 x, const s32 y)
+        :
+        x { x },
+        y { y }
+    {}
+
+    constexpr s32&
+    operator[](const s32 index)
+    {
+        return (&x)[index];
+    }
+
+    constexpr const s32&
+    operator[](const s32 index) const
+    {
+        return (&x)[index];
+    }
+
+    friend IVec2 operator+(const IVec2& lhs, const IVec2& rhs);
+    friend IVec2 operator-(const IVec2& lhs, const IVec2& rhs);
+    friend IVec2 operator*(s32 lhs, const IVec2& rhs);
+};
+
+class IVec3
+{
+public:
+    s32 x { 0 };
+    s32 y { 0 };
+    s32 z { 0 };
+
+    constexpr IVec3() = default;
+
+    explicit constexpr IVec3(const s32 s)
+        :
+        x { s },
+        y { s },
+        z { s }
+    {}
+
+    constexpr IVec3(const s32 x, const s32 y, const s32 z)
+        :
+        x { x },
+        y { y },
+        z { z }
+    {}
+
+    constexpr s32&
+    operator[](const s32 index)
+    {
+        return (&x)[index];
+    }
+
+    constexpr const s32&
+    operator[](const s32 index) const
+    {
+        return (&x)[index];
+    }
+
+    friend IVec3 operator+(const IVec3& lhs, const IVec3& rhs);
+    friend IVec3 operator-(const IVec3& lhs, const IVec3& rhs);
+    friend IVec3 operator*(s32 lhs, const IVec3& rhs);
+};

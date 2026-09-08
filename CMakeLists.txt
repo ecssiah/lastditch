@@ -157,19 +157,29 @@ target_sources(
         PRIVATE
         "${ACTOR_DATA_GENERATED_HEADER}"
         "${BLOCK_DATA_GENERATED_HEADER}"
-        src/app/actor.h
+        src/app/data/render/context.h
+        src/app/data/render/sector.h
+        src/app/data/render/vertex.h
+        src/app/data/actor.h
+        src/app/data/area.h
+        src/app/data/cell.h
+        src/app/data/collider.h
+        src/app/data/constants.h
+        src/app/data/direction.h
+        src/app/data/inputs.h
+        src/app/data/nation.h
+        src/app/data/path.h
+        src/app/data/work.h
+        src/app/action.cpp
+        src/app/action.h
         src/app/app.cpp
         src/app/app.h
-        src/app/area.h
-        src/app/cell.h
         src/app/control.cpp
         src/app/control.h
         src/app/debug.cpp
         src/app/debug.h
-        src/app/direction.h
-        src/app/nation.h
-        src/app/navigation.h
         src/app/navigation.cpp
+        src/app/navigation.h
         src/app/physics.cpp
         src/app/physics.h
         src/app/population.cpp
@@ -178,12 +188,19 @@ target_sources(
         src/app/render.h
         src/app/screen.cpp
         src/app/screen.h
-        src/app/action.cpp
-        src/app/action.h
         src/app/world.cpp
         src/app/world.h
+        src/core/geometry/bounds.cpp
+        src/core/geometry/bounds.h
+        src/core/geometry/matrix.cpp
+        src/core/geometry/matrix.h
+        src/core/geometry/orientation.cpp
+        src/core/geometry/orientation.h
+        src/core/geometry/scalar.cpp
+        src/core/geometry/scalar.h
+        src/core/geometry/vector.cpp
+        src/core/geometry/vector.h
         src/core/color.h
-        src/core/geometry.cpp
         src/core/geometry.h
         src/core/id.h
         src/core/log.cpp

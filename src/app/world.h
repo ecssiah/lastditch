@@ -4,18 +4,20 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <unordered_set>
 
-#include "area.h"
-#include "cell.h"
-#include "constants.h"
+#include "data/area.h"
+#include "data/cell.h"
+#include "data/constants.h"
 #include "debug.h"
-#include "direction.h"
+#include "data/direction.h"
 #include "physics.h"
+#include "core/geometry.h"
 #include "core/id.h"
 #include "core/random.h"
 #include "core/types.h"
 
-class Actor;
+struct Actor;
 class Population;
 
 enum class SectionType : u8
@@ -85,6 +87,14 @@ public:
     b32 is_solid(s32 x, s32 y, s32 z);
     b32 is_clear(s32 x, s32 y, s32 z, u8 direction_mask);
 
+    static Vec2 get_direction_from_angle(f32 rotation_degrees);
+    static Direction get_direction_opposite(const Direction& direction);
+    static Vec3 get_direction_normal(const Direction& direction);
+    static std::string_view get_direction_string(Direction direction);
+    static Direction get_direction_from_mask(const u8 mask);
+
+    IVec2 rotate_point_by_direction(IVec2 point, IVec2 pivot, Direction direction);
+
     Random random { WORLD_SEED };
     Physics physics {};
 
@@ -118,10 +128,7 @@ private:
     void layout_eagle_territory();
     void layout_bear_territory();
     void layout_lion_territory();
-    void layout_test_area();
-
-    void layout_tower();
-    void layout_roof();
+    void setup_test_area();
 
     void set_block(s32 x, s32 y, s32 z, BlockType block_type);
     void set_box(s32 x, s32 y, s32 z, s32 size_x, s32 size_y, s32 size_z, BlockType block_type);
@@ -144,14 +151,14 @@ private:
     void construct_tower();
     void construct_roof();
 
+    static Border calculate_border(const Area& area_left, const Area& area_right);
+
+    Link calculate_link(const Border& border);
+    void calculate_links();
+
     u8 get_direction_mask(s32 x, s32 y, s32 z) const;
 
     void calculate_direction_masks();
-
-    static Border calculate_border(const Area& area_left, const Area& area_right);
-    Link calculate_link(const Border& border);
-
-    void calculate_links();
 
     IdGenerator area_id_generator {};
     IdGenerator link_id_generator {};

@@ -6,9 +6,9 @@
 #include <iterator>
 #include <ranges>
 
-#include "actor.h"
-#include "area.h"
-#include "direction.h"
+#include "data/actor.h"
+#include "data/area.h"
+#include "data/direction.h"
 #include "population.h"
 #include "core/log.h"
 #include "core/types.h"
@@ -291,7 +291,7 @@ World::init()
     layout_roof_areas();
 
     layout_elevator_areas();
-    layout_test_area();
+    setup_test_area();
 
     layout_eagle_territory();
     layout_wolf_territory();
@@ -478,6 +478,97 @@ World::is_clear(const s32 x, const s32 y, const s32 z, const u8 direction_mask)
     }
 
     return true;
+}
+
+Vec2
+World::get_direction_from_angle(const f32 rotation_degrees)
+{
+    return {
+        cos(to_radians(rotation_degrees)),
+        sin(to_radians(rotation_degrees)),
+    };
+}
+
+Direction
+World::get_direction_opposite(const Direction& direction)
+{
+    switch (direction)
+    {
+        case Direction::East:   return Direction::West;
+        case Direction::West:   return Direction::East;
+        case Direction::North:  return Direction::South;
+        case Direction::South:  return Direction::North;
+        case Direction::Up:     return Direction::Down;
+        case Direction::Down:   return Direction::Up;
+        default:                throw std::invalid_argument("invalid direction");
+    }
+}
+
+Vec3
+World::get_direction_normal(const Direction& direction)
+{
+    const s32 direction_index { 3 * static_cast<s32>(direction) };
+
+    return {
+        DIRECTION_NORMAL_ARRAY[direction_index + 0],
+        DIRECTION_NORMAL_ARRAY[direction_index + 1],
+        DIRECTION_NORMAL_ARRAY[direction_index + 2]
+    };
+}
+
+std::string_view
+World::get_direction_string(const Direction direction)
+{
+    switch (direction)
+    {
+        case Direction::East:   return "West";
+        case Direction::West:   return "East";
+        case Direction::North:  return "South";
+        case Direction::South:  return "North";
+        case Direction::Up:     return "Down";
+        case Direction::Down:   return "Up";
+        default:                throw std::invalid_argument("invalid direction");
+    }
+}
+
+Direction
+World::get_direction_from_mask(const u8 mask)
+{
+    if (mask == 0)
+    {
+        throw std::invalid_argument("empty direction mask");
+    }
+
+    const s32 index { __builtin_ctz(static_cast<unsigned>(mask)) };
+
+    if (index >= DIRECTION_COUNT)
+    {
+        throw std::invalid_argument("invalid direction mask");
+    }
+
+    return static_cast<Direction>(index);
+}
+
+IVec2
+World::rotate_point_by_direction(const IVec2 point, const IVec2 pivot, const Direction direction)
+{
+    const IVec2 position { point - pivot };
+
+    switch (direction)
+    {
+        case Direction::North:
+            return pivot + IVec2 { position.x, position.y };
+        case Direction::West:
+            return pivot + IVec2 { -position.y, position.x };
+        case Direction::South:
+            return pivot + IVec2 { -position.x, -position.y };
+        case Direction::East:
+            return pivot + IVec2 { position.y, -position.x };
+        default:
+            assert(false && "Invalid direction for rotation");
+    }
+
+    std::unreachable();
 }
 
 s32
@@ -825,6 +916,7 @@ World::add_link(Link link)
 
     area_1.area_link_set.insert(link_id);
     area_2.area_link_set.insert(link_id);
+
     link_id_vector[floor_number].insert(link_id);
 }
 
@@ -1005,14 +1097,7 @@ World::layout_elevator_areas()
             },
         };
 
-        if (floor_number < TOWER_FLOOR_COUNT)
-        {
-            place_area(elevator_shaft);
-        }
-        else
-        {
-            place_area(elevator_shaft);
-        }
+        place_area(elevator_shaft);
     }
 }
 
@@ -1274,7 +1359,7 @@ World::layout_wolf_territory()
 void
 World::layout_eagle_territory()
 {
-    const IVec3 temple_origin
+    constexpr IVec3 temple_origin
     {
         TOWER_BORDER + TEMPLE_BORDER_OFFSET,
         WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2,
@@ -1660,20 +1745,8 @@ World::calculate_links()
 }
 
 void
-World::layout_test_area()
+World::setup_test_area()
 {
-    set_block(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_bear);
-    set_block(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_wolf);
-    set_block(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_lion);
-    set_block(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_eagle);
-
-    set_block(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_bear);
-    set_block(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_wolf);
-    set_block(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_lion);
-    set_block(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_eagle);
-
-    set_block(WORLD_CENTER_S32, WORLD_CENTER_S32, ROOF_Z + 4, BlockType::compass);
-
     constexpr IVec3 test_area_position
     {
         WORLD_CENTER_S32 - 20,
@@ -1705,18 +1778,18 @@ World::layout_test_area()
 
     place_area(test_room1);
     place_area(test_room2);
-}
 
-void
-World::layout_tower()
-{
+    set_block(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_bear);
+    set_block(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_wolf);
+    set_block(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_lion);
+    set_block(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 10, ROOF_Z + 2, BlockType::symbol_eagle);
 
-}
+    set_block(WORLD_CENTER_S32 + 16, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_bear);
+    set_block(WORLD_CENTER_S32 + 18, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_wolf);
+    set_block(WORLD_CENTER_S32 + 20, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_lion);
+    set_block(WORLD_CENTER_S32 + 22, WORLD_CENTER_S32 - 14, ROOF_Z + 2, BlockType::text_eagle);
 
-void
-World::layout_roof()
-{
-
+    set_block(WORLD_CENTER_S32, WORLD_CENTER_S32, ROOF_Z + 4, BlockType::compass);
 }
 
 void

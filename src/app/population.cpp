@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "actor.h"
+#include "data/actor.h"
 #include "physics.h"
 #include "world.h"
 #include "action.h"
