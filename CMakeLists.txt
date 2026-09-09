@@ -126,6 +126,13 @@ add_custom_command(
 
 add_executable(lastditch src/lastditch.cpp)
 
+set_target_properties(
+        lastditch
+        PROPERTIES
+        UNITY_BUILD ON
+        UNITY_BUILD_BATCH_SIZE 32
+)
+
 add_custom_target(
         generate_block_types
         DEPENDS "${BLOCK_DATA_GENERATED_HEADER}"
@@ -190,15 +197,11 @@ target_sources(
         src/app/screen.h
         src/app/world.cpp
         src/app/world.h
-        src/core/geometry/bounds.cpp
         src/core/geometry/bounds.h
-        src/core/geometry/matrix.cpp
+        src/core/geometry/interpolation.h
         src/core/geometry/matrix.h
-        src/core/geometry/orientation.cpp
         src/core/geometry/orientation.h
-        src/core/geometry/scalar.cpp
         src/core/geometry/scalar.h
-        src/core/geometry/vector.cpp
         src/core/geometry/vector.h
         src/core/color.h
         src/core/geometry.h

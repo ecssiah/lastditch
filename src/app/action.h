@@ -1,11 +1,10 @@
 #pragma once
 
-#include "data/actor.h"
-#include "data/constants.h"
 #include "control.h"
 #include "navigation.h"
 #include "core/random.h"
 #include "core/types.h"
+#include "data/constants.h"
 
 struct Work;
 

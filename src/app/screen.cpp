@@ -1,7 +1,6 @@
 #include "screen.h"
 
 #include <format>
-
 #include "control.h"
 #include "world.h"
 

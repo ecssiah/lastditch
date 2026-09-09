@@ -1,15 +1,18 @@
 #pragma once
 
-#include <vector>
-
+#include <algorithm>
+#include <array>
+#include <cstddef>
 #include "vector.h"
 #include "core/types.h"
 
 class IBounds2
 {
 public:
+    constexpr
     IBounds2() = default;
 
+    constexpr
     IBounds2(const IVec2& min, const IVec2& max)
         :
         min { min },
@@ -18,37 +21,61 @@ public:
 
     }
 
-    IVec2
+    constexpr IVec2
     position() const
     {
-        return {
+        return
+        {
             min.x,
             min.y
         };
     }
 
-    IVec2
+    constexpr IVec2
     size() const
     {
-        return {
+        return
+        {
             max.x - min.x,
             max.y - min.y,
         };
     }
 
-    friend b32 overlaps(const IBounds2& lhs, const IBounds2& rhs);
-    friend IBounds2 get_intersection(const IBounds2& lhs, const IBounds2& rhs);
-    friend std::vector<IBounds2> subtract(const IBounds2& lhs, const IBounds2& rhs);
-
     IVec2 min {};
     IVec2 max {};
+};
+
+struct IBounds2List
+{
+    std::array<IBounds2, 4> values {};
+    std::size_t count {};
+
+    constexpr auto
+    begin() const
+    {
+        return values.begin();
+    }
+
+    constexpr auto
+    end() const
+    {
+        return values.begin() + count;
+    }
+
+    constexpr void
+    push_back(const IBounds2& bounds)
+    {
+        values[count++] = bounds;
+    }
 };
 
 class IBounds3
 {
 public:
+    constexpr
     IBounds3() = default;
 
+    constexpr
     IBounds3(const IVec3& min, const IVec3& max)
         :
         min { min },
@@ -57,20 +84,22 @@ public:
 
     }
 
-    IVec3
+    constexpr IVec3
     position() const
     {
-        return {
+        return
+        {
             min.x,
             min.y,
             min.z,
         };
     }
 
-    IVec3
+    constexpr IVec3
     size() const
     {
-        return {
+        return
+        {
             max.x - min.x,
             max.y - min.y,
             max.z - min.z,
@@ -84,9 +113,10 @@ public:
 class Bounds2
 {
 public:
+    constexpr
     Bounds2() = default;
 
-    explicit
+    constexpr explicit
     Bounds2(const IBounds2& bounds)
         :
         min { bounds.min },
@@ -95,6 +125,7 @@ public:
 
     }
 
+    constexpr
     Bounds2(const Vec2& min, const Vec2& max)
         :
         min { min },
@@ -110,9 +141,10 @@ public:
 class Bounds3
 {
 public:
+    constexpr
     Bounds3() = default;
 
-    explicit
+    constexpr explicit
     Bounds3(const IBounds3& bounds)
         :
         min { bounds.min },
@@ -121,6 +153,7 @@ public:
 
     }
 
+    constexpr
     Bounds3(const Vec3 &min, const Vec3 &max)
         :
         min { min },
@@ -133,86 +166,95 @@ public:
     Vec3 max {};
 };
 
-inline b32
-overlaps(const IBounds2& lhs, const IBounds2& rhs)
+constexpr b32
+overlaps(const IBounds2& left, const IBounds2& right)
 {
-    const b32 is_clear {
-        lhs.max.x <= rhs.min.x ||
-        rhs.max.x <= lhs.min.x ||
-        lhs.max.y <= rhs.min.y ||
-        rhs.max.y <= lhs.min.y
+    const b32 is_clear
+    {
+        left.max.x <= right.min.x ||
+        right.max.x <= left.min.x ||
+        left.max.y <= right.min.y ||
+        right.max.y <= left.min.y
     };
 
     return !is_clear;
 }
 
-inline IBounds2
-get_intersection(const IBounds2& lhs, const IBounds2& rhs)
+constexpr IBounds2
+get_intersection(const IBounds2& left, const IBounds2& right)
 {
-    const IBounds2 bounds {
+    const IBounds2 bounds
+    {
         {
-            std::max(lhs.min.x, rhs.min.x),
-            std::max(lhs.min.y, rhs.min.y)
+            std::max(left.min.x, right.min.x),
+            std::max(left.min.y, right.min.y)
         },
         {
-            std::min(lhs.max.x, rhs.max.x),
-            std::min(lhs.max.y, rhs.max.y)
+            std::min(left.max.x, right.max.x),
+            std::min(left.max.y, right.max.y)
         },
     };
 
     return bounds;
 }
 
-inline std::vector<IBounds2>
-subtract(const IBounds2& lhs, const IBounds2& rhs)
+constexpr IBounds2List
+subtract(const IBounds2& left, const IBounds2& right)
 {
-    if (!overlaps(lhs, rhs))
+    IBounds2List bounds_list {};
+
+    if (!overlaps(left, right))
     {
-        return { lhs };
+        bounds_list.push_back(left);
+
+        return bounds_list;
     }
 
-    std::vector<IBounds2> bounds_vector {};
-    const IBounds2 intersection_bounds { get_intersection(lhs, rhs) };
+    const IBounds2 intersection_bounds { get_intersection(left, right) };
 
-    if (intersection_bounds.min.x > lhs.min.x)
+    if (intersection_bounds.min.x > left.min.x)
     {
-        const IBounds2 bounds {
-            { lhs.min.x, lhs.min.y },
-            { intersection_bounds.min.x, lhs.max.y }
+        const IBounds2 bounds
+        {
+            { left.min.x, left.min.y },
+            { intersection_bounds.min.x, left.max.y }
         };
 
-        bounds_vector.push_back(bounds);
+        bounds_list.push_back(bounds);
     }
 
-    if (intersection_bounds.max.x < lhs.max.x)
+    if (intersection_bounds.max.x < left.max.x)
     {
-        const IBounds2 bounds {
-            { intersection_bounds.max.x, lhs.min.y },
-            { lhs.max.x, lhs.max.y}
+        const IBounds2 bounds
+        {
+            { intersection_bounds.max.x, left.min.y },
+            { left.max.x, left.max.y}
         };
 
-        bounds_vector.push_back(bounds);
+        bounds_list.push_back(bounds);
     }
 
-    if (intersection_bounds.min.y > lhs.min.y)
+    if (intersection_bounds.min.y > left.min.y)
     {
-        const IBounds2 bounds {
-            { intersection_bounds.min.x, lhs.min.y },
+        const IBounds2 bounds
+        {
+            { intersection_bounds.min.x, left.min.y },
             { intersection_bounds.max.x, intersection_bounds.min.y }
         };
 
-        bounds_vector.push_back(bounds);
+        bounds_list.push_back(bounds);
     }
 
-    if (intersection_bounds.max.y < lhs.max.y)
+    if (intersection_bounds.max.y < left.max.y)
     {
-        const IBounds2 bounds {
+        const IBounds2 bounds
+        {
             { intersection_bounds.min.x, intersection_bounds.max.y },
-            { intersection_bounds.max.x, lhs.max.y }
+            { intersection_bounds.max.x, left.max.y }
         };
 
-        bounds_vector.push_back(bounds);
+        bounds_list.push_back(bounds);
     }
 
-    return bounds_vector;
+    return bounds_list;
 }

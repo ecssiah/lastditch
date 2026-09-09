@@ -3,19 +3,17 @@
 #include <array>
 #include <string>
 #include <unordered_map>
-#include <vector>
 #include <unordered_set>
-
-#include "data/area.h"
-#include "data/cell.h"
-#include "data/constants.h"
-#include "debug.h"
-#include "data/direction.h"
+#include <vector>
 #include "physics.h"
 #include "core/geometry.h"
 #include "core/id.h"
 #include "core/random.h"
 #include "core/types.h"
+#include "data/area.h"
+#include "data/cell.h"
+#include "data/constants.h"
+#include "data/direction.h"
 
 struct Actor;
 class Population;

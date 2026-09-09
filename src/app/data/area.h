@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_set>
 #include "core/geometry.h"
 #include "core/types.h"
 

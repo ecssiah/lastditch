@@ -5,13 +5,10 @@
 #include <exception>
 #include <iterator>
 #include <ranges>
-
-#include "data/actor.h"
-#include "data/area.h"
-#include "data/direction.h"
-#include "population.h"
 #include "core/log.h"
 #include "core/types.h"
+#include "data/area.h"
+#include "data/direction.h"
 
 using namespace std;
 
@@ -960,7 +957,7 @@ World::place_area(Area area)
             continue;
         }
 
-        const vector bounds_vector { subtract(test_area.bounds, area.bounds) };
+        const IBounds2List bounds_vector { subtract(test_area.bounds, area.bounds) };
 
         for (const IBounds2& bounds : bounds_vector)
         {

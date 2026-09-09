@@ -1,6 +1,8 @@
 #pragma once
 
 #include "scalar.h"
+#include "trigonometry.h"
+#include "vector.h"
 #include "core/types.h"
 
 enum class Axis : u8
@@ -13,22 +15,23 @@ enum class Axis : u8
 
 constexpr s32 AXIS_COUNT { static_cast<s32>(Axis::COUNT) };
 
-inline Vec3
+constexpr Vec3
 get_forward(const Vec3& rotation)
 {
     const f32 rotation_x { to_radians(rotation.x) };
     const f32 rotation_z { to_radians(rotation.z) };
 
-    const Vec3 forward {
-        cos(rotation_x) * cos(rotation_z),
-        cos(rotation_x) * sin(rotation_z),
-        sin(rotation_x),
-    };
+    const auto [sin_x, cos_x] { get_sin_cos(rotation_x) };
+    const auto [sin_z, cos_z] { get_sin_cos(rotation_z) };
 
-    return forward.normalize();
+    return {
+        cos_x * cos_z,
+        cos_x * sin_z,
+        sin_x,
+    };
 }
 
-inline Vec3
+constexpr Vec3
 get_right(const Vec3& rotation)
 {
     const Vec3 forward  { get_forward(rotation) };
@@ -37,7 +40,7 @@ get_right(const Vec3& rotation)
     return right.normalize();
 }
 
-inline Vec3
+constexpr Vec3
 get_up(const Vec3& rotation)
 {
     const Vec3 forward  { get_forward(rotation) };

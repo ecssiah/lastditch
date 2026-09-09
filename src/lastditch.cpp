@@ -1,11 +1,10 @@
 #include <memory>
-
 #include "app/app.h"
 
 int
 main()
 {
-    const auto app { make_unique<App>() };
+    const auto app { std::make_unique<App>() };
 
     app->init();
 

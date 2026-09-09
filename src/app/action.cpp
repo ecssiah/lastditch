@@ -1,10 +1,10 @@
-#include "action.h"
-
 #include <algorithm>
-#include "data/actor.h"
-#include "data/work.h"
+#include "action.h"
 #include "population.h"
 #include "world.h"
+#include "core/geometry/interpolation.h"
+#include "data/actor.h"
+#include "data/work.h"
 
 using namespace std;
 

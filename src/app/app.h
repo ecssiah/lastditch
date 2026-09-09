@@ -1,9 +1,11 @@
 #pragma once
 
-#include "population.h"
-#include "render.h"
-#include "action.h"
-#include "world.h"
+#include "app/action.h"
+#include "app/control.h"
+#include "app/population.h"
+#include "app/render.h"
+#include "app/world.h"
+#include "core/types.h"
 #include "platform/platform.h"
 
 class App
@@ -17,7 +19,7 @@ public:
 
     b32 is_active() const;
 
-    b32 evolving { true };
+    b32 is_evolving { true };
 
 private:
     f64 simulation_time { 0.0 };

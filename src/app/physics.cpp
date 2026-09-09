@@ -2,10 +2,9 @@
 
 #include <algorithm>
 #include <cmath>
-
-#include "data/actor.h"
 #include "world.h"
 #include "core/types.h"
+#include "data/actor.h"
 
 using namespace std;
 

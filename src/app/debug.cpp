@@ -1,7 +1,6 @@
 #include "debug.h"
 
 #include <ranges>
-
 #include "world.h"
 
 void

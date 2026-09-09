@@ -1,14 +1,12 @@
 #include "population.h"
 
 #include <iostream>
-
-#include "data/actor.h"
-#include "physics.h"
-#include "world.h"
 #include "action.h"
+#include "world.h"
 #include "core/geometry.h"
 #include "core/log.h"
 #include "core/types.h"
+#include "data/actor.h"
 
 void
 Population::init()

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-
 #include "core/types.h"
 
 enum class Direction : u8

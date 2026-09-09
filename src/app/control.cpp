@@ -1,9 +1,7 @@
 #include "control.h"
 
-#include <cmath>
-
-#include "population.h"
 #include "action.h"
+#include "population.h"
 #include "core/log.h"
 #include "platform/platform.h"
 

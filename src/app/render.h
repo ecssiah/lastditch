@@ -3,12 +3,11 @@
 #include <string>
 #include <vector>
 #include <SDL3/SDL_gpu.h>
-#include "data/cell.h"
-#include "data/constants.h"
 #include "debug.h"
 #include "screen.h"
 #include "core/color.h"
 #include "core/types.h"
+#include "data/constants.h"
 #include "data/render/context.h"
 #include "platform/platform.h"
 

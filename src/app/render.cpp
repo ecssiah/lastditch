@@ -2,17 +2,16 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cstdio>
 #include <format>
 #include <fstream>
 #include <iterator>
 #include <SDL3/SDL_surface.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include "data/actor.h"
 #include "control.h"
 #include "population.h"
 #include "world.h"
 #include "core/log.h"
+#include "data/actor.h"
 
 using namespace std;
 
