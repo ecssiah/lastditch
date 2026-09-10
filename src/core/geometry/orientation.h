@@ -1,5 +1,6 @@
 #pragma once
 
+#include "quaternion.h"
 #include "scalar.h"
 #include "trigonometry.h"
 #include "vector.h"
@@ -48,4 +49,31 @@ get_up(const Vec3& rotation)
     const Vec3 up       { cross(forward, right) };
 
     return up.normalize();
+}
+
+constexpr Vec3
+rotate_vector(const Quaternion& orientation, const Vec3& vector)
+{
+    const Vec3 imaginary { orientation.x, orientation.y, orientation.z };
+    const Vec3 twice_cross { 2.0f * cross(imaginary, vector) };
+
+    return vector + orientation.w * twice_cross + cross(imaginary, twice_cross);
+}
+
+constexpr Vec3
+get_forward(const Quaternion& orientation)
+{
+    return rotate_vector(orientation, Vec3::unit_x());
+}
+
+constexpr Vec3
+get_right(const Quaternion& orientation)
+{
+    return rotate_vector(orientation, { 0.0f, -1.0f, 0.0f });
+}
+
+constexpr Vec3
+get_up(const Quaternion& orientation)
+{
+    return rotate_vector(orientation, Vec3::unit_z());
 }

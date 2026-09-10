@@ -32,6 +32,7 @@ find_repository_root()
         }
 
         const auto parent { candidate.parent_path() };
+
         if (parent == candidate)
         {
             return {};
@@ -82,6 +83,7 @@ Log::init()
     filesystem::path repository_path {};
 
     const auto repository_root { find_repository_root() };
+
     if (!repository_root.empty())
     {
         repository_log_directory = repository_root / "logs";

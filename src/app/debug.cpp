@@ -16,7 +16,8 @@ Debug::init(const World& world)
             {
                 const Area& area { world.area_map.at(area_id) };
 
-                const IBounds3 area_bounds {
+                const IBounds3 area_bounds
+                {
                     {
                         area.bounds.min.x,
                         area.bounds.min.y,
@@ -35,7 +36,8 @@ Debug::init(const World& world)
                 {
                     const Link& link { world.link_map.at(link_id) };
 
-                    const Vec3 link_position {
+                    const Vec3 link_position
+                    {
                         static_cast<f32>(link.position.x),
                         static_cast<f32>(link.position.y),
                         static_cast<f32>(World::get_height(area.floor_number))
@@ -43,7 +45,8 @@ Debug::init(const World& world)
 
                     if (link.axis == Axis::X)
                     {
-                        const Bounds3 link_bounds {
+                        const Bounds3 link_bounds
+                        {
                             { link_position.x, link_position.y, link_position.z + 1 },
                             { link_position.x + 1, link_position.y + 2, link_position.z + 3 },
                         };
@@ -52,7 +55,8 @@ Debug::init(const World& world)
                     }
                     else if (link.axis == Axis::Y)
                     {
-                        const Bounds3 link_bounds {
+                        const Bounds3 link_bounds
+                        {
                             { link_position.x, link_position.y, link_position.z + 1 },
                             { link_position.x + 2, link_position.y + 1, link_position.z + 3 },
                         };

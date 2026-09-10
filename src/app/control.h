@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/geometry.h"
+#include "core/geometry/quaternion.h"
 #include "data/inputs.h"
 #include "platform/platform.h"
 
@@ -20,6 +21,7 @@ public:
 
     Vec3 position { 0.0f };
     Vec3 rotation { 0.0f };
+    Quaternion orientation {};
 
     Mat4 view_matrix { 1.0f };
     Mat4 projection_matrix { 1.0f };
@@ -32,4 +34,3 @@ private:
 
     void sync_to_actor(const Actor& actor);
 };
-

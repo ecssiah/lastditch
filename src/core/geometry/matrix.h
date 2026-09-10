@@ -145,6 +145,16 @@ get_view_matrix(const Vec3& position, const Vec3& rotation)
 }
 
 constexpr Mat4
+get_view_matrix(const Vec3& position, const Quaternion& orientation)
+{
+    return get_look_at_matrix(
+        position,
+        position + get_forward(orientation),
+        get_up(orientation)
+    );
+}
+
+constexpr Mat4
 get_orthographic_matrix(const Vec2& min, const Vec2& max, const f32 near, const f32 far)
 {
     Mat4 result {};

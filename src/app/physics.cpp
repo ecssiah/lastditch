@@ -15,7 +15,8 @@ Physics::update_actor(World& world, Actor& actor)
 
     constexpr s32 z_axis_index { static_cast<s32>(Axis::Z) };
 
-    const f32 dz {
+    const f32 dz
+    {
         actor.velocity[z_axis_index] <= 0.0f
             ? FIXED_FRAME_TIME_32 * FALLING_GRAVITY_MODIFIER * GRAVITY
             : FIXED_FRAME_TIME_32 * RISING_GRAVITY_MODIFIER * GRAVITY
@@ -29,7 +30,8 @@ Physics::update_actor(World& world, Actor& actor)
 
     if (actor.box_collider.collision_enabled)
     {
-        const Vec3 move {
+        const Vec3 move
+        {
             abs(FIXED_FRAME_TIME_32 * actor.velocity.x),
             abs(FIXED_FRAME_TIME_32 * actor.velocity.y),
             abs(FIXED_FRAME_TIME_32 * actor.velocity.z),
@@ -65,17 +67,21 @@ Bounds3
 Physics::get_collider_bounds(const Collider& collider, const Vec3& position)
 {
     constexpr f32 world_size { WORLD_SIZE_IN_CELLS };
-    
-    return {
+
+    const Bounds3 bounds
+    {
         max(position - collider.radius, Vec3{ 0.0f }),
         min(position + collider.radius, Vec3{ world_size }),
     };
+
+    return bounds;
 }
 
 IBounds3
 Physics::get_grid_overlap_of_bounds(const Bounds3& bounds)
 {
-    return {
+    const IBounds3 overlap_bounds
+    {
         {
             max(static_cast<s32>(floorf(bounds.min.x)), 0),
             max(static_cast<s32>(floorf(bounds.min.y)), 0),
@@ -87,6 +93,8 @@ Physics::get_grid_overlap_of_bounds(const Bounds3& bounds)
             min(static_cast<s32>(ceilf(bounds.max.z)) - 1, WORLD_SIZE_IN_CELLS - 1),
         },
     };
+
+    return overlap_bounds;
 }
 
 void

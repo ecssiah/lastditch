@@ -68,7 +68,7 @@ Control::update(const Platform& platform, Population& population)
         sync_to_actor(actor);
     }
 
-    view_matrix = get_view_matrix(position, rotation);
+    view_matrix = get_view_matrix(position, orientation);
 }
 
 void
@@ -124,8 +124,8 @@ void
 Control::drive()
 {
     const Vec3 direction {
-        input.move.x * get_right(rotation) +
-        input.move.y * get_forward(rotation) +
+        input.move.x * get_right(orientation) +
+        input.move.y * get_forward(orientation) +
         input.move.z * Vec3::unit_z()
     };
 
@@ -145,13 +145,16 @@ Control::drive()
     {
         rotation.x = -CAMERA_PITCH_LIMIT;
     }
+
+    orientation = Quaternion::from_euler_degrees(rotation.x, rotation.y, rotation.z);
 }
 
 void
 Control::drive_actor(Actor& actor) const
 {
-    const Vec3 forward { get_forward(actor.rotation) };
-    const Vec3 right { get_right(actor.rotation) };
+    const Vec3 movement_rotation { 0.0f, 0.0f, actor.movement_yaw };
+    const Vec3 forward { get_forward(movement_rotation) };
+    const Vec3 right { get_right(movement_rotation) };
 
     const Vec3 forward_xy {
         forward.x,
@@ -195,5 +198,6 @@ Control::sync_to_actor(const Actor& actor)
     const Vec3 eye_position { actor.position + eye_offset };
 
     position = eye_position;
-    rotation = actor.rotation;
+    rotation = actor.rotation_target;
+    orientation = actor.orientation;
 }

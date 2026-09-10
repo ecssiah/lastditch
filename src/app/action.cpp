@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include "action.h"
 #include "population.h"
 #include "world.h"
@@ -30,7 +31,10 @@ const vector<Work> WORK_VECTOR
                 {
                     actor.decision_timer = population.random.uniform(10, 50);
 
-                    const f32 distance_to_target { actor.rotation_target.z - actor.rotation.z };
+                    const f32 distance_to_target
+                    {
+                        get_shortest_angle_delta(actor.movement_yaw, actor.rotation_target.z)
+                    };
 
                     if (abs(distance_to_target) < 1.0f)
                     {
@@ -72,12 +76,27 @@ const vector<Work> WORK_VECTOR
         {
             for (Actor& actor : population.actor_vector)
             {
-                actor.rotation = interpolate_to(
-                     actor.rotation,
-                     actor.rotation_target,
-                     actor.turn_speed,
-                     FIXED_FRAME_TIME_32
-                 );
+                const f32 alpha
+                {
+                    1.0f - std::exp(-actor.turn_speed * FIXED_FRAME_TIME_32)
+                };
+
+                actor.movement_yaw = interpolate_angle_to(
+                    actor.movement_yaw,
+                    actor.rotation_target.z,
+                    actor.turn_speed,
+                    FIXED_FRAME_TIME_32
+                );
+
+                actor.orientation = spherical_interpolation_to(
+                    actor.orientation,
+                    Quaternion::from_euler_degrees(
+                        actor.rotation_target.x,
+                        actor.rotation_target.y,
+                        actor.rotation_target.z
+                    ),
+                    alpha
+                );
 
                 Physics::update_actor(world, actor);
             }

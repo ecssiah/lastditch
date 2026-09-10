@@ -1174,7 +1174,7 @@ void Render::draw_models(SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands
 
         Mat4 model { 1.0f };
         model = model.translate(actor.position);
-        model = model.rotate(to_radians(actor.rotation.z), Vec3::unit_z());
+        model = model.rotate(to_radians(actor.movement_yaw), Vec3::unit_z());
 
         const ObjectUniform object { model };
         const LayerUniform layer { data.texture_layer };

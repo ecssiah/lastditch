@@ -5,6 +5,7 @@
 #include "nation.h"
 #include "core/geometry.h"
 #include "core/types.h"
+#include "core/geometry/quaternion.h"
 
 enum class ActorType : u8
 {
@@ -27,11 +28,13 @@ struct Actor
     f32 turn_speed { ACTOR_DEFAULT_TURN_SPEED };
 
     Vec3 position {};
-    Vec3 rotation {};
-    Vec3 velocity {};
-
     Vec3 position_target {};
+
+    Quaternion orientation {};
     Vec3 rotation_target {};
+    f32 movement_yaw {};
+
+    Vec3 velocity {};
 
     Collider box_collider {};
 

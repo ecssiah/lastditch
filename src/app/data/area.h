@@ -31,6 +31,38 @@ enum class AreaType : u8
     COUNT,
 };
 
+enum class SectionType : u8
+{
+    Center,
+    CenterHall1,
+    CenterHall2,
+    CenterHall3,
+    CenterHall4,
+    Quadrant1,
+    Quadrant2,
+    Quadrant3,
+    Quadrant4,
+    East1,
+    East2,
+    East3,
+    NorthEast,
+    North1,
+    North2,
+    North3,
+    NorthWest,
+    West1,
+    West2,
+    West3,
+    SouthWest,
+    South1,
+    South2,
+    South3,
+    SouthEast,
+    COUNT,
+};
+
+constexpr s32 SECTION_TYPE_COUNT { static_cast<s32>(SectionType::COUNT) };
+
 struct Area
 {
     AreaID area_id { -1 };

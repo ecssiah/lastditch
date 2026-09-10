@@ -1,10 +1,11 @@
-#include "platform/platform.h"
+#include "platform.h"
 
 #include <algorithm>
 #include <cassert>
-
 #include "../app/data/constants.h"
 #include "core/log.h"
+
+using namespace std;
 
 void
 Platform::init()
@@ -41,9 +42,12 @@ Platform::init()
         LOG_ERROR("SDL base path retrieval failed: %s", SDL_GetError());
     }
 
-    const auto filesystem_base_path { std::filesystem::path { reinterpret_cast<const char8_t*>(sdl_base_path_string) } };
+    const auto filesystem_base_path
+    {
+        filesystem::path { reinterpret_cast<const char8_t*>(sdl_base_path_string) }
+    };
 
-    std::filesystem::current_path(filesystem_base_path);
+    filesystem::current_path(filesystem_base_path);
 
     update_framebuffer_size();
 
@@ -163,6 +167,7 @@ void
 Platform::update_time()
 {
     const u64 time_current_ns { SDL_GetTicksNS() };
+
     delta_time = static_cast<f64>(time_current_ns - time_previous_ns) / 1'000'000'000.0;
     time_previous_ns = time_current_ns;
     frame_time = std::min<f64>(delta_time, FRAME_TIME_MAX);
@@ -172,11 +177,13 @@ void
 Platform::begin_frame()
 {
     update_time();
+
     previous_button_array = current_button_array;
     pointer_delta_x = 0.0;
     pointer_delta_y = 0.0;
 
     SDL_Event event {};
+
     while (SDL_PollEvent(&event))
     {
         handle_event(event);
@@ -200,10 +207,12 @@ Platform::update_framebuffer_size()
 {
     int width {};
     int height {};
+
     if (SDL_GetWindowSizeInPixels(sdl_window, &width, &height))
     {
         window_width = width;
         window_height = height;
+
         if (height > 0)
         {
             aspect_ratio = static_cast<f32>(width) / static_cast<f32>(height);
@@ -216,7 +225,9 @@ Platform::get_framebuffer_size() const
 {
     int width {};
     int height {};
+
     SDL_GetWindowSizeInPixels(sdl_window, &width, &height);
+
     return { width, height };
 }
 
@@ -230,6 +241,7 @@ b32
 Platform::button_is_pressed(const ButtonType button) const
 {
     const s32 index { static_cast<s32>(button) };
+
     return current_button_array[index] && !previous_button_array[index];
 }
 

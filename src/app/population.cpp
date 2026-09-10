@@ -30,17 +30,19 @@ Population::init_judge()
 {
     judge_id = actor_id_generator.next();
 
-    const Actor judge {
+    const Actor judge
+    {
         .id = judge_id,
         .actor_type = ActorType::Judge,
         .nation_type = NationType::lion,
         .move_speed = JUDGE_DEFAULT_MOVE_SPEED,
         .turn_speed = JUDGE_DEFAULT_TURN_SPEED,
         .position = { WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
-        .rotation = { 0.0f, 0.0f, 90.0f },
-        .velocity = { 0.0f, 0.0f, 0.0f },
         .position_target = { WORLD_CENTER_F32, WORLD_CENTER_F32 - 12.0f, ROOF_Z + 4.0f },
+        .orientation = Quaternion::from_euler_degrees(0.0f, 0.0f, 90.0f),
         .rotation_target = { 0.0f, 0.0f, 90.0f },
+        .movement_yaw = 90.0f,
+        .velocity = { 0.0f, 0.0f, 0.0f },
         .box_collider = {
             .collision_enabled = true,
             .radius = { 0.30f, 0.30f, 0.90f },
@@ -68,30 +70,40 @@ Population::init_agents()
     {
         for (s32 agent_index { 0 }; agent_index < INITIAL_POPULATION_SIZE; ++agent_index)
         {
-            const IVec3 position {
+            const IVec3 position
+            {
                 nation.home_coordinate.x - 6 + random.uniform(0, 11),
                 nation.home_coordinate.y - 6 + random.uniform(0, 11),
                 nation.home_coordinate.z + 4,
             };
 
-            const IVec3 rotation {
+            const IVec3 rotation
+            {
                 0,
                 0,
                 random.uniform(0, 360)
             };
 
-            const Actor agent {
+            const Vec3 rotation_degrees { rotation };
+
+            const Actor agent
+            {
                 .id = actor_id_generator.next(),
                 .actor_type = ActorType::Agent,
                 .nation_type = nation.nation_type,
                 .move_speed = ACTOR_DEFAULT_MOVE_SPEED,
                 .turn_speed = ACTOR_DEFAULT_TURN_SPEED,
                 .position = Vec3 { position },
-                .rotation = Vec3 { rotation },
-                .velocity = {},
                 .position_target = Vec3 { position },
-                .rotation_target = Vec3 { rotation },
-                .box_collider = {
+                .orientation = Quaternion::from_euler_degrees(
+                    rotation_degrees.x,
+                    rotation_degrees.y,
+                    rotation_degrees.z
+                ),
+                .rotation_target = rotation_degrees,
+                .movement_yaw = rotation_degrees.z,
+                .velocity = {},
+                .box_collider ={
                     .collision_enabled = true,
                     .radius = { 0.40f, 0.40f, 0.90f },
                 },
