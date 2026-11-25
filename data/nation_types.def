@@ -1,0 +1,5 @@
+/* Nation name and actor texture basename. Row order defines the IDs. */
+NATION(BEAR, bear, agent_bear)
+NATION(EAGLE, eagle, agent_eagle)
+NATION(LION, lion, agent_lion)
+NATION(WOLF, wolf, agent_wolf)
