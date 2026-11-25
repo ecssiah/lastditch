@@ -242,7 +242,11 @@ world_set_block(World* world, const s32 x, const s32 y, const s32 z, const Block
 
 // Documented in src/app/world.h.
 void
-world_set_shape(World* world, const StructureShape shape, const IVec3 origin, const IVec3 size, const BlockType block_type)
+world_set_shape(World* world,
+		const StructureShape shape,
+		const IVec3 origin,
+		const IVec3 size,
+		const BlockType block_type)
 {
     const IVec3 max = ivec3_make(origin.x + size.x, origin.y + size.y, origin.z + size.z);
     const s32 boundary_count_required = STRUCTURE_SHAPE_BOUNDARY_COUNT[shape];

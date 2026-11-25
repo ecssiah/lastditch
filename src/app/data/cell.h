@@ -7,7 +7,7 @@
 #ifndef APP_DATA_CELL_H
 #define APP_DATA_CELL_H
 
-#include "block_data.generated.h"
+#include "app/data/block_reference.h"
 
 #include "app/data/constants.h"
 #include "core/types.h"

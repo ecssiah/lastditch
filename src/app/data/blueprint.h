@@ -12,8 +12,8 @@
 #ifndef APP_DATA_BLUEPRINT_H
 #define APP_DATA_BLUEPRINT_H
 
-#include "actor_data.generated.h"
-#include "block_data.generated.h"
+#include "app/data/actor_reference.h"
+#include "app/data/block_reference.h"
 
 #include "app/data/area.h"
 #include "app/data/constants.h"

@@ -1,17 +1,38 @@
 # Building Last Ditch
 
-## Quick start
+## Debian development with GNU Make
+
+Install the compiler, SDL development libraries and the shader compiler:
 
 ```sh
-python3 tools/bootstrap.py              # once: creates tools/.venv and installs PyYAML
+sudo apt install build-essential pkgconf libsdl3-dev libsdl3-ttf-dev libsdl3-image-dev glslang-tools
+make -j
+make check
+./build-make/lastditch
+```
+
+The Make build uses GNU Make 4.3 or newer. It links against the installed
+SDL3 and SDL3_ttf, plus SDL3_image for PNG support on SDL 3.2. It compiles
+the C files separately in GNU C90 mode and puts the game, assets, data and
+Vulkan shaders in `build-make/`. The default target updates runtime files
+independently of linking.
+Use `make shaders` to compile just the SPIR-V shaders.
+
+Use a distinct `BUILD_DIR` when
+switching toolchains or build flags. The Make build currently supports
+Linux. Platform-specific link and shader rules live in `make/linux.mk`.
+
+## CMake quick start
+
+```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 cmake --build build --target shaders    # once, and whenever a shader changes
 cmake --build build                     # builds the game and the test program
-ctest --test-dir build                  # runs the tests and the source checks
+ctest --test-dir build                  # runs the simulation tests
 ./build/lastditch
 ```
 
-On Windows use `py -3 tools/bootstrap.py`. The shader step must run before
+The CMake shader step must run before
 the game is built for the first time, because the build copies `assets/`
 (including `assets/shaders/compiled/`) next to the executable.
 
@@ -21,7 +42,6 @@ the game is built for the first time, because the build copies `assets/`
 | --- | --- |
 | CMake 3.20 or newer and a build tool (Ninja or Make) | Build system. |
 | A C compiler: GCC or Clang | The warning flags in `CMakeLists.txt` are GCC/Clang flags. |
-| Python 3 | Code generation, shader compilation and the source checks. `tools/bootstrap.py` creates the virtual environment `tools/.venv` that CMake uses. |
 | `spirv-cross`, and `dxc` or `glslangValidator` | Only for the `shaders` target. |
 | The development packages SDL needs on your platform | SDL3 and SDL3_ttf are vendored under `vendor/` and built from source as static libraries. On Linux this means the X11 and/or Wayland headers; see `vendor/SDL3-3.4.14/docs`. |
 
@@ -52,13 +72,6 @@ Three things C89 lacks are taken from SDL, which the game depends on anyway:
 | Fixed-width integers, including the 64-bit types used for time stamps and the step counter | `Uint8` ... `Sint64` from `SDL_stdinc.h`, aliased in `src/core/types.h` |
 | Bounded string formatting | `SDL_snprintf`, `SDL_vsnprintf`, `SDL_strlcpy` |
 | File system access (directories, whole-file reads, the executable's location) | `SDL_CreateDirectory`, `SDL_GetPathInfo`, `SDL_LoadFile`, `SDL_GetBasePath` |
-
-The `c89` test **proves** the dialect claim rather than trusting it:
-`tools/python/check_c89.py` copies the sources, mechanically rewrites every
-`//` comment as `/* */`, and compiles each file with
-`-std=c89 -pedantic-errors -Wall -Wextra`. Anything that is not strict C89 –
-another extension, a C99 feature, a call to a function C89 does not declare –
-fails the test.
 
 Regular builds add `-Wdeclaration-after-statement`, `-Wstrict-prototypes`,
 `-Wold-style-definition`, `-Wmissing-prototypes` and `-Wvla` to `-Wall
@@ -120,36 +133,34 @@ runs without a window, shared with the tests) or
 `LASTDITCH_APPLICATION_SOURCES` (the renderer and the entry point) in
 `CMakeLists.txt`, and its header to `LASTDITCH_HEADERS`.
 
-## Generated code
+## Reference tables
 
-Two reference tables are authored as YAML and turned into C at build time:
+The C preprocessor reads three plain-text files in `data/`. Row order defines
+the numeric IDs and must stay stable for existing rows.
 
-| Input | Generator | Output (in `build/generated/`) |
-| --- | --- | --- |
-| `data/block_data.yml` | `tools/python/generate_block_data.py` | `block_data.generated.h`, `block_data.generated.c` |
-| `data/actor_data.yml` | `tools/python/generate_actor_data.py` | `actor_data.generated.h`, `actor_data.generated.c` |
+| File | Row format |
+| --- | --- |
+| `nation_types.def` | `NATION(ID, name, texture)` |
+| `face_types.def` | `FACE(ID, texture)` |
+| `block_types.def` | `BLOCK(ID, name, FACE)` for a single texture or `BLOCK_FACES(ID, name, EAST, WEST, NORTH, SOUTH, UP, DOWN)` for six textures |
 
-The header declares the key enum (for example `BLOCK_TYPE_SMOOTH1`), the
-storage type for keys in columns (`BlockType`, the narrowest unsigned type
-that fits) and the tables; the source file holds the rows. Both are part of
-the Unity translation unit like any other source file. The generators
-validate the YAML and only rewrite their outputs when the content changes.
-
-To add a block: add its face types and the block to `data/block_data.yml`,
-add a 64×64 PNG per new face type to `assets/textures/block/`, and rebuild.
+IDs and face references use uppercase identifiers. Names and texture
+filenames use lowercase names without extensions. Add a 64×64 PNG under
+`assets/textures/block/` for each new face texture, then rebuild.
 
 ## Shaders
 
-The HLSL sources in `assets/shaders/` are compiled by
-`tools/python/compile_shaders.py` into `assets/shaders/compiled/` as SPIR-V
-(Vulkan), MSL (Metal) and, when `dxc` is available, DXIL (Direct3D 12):
+GNU Make runs `glslangValidator` directly to place the SPIR-V files in
+`build-make/assets/shaders/compiled/`. The CMake shader target runs
+`glslangValidator` or `dxc` for SPIR-V, `spirv-cross` for MSL (Metal), and
+`dxc` for DXIL (Direct3D 12) when available. Its output goes in
+`assets/shaders/compiled/`:
 
 ```sh
 cmake --build build --target shaders
 ```
 
-The compiled shaders are not checked in and the `shaders` target is not part
-of the default build, because it needs the external shader tools.
+The CMake shader target is optional. The default Make build compiles its shaders automatically.
 
 ## What the build produces
 
@@ -158,7 +169,6 @@ build/
   lastditch              the game
   lastditch_tests        the test program
   assets/, data/         copied from the source tree after every link of the game
-  generated/             the generated reference tables
 ```
 
 At run time the game loads its assets relative to the directory of the
@@ -169,13 +179,11 @@ repository root).
 
 ## Tests and checks
 
-`ctest --test-dir build` runs three tests:
+`make check` and `ctest --test-dir build` both run the simulation test program.
 
 | Test | What it does |
 | --- | --- |
 | `simulation` | Runs `lastditch_tests`: the table primitives, random numbers and geometry; the data tables, indexes and reference tables; world generation (invariants plus recorded values for the world of the built-in seed); population, physics, scheduling and player control; HUD labels, the debug overlay, sector meshing and model loading. Needs no window and no GPU. |
-| `documentation` | Runs `tools/python/check_documentation.py` over `src/`, `tests/` and the generated files; see [documentation_standard.md](documentation_standard.md). |
-| `c89` | Runs `tools/python/check_c89.py`; see above. |
 
 The renderer itself (`src/app/render.c`) is not covered by automated tests;
 it needs a GPU device.

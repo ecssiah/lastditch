@@ -1,9 +1,6 @@
 # Documentation standard
 
-Every C file in `src/` and `tests/`, and every generated C file, is documented
-the same way. The rules below are the whole standard. They are enforced by
-`tools/python/check_documentation.py`, which runs as the `documentation` test
-of `ctest`; a file that breaks a rule fails the build's checks.
+The same documentation standard applies to every C file in `src/` and `tests/`.
 
 The standard answers four questions, always in the same place:
 
@@ -173,33 +170,3 @@ area_table_delete(AreaTable* table, const s32 area_id)
 Comments inside a function body are free-form `//` comments. They explain
 *why* the code does something (an invariant, an ordering requirement, a
 non-obvious formula), not *what* the next line does.
-
-## 6. What the checker verifies
-
-`check_documentation.py` understands the layout described above and reports:
-
-* a missing or malformed banner, a banner whose `File` is not the file's path,
-  or an unknown layer;
-* a block with an unknown kind, with fields missing, out of order, repeated
-  or misaligned, or not directly followed by a declaration;
-* a `typedef struct`/`typedef enum` without a block of a matching kind, or
-  whose block names a different type;
-* any other `typedef` without a `Type` block;
-* a `#define` (other than an include guard) that is not covered by a
-  `Constants` or `Macro` block, or a constant without a trailing comment;
-* a struct member or enumerator without a trailing comment;
-* a reference table or file-scope variable without a `Reference` or `State`
-  block;
-* a header prototype or `static` function without a `Function` block, a block
-  that names a different function, or a `Params` field that does not list
-  exactly the function's parameters in order;
-* a non-`static` function that no header declares, a definition that lacks
-  its `// Documented in ...` line, or a function documented twice.
-
-Run it by hand with:
-
-```sh
-python3 tools/python/check_documentation.py --root . src tests build/generated
-```
-
-It prints the number of files and blocks checked, broken down by kind.

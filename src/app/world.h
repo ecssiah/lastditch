@@ -9,7 +9,7 @@
 #ifndef APP_WORLD_H
 #define APP_WORLD_H
 
-#include "block_data.generated.h"
+#include "app/data/block_reference.h"
 
 #include "app/data/area.h"
 #include "app/data/blueprint.h"

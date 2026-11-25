@@ -12,7 +12,7 @@
 #include <SDL3/SDL_gpu.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "actor_data.generated.h"
+#include "app/data/actor_reference.h"
 
 #include "app/data/constants.h"
 #include "app/data/render/sector.h"

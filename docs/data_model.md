@@ -41,8 +41,7 @@ explicit.
 
 * Columns are named after the attribute, in the singular: `table->floor_number[row]`.
 * Columns use the narrowest type that holds their domain (`u8` for
-  enumerations and flags; generated key types such as `BlockType` are sized
-  by the code generator from the number of rows in the YAML file).
+  enumerations and flags; key types such as `BlockType` use a compile-time capacity check).
 * Vector attributes are stored as **one column per component**, indexed by
   `Axis`: `actor->position[AXIS_Z][row]`. Systems that work one axis at a
   time (physics, area splitting) then index the axis directly. The one
@@ -101,7 +100,7 @@ program:
   struct, one initialiser per row, because that is the readable way to write
   and review rows with many attributes.
 
-The block, face and nation tables are generated from `data/*.yml` (see
+The block, face and nation tables are defined in `data/*.def` (see
 [build.md](build.md)); the others are written by hand in
 `src/app/data/*.c`.
 
@@ -166,10 +165,10 @@ freely.
 
 | Table | Key | Contents | Defined in |
 | --- | --- | --- | --- |
-| `FACE_TYPE_NAME` | `FaceTypeId` | name = texture file base name | generated from `data/block_data.yml` |
-| `BLOCK_TYPE_NAME` | `BlockTypeId` | name | generated from `data/block_data.yml` |
-| `BLOCK_FACE_TYPE` | (`BlockTypeId`, `Direction`) | face type shown on each side | generated from `data/block_data.yml` |
-| `NATION_TYPE_NAME`, `NATION_TEXTURE_NAME` | `NationTypeId` | name, actor texture | generated from `data/actor_data.yml` |
+| `FACE_TYPE_NAME` | `FaceTypeId` | name = texture file base name | defined in `data/face_types.def` |
+| `BLOCK_TYPE_NAME` | `BlockTypeId` | name | defined in `data/block_types.def` |
+| `BLOCK_FACE_TYPE` | (`BlockTypeId`, `Direction`) | face type shown on each side | defined in `data/block_types.def` |
+| `NATION_TYPE_NAME`, `NATION_TEXTURE_NAME` | `NationTypeId` | name, actor texture | defined in `data/nation_types.def` |
 | `NATION_TABLE` | `nation_type` | home coordinate; row order = spawn order | `src/app/data/nation.c` |
 | `DIRECTION_NORMAL`, `DIRECTION_OPPOSITE`, `DIRECTION_STRIDE`, `DIRECTION_NAME` | `Direction` | cell offset, opposite direction, cell index stride, name | `src/app/data/direction.c` |
 | `SECTION_TABLE` | `SectionType` | origin, size and area type of the 25 sections of a tower floor | `src/app/data/blueprint.c` |

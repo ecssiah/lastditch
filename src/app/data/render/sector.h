@@ -11,7 +11,7 @@
 #ifndef APP_DATA_RENDER_SECTOR_H
 #define APP_DATA_RENDER_SECTOR_H
 
-#include "block_data.generated.h"
+#include "app/data/block_reference.h"
 
 #include "app/data/render/vertex.h"
 #include "core/types.h"

@@ -8,7 +8,7 @@
 #ifndef APP_DATA_ACTOR_H
 #define APP_DATA_ACTOR_H
 
-#include "actor_data.generated.h"
+#include "app/data/actor_reference.h"
 
 #include "core/geometry.h"
 #include "core/table.h"

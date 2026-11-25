@@ -12,6 +12,9 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#if !SDL_VERSION_ATLEAST(3, 4, 0)
+#include <SDL3_image/SDL_image.h>
+#endif
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "app/data/actor.h"
@@ -180,7 +183,7 @@ render_load_shader(const Render* render, const Platform* platform, const char* n
     SDL_zero(info);
     info.code_size = code_size;
     info.code = (const Uint8*)code;
-    info.entrypoint = NULL;
+    info.entrypoint = selected_format == SDL_GPU_SHADERFORMAT_SPIRV ? "main" : NULL;
     info.format = selected_format;
     info.stage = stage;
     info.num_samplers = sampler_count;
@@ -494,7 +497,11 @@ render_create_texture_array(const Render* render, const Platform* platform, cons
         SDL_snprintf(relative_path, sizeof(relative_path), "assets/textures/%s/%s.png", directory, name_array[layer]);
         platform_resolve_path(platform, relative_path, path, sizeof(path));
 
+#if SDL_VERSION_ATLEAST(3, 4, 0)
         loaded = SDL_LoadPNG(path);
+#else
+        loaded = IMG_Load(path);
+#endif
 
         if (loaded == NULL)
         {
