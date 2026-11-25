@@ -1,107 +1,53 @@
-#pragma once
+// ============================================================================
+// File:    src/core/geometry/interpolation.h
+// Layer:   core
+// Purpose: Smooth transitions between angles and between orientations.
+// ============================================================================
 
-#include <algorithm>
-#include <cmath>
-#include <limits>
-#include "quaternion.h"
-#include "scalar.h"
-#include "vector.h"
+#ifndef CORE_GEOMETRY_INTERPOLATION_H
+#define CORE_GEOMETRY_INTERPOLATION_H
 
-constexpr f32
-get_shortest_angle_delta(const f32 current, const f32 target)
-{
-    f32 delta { target - current };
+#include "core/geometry/quaternion.h"
+#include "core/types.h"
 
-    while (delta > 180.0f)
-        delta -= 360.0f;
+// ----------------------------------------------------------------------------
+// Function: angle_get_shortest_delta
+// Purpose:  Computes the signed rotation that takes one angle to another by
+//           the shorter way around the circle.
+// Params:   current - starting angle in degrees
+//           target  - destination angle in degrees
+// Returns:  The difference target - current wrapped into [-180, 180].
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+f32 angle_get_shortest_delta(f32 current, f32 target);
 
-    while (delta < -180.0f)
-        delta += 360.0f;
+// ----------------------------------------------------------------------------
+// Function: angle_interpolate_to
+// Purpose:  Moves an angle towards a target with exponential smoothing, so
+//           the motion is independent of the time step length.
+// Params:   current_angle - starting angle in degrees
+//           target_angle  - destination angle in degrees
+//           rate          - smoothing rate; larger values turn faster
+//           delta_time    - time step in seconds
+// Returns:  The new angle; target_angle once the two coincide.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+f32 angle_interpolate_to(f32 current_angle, f32 target_angle, f32 rate, f32 delta_time);
 
-    return delta;
-}
+// ----------------------------------------------------------------------------
+// Function: quaternion_spherical_interpolation_to
+// Purpose:  Interpolates between two orientations along the shortest arc
+//           (slerp), falling back to normalized linear interpolation when
+//           the orientations are nearly equal.
+// Params:   current - starting orientation
+//           target  - destination orientation
+//           amount  - fraction of the way to move; clamped to [0, 1]
+// Returns:  The interpolated unit quaternion.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Quaternion quaternion_spherical_interpolation_to(Quaternion current, Quaternion target, f32 amount);
 
-constexpr Vec3
-interpolate_to(const Vec3& current, const Vec3& target, const f32 speed, const f32 delta_time)
-{
-    const Vec3 delta { target - current };
-    const f32 distance { delta.get_length() };
-    const f32 maximum_step { speed * delta_time };
-
-    if (distance <= maximum_step)
-    {
-        return target;
-    }
-
-    return current + (maximum_step / distance) * delta;
-}
-
-constexpr f32
-interpolate_angle_to(const f32 current_angle, const f32 target_angle, const f32 rate, const f32 delta_time)
-{
-    constexpr f32 epsilon { std::numeric_limits<f32>::epsilon() };
-
-    const f32 alpha { 1.0f - std::exp(-rate * delta_time) };
-
-    const f32 delta { get_shortest_angle_delta(current_angle, target_angle) };
-
-    if (std::abs(delta) > epsilon)
-    {
-        return current_angle + delta * alpha;
-    }
-
-    return target_angle;
-}
-
-inline Quaternion
-spherical_interpolation_to(const Quaternion& current, const Quaternion& target, const f32 amount)
-{
-    const f32 t { std::clamp(amount, 0.0f, 1.0f) };
-
-    Quaternion end { target };
-    f32 cosine { dot(current, end) };
-
-    if (cosine < 0.0f)
-    {
-        end = -end;
-        cosine = -cosine;
-    }
-
-    cosine = std::clamp(cosine, -1.0f, 1.0f);
-
-    if (cosine > 0.9995f)
-    {
-        const Quaternion quaternion
-        {
-            current.x + t * (end.x - current.x),
-            current.y + t * (end.y - current.y),
-            current.z + t * (end.z - current.z),
-            current.w + t * (end.w - current.w),
-        };
-
-        return quaternion.normalize();
-    }
-
-    const f32 angle { std::acos(cosine) };
-    const f32 inverse_sine { 1.0f / std::sin(angle) };
-
-    const f32 start_weight
-    {
-        std::sin((1.0f - t) * angle) * inverse_sine
-    };
-
-    const f32 end_weight
-    {
-        std::sin(t * angle) * inverse_sine
-    };
-
-    const Quaternion quaternion
-    {
-        start_weight * current.x + end_weight * end.x,
-        start_weight * current.y + end_weight * end.y,
-        start_weight * current.z + end_weight * end.z,
-        start_weight * current.w + end_weight * end.w,
-    };
-
-    return quaternion.normalize();
-}
+#endif

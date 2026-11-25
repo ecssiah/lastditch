@@ -1,77 +1,211 @@
-#pragma once
+// ============================================================================
+// File:    src/platform/platform.h
+// Layer:   platform
+// Purpose: The boundary to the operating system, through SDL: the window,
+//          the frame clock, the input devices and the location of the
+//          application's files.
+// ============================================================================
 
-#include <array>
-#include <utility>
+#ifndef PLATFORM_PLATFORM_H
+#define PLATFORM_PLATFORM_H
 
 #include <SDL3/SDL.h>
 
 #include "core/types.h"
 
-constexpr s32 WINDOW_WIDTH  { 1024 };
-constexpr s32 WINDOW_HEIGHT { 768 };
+// ----------------------------------------------------------------------------
+// Constants: window defaults
+// Purpose:   Size of the window when the application starts.
+// ----------------------------------------------------------------------------
+#define WINDOW_WIDTH 1024                                               // Initial window width, in window coordinates.
+#define WINDOW_HEIGHT 768                                               // Initial window height, in window coordinates.
+#define WINDOW_ASPECT_RATIO ((f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT)    // Initial width divided by height.
 
-constexpr f32 WINDOW_ASPECT_RATIO { static_cast<f32>(WINDOW_WIDTH) / static_cast<f32>(WINDOW_HEIGHT) };
+// ----------------------------------------------------------------------------
+// Constants: platform limits
+// Purpose:   Fixed sizes of the platform's reference tables.
+// ----------------------------------------------------------------------------
+#define PLATFORM_KEY_BINDING_COUNT 9        // Rows of PLATFORM_KEY_BINDING_TABLE.
+#define PLATFORM_MOUSE_BINDING_COUNT 3      // Rows of PLATFORM_MOUSE_BINDING_TABLE.
 
-enum class ButtonType : u8
+// ----------------------------------------------------------------------------
+// Enum:    ButtonType
+// Purpose: Key of the button state columns in Platform. A button is a
+//          logical input; the binding tables map physical keys and mouse
+//          buttons to it.
+// ----------------------------------------------------------------------------
+typedef enum ButtonType
 {
-    None,
-    A,
-    D,
-    E,
-    Escape,
-    Mouse_1,
-    Mouse_2,
-    Mouse_3,
-    S,
-    Space,
-    Tab,
-    Q,
-    W,
-    COUNT,
-};
+    BUTTON_TYPE_NONE,               // No button; physical inputs without a binding map here.
+    BUTTON_TYPE_A,                  // Strafe left.
+    BUTTON_TYPE_D,                  // Strafe right.
+    BUTTON_TYPE_E,                  // Fly up (free camera).
+    BUTTON_TYPE_ESCAPE,             // Quit.
+    BUTTON_TYPE_MOUSE_1,            // Left mouse button.
+    BUTTON_TYPE_MOUSE_2,            // Right mouse button.
+    BUTTON_TYPE_MOUSE_3,            // Middle mouse button.
+    BUTTON_TYPE_S,                  // Move backward.
+    BUTTON_TYPE_SPACE,              // Jump.
+    BUTTON_TYPE_TAB,                // Toggle between the judge and the free camera.
+    BUTTON_TYPE_Q,                  // Fly down (free camera).
+    BUTTON_TYPE_W,                  // Move forward.
+    BUTTON_TYPE_COUNT               // Number of buttons.
+} ButtonType;
 
-class Platform
+// ----------------------------------------------------------------------------
+// Record:  KeyBindingRecord
+// Purpose: Row type of PLATFORM_KEY_BINDING_TABLE.
+// ----------------------------------------------------------------------------
+typedef struct KeyBindingRecord
 {
-public:
-    Platform() = default;
+    SDL_Scancode scancode;          // Physical key, by keyboard position.
+    ButtonType button;              // Button the key drives.
+} KeyBindingRecord;
 
-    void init();
-    void quit();
-    void begin_frame();
+// ----------------------------------------------------------------------------
+// Record:  MouseBindingRecord
+// Purpose: Row type of PLATFORM_MOUSE_BINDING_TABLE.
+// ----------------------------------------------------------------------------
+typedef struct MouseBindingRecord
+{
+    u8 mouse_button;                // SDL mouse button number.
+    ButtonType button;              // Button the mouse button drives.
+} MouseBindingRecord;
 
-    SDL_Window* window() const { return sdl_window; }
-    std::pair<s32, s32> get_framebuffer_size() const;
+// ----------------------------------------------------------------------------
+// Reference: PLATFORM_KEY_BINDING_TABLE
+// Purpose:   Which keyboard key drives which button.
+// Key:       scancode
+// Order:     none; the table is scanned
+// Lifetime:  compiled in, read-only
+// ----------------------------------------------------------------------------
+extern const KeyBindingRecord PLATFORM_KEY_BINDING_TABLE[PLATFORM_KEY_BINDING_COUNT];
 
-    b32 button_is_down(ButtonType button) const;
-    b32 button_is_pressed(ButtonType button) const;
-    b32 button_is_released(ButtonType button) const;
+// ----------------------------------------------------------------------------
+// Reference: PLATFORM_MOUSE_BINDING_TABLE
+// Purpose:   Which mouse button drives which button.
+// Key:       mouse_button
+// Order:     none; the table is scanned
+// Lifetime:  compiled in, read-only
+// ----------------------------------------------------------------------------
+extern const MouseBindingRecord PLATFORM_MOUSE_BINDING_TABLE[PLATFORM_MOUSE_BINDING_COUNT];
 
-    b32 active { true };
+// ----------------------------------------------------------------------------
+// State:   Platform
+// Purpose: Everything the application knows about its window, clock and
+//          input devices. The button columns form a small table keyed by
+//          ButtonType with one column for this frame and one for the last.
+// ----------------------------------------------------------------------------
+typedef struct Platform
+{
+    b32 active;                                 // False once the user has asked to quit.
+    f64 delta_time;                             // Real time since the previous frame, in seconds.
+    f64 frame_time;                             // delta_time limited to FRAME_TIME_MAX; what the simulation consumes.
+    f64 pointer_delta_x;                        // Horizontal pointer motion accumulated this frame.
+    f64 pointer_delta_y;                        // Vertical pointer motion accumulated this frame.
+    s32 window_width;                           // Drawable width, in pixels.
+    s32 window_height;                          // Drawable height, in pixels.
+    f32 aspect_ratio;                           // Drawable width divided by height.
+    SDL_Window* window;                         // The application window; NULL before platform_init.
+    const char* base_path;                      // Directory of the executable, ending with a separator; owned by SDL.
+    u64 time_previous_ns;                       // Clock reading at the previous frame, in nanoseconds.
+    b32 ignore_pointer_delta;                   // True to discard this frame's pointer motion (after a focus change).
+    u8 button_current[BUTTON_TYPE_COUNT];       // Non-zero while the button is held, this frame; keyed by ButtonType.
+    u8 button_previous[BUTTON_TYPE_COUNT];      // The same state as of the previous frame; keyed by ButtonType.
+} Platform;
 
-    f64 delta_time { 0.0 };
-    f64 frame_time { 0.0 };
+// ----------------------------------------------------------------------------
+// Function: platform_init
+// Purpose:  Starts SDL, opens the window, captures the mouse and starts the
+//           frame clock.
+// Params:   platform - platform state to initialise
+// Returns:  nothing
+// Reads:    nothing
+// Writes:   platform
+// ----------------------------------------------------------------------------
+void platform_init(Platform* platform);
 
-    f64 pointer_delta_x { 0.0 };
-    f64 pointer_delta_y { 0.0 };
+// ----------------------------------------------------------------------------
+// Function: platform_quit
+// Purpose:  Closes the window and shuts SDL down.
+// Params:   platform - platform state
+// Returns:  nothing
+// Reads:    platform.window
+// Writes:   platform.window
+// ----------------------------------------------------------------------------
+void platform_quit(Platform* platform);
 
-    s32 window_width { WINDOW_WIDTH };
-    s32 window_height { WINDOW_HEIGHT };
-    f32 aspect_ratio { WINDOW_ASPECT_RATIO };
+// ----------------------------------------------------------------------------
+// Function: platform_begin_frame
+// Purpose:  Starts a frame: advances the clock, moves the current button
+//           state to the previous column and processes every pending
+//           window and input event.
+// Params:   platform - platform state
+// Returns:  nothing
+// Reads:    the SDL event queue, the SDL clock, the binding tables
+// Writes:   platform
+// ----------------------------------------------------------------------------
+void platform_begin_frame(Platform* platform);
 
-private:
-    void handle_event(const SDL_Event& event);
-    void set_button(ButtonType button, bool down);
-    void update_time();
-    void update_framebuffer_size();
-    void clear_buttons();
+// ----------------------------------------------------------------------------
+// Function: platform_get_framebuffer_size
+// Purpose:  Queries the size of the window's drawable surface.
+// Params:   platform - platform state
+//           width    - receives the width in pixels
+//           height   - receives the height in pixels
+// Returns:  nothing
+// Reads:    platform.window
+// Writes:   width, height
+// ----------------------------------------------------------------------------
+void platform_get_framebuffer_size(const Platform* platform, s32* width, s32* height);
 
-    static ButtonType button_from_scancode(SDL_Scancode scancode);
-    static ButtonType button_from_mouse(u8 button);
+// ----------------------------------------------------------------------------
+// Function: platform_button_is_down
+// Purpose:  Tests whether a button is held this frame.
+// Params:   platform - platform state
+//           button   - button to test
+// Returns:  true while the button is held.
+// Reads:    platform.button_current
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+b32 platform_button_is_down(const Platform* platform, ButtonType button);
 
-    SDL_Window* sdl_window { nullptr };
-    u64 time_previous_ns {};
-    bool ignore_pointer_delta { true };
+// ----------------------------------------------------------------------------
+// Function: platform_button_is_pressed
+// Purpose:  Tests whether a button went down this frame.
+// Params:   platform - platform state
+//           button   - button to test
+// Returns:  true on the first frame the button is held.
+// Reads:    platform.button_current, platform.button_previous
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+b32 platform_button_is_pressed(const Platform* platform, ButtonType button);
 
-    std::array<b32, static_cast<s32>(ButtonType::COUNT)> current_button_array {};
-    std::array<b32, static_cast<s32>(ButtonType::COUNT)> previous_button_array {};
-};
+// ----------------------------------------------------------------------------
+// Function: platform_button_is_released
+// Purpose:  Tests whether a button went up this frame.
+// Params:   platform - platform state
+//           button   - button to test
+// Returns:  true on the first frame the button is no longer held.
+// Reads:    platform.button_current, platform.button_previous
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+b32 platform_button_is_released(const Platform* platform, ButtonType button);
+
+// ----------------------------------------------------------------------------
+// Function: platform_resolve_path
+// Purpose:  Turns a path relative to the application directory (where the
+//           assets are installed next to the executable) into a path that
+//           can be opened regardless of the working directory.
+// Params:   platform      - platform state
+//           relative_path - path relative to the application directory
+//           path          - receives the resolved path
+//           path_capacity - size of the path buffer in bytes
+// Returns:  true on success; false when the buffer is too small, in which
+//           case path holds an empty string.
+// Reads:    platform.base_path
+// Writes:   path
+// ----------------------------------------------------------------------------
+b32 platform_resolve_path(const Platform* platform, const char* relative_path, char* path, size_t path_capacity);
+
+#endif

@@ -1,79 +1,78 @@
-#pragma once
+// ============================================================================
+// File:    src/core/geometry/orientation.h
+// Layer:   core
+// Purpose: Direction vectors derived from orientations. The world is
+//          Z-up: with no rotation, forward is +X, left is +Y and up is +Z.
+// ============================================================================
 
-#include "quaternion.h"
-#include "scalar.h"
-#include "trigonometry.h"
-#include "vector.h"
+#ifndef CORE_GEOMETRY_ORIENTATION_H
+#define CORE_GEOMETRY_ORIENTATION_H
+
+#include "core/geometry/quaternion.h"
+#include "core/geometry/vector.h"
 #include "core/types.h"
 
-enum class Axis : u8
-{
-    X,
-    Y,
-    Z,
-    COUNT,
-};
+// ----------------------------------------------------------------------------
+// Function: rotation_get_forward
+// Purpose:  Computes the forward direction of an Euler rotation.
+// Params:   rotation - Euler angles in degrees; x is pitch and z is yaw
+// Returns:  The unit vector the rotation faces.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 rotation_get_forward(Vec3 rotation);
 
-constexpr s32 AXIS_COUNT { static_cast<s32>(Axis::COUNT) };
+// ----------------------------------------------------------------------------
+// Function: rotation_get_right
+// Purpose:  Computes the horizontal right-hand direction of an Euler
+//           rotation.
+// Params:   rotation - Euler angles in degrees; x is pitch and z is yaw
+// Returns:  The unit vector pointing to the right of the forward direction,
+//           or the zero vector when forward is vertical.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 rotation_get_right(Vec3 rotation);
 
-constexpr Vec3
-get_forward(const Vec3& rotation)
-{
-    const f32 rotation_x { to_radians(rotation.x) };
-    const f32 rotation_z { to_radians(rotation.z) };
+// ----------------------------------------------------------------------------
+// Function: quaternion_rotate_vector
+// Purpose:  Rotates a vector by an orientation.
+// Params:   orientation - unit quaternion to rotate by
+//           vector      - vector to rotate
+// Returns:  The rotated vector.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 quaternion_rotate_vector(Quaternion orientation, Vec3 vector);
 
-    const auto [sin_x, cos_x] { get_sin_cos(rotation_x) };
-    const auto [sin_z, cos_z] { get_sin_cos(rotation_z) };
+// ----------------------------------------------------------------------------
+// Function: quaternion_get_forward
+// Purpose:  Computes the forward direction of an orientation.
+// Params:   orientation - unit quaternion
+// Returns:  The image of +X under the orientation.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 quaternion_get_forward(Quaternion orientation);
 
-    return {
-        cos_x * cos_z,
-        cos_x * sin_z,
-        sin_x,
-    };
-}
+// ----------------------------------------------------------------------------
+// Function: quaternion_get_right
+// Purpose:  Computes the right-hand direction of an orientation.
+// Params:   orientation - unit quaternion
+// Returns:  The image of -Y under the orientation.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 quaternion_get_right(Quaternion orientation);
 
-constexpr Vec3
-get_right(const Vec3& rotation)
-{
-    const Vec3 forward  { get_forward(rotation) };
-    const Vec3 right    { cross(forward, Vec3::unit_z()) };
+// ----------------------------------------------------------------------------
+// Function: quaternion_get_up
+// Purpose:  Computes the up direction of an orientation.
+// Params:   orientation - unit quaternion
+// Returns:  The image of +Z under the orientation.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 quaternion_get_up(Quaternion orientation);
 
-    return right.normalize();
-}
-
-constexpr Vec3
-get_up(const Vec3& rotation)
-{
-    const Vec3 forward  { get_forward(rotation) };
-    const Vec3 right    { get_right(rotation) };
-    const Vec3 up       { cross(forward, right) };
-
-    return up.normalize();
-}
-
-constexpr Vec3
-rotate_vector(const Quaternion& orientation, const Vec3& vector)
-{
-    const Vec3 imaginary { orientation.x, orientation.y, orientation.z };
-    const Vec3 twice_cross { 2.0f * cross(imaginary, vector) };
-
-    return vector + orientation.w * twice_cross + cross(imaginary, twice_cross);
-}
-
-constexpr Vec3
-get_forward(const Quaternion& orientation)
-{
-    return rotate_vector(orientation, Vec3::unit_x());
-}
-
-constexpr Vec3
-get_right(const Quaternion& orientation)
-{
-    return rotate_vector(orientation, { 0.0f, -1.0f, 0.0f });
-}
-
-constexpr Vec3
-get_up(const Quaternion& orientation)
-{
-    return rotate_vector(orientation, Vec3::unit_z());
-}
+#endif

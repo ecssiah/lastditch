@@ -1,64 +1,53 @@
-#pragma once
+// ============================================================================
+// File:    src/app/population.h
+// Layer:   app
+// Purpose: The population database (actors and their decision state) and
+//          the pass that spawns the initial population.
+// ============================================================================
 
-#include "world.h"
-#include "core/id.h"
+#ifndef APP_POPULATION_H
+#define APP_POPULATION_H
+
+#include "app/data/actor.h"
+#include "app/data/constants.h"
+#include "app/data/nation.h"
 #include "core/random.h"
-#include "data/actor.h"
-#include "data/nation.h"
+#include "core/types.h"
 
-class World;
-
-class Population
+// ----------------------------------------------------------------------------
+// State:   Population
+// Purpose: The population database: every table that describes the actors,
+//          plus the random stream that spawning and decisions draw from.
+// ----------------------------------------------------------------------------
+typedef struct Population
 {
-public:
-    void init();
+    Random random;                  // Random stream of the population, seeded with POPULATION_SEED.
+    s32 judge_id;                   // [FK -> ActorTable.actor_id] The judge; TABLE_KEY_NONE before population_init.
+    ActorTable actor;               // Every actor.
+    DecisionTable decision;         // The actors that steer themselves.
+} Population;
 
-    Nation& get_nation(NationType nation_type);
+// ----------------------------------------------------------------------------
+// Function: population_init
+// Purpose:  Spawns the initial population: the judge, then
+//           INITIAL_POPULATION_SIZE agents around each nation's home, in
+//           NATION_TABLE order.
+// Params:   population - population to fill; must be zero-initialised
+// Returns:  nothing
+// Reads:    NATION_TABLE, NATION_TYPE_NAME
+// Writes:   population: actor, decision, judge_id, random
+// Notes:    Deterministic: the result depends only on POPULATION_SEED.
+// ----------------------------------------------------------------------------
+void population_init(Population* population);
 
-    Random random { POPULATION_SEED };
+// ----------------------------------------------------------------------------
+// Function: population_quit
+// Purpose:  Releases every table of the population.
+// Params:   population - population to release
+// Returns:  nothing
+// Reads:    population
+// Writes:   population
+// ----------------------------------------------------------------------------
+void population_quit(Population* population);
 
-    s32 judge_id { -1 };
-
-    std::vector<Actor> actor_vector {};
-
-private:
-    void init_judge();
-    void init_agents();
-
-    IdGenerator actor_id_generator {};
-
-    std::array<Nation, NATION_TYPE_COUNT> nation_array {
-        Nation {
-            .nation_type = NationType::wolf,
-            .home_coordinate = {
-                WORLD_CENTER_S32 + NATION_HOME_OFFSET,
-                WORLD_CENTER_S32,
-                ROOF_Z + 3,
-            },
-        },
-        Nation {
-            .nation_type = NationType::eagle,
-            .home_coordinate = {
-                WORLD_CENTER_S32 - NATION_HOME_OFFSET,
-                WORLD_CENTER_S32,
-                ROOF_Z + 3,
-            },
-        },
-        Nation {
-            .nation_type = NationType::lion,
-            .home_coordinate = {
-                WORLD_CENTER_S32,
-                WORLD_CENTER_S32 - NATION_HOME_OFFSET,
-                ROOF_Z + 3,
-            },
-        },
-        Nation {
-            .nation_type = NationType::bear,
-            .home_coordinate = {
-                WORLD_CENTER_S32,
-                WORLD_CENTER_S32 + NATION_HOME_OFFSET,
-                ROOF_Z + 3,
-            },
-        },
-    };
-};
+#endif

@@ -1,150 +1,120 @@
-#pragma once
+// ============================================================================
+// File:    src/core/geometry/quaternion.h
+// Layer:   core
+// Purpose: Unit quaternions representing orientations in three dimensions.
+// ============================================================================
 
-#include <limits>
-#include "scalar.h"
-#include "trigonometry.h"
+#ifndef CORE_GEOMETRY_QUATERNION_H
+#define CORE_GEOMETRY_QUATERNION_H
+
 #include "core/types.h"
 
-class Quaternion
+// ----------------------------------------------------------------------------
+// Value:   Quaternion
+// Purpose: Rotation stored as a quaternion x*i + y*j + z*k + w. The identity
+//          rotation is (0, 0, 0, 1). Always read and written as a whole.
+// ----------------------------------------------------------------------------
+typedef struct Quaternion
 {
-public:
-    f32 x { 0.0f };
-    f32 y { 0.0f };
-    f32 z { 0.0f };
-    f32 w { 1.0f };
+    f32 x;                          // Coefficient of i.
+    f32 y;                          // Coefficient of j.
+    f32 z;                          // Coefficient of k.
+    f32 w;                          // Real part.
+} Quaternion;
 
-    constexpr
-    Quaternion() = default;
+// ----------------------------------------------------------------------------
+// Function: quaternion_make
+// Purpose:  Builds a quaternion from its four components.
+// Params:   x - coefficient of i
+//           y - coefficient of j
+//           z - coefficient of k
+//           w - real part
+// Returns:  The quaternion (x, y, z, w).
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Quaternion quaternion_make(f32 x, f32 y, f32 z, f32 w);
 
-    constexpr Quaternion(const f32 x, const f32 y, const f32 z, const f32 w)
-        :
-        x { x },
-        y { y },
-        z { z },
-        w { w }
-    {}
+// ----------------------------------------------------------------------------
+// Function: quaternion_identity
+// Purpose:  Produces the rotation that leaves every vector unchanged.
+// Params:   none
+// Returns:  The quaternion (0, 0, 0, 1).
+// Reads:    nothing
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Quaternion quaternion_identity(void);
 
-    static constexpr Quaternion from_euler_radians(f32 pitch, f32 roll, f32 yaw);
-    static constexpr Quaternion from_euler_degrees(f32 pitch, f32 roll, f32 yaw);
+// ----------------------------------------------------------------------------
+// Function: quaternion_normalize
+// Purpose:  Scales a quaternion to unit length so that it is a rotation.
+// Params:   value - quaternion to normalize
+// Returns:  The unit quaternion, or the identity when value is too close to
+//           zero to have a direction.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Quaternion quaternion_normalize(Quaternion value);
 
-    constexpr Quaternion
-    normalize() const
-    {
-        const f32 length_squared
-        {
-            x * x + y * y + z * z + w * w
-        };
+// ----------------------------------------------------------------------------
+// Function: quaternion_dot
+// Purpose:  Computes the four dimensional dot product of two quaternions,
+//           the cosine of half the angle between two rotations.
+// Params:   left  - first operand
+//           right - second operand
+// Returns:  The scalar dot product.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+f32 quaternion_dot(Quaternion left, Quaternion right);
 
-        if (length_squared <= std::numeric_limits<f32>::epsilon())
-        {
-            return {};
-        }
+// ----------------------------------------------------------------------------
+// Function: quaternion_negate
+// Purpose:  Negates every component. The result is the same rotation,
+//           expressed on the opposite side of the quaternion sphere.
+// Params:   value - quaternion to negate
+// Returns:  (-x, -y, -z, -w).
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Quaternion quaternion_negate(Quaternion value);
 
-        const f32 inverse_length
-        {
-            1.0f / get_square_root(length_squared)
-        };
+// ----------------------------------------------------------------------------
+// Function: quaternion_multiply
+// Purpose:  Composes two rotations with the Hamilton product.
+// Params:   left  - rotation applied second
+//           right - rotation applied first
+// Returns:  The rotation equal to right followed by left.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Quaternion quaternion_multiply(Quaternion left, Quaternion right);
 
-        const Quaternion quaternion
-        {
-            x * inverse_length,
-            y * inverse_length,
-            z * inverse_length,
-            w * inverse_length,
-        };
+// ----------------------------------------------------------------------------
+// Function: quaternion_from_euler_radians
+// Purpose:  Builds an orientation from Euler angles. Roll about X is applied
+//           first, then pitch about Y, then yaw about Z. Positive pitch
+//           raises the forward direction.
+// Params:   pitch - rotation about the Y axis, in radians
+//           roll  - rotation about the X axis, in radians
+//           yaw   - rotation about the Z axis, in radians
+// Returns:  The unit quaternion for the combined rotation.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Quaternion quaternion_from_euler_radians(f32 pitch, f32 roll, f32 yaw);
 
-        return quaternion;
-    }
-};
+// ----------------------------------------------------------------------------
+// Function: quaternion_from_euler_degrees
+// Purpose:  Builds an orientation from Euler angles given in degrees; see
+//           quaternion_from_euler_radians for the rotation order.
+// Params:   pitch - rotation about the Y axis, in degrees
+//           roll  - rotation about the X axis, in degrees
+//           yaw   - rotation about the Z axis, in degrees
+// Returns:  The unit quaternion for the combined rotation.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Quaternion quaternion_from_euler_degrees(f32 pitch, f32 roll, f32 yaw);
 
-constexpr f32
-dot(const Quaternion& left, const Quaternion& right)
-{
-    const f32 product
-    {
-        left.x * right.x +
-        left.y * right.y +
-        left.z * right.z +
-        left.w * right.w
-    };
-
-    return product;
-}
-
-constexpr Quaternion
-operator-(const Quaternion& value)
-{
-    const Quaternion quaternion
-    {
-        -value.x,
-        -value.y,
-        -value.z,
-        -value.w,
-    };
-
-    return quaternion;
-}
-
-constexpr Quaternion
-operator*(const Quaternion& left, const Quaternion& right)
-{
-    const f32 x { left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y };
-    const f32 y { left.w * right.y - left.x * right.z + left.y * right.w + left.z * right.x };
-    const f32 z { left.w * right.z + left.x * right.y - left.y * right.x + left.z * right.w };
-    const f32 w { left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z };
-
-    const Quaternion quaternion { x, y, z, w };
-
-    return quaternion;
-}
-
-constexpr Quaternion
-Quaternion::from_euler_radians(const f32 pitch, const f32 roll, const f32 yaw)
-{
-    const auto [sin_pitch, cos_pitch] { get_sin_cos(pitch * 0.5f) };
-    const auto [sin_roll, cos_roll] { get_sin_cos(roll * 0.5f) };
-    const auto [sin_yaw, cos_yaw] { get_sin_cos(yaw * 0.5f) };
-
-    const Quaternion yaw_rotation
-    {
-        0.0f,
-        0.0f,
-        sin_yaw,
-        cos_yaw,
-    };
-
-    const Quaternion pitch_rotation
-    {
-        0.0f,
-        -sin_pitch,
-        0.0f,
-        cos_pitch,
-    };
-
-    const Quaternion roll_rotation
-    {
-        sin_roll,
-        0.0f,
-        0.0f,
-        cos_roll,
-    };
-
-    const Quaternion quaternion { yaw_rotation * pitch_rotation * roll_rotation };
-
-    return quaternion.normalize();
-}
-
-constexpr Quaternion
-Quaternion::from_euler_degrees(const f32 pitch, const f32 roll, const f32 yaw)
-{
-    const Quaternion quaternion
-    {
-        from_euler_radians(
-            to_radians(pitch),
-            to_radians(roll),
-            to_radians(yaw)
-        )
-    };
-
-    return quaternion;
-}
+#endif

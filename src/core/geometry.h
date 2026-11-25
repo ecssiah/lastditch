@@ -1,8 +1,20 @@
-#pragma once
+// ============================================================================
+// File:    src/core/geometry.h
+// Layer:   core
+// Purpose: Umbrella header that brings in the whole geometry library:
+//          scalars, vectors, quaternions, orientations, matrices, bounds and
+//          interpolation.
+// ============================================================================
 
-#include "geometry/bounds.h"
-#include "geometry/matrix.h"
-#include "geometry/orientation.h"
-#include "geometry/scalar.h"
-#include "geometry/vector.h"
+#ifndef CORE_GEOMETRY_H
+#define CORE_GEOMETRY_H
 
+#include "core/geometry/bounds.h"
+#include "core/geometry/interpolation.h"
+#include "core/geometry/matrix.h"
+#include "core/geometry/orientation.h"
+#include "core/geometry/quaternion.h"
+#include "core/geometry/scalar.h"
+#include "core/geometry/vector.h"
+
+#endif

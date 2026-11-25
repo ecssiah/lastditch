@@ -1,50 +1,53 @@
-#pragma once
+// ============================================================================
+// File:    src/core/color.h
+// Layer:   core
+// Purpose: RGBA color value and the named colors used by the application.
+// ============================================================================
 
-#include "types.h"
+#ifndef CORE_COLOR_H
+#define CORE_COLOR_H
 
-class Color
+#include "core/types.h"
+
+// ----------------------------------------------------------------------------
+// Value:   Color
+// Purpose: A color with floating point channels in the range [0, 1].
+// ----------------------------------------------------------------------------
+typedef struct Color
 {
-public:
-    constexpr Color(const f32 r, const f32 g, const f32 b)
-        :
-        r { r },
-        g { g },
-        b { b },
-        a { 1.0f }
-    {
+    f32 r;                          // Red channel.
+    f32 g;                          // Green channel.
+    f32 b;                          // Blue channel.
+    f32 a;                          // Opacity; 1 is fully opaque.
+} Color;
 
-    }
+// ----------------------------------------------------------------------------
+// Reference: named colors
+// Purpose:   Fully opaque primary and secondary colors.
+// Key:       the constant's name
+// Order:     not applicable; each constant is a single row
+// Lifetime:  compiled in, read-only
+// ----------------------------------------------------------------------------
+extern const Color COLOR_BLACK;
+extern const Color COLOR_WHITE;
+extern const Color COLOR_RED;
+extern const Color COLOR_GREEN;
+extern const Color COLOR_BLUE;
+extern const Color COLOR_YELLOW;
+extern const Color COLOR_CYAN;
+extern const Color COLOR_MAGENTA;
 
-    constexpr Color(const f32 r, const f32 g, const f32 b, const f32 a)
-        :
-        r { r },
-        g { g },
-        b { b },
-        a { a }
-    {
+// ----------------------------------------------------------------------------
+// Function: color_make
+// Purpose:  Builds a color from its four channels.
+// Params:   r - red channel
+//           g - green channel
+//           b - blue channel
+//           a - opacity
+// Returns:  The color (r, g, b, a).
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Color color_make(f32 r, f32 g, f32 b, f32 a);
 
-    }
-
-    static const Color Black;
-    static const Color White;
-    static const Color Red;
-    static const Color Green;
-    static const Color Blue;
-    static const Color Yellow;
-    static const Color Cyan;
-    static const Color Magenta;
-
-    f32 r;
-    f32 g;
-    f32 b;
-    f32 a;
-};
-
-constexpr Color Color::Black                { 0.0f, 0.0f, 0.0f, 1.0f };
-constexpr Color Color::White                { 1.0f, 1.0f, 1.0f, 1.0f };
-constexpr Color Color::Red                  { 1.0f, 0.0f, 0.0f, 1.0f };
-constexpr Color Color::Green                { 0.0f, 1.0f, 0.0f, 1.0f };
-constexpr Color Color::Blue                 { 0.0f, 0.0f, 1.0f, 1.0f };
-constexpr Color Color::Yellow               { 1.0f, 1.0f, 0.0f, 1.0f };
-constexpr Color Color::Cyan                 { 0.0f, 1.0f, 1.0f, 1.0f };
-constexpr Color Color::Magenta              { 1.0f, 0.0f, 1.0f, 1.0f };
+#endif

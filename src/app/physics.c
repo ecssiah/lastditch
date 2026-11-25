@@ -1,0 +1,266 @@
+// ============================================================================
+// File:    src/app/physics.c
+// Layer:   app
+// Purpose: Implementation of actor physics declared in app/physics.h.
+// ============================================================================
+
+#include "app/physics.h"
+
+#include "app/data/constants.h"
+#include "core/geometry.h"
+
+// ----------------------------------------------------------------------------
+// Function: physics_get_collider_bounds
+// Purpose:  Computes the box an actor's collider occupies, clipped to the
+//           extent of the world.
+// Params:   actor      - actor table to read
+//           row        - row of the actor
+//           bounds_min - receives the lower corner, one value per axis
+//           bounds_max - receives the upper corner, one value per axis
+// Returns:  nothing
+// Reads:    actor.position, actor.collider_radius
+// Writes:   bounds_min, bounds_max
+// ----------------------------------------------------------------------------
+static void
+physics_get_collider_bounds(const ActorTable* actor, const s32 row, f32* bounds_min, f32* bounds_max)
+{
+    const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
+    s32 axis;
+
+    for (axis = 0; axis < AXIS_COUNT; ++axis)
+    {
+        const f32 lower = actor->position[axis][row] - actor->collider_radius[axis][row];
+        const f32 upper = actor->position[axis][row] + actor->collider_radius[axis][row];
+
+        bounds_min[axis] = lower > 0.0f ? lower : 0.0f;
+        bounds_max[axis] = upper < world_size ? upper : world_size;
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Function: physics_get_grid_overlap
+// Purpose:  Finds the range of cells that a world-space box touches.
+// Params:   bounds_min - lower corner of the box, one value per axis
+//           bounds_max - upper corner of the box, one value per axis
+//           cell_min   - receives the first cell touched, per axis
+//           cell_max   - receives the last cell touched (inclusive), per axis
+// Returns:  nothing
+// Reads:    bounds_min, bounds_max
+// Writes:   cell_min, cell_max
+// ----------------------------------------------------------------------------
+static void
+physics_get_grid_overlap(const f32* bounds_min, const f32* bounds_max, s32* cell_min, s32* cell_max)
+{
+    s32 axis;
+
+    for (axis = 0; axis < AXIS_COUNT; ++axis)
+    {
+        cell_min[axis] = s32_max((s32)f32_floor(bounds_min[axis]), 0);
+        cell_max[axis] = s32_min((s32)f32_ceil(bounds_max[axis]) - 1, WORLD_SIZE_IN_CELLS - 1);
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Function: physics_resolve_axis_collisions
+// Purpose:  Moves one actor along one axis for one sub-step. If a block
+//           face lies in the way, the actor is placed against the nearest
+//           such face and its velocity along the axis is cleared; landing
+//           on a face below marks the actor as grounded.
+// Params:   world           - world to collide against
+//           actor           - actor table to update
+//           row             - row of the actor to move
+//           axis            - axis to move along
+//           step_delta_time - length of the sub-step, in seconds
+// Returns:  nothing
+// Reads:    world.cell.block_type; actor.velocity, actor.position,
+//           actor.collider_radius
+// Writes:   actor.position[axis], actor.velocity[axis], actor.is_grounded
+// ----------------------------------------------------------------------------
+static void
+physics_resolve_axis_collisions(const World* world, ActorTable* actor, const s32 row, const Axis axis, const f32 step_delta_time)
+{
+    const f32 axis_velocity = actor->velocity[axis][row];
+    const s32 axis_s = (axis + 1) % AXIS_COUNT;
+    const s32 axis_t = (axis + 2) % AXIS_COUNT;
+    f32 actor_min[AXIS_COUNT];
+    f32 actor_max[AXIS_COUNT];
+    f32 swept_min[AXIS_COUNT];
+    f32 swept_max[AXIS_COUNT];
+    s32 cell_min[AXIS_COUNT];
+    s32 cell_max[AXIS_COUNT];
+    s32 cell[AXIS_COUNT];
+    f32 actor_min_prev;
+    f32 actor_max_prev;
+    f32 actor_min_next;
+    f32 actor_max_next;
+    b32 found;
+    f32 best;
+    s32 axis_index;
+
+    if (axis_velocity == 0.0f)
+    {
+        return;
+    }
+
+    physics_get_collider_bounds(actor, row, actor_min, actor_max);
+
+    // The swept box covers the collider before and after the sub-step along
+    // every axis; only cells it touches can be hit.
+    for (axis_index = 0; axis_index < AXIS_COUNT; ++axis_index)
+    {
+        const f32 step = step_delta_time * actor->velocity[axis_index][row];
+
+        swept_min[axis_index] = f32_min(actor_min[axis_index], actor_min[axis_index] + step);
+        swept_max[axis_index] = f32_max(actor_max[axis_index], actor_max[axis_index] + step);
+    }
+
+    physics_get_grid_overlap(swept_min, swept_max, cell_min, cell_max);
+
+    actor_min_prev = actor_min[axis];
+    actor_max_prev = actor_max[axis];
+
+    actor_min_next = actor_min_prev + step_delta_time * axis_velocity;
+    actor_max_next = actor_max_prev + step_delta_time * axis_velocity;
+
+    found = false;
+    best = axis_velocity > 0.0f ? f32_infinity() : -f32_infinity();
+
+    for (cell[AXIS_Z] = cell_min[AXIS_Z]; cell[AXIS_Z] <= cell_max[AXIS_Z]; ++cell[AXIS_Z])
+    {
+        for (cell[AXIS_Y] = cell_min[AXIS_Y]; cell[AXIS_Y] <= cell_max[AXIS_Y]; ++cell[AXIS_Y])
+        {
+            for (cell[AXIS_X] = cell_min[AXIS_X]; cell[AXIS_X] <= cell_max[AXIS_X]; ++cell[AXIS_X])
+            {
+                f32 cell_s;
+                f32 cell_t;
+
+                if (!world_cell_coordinate_is_valid(cell[AXIS_X], cell[AXIS_Y], cell[AXIS_Z]))
+                {
+                    continue;
+                }
+
+                if (world_get_block_type(world, cell[AXIS_X], cell[AXIS_Y], cell[AXIS_Z]) == BLOCK_TYPE_NONE)
+                {
+                    continue;
+                }
+
+                // The block only blocks the move if the collider overlaps
+                // it along both of the other axes.
+                cell_s = (f32)cell[axis_s];
+
+                if (actor_max[axis_s] <= cell_s || actor_min[axis_s] >= cell_s + 1.0f)
+                {
+                    continue;
+                }
+
+                cell_t = (f32)cell[axis_t];
+
+                if (actor_max[axis_t] <= cell_t || actor_min[axis_t] >= cell_t + 1.0f)
+                {
+                    continue;
+                }
+
+                if (axis_velocity > 0.0f)
+                {
+                    const f32 block_min = (f32)cell[axis];
+
+                    if (block_min >= actor_max_prev && block_min <= actor_max_next && block_min < best)
+                    {
+                        best = block_min;
+                        found = true;
+                    }
+                }
+                else
+                {
+                    const f32 block_max = (f32)cell[axis] + 1.0f;
+
+                    if (block_max <= actor_min_prev && block_max >= actor_min_next && block_max > best)
+                    {
+                        best = block_max;
+                        found = true;
+                    }
+                }
+            }
+        }
+    }
+
+    if (found)
+    {
+        if (axis_velocity > 0.0f)
+        {
+            actor->position[axis][row] = best - actor->collider_radius[axis][row];
+        }
+        else
+        {
+            actor->position[axis][row] = best + actor->collider_radius[axis][row];
+
+            if (axis == AXIS_Z)
+            {
+                actor->is_grounded[row] = 1;
+            }
+        }
+
+        actor->velocity[axis][row] = 0.0f;
+    }
+    else
+    {
+        actor->position[axis][row] += step_delta_time * axis_velocity;
+    }
+}
+
+// Documented in src/app/physics.h.
+void
+physics_update_actor(const World* world, ActorTable* actor, const s32 row)
+{
+    const f32 gravity_step =
+        actor->velocity[AXIS_Z][row] <= 0.0f
+            ? FIXED_FRAME_TIME_32 * FALLING_GRAVITY_MODIFIER * GRAVITY
+            : FIXED_FRAME_TIME_32 * RISING_GRAVITY_MODIFIER * GRAVITY;
+    s32 axis;
+
+    actor->is_grounded[row] = 0;
+
+    actor->velocity[AXIS_Z][row] = f32_clamp(
+        actor->velocity[AXIS_Z][row] + gravity_step,
+        -MAX_VELOCITY,
+        MAX_VELOCITY
+    );
+
+    if (actor->collision_enabled[row])
+    {
+        f32 max_move = 0.0f;
+        f32 step_delta_time;
+        s32 step_count;
+        s32 step_index;
+
+        for (axis = 0; axis < AXIS_COUNT; ++axis)
+        {
+            max_move = f32_max(max_move, f32_abs(FIXED_FRAME_TIME_32 * actor->velocity[axis][row]));
+        }
+
+        // One sub-step per cell travelled keeps a sub-step shorter than a
+        // cell, so a collider can never tunnel through a block.
+        step_count = (s32)f32_ceil(max_move);
+
+        if (step_count < 1)
+        {
+            step_count = 1;
+        }
+
+        step_delta_time = FIXED_FRAME_TIME_32 / (f32)step_count;
+
+        for (step_index = 0; step_index < step_count; ++step_index)
+        {
+            physics_resolve_axis_collisions(world, actor, row, AXIS_X, step_delta_time);
+            physics_resolve_axis_collisions(world, actor, row, AXIS_Y, step_delta_time);
+            physics_resolve_axis_collisions(world, actor, row, AXIS_Z, step_delta_time);
+        }
+    }
+    else
+    {
+        for (axis = 0; axis < AXIS_COUNT; ++axis)
+        {
+            actor->position[axis][row] = actor->position[axis][row] + FIXED_FRAME_TIME_32 * actor->velocity[axis][row];
+        }
+    }
+}

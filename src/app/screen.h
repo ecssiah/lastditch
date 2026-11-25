@@ -1,28 +1,59 @@
-#pragma once
+// ============================================================================
+// File:    src/app/screen.h
+// Layer:   app
+// Purpose: The heads-up display: text labels produced each frame for the
+//          renderer to draw in screen space.
+// ============================================================================
 
-#include <string>
-#include <vector>
+#ifndef APP_SCREEN_H
+#define APP_SCREEN_H
+
+#include "app/control.h"
 #include "core/types.h"
 
-class Control;
+// ----------------------------------------------------------------------------
+// Constants: screen limits
+// Purpose:   Fixed capacity of the label table. Labels are rebuilt every
+//            frame, so the table never allocates.
+// ----------------------------------------------------------------------------
+#define SCREEN_LABEL_CAPACITY 16            // Most labels on screen at once.
+#define SCREEN_LABEL_TEXT_CAPACITY 96       // Longest label text, with terminator.
 
-struct TextLabel
+// ----------------------------------------------------------------------------
+// Table:    ScreenLabelTable
+// Purpose:  The text labels to draw this frame.
+// Key:      row number
+// Order:    the order in which the labels were added
+// Lifetime: emptied and refilled by screen_update every frame; read by the
+//           renderer in the same frame
+// ----------------------------------------------------------------------------
+typedef struct ScreenLabelTable
 {
-    std::string text {};
-    f32 x {};
-    f32 y {};
-};
+    s32 row_count;                                                      // Number of labels this frame.
+    char text[SCREEN_LABEL_CAPACITY][SCREEN_LABEL_TEXT_CAPACITY];       // Label text, null-terminated UTF-8.
+    f32 x[SCREEN_LABEL_CAPACITY];                                       // Left edge of the label, in screen pixels.
+    f32 y[SCREEN_LABEL_CAPACITY];                                       // Top edge of the label, in screen pixels.
+} ScreenLabelTable;
 
-class Screen
+// ----------------------------------------------------------------------------
+// State:   Screen
+// Purpose: State of the heads-up display.
+// ----------------------------------------------------------------------------
+typedef struct Screen
 {
-public:
-    void update(const Control& control);
+    ScreenLabelTable label;         // The labels to draw this frame.
+} Screen;
 
-    const std::vector<TextLabel>& labels() const { return text_labels; }
+// ----------------------------------------------------------------------------
+// Function: screen_update
+// Purpose:  Rebuilds the label table for this frame: the camera position
+//           and the cell, sector and floor that contain it.
+// Params:   screen  - screen state
+//           control - source of the camera position
+// Returns:  nothing
+// Reads:    control.position
+// Writes:   screen.label
+// ----------------------------------------------------------------------------
+void screen_update(Screen* screen, const Control* control);
 
-private:
-    void draw_text(const std::string& text, f32 x, f32 y);
-    void draw_debug_info(const Control& control);
-
-    std::vector<TextLabel> text_labels {};
-};
+#endif

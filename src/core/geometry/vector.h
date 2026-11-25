@@ -1,512 +1,258 @@
-#pragma once
+// ============================================================================
+// File:    src/core/geometry/vector.h
+// Layer:   core
+// Purpose: Two and three component vectors over f32 and s32, and the
+//          arithmetic the application performs on them. Vectors are small
+//          value types: they are passed and returned by value.
+// ============================================================================
 
-#include "scalar.h"
+#ifndef CORE_GEOMETRY_VECTOR_H
+#define CORE_GEOMETRY_VECTOR_H
+
 #include "core/types.h"
 
-class IVec2;
-class IVec3;
-class Vec2;
-class Vec3;
-
-class Vec2
+// ----------------------------------------------------------------------------
+// Enum:    Axis
+// Purpose: Names the coordinate axes. The values double as indices into
+//          per-axis column arrays such as ActorTable.position, which is why
+//          AXIS_COUNT closes the list.
+// ----------------------------------------------------------------------------
+typedef enum Axis
 {
-public:
-    f32 x { 0.0f };
-    f32 y { 0.0f };
+    AXIS_X,                         // East-west axis; east is positive.
+    AXIS_Y,                         // North-south axis; north is positive.
+    AXIS_Z,                         // Vertical axis; up is positive.
+    AXIS_COUNT                      // Number of axes.
+} Axis;
 
-    constexpr
-    Vec2() = default;
-
-    explicit constexpr
-    Vec2(const f32 scalar)
-        :
-        x { scalar },
-        y { scalar }
-    {}
-
-    constexpr
-    Vec2(const f32 x, const f32 y)
-        :
-        x { x },
-        y { y }
-    {}
-
-    explicit constexpr Vec2(const IVec2& vec);
-
-    static constexpr Vec2
-    unit_x()
-    {
-        constexpr Vec2 unit { 1.0f, 0.0f };
-
-        return unit;
-    }
-
-    static constexpr Vec2
-    unit_y()
-    {
-        constexpr Vec2 unit { 0.0f, 1.0f };
-
-        return unit;
-    }
-
-    constexpr f32&
-    operator[](const s32 index)
-    {
-        return (&x)[index];
-    }
-
-    constexpr const f32&
-    operator[](const s32 index) const
-    {
-        return (&x)[index];
-    }
-
-    constexpr f32
-    get_length() const
-    {
-        const f32 length_squared { get_length_squared() };
-
-        return get_square_root(length_squared);
-    }
-
-    constexpr f32
-    get_length_squared() const
-    {
-        return x * x + y * y;
-    }
-
-    constexpr Vec2
-    normalize() const
-    {
-        constexpr f32 epsilon_squared
-        {
-            std::numeric_limits<f32>::epsilon() *
-            std::numeric_limits<f32>::epsilon()
-        };
-
-        const f32 length_squared { get_length_squared() };
-
-        if (length_squared <= epsilon_squared)
-        {
-            return {};
-        }
-
-        const f32 inverse_length
-        {
-            1.0f / get_square_root(length_squared)
-        };
-
-        const Vec2 normalized
-        {
-            x * inverse_length,
-            y * inverse_length
-        };
-
-        return normalized;
-    }
-};
-
-class Vec3
+// ----------------------------------------------------------------------------
+// Value:   Vec2
+// Purpose: Two component floating point vector.
+// ----------------------------------------------------------------------------
+typedef struct Vec2
 {
-public:
-    f32 x { 0.0f };
-    f32 y { 0.0f };
-    f32 z { 0.0f };
+    f32 x;                          // Component along AXIS_X.
+    f32 y;                          // Component along AXIS_Y.
+} Vec2;
 
-    constexpr
-    Vec3() = default;
-
-    explicit constexpr
-    Vec3(const f32 scalar)
-        :
-        x { scalar },
-        y { scalar },
-        z { scalar }
-    {}
-
-    constexpr
-    Vec3(const f32 x, const f32 y, const f32 z)
-        :
-        x { x },
-        y { y },
-        z { z }
-    {}
-
-    explicit constexpr Vec3(const IVec3& vec);
-
-    constexpr f32&
-    operator[](const s32 index)
-    {
-        return (&x)[index];
-    }
-
-    constexpr const f32&
-    operator[](const s32 index) const
-    {
-        return (&x)[index];
-    }
-
-    static constexpr Vec3
-    unit_x()
-    {
-        constexpr Vec3 unit { 1.0f, 0.0f, 0.0f };
-
-        return unit;
-    }
-
-    static constexpr Vec3
-    unit_y()
-    {
-        constexpr Vec3 unit { 0.0f, 1.0f, 0.0f };
-
-        return unit;
-    }
-
-    static constexpr Vec3
-    unit_z()
-    {
-        constexpr Vec3 unit { 0.0f, 0.0f, 1.0f };
-
-        return unit;
-    }
-
-    constexpr f32
-    get_length() const
-    {
-        const f32 length_squared { get_length_squared() };
-
-        return get_square_root(length_squared);
-    }
-
-    constexpr f32
-    get_length_squared() const
-    {
-        return x * x + y * y + z * z;
-    }
-
-    constexpr Vec3
-    normalize() const
-    {
-        constexpr f32 epsilon_squared
-        {
-            std::numeric_limits<f32>::epsilon() *
-            std::numeric_limits<f32>::epsilon()
-        };
-
-        const f32 length_squared { get_length_squared() };
-
-        if (length_squared <= epsilon_squared)
-        {
-            return {};
-        }
-
-        const f32 inverse_length
-        {
-            1.0f / get_square_root(length_squared)
-        };
-
-        const Vec3 normalized
-        {
-            x * inverse_length,
-            y * inverse_length,
-            z * inverse_length,
-        };
-
-        return normalized;
-    }
-};
-
-class IVec2
+// ----------------------------------------------------------------------------
+// Value:   Vec3
+// Purpose: Three component floating point vector; also used for Euler
+//          rotations in degrees, where x is pitch, y is roll and z is yaw.
+// ----------------------------------------------------------------------------
+typedef struct Vec3
 {
-public:
-    s32 x { 0 };
-    s32 y { 0 };
+    f32 x;                          // Component along AXIS_X.
+    f32 y;                          // Component along AXIS_Y.
+    f32 z;                          // Component along AXIS_Z.
+} Vec3;
 
-    constexpr
-    IVec2() = default;
-
-    explicit constexpr
-    IVec2(const s32 scalar)
-        :
-        x { scalar },
-        y { scalar }
-    {}
-
-    constexpr
-    IVec2(const s32 x, const s32 y)
-        :
-        x { x },
-        y { y }
-    {}
-
-    constexpr s32&
-    operator[](const s32 index)
-    {
-        return (&x)[index];
-    }
-
-    constexpr const s32&
-    operator[](const s32 index) const
-    {
-        return (&x)[index];
-    }
-};
-
-class IVec3
+// ----------------------------------------------------------------------------
+// Value:   IVec2
+// Purpose: Two component integer vector, used for cell and sector
+//          coordinates in the horizontal plane.
+// ----------------------------------------------------------------------------
+typedef struct IVec2
 {
-public:
-    s32 x { 0 };
-    s32 y { 0 };
-    s32 z { 0 };
+    s32 x;                          // Component along AXIS_X.
+    s32 y;                          // Component along AXIS_Y.
+} IVec2;
 
-    constexpr
-    IVec3() = default;
-
-    explicit constexpr
-    IVec3(const s32 scalar)
-        :
-        x { scalar },
-        y { scalar },
-        z { scalar }
-    {}
-
-    constexpr
-    IVec3(const s32 x, const s32 y, const s32 z)
-        :
-        x { x },
-        y { y },
-        z { z }
-    {}
-
-    constexpr s32&
-    operator[](const s32 index)
-    {
-        return (&x)[index];
-    }
-
-    constexpr const s32&
-    operator[](const s32 index) const
-    {
-        return (&x)[index];
-    }
-};
-
-constexpr
-Vec2::Vec2(const IVec2& vec)
-    :
-    x { static_cast<f32>(vec.x) },
-    y { static_cast<f32>(vec.y) }
-{}
-
-constexpr Vec2
-operator+(const Vec2& left, const Vec2& right)
+// ----------------------------------------------------------------------------
+// Value:   IVec3
+// Purpose: Three component integer vector, used for cell coordinates.
+// ----------------------------------------------------------------------------
+typedef struct IVec3
 {
-    const Vec2 sum
-    {
-        left.x + right.x,
-        left.y + right.y,
-    };
+    s32 x;                          // Component along AXIS_X.
+    s32 y;                          // Component along AXIS_Y.
+    s32 z;                          // Component along AXIS_Z.
+} IVec3;
 
-    return sum;
-}
+// ----------------------------------------------------------------------------
+// Function: vec2_make
+// Purpose:  Builds a Vec2 from its components.
+// Params:   x - component along AXIS_X
+//           y - component along AXIS_Y
+// Returns:  The vector (x, y).
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec2 vec2_make(f32 x, f32 y);
 
-constexpr Vec2
-operator-(const Vec2& left, const Vec2& right)
-{
-    const Vec2 difference
-    {
-        left.x - right.x,
-        left.y - right.y,
-    };
+// ----------------------------------------------------------------------------
+// Function: vec3_make
+// Purpose:  Builds a Vec3 from its components.
+// Params:   x - component along AXIS_X
+//           y - component along AXIS_Y
+//           z - component along AXIS_Z
+// Returns:  The vector (x, y, z).
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_make(f32 x, f32 y, f32 z);
 
-    return difference;
-}
+// ----------------------------------------------------------------------------
+// Function: vec3_from_ivec3
+// Purpose:  Converts an integer vector to floating point.
+// Params:   vector - integer vector to convert
+// Returns:  The same vector with f32 components.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_from_ivec3(IVec3 vector);
 
-constexpr Vec2
-operator*(const f32 left, const Vec2& right)
-{
-    const Vec2 product
-    {
-        left * right.x,
-        left * right.y,
-    };
+// ----------------------------------------------------------------------------
+// Function: vec3_add
+// Purpose:  Adds two vectors component by component.
+// Params:   left  - first operand
+//           right - second operand
+// Returns:  left + right.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_add(Vec3 left, Vec3 right);
 
-    return product;
-}
+// ----------------------------------------------------------------------------
+// Function: vec3_subtract
+// Purpose:  Subtracts one vector from another component by component.
+// Params:   left  - vector to subtract from
+//           right - vector to subtract
+// Returns:  left - right.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_subtract(Vec3 left, Vec3 right);
 
-constexpr f32
-dot(const Vec2& left, const Vec2& right)
-{
-    const f32 product { left.x * right.x + left.y * right.y };
+// ----------------------------------------------------------------------------
+// Function: vec3_scale
+// Purpose:  Multiplies every component of a vector by a scalar.
+// Params:   scalar - factor to multiply by
+//           vector - vector to scale
+// Returns:  scalar * vector.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_scale(f32 scalar, Vec3 vector);
 
-    return product;
-}
+// ----------------------------------------------------------------------------
+// Function: vec3_min
+// Purpose:  Takes the component-wise minimum of two vectors.
+// Params:   left  - first operand
+//           right - second operand
+// Returns:  A vector whose components are the smaller of each pair.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_min(Vec3 left, Vec3 right);
 
-constexpr
-Vec3::Vec3(const IVec3& vec)
-    :
-    x { static_cast<f32>(vec.x) },
-    y { static_cast<f32>(vec.y) },
-    z { static_cast<f32>(vec.z) }
-{}
+// ----------------------------------------------------------------------------
+// Function: vec3_max
+// Purpose:  Takes the component-wise maximum of two vectors.
+// Params:   left  - first operand
+//           right - second operand
+// Returns:  A vector whose components are the larger of each pair.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_max(Vec3 left, Vec3 right);
 
-constexpr Vec3
-operator+(const Vec3& left, const Vec3& right)
-{
-    const Vec3 sum
-    {
-        left.x + right.x,
-        left.y + right.y,
-        left.z + right.z
-    };
+// ----------------------------------------------------------------------------
+// Function: vec3_dot
+// Purpose:  Computes the dot product of two vectors.
+// Params:   left  - first operand
+//           right - second operand
+// Returns:  The scalar left . right.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+f32 vec3_dot(Vec3 left, Vec3 right);
 
-    return sum;
-}
+// ----------------------------------------------------------------------------
+// Function: vec3_cross
+// Purpose:  Computes the cross product of two vectors.
+// Params:   left  - first operand
+//           right - second operand
+// Returns:  The vector left x right, perpendicular to both operands.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_cross(Vec3 left, Vec3 right);
 
-constexpr Vec3
-operator-(const Vec3& left, const Vec3& right)
-{
-    const Vec3 difference
-    {
-        left.x - right.x,
-        left.y - right.y,
-        left.z - right.z
-    };
+// ----------------------------------------------------------------------------
+// Function: vec3_length_squared
+// Purpose:  Computes the squared length of a vector, avoiding a square root.
+// Params:   vector - vector to measure
+// Returns:  The squared Euclidean length.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+f32 vec3_length_squared(Vec3 vector);
 
-    return difference;
-}
+// ----------------------------------------------------------------------------
+// Function: vec3_length
+// Purpose:  Computes the length of a vector.
+// Params:   vector - vector to measure
+// Returns:  The Euclidean length.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+f32 vec3_length(Vec3 vector);
 
-constexpr Vec3
-operator*(const f32 left, const Vec3& right)
-{
-    const Vec3 product
-    {
-        left * right.x,
-        left * right.y,
-        left * right.z,
-    };
+// ----------------------------------------------------------------------------
+// Function: vec3_normalize
+// Purpose:  Scales a vector to unit length.
+// Params:   vector - vector to normalize
+// Returns:  The unit vector with the direction of vector, or the zero vector
+//           when vector is too short to have a reliable direction.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+Vec3 vec3_normalize(Vec3 vector);
 
-    return product;
-}
+// ----------------------------------------------------------------------------
+// Function: ivec2_make
+// Purpose:  Builds an IVec2 from its components.
+// Params:   x - component along AXIS_X
+//           y - component along AXIS_Y
+// Returns:  The vector (x, y).
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+IVec2 ivec2_make(s32 x, s32 y);
 
-constexpr Vec3
-max(const Vec3& left, const Vec3& right)
-{
-    const Vec3 max
-    {
-        left.x > right.x ? left.x : right.x,
-        left.y > right.y ? left.y : right.y,
-        left.z > right.z ? left.z : right.z,
-    };
+// ----------------------------------------------------------------------------
+// Function: ivec2_add
+// Purpose:  Adds two integer vectors component by component.
+// Params:   left  - first operand
+//           right - second operand
+// Returns:  left + right.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+IVec2 ivec2_add(IVec2 left, IVec2 right);
 
-    return max;
-}
+// ----------------------------------------------------------------------------
+// Function: ivec2_subtract
+// Purpose:  Subtracts one integer vector from another.
+// Params:   left  - vector to subtract from
+//           right - vector to subtract
+// Returns:  left - right.
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+IVec2 ivec2_subtract(IVec2 left, IVec2 right);
 
-constexpr Vec3
-min(const Vec3& left, const Vec3& right)
-{
-    const Vec3 min
-    {
-        left.x < right.x ? left.x : right.x,
-        left.y < right.y ? left.y : right.y,
-        left.z < right.z ? left.z : right.z,
-    };
+// ----------------------------------------------------------------------------
+// Function: ivec3_make
+// Purpose:  Builds an IVec3 from its components.
+// Params:   x - component along AXIS_X
+//           y - component along AXIS_Y
+//           z - component along AXIS_Z
+// Returns:  The vector (x, y, z).
+// Reads:    arguments only
+// Writes:   nothing
+// ----------------------------------------------------------------------------
+IVec3 ivec3_make(s32 x, s32 y, s32 z);
 
-    return min;
-}
-
-constexpr f32
-dot(const Vec3& left, const Vec3& right)
-{
-    const f32 product { left.x * right.x + left.y * right.y + left.z * right.z };
-
-    return product;
-}
-
-constexpr Vec3
-cross(const Vec3& left, const Vec3& right)
-{
-    const Vec3 product
-    {
-        left.y * right.z - left.z * right.y,
-        left.z * right.x - left.x * right.z,
-        left.x * right.y - left.y * right.x
-    };
-
-    return product;
-}
-
-constexpr IVec2
-operator+(const IVec2& left, const IVec2& right)
-{
-    const IVec2 sum
-    {
-        left.x + right.x,
-        left.y + right.y,
-    };
-
-    return sum;
-}
-
-constexpr IVec2
-operator-(const IVec2& left, const IVec2& right)
-{
-    const IVec2 difference
-    {
-        left.x - right.x,
-        left.y - right.y,
-    };
-
-    return difference;
-}
-
-constexpr IVec2
-operator*(const s32 left, const IVec2& right)
-{
-    const IVec2 product
-    {
-        left * right.x,
-        left * right.y,
-    };
-
-    return product;
-}
-
-constexpr IVec3
-operator+(const IVec3& left, const IVec3& right)
-{
-    const IVec3 sum
-    {
-        left.x + right.x,
-        left.y + right.y,
-        left.z + right.z
-    };
-
-    return sum;
-}
-
-constexpr IVec3
-operator-(const IVec3& left, const IVec3& right)
-{
-    const IVec3 difference
-    {
-        left.x - right.x,
-        left.y - right.y,
-        left.z - right.z
-    };
-
-    return difference;
-}
-
-constexpr IVec3
-operator*(const s32 left, const IVec3& right)
-{
-    const IVec3 product
-    {
-        left * right.x,
-        left * right.y,
-        left * right.z,
-    };
-
-    return product;
-}
+#endif

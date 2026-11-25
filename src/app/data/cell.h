@@ -1,21 +1,52 @@
-#pragma once
+// ============================================================================
+// File:    src/app/data/cell.h
+// Layer:   app
+// Purpose: The cell table: the voxel grid of the world, one row per cell.
+// ============================================================================
+
+#ifndef APP_DATA_CELL_H
+#define APP_DATA_CELL_H
 
 #include "block_data.generated.h"
-#include "constants.h"
+
+#include "app/data/constants.h"
 #include "core/types.h"
 
-struct Cell
+// ----------------------------------------------------------------------------
+// Table:    CellTable
+// Purpose:  What occupies every cell of the world. The faces a cell shows
+//           are not stored per cell: they follow from its block type through
+//           the BLOCK_FACE_TYPE reference table.
+// Key:      cell index, implicit: the row number. The cell at coordinate
+//           (x, y, z) is row x + y * WORLD_STRIDE_Y + z * WORLD_STRIDE_Z.
+// Order:    by cell index; the table always has WORLD_VOLUME_IN_CELLS rows
+// Lifetime: allocated by cell_table_init, released by cell_table_free;
+//           written during world generation, read-only afterwards
+// ----------------------------------------------------------------------------
+typedef struct CellTable
 {
-    s32 cell_index          { -1 };
-    u8 direction_mask       { 0 };
-    BlockType block_type    { BlockType::none };
+    BlockType* block_type;          // [FK -> BLOCK_TYPE_NAME] Block occupying the cell; BLOCK_TYPE_NONE when empty.
+    u8* direction_mask;             // [derived] Direction bits whose neighbouring cell is empty or outside the world.
+} CellTable;
 
-    std::array<FaceType, FACE_COUNT_PER_VOXEL> face_type_array {
-        FaceType::none,
-        FaceType::none,
-        FaceType::none,
-        FaceType::none,
-        FaceType::none,
-        FaceType::none,
-    };
-};
+// ----------------------------------------------------------------------------
+// Function: cell_table_init
+// Purpose:  Allocates the cell table and makes every cell empty.
+// Params:   table - table to initialise; must not hold storage already
+// Returns:  nothing
+// Reads:    nothing
+// Writes:   table, all rows of block_type and direction_mask
+// ----------------------------------------------------------------------------
+void cell_table_init(CellTable* table);
+
+// ----------------------------------------------------------------------------
+// Function: cell_table_free
+// Purpose:  Releases the storage of the cell table.
+// Params:   table - table to release
+// Returns:  nothing
+// Reads:    table
+// Writes:   table; its columns become NULL
+// ----------------------------------------------------------------------------
+void cell_table_free(CellTable* table);
+
+#endif
