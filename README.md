@@ -5,21 +5,17 @@ The Garden of Civilization
 
 ## Building
 
-Last Ditch is written in ANSI C89 and built with CMake as a single
-translation unit (a Unity build) on top of the vendored SDL3 and SDL3_ttf.
+Last Ditch is written in ANSI C89. On Debian, install the dependencies listed
+in [the build guide](build.md#debian-development-with-gnu-make), then run:
 
 ```sh
-python3 tools/bootstrap.py
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
-cmake --build build --target shaders
-cmake --build build
-ctest --test-dir build
-./build/lastditch
+make -j
+make check
+./build-make/lastditch
 ```
 
-[docs/build.md](docs/build.md) explains the build in detail: the language
-dialect, how the Unity build works, the generated code, the shaders and the
-tests.
+The [build guide](build.md) also covers the vendored CMake build, reference
+tables, shaders, and tests.
 
 ## Controls
 
@@ -36,6 +32,6 @@ tests.
 
 | Document | Contents |
 | --- | --- |
-| [docs/build.md](docs/build.md) | How the project is built and tested. |
+| [build.md](build.md) | How the project is built and tested. |
 | [docs/data_model.md](docs/data_model.md) | How the simulation's data is organised: tables, keys, indexes, reference tables and the systems that work on them. |
 | [docs/documentation_standard.md](docs/documentation_standard.md) | The rules every source comment follows, and the tool that checks them. |
