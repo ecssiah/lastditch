@@ -30,8 +30,10 @@ static const s32 STRUCTURE_SHAPE_BOUNDARY_COUNT[STRUCTURE_SHAPE_COUNT] =
 };
 
 // Documented in src/app/world.h.
-b32
-world_cell_coordinate_is_valid(const s32 x, const s32 y, const s32 z)
+int
+world_cell_coordinate_is_valid(const s32 x,
+			       const s32 y,
+			       const s32 z)
 {
     return
         x >= 0 && x < WORLD_SIZE_IN_CELLS &&
@@ -40,8 +42,9 @@ world_cell_coordinate_is_valid(const s32 x, const s32 y, const s32 z)
 }
 
 // Documented in src/app/world.h.
-b32
-world_sector_coordinate_is_valid(const s32 x, const s32 y)
+int
+world_sector_coordinate_is_valid(const s32 x,
+				 const s32 y)
 {
     return
         x >= 0 && x < WORLD_SIZE_IN_SECTORS &&
@@ -67,7 +70,9 @@ world_sector_index_to_coordinate(const s32 sector_index)
 
 // Documented in src/app/world.h.
 s32
-world_cell_coordinate_to_index(const s32 x, const s32 y, const s32 z)
+world_cell_coordinate_to_index(const s32 x,
+			       const s32 y,
+			       const s32 z)
 {
     return x * WORLD_STRIDE_X + y * WORLD_STRIDE_Y + z * WORLD_STRIDE_Z;
 }
@@ -85,7 +90,8 @@ world_cell_index_to_coordinate(const s32 cell_index)
 
 // Documented in src/app/world.h.
 IVec2
-world_cell_coordinate_to_sector_coordinate(const s32 x, const s32 y)
+world_cell_coordinate_to_sector_coordinate(const s32 x,
+					   const s32 y)
 {
     return ivec2_make(
         x >> SECTOR_SIZE_IN_CELLS_LOG2,
@@ -95,14 +101,17 @@ world_cell_coordinate_to_sector_coordinate(const s32 x, const s32 y)
 
 // Documented in src/app/world.h.
 s32
-world_cell_coordinate_to_sector_index(const s32 x, const s32 y)
+world_cell_coordinate_to_sector_index(const s32 x,
+				      const s32 y)
 {
     return world_sector_coordinate_to_index(world_cell_coordinate_to_sector_coordinate(x, y));
 }
 
 // Documented in src/app/world.h.
 IVec3
-world_cell_coordinate_to_local_coordinate(const s32 x, const s32 y, const s32 z)
+world_cell_coordinate_to_local_coordinate(const s32 x,
+					  const s32 y,
+					  const s32 z)
 {
     return ivec3_make(
         x & (SECTOR_SIZE_IN_CELLS - 1),
@@ -113,7 +122,9 @@ world_cell_coordinate_to_local_coordinate(const s32 x, const s32 y, const s32 z)
 
 // Documented in src/app/world.h.
 s32
-world_cell_coordinate_to_local_index(const s32 x, const s32 y, const s32 z)
+world_cell_coordinate_to_local_index(const s32 x,
+				     const s32 y,
+				     const s32 z)
 {
     const IVec3 local_coordinate = world_cell_coordinate_to_local_coordinate(x, y, z);
 
@@ -125,14 +136,18 @@ world_cell_coordinate_to_local_index(const s32 x, const s32 y, const s32 z)
 
 // Documented in src/app/world.h.
 Vec3
-world_cell_coordinate_to_position(const s32 x, const s32 y, const s32 z)
+world_cell_coordinate_to_position(const s32 x,
+				  const s32 y,
+				  const s32 z)
 {
     return vec3_make((f32)x, (f32)y, (f32)z);
 }
 
 // Documented in src/app/world.h.
 IVec3
-world_position_to_cell_coordinate(const f32 x, const f32 y, const f32 z)
+world_position_to_cell_coordinate(const f32 x,
+				  const f32 y,
+				  const f32 z)
 {
     return ivec3_make(
         (s32)f32_floor(x),
@@ -190,7 +205,10 @@ world_face_type_index_from_string(const char* face_type_string)
 
 // Documented in src/app/world.h.
 BlockType
-world_get_block_type(const World* world, const s32 x, const s32 y, const s32 z)
+world_get_block_type(const World* world,
+		     const s32 x,
+		     const s32 y,
+		     const s32 z)
 {
     assert(world_cell_coordinate_is_valid(x, y, z));
 
@@ -198,8 +216,11 @@ world_get_block_type(const World* world, const s32 x, const s32 y, const s32 z)
 }
 
 // Documented in src/app/world.h.
-b32
-world_is_solid(const World* world, const s32 x, const s32 y, const s32 z)
+int
+world_is_solid(const World* world,
+	       const s32 x,
+	       const s32 y,
+	       const s32 z)
 {
     if (!world_cell_coordinate_is_valid(x, y, z))
     {
@@ -210,8 +231,12 @@ world_is_solid(const World* world, const s32 x, const s32 y, const s32 z)
 }
 
 // Documented in src/app/world.h.
-b32
-world_is_clear(const World* world, const s32 x, const s32 y, const s32 z, const u8 direction_mask)
+int
+world_is_clear(const World* world,
+	       const s32 x,
+	       const s32 y,
+	       const s32 z,
+	       const u8 direction_mask)
 {
     s32 direction_index;
 
@@ -233,7 +258,11 @@ world_is_clear(const World* world, const s32 x, const s32 y, const s32 z, const 
 
 // Documented in src/app/world.h.
 void
-world_set_block(World* world, const s32 x, const s32 y, const s32 z, const BlockType block_type)
+world_set_block(World* world,
+		const s32 x,
+		const s32 y,
+		const s32 z,
+		const BlockType block_type)
 {
     assert(world_cell_coordinate_is_valid(x, y, z));
 
@@ -303,7 +332,14 @@ world_set_shape(World* world,
 // Writes:   world.cell.block_type
 // ----------------------------------------------------------------------------
 static void
-world_set_cube(World* world, const s32 x, const s32 y, const s32 z, const s32 size_x, const s32 size_y, const s32 size_z, const BlockType block_type)
+world_set_cube(World* world,
+	       const s32 x,
+	       const s32 y,
+	       const s32 z,
+	       const s32 size_x,
+	       const s32 size_y,
+	       const s32 size_z,
+	       const BlockType block_type)
 {
     world_set_shape(
         world,
@@ -316,7 +352,8 @@ world_set_cube(World* world, const s32 x, const s32 y, const s32 z, const s32 si
 
 // Documented in src/app/world.h.
 Border
-world_calculate_border(const AreaRecord* area_left, const AreaRecord* area_right)
+world_calculate_border(const AreaRecord* area_left,
+		       const AreaRecord* area_right)
 {
     const IBounds2 left = area_left->bounds;
     const IBounds2 right = area_right->bounds;
@@ -370,7 +407,8 @@ world_calculate_border(const AreaRecord* area_left, const AreaRecord* area_right
 // Writes:   world.link.id_sequence
 // ----------------------------------------------------------------------------
 static LinkRecord
-world_calculate_link(World* world, const Border* border)
+world_calculate_link(World* world,
+		     const Border* border)
 {
     const IVec2 size = ibounds2_size(border->bounds);
     LinkRecord record;
@@ -396,7 +434,8 @@ world_calculate_link(World* world, const Border* border)
 
 // Documented in src/app/world.h.
 void
-world_add_link(World* world, const LinkRecord* record)
+world_add_link(World* world,
+	       const LinkRecord* record)
 {
     const s32 area_1_row = area_table_find_row(&world->area, record->area_1_id);
     const s32 area_2_row = area_table_find_row(&world->area, record->area_2_id);
@@ -414,7 +453,8 @@ world_add_link(World* world, const LinkRecord* record)
 
 // Documented in src/app/world.h.
 void
-world_place_area(World* world, const AreaRecord* record)
+world_place_area(World* world,
+		 const AreaRecord* record)
 {
     const AreaTable* area = &world->area;
     AreaChangeSet* change_set = &world->area_change_set;
@@ -454,7 +494,8 @@ world_place_area(World* world, const AreaRecord* record)
 
 // Documented in src/app/world.h.
 void
-world_place_content(World* world, const s32 floor_number)
+world_place_content(World* world,
+		    const s32 floor_number)
 {
     const AreaTable* area = &world->area;
     const s32 floor_z = world_get_height(floor_number);
@@ -536,7 +577,10 @@ world_place_content(World* world, const s32 floor_number)
 // Writes:   world.cell.block_type, world.random (two draws)
 // ----------------------------------------------------------------------------
 static void
-world_construct_wall_panel(World* world, const s32 x, const s32 y, const s32 floor_z)
+world_construct_wall_panel(World* world,
+			   const s32 x,
+			   const s32 y,
+			   const s32 floor_z)
 {
     const s32 offset = random_uniform_s32(&world->random, 0, FLOOR_SIZE_Z - 3);
     s32 position_z;
@@ -672,14 +716,16 @@ world_construct_tower_frame(World* world)
 // Writes:   world.area
 // ----------------------------------------------------------------------------
 static void
-world_layout_sections(World* world, const s32 floor_number, const b32 include_room)
+world_layout_sections(World* world,
+		      const s32 floor_number,
+		      const int include_room)
 {
     s32 section_index;
 
     for (section_index = 0; section_index < SECTION_TYPE_COUNT; ++section_index)
     {
         const SectionRecord* section = &SECTION_TABLE[section_index];
-        const b32 is_room = section->area_type == AREA_TYPE_ROOM;
+        const int is_room = section->area_type == AREA_TYPE_ROOM;
         AreaRecord record;
 
         if ((is_room && !include_room) || (!is_room && include_room))
@@ -716,7 +762,8 @@ world_layout_sections(World* world, const s32 floor_number, const b32 include_ro
 //           new keys and keep the type of the area they replace.
 // ----------------------------------------------------------------------------
 static void
-world_split_areas(World* world, const s32 floor_number)
+world_split_areas(World* world,
+		  const s32 floor_number)
 {
     const AreaTable* area = &world->area;
     AreaChangeSet* change_set = &world->area_change_set;
@@ -938,7 +985,8 @@ world_setup_test_area(World* world)
 // Writes:   world.area, world.area_change_set, world.cell.block_type
 // ----------------------------------------------------------------------------
 static void
-world_layout_territory(World* world, const TerritoryRecord* territory)
+world_layout_territory(World* world,
+		       const TerritoryRecord* territory)
 {
     const s32 pillar_offset = 2;
     const IVec2 temple_origin = territory->temple_origin;
@@ -1207,7 +1255,7 @@ world_calculate_direction_masks(World* world)
                 {
                     const s32* normal = DIRECTION_NORMAL[direction_index];
 
-                    const b32 neighbor_is_valid = world_cell_coordinate_is_valid(
+                    const int neighbor_is_valid = world_cell_coordinate_is_valid(
                         x + normal[AXIS_X],
                         y + normal[AXIS_Y],
                         z + normal[AXIS_Z]
@@ -1229,7 +1277,7 @@ world_calculate_direction_masks(World* world)
 
 // Documented in src/app/world.h.
 void
-world_init(World* world)
+world_init(World *world)
 {
     s32 row;
 
@@ -1266,7 +1314,7 @@ world_init(World* world)
 
 // Documented in src/app/world.h.
 void
-world_quit(World* world)
+world_quit(World *world)
 {
     cell_table_free(&world->cell);
     area_table_free(&world->area);

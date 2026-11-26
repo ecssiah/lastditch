@@ -443,7 +443,7 @@ render_create_static_buffer(const Render* render, const void* data, const size_t
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static SDL_GPUTexture*
-render_create_texture_array(const Render* render, const Platform* platform, const u32 width, const u32 height, const u32 layer_count, const char* directory, const char* const* name_array, const b32 flip_vertical)
+render_create_texture_array(const Render* render, const Platform* platform, const u32 width, const u32 height, const u32 layer_count, const char* directory, const char* const* name_array, const int flip_vertical)
 {
     const size_t row_size = (size_t)width * RENDER_BYTES_PER_PIXEL;
     const size_t layer_size = row_size * height;
@@ -491,7 +491,7 @@ render_create_texture_array(const Render* render, const Platform* platform, cons
         SDL_Surface* surface;
         const u8* pixels;
         size_t source_pitch;
-        b32 must_unlock;
+        int must_unlock;
         u32 row;
 
         SDL_snprintf(relative_path, sizeof(relative_path), "assets/textures/%s/%s.png", directory, name_array[layer]);

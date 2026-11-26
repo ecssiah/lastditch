@@ -106,7 +106,7 @@ test_simulation_population(const Population* population)
     for (row = 0; row < actor->row_count && row < TEST_SPAWN_COUNT; ++row)
     {
         const TestSpawnRecord* spawn = &TEST_SPAWN_TABLE[row];
-        const b32 is_judge = actor->actor_id[row] == population->judge_id;
+        const int is_judge = actor->actor_id[row] == population->judge_id;
         const Vec3 forward = quaternion_get_forward(actor->orientation[row]);
         const Vec2 heading = direction_from_angle(actor->movement_yaw[row]);
 
@@ -465,7 +465,7 @@ test_simulation_schedule(World* world, Population* population)
             const s32 max_x = (s32)f32_floor(position.x + actor->collider_radius[AXIS_X][row]);
             const s32 min_y = (s32)f32_floor(position.y - actor->collider_radius[AXIS_Y][row]);
             const s32 max_y = (s32)f32_floor(position.y + actor->collider_radius[AXIS_Y][row]);
-            b32 is_supported = false;
+            int is_supported = false;
             s32 x;
             s32 y;
 

@@ -67,7 +67,7 @@ u32 mesh_encode_face_texture_index(FaceType face_type);
 //           skipped, as are faces that reference elements the file has not
 //           defined.
 // ----------------------------------------------------------------------------
-b32 mesh_load_model(const char* path, ModelVertexTable* vertex);
+int mesh_load_model(const char* path, ModelVertexTable* vertex);
 
 // ----------------------------------------------------------------------------
 // Function: sector_quad_table_free

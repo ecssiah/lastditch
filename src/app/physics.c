@@ -22,7 +22,10 @@
 // Writes:   bounds_min, bounds_max
 // ----------------------------------------------------------------------------
 static void
-physics_get_collider_bounds(const ActorTable* actor, const s32 row, f32* bounds_min, f32* bounds_max)
+physics_get_collider_bounds(const ActorTable* actor,
+			    const s32 row,
+			    f32* bounds_min,
+			    f32* bounds_max)
 {
     const f32 world_size = (f32)WORLD_SIZE_IN_CELLS;
     s32 axis;
@@ -49,7 +52,10 @@ physics_get_collider_bounds(const ActorTable* actor, const s32 row, f32* bounds_
 // Writes:   cell_min, cell_max
 // ----------------------------------------------------------------------------
 static void
-physics_get_grid_overlap(const f32* bounds_min, const f32* bounds_max, s32* cell_min, s32* cell_max)
+physics_get_grid_overlap(const f32* bounds_min,
+			 const f32* bounds_max,
+			 s32* cell_min,
+			 s32* cell_max)
 {
     s32 axis;
 
@@ -77,7 +83,11 @@ physics_get_grid_overlap(const f32* bounds_min, const f32* bounds_max, s32* cell
 // Writes:   actor.position[axis], actor.velocity[axis], actor.is_grounded
 // ----------------------------------------------------------------------------
 static void
-physics_resolve_axis_collisions(const World* world, ActorTable* actor, const s32 row, const Axis axis, const f32 step_delta_time)
+physics_resolve_axis_collisions(const World* world,
+				ActorTable* actor,
+				const s32 row,
+				const Axis axis,
+				const f32 step_delta_time)
 {
     const f32 axis_velocity = actor->velocity[axis][row];
     const s32 axis_s = (axis + 1) % AXIS_COUNT;
@@ -93,7 +103,7 @@ physics_resolve_axis_collisions(const World* world, ActorTable* actor, const s32
     f32 actor_max_prev;
     f32 actor_min_next;
     f32 actor_max_next;
-    b32 found;
+    int found;
     f32 best;
     s32 axis_index;
 
@@ -210,7 +220,9 @@ physics_resolve_axis_collisions(const World* world, ActorTable* actor, const s32
 
 // Documented in src/app/physics.h.
 void
-physics_update_actor(const World* world, ActorTable* actor, const s32 row)
+physics_update_actor(const World* world,
+		     ActorTable* actor,
+		     const s32 row)
 {
     const f32 gravity_step =
         actor->velocity[AXIS_Z][row] <= 0.0f

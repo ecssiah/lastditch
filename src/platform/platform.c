@@ -92,7 +92,7 @@ platform_button_from_mouse(const u8 mouse_button)
 // Writes:   platform.button_current
 // ----------------------------------------------------------------------------
 static void
-platform_set_button(Platform* platform, const ButtonType button, const b32 is_down)
+platform_set_button(Platform* platform, const ButtonType button, const int is_down)
 {
     if (button != BUTTON_TYPE_NONE)
     {
@@ -313,28 +313,28 @@ platform_get_framebuffer_size(const Platform* platform, s32* width, s32* height)
 }
 
 // Documented in src/platform/platform.h.
-b32
+int
 platform_button_is_down(const Platform* platform, const ButtonType button)
 {
     return platform->button_current[button] != 0;
 }
 
 // Documented in src/platform/platform.h.
-b32
+int
 platform_button_is_pressed(const Platform* platform, const ButtonType button)
 {
     return platform->button_current[button] != 0 && platform->button_previous[button] == 0;
 }
 
 // Documented in src/platform/platform.h.
-b32
+int
 platform_button_is_released(const Platform* platform, const ButtonType button)
 {
     return platform->button_current[button] == 0 && platform->button_previous[button] != 0;
 }
 
 // Documented in src/platform/platform.h.
-b32
+int
 platform_resolve_path(const Platform* platform, const char* relative_path, char* path, const size_t path_capacity)
 {
     const char* base_path = platform->base_path != NULL ? platform->base_path : "";

@@ -29,10 +29,10 @@ ibounds2_size(const IBounds2 bounds)
 }
 
 // Documented in src/core/geometry/bounds.h.
-b32
+int
 ibounds2_overlaps(const IBounds2 left, const IBounds2 right)
 {
-    const b32 is_clear =
+    const int is_clear =
         left.max.x <= right.min.x ||
         right.max.x <= left.min.x ||
         left.max.y <= right.min.y ||

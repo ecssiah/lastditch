@@ -228,7 +228,7 @@ static void
 control_toggle_possession(Control* control, Population* population)
 {
     ActorTable* actor = &population->actor;
-    const b32 is_taking = control->actor_id == TABLE_KEY_NONE;
+    const int is_taking = control->actor_id == TABLE_KEY_NONE;
     const s32 actor_id = is_taking ? population->judge_id : control->actor_id;
     const s32 row = actor_table_find_row(actor, actor_id);
 

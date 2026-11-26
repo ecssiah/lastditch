@@ -43,9 +43,9 @@ typedef struct ActorRecord
     Vec3 rotation_target;           // Wanted Euler rotation in degrees: x pitch, y roll, z yaw.
     f32 movement_yaw;               // Current heading in degrees, smoothed towards rotation_target.z.
     Vec3 velocity;                  // Velocity in cells per second.
-    b32 collision_enabled;          // Whether the actor collides with blocks.
+    int collision_enabled;          // Whether the actor collides with blocks.
     Vec3 collider_radius;           // Half extents of the actor's box collider.
-    b32 is_grounded;                // Whether the actor stood on a block after the last physics step.
+    int is_grounded;                // Whether the actor stood on a block after the last physics step.
 } ActorRecord;
 
 // ----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ typedef struct ActorTable
     s32 row_capacity;                   // Number of rows the columns can hold.
     Sequence id_sequence;               // Issues actor_id values.
     s32* actor_id;                      // [PK] Key of the actor.
-    u8* actor_type;                     // ActorType of the actor.
+    u8* actor_type;                     // ActorType of the actor.x
     NationType* nation_type;            // [FK -> NATION_TABLE.nation_type] Nation the actor belongs to.
     f32* move_speed;                    // Horizontal speed when moving, in cells per second.
     f32* turn_speed;                    // Rate at which the actor turns towards its rotation target.

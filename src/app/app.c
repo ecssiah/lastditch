@@ -63,7 +63,7 @@ app_quit(App* app)
 }
 
 // Documented in src/app/app.h.
-b32
+int
 app_is_active(const App* app)
 {
     return app->platform.active;

@@ -232,7 +232,7 @@ mesh_append_f32(f32** column, s32* count, s32* capacity, const f32* values, cons
 }
 
 // Documented in src/app/mesh.h.
-b32
+int
 mesh_load_model(const char* path, ModelVertexTable* vertex)
 {
     size_t file_size = 0;
@@ -302,7 +302,7 @@ mesh_load_model(const char* path, ModelVertexTable* vertex)
                 &p[0], &uv[0], &n[0], &p[1], &uv[1], &n[1], &p[2], &uv[2], &n[2]
             );
 
-            b32 is_valid = scanned == 9;
+            int is_valid = scanned == 9;
             s32 index;
 
             for (index = 0; is_valid && index < 3; ++index)

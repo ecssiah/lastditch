@@ -77,7 +77,7 @@ void action_update(Action* action, World* world, Population* population);
 // Reads:    action.tick_count, work
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 action_is_due(const Action* action, const WorkRecord* work);
+int action_is_due(const Action* action, const WorkRecord* work);
 
 // ----------------------------------------------------------------------------
 // Function: work_decide

@@ -618,8 +618,8 @@ test_world_content(void)
             for (x = 0; x < WORLD_SIZE_IN_CELLS; ++x)
             {
                 const BlockType block_type = world_get_block_type(&world, x, y, z);
-                b32 is_inside;
-                b32 is_level_block;
+                int is_inside;
+                int is_level_block;
 
                 if (block_type == BLOCK_TYPE_NONE)
                 {

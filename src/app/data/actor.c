@@ -21,7 +21,8 @@
 // Writes:   table: column storage, row_capacity
 // ----------------------------------------------------------------------------
 static void
-actor_table_reserve(ActorTable* table, const s32 row_required)
+actor_table_reserve(ActorTable* table,
+		    const s32 row_required)
 {
     const s32 capacity = table_grow_capacity(table->row_capacity, row_required);
     s32 axis;
@@ -55,7 +56,8 @@ actor_table_reserve(ActorTable* table, const s32 row_required)
 
 // Documented in src/app/data/actor.h.
 s32
-actor_table_insert(ActorTable* table, const ActorRecord* record)
+actor_table_insert(ActorTable* table,
+		   const ActorRecord* record)
 {
     const s32 row = table->row_count;
 
@@ -101,14 +103,16 @@ actor_table_insert(ActorTable* table, const ActorRecord* record)
 
 // Documented in src/app/data/actor.h.
 s32
-actor_table_find_row(const ActorTable* table, const s32 actor_id)
+actor_table_find_row(const ActorTable* table,
+		     const s32 actor_id)
 {
     return key_column_find_row(table->actor_id, table->row_count, actor_id);
 }
 
 // Documented in src/app/data/actor.h.
 Vec3
-actor_table_get_position(const ActorTable* table, const s32 row)
+actor_table_get_position(const ActorTable* table,
+			 const s32 row)
 {
     assert(row >= 0 && row < table->row_count);
 
@@ -121,7 +125,8 @@ actor_table_get_position(const ActorTable* table, const s32 row)
 
 // Documented in src/app/data/actor.h.
 Vec3
-actor_table_get_rotation_target(const ActorTable* table, const s32 row)
+actor_table_get_rotation_target(const ActorTable* table,
+				const s32 row)
 {
     assert(row >= 0 && row < table->row_count);
 
@@ -162,7 +167,9 @@ actor_table_free(ActorTable* table)
 
 // Documented in src/app/data/actor.h.
 s32
-decision_table_insert(DecisionTable* table, const s32 actor_id, const s32 decision_timer)
+decision_table_insert(DecisionTable* table,
+		      const s32 actor_id,
+		      const s32 decision_timer)
 {
     const s32 row = table->row_count;
     const s32 capacity = table_grow_capacity(table->row_capacity, row + 1);

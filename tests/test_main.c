@@ -38,7 +38,7 @@ typedef struct TestState
 {
     s32 check_count;                            // Checks evaluated so far.
     s32 failure_count;                          // Checks that failed so far.
-    b32 world_is_generated;                     // Whether the shared world has been generated.
+    int world_is_generated;                     // Whether the shared world has been generated.
     World world;                                // The shared world fixture.
     char asset_directory[TEST_PATH_CAPACITY];   // Asset directory, ending with a separator.
 } TestState;
@@ -67,7 +67,7 @@ static TestState test_state;
 
 // Documented in tests/test.h.
 void
-test_check(const b32 passed, const char* expression, const char* file, const int line)
+test_check(const int passed, const char* expression, const char* file, const int line)
 {
     test_state.check_count++;
 

@@ -86,7 +86,7 @@ log_level_to_string(const LogLevel level)
 // Reads:    the file system
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-static b32
+static int
 log_path_exists(const char* path)
 {
     if (path[0] == '\0')
@@ -105,7 +105,7 @@ log_path_exists(const char* path)
 // Reads:    arguments only
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-static b32
+static int
 log_path_is_separator(const char character)
 {
     return character == '/' || character == '\\';
@@ -120,7 +120,7 @@ log_path_is_separator(const char character)
 // Reads:    directory
 // Writes:   directory
 // ----------------------------------------------------------------------------
-static b32
+static int
 log_path_to_parent(char* directory)
 {
     size_t length;
@@ -162,12 +162,12 @@ log_path_to_parent(char* directory)
 // Writes:   root, is_working_directory
 // ----------------------------------------------------------------------------
 static void
-log_find_repository_root(char* root, const size_t root_capacity, b32* is_working_directory)
+log_find_repository_root(char* root, const size_t root_capacity, int* is_working_directory)
 {
     char candidate[LOG_PATH_CAPACITY];
     char marker[LOG_PATH_CAPACITY];
     char* working_directory;
-    b32 is_first;
+    int is_first;
 
     root[0] = '\0';
     *is_working_directory = false;
@@ -265,7 +265,7 @@ log_init(void)
     char repository_root[LOG_PATH_CAPACITY];
     char repository_log_directory[LOG_PATH_CAPACITY];
     char repository_path[LOG_PATH_CAPACITY];
-    b32 root_is_working_directory;
+    int root_is_working_directory;
     time_t now;
     const struct tm* time_info;
     u32 sequence;

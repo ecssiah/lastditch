@@ -53,7 +53,7 @@ work_decide(World* world, Population* population)
 
         if (f32_abs(distance_to_target) < 1.0f)
         {
-            const b32 should_act = random_uniform_s32(&population->random, 0, 1) == 1;
+            const int should_act = random_uniform_s32(&population->random, 0, 1) == 1;
 
             if (should_act)
             {
@@ -155,7 +155,7 @@ action_update(Action* action, World* world, Population* population)
 }
 
 // Documented in src/app/action.h.
-b32
+int
 action_is_due(const Action* action, const WorkRecord* work)
 {
     return (action->tick_count + (u64)work->phase) % (u64)work->frequency == 0;

@@ -70,7 +70,7 @@ void world_quit(World* world);
 // Reads:    arguments only
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 world_cell_coordinate_is_valid(s32 x, s32 y, s32 z);
+int world_cell_coordinate_is_valid(s32 x, s32 y, s32 z);
 
 // ----------------------------------------------------------------------------
 // Function: world_sector_coordinate_is_valid
@@ -81,7 +81,7 @@ b32 world_cell_coordinate_is_valid(s32 x, s32 y, s32 z);
 // Reads:    arguments only
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 world_sector_coordinate_is_valid(s32 x, s32 y);
+int world_sector_coordinate_is_valid(s32 x, s32 y);
 
 // ----------------------------------------------------------------------------
 // Function: world_sector_coordinate_to_index
@@ -265,7 +265,7 @@ BlockType world_get_block_type(const World* world, s32 x, s32 y, s32 z);
 // Reads:    world.cell.block_type
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 world_is_solid(const World* world, s32 x, s32 y, s32 z);
+int world_is_solid(const World* world, s32 x, s32 y, s32 z);
 
 // ----------------------------------------------------------------------------
 // Function: world_is_clear
@@ -280,7 +280,7 @@ b32 world_is_solid(const World* world, s32 x, s32 y, s32 z);
 // Reads:    world.cell.block_type, DIRECTION_NORMAL
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 world_is_clear(const World* world, s32 x, s32 y, s32 z, u8 direction_mask);
+int world_is_clear(const World* world, s32 x, s32 y, s32 z, u8 direction_mask);
 
 // ----------------------------------------------------------------------------
 // Function: world_set_block

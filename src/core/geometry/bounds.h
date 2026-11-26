@@ -71,7 +71,7 @@ IVec2 ibounds2_size(IBounds2 bounds);
 // Reads:    arguments only
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 ibounds2_overlaps(IBounds2 left, IBounds2 right);
+int ibounds2_overlaps(IBounds2 left, IBounds2 right);
 
 // ----------------------------------------------------------------------------
 // Function: ibounds2_intersection

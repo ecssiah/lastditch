@@ -43,7 +43,7 @@ typedef void (*TestSuiteFunction)(void);
 // Reads:    arguments only
 // Writes:   the check counters; stderr on failure
 // ----------------------------------------------------------------------------
-void test_check(b32 passed, const char* expression, const char* file, int line);
+void test_check(int passed, const char* expression, const char* file, int line);
 
 // ----------------------------------------------------------------------------
 // Function: test_check_s32

@@ -477,7 +477,7 @@ test_data_reference_tables(void)
     for (row = 0; row < SECTION_TYPE_COUNT; ++row)
     {
         const SectionRecord* section = &SECTION_TABLE[row];
-        const b32 is_quadrant = row >= SECTION_TYPE_QUADRANT_1 && row <= SECTION_TYPE_QUADRANT_4;
+        const int is_quadrant = row >= SECTION_TYPE_QUADRANT_1 && row <= SECTION_TYPE_QUADRANT_4;
 
         TEST_CHECK((section->area_type == AREA_TYPE_ROOM) == is_quadrant);
 

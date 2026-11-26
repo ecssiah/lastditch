@@ -43,15 +43,6 @@ typedef float f32;
 typedef double f64;
 
 // ----------------------------------------------------------------------------
-// Type:    b32
-// Purpose: Truth value for function results and singleton state. Zero is
-//          false and any other value is true; use the `true` and `false`
-//          constants supplied by SDL_stdinc.h when assigning. Table columns
-//          that hold a flag per row use u8 instead to keep rows compact.
-// ----------------------------------------------------------------------------
-typedef Uint32 b32;
-
-// ----------------------------------------------------------------------------
 // Macro:   ARRAY_COUNT
 // Purpose: Number of elements in a true array (not a pointer) as an s32, the
 //          type used for all row counts.

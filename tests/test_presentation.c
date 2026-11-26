@@ -112,8 +112,8 @@ test_presentation_debug(const World* world)
     for (row = 0; row < debug.line.row_count; ++row)
     {
         const DebugVertex* vertex = &debug.line.vertex[row];
-        const b32 is_red = vertex->color[0] == 1.0f && vertex->color[1] == 0.0f && vertex->color[2] == 0.0f;
-        const b32 is_cyan = vertex->color[0] == 0.0f && vertex->color[1] == 1.0f && vertex->color[2] == 1.0f;
+        const int is_red = vertex->color[0] == 1.0f && vertex->color[1] == 0.0f && vertex->color[2] == 0.0f;
+        const int is_cyan = vertex->color[0] == 0.0f && vertex->color[1] == 1.0f && vertex->color[2] == 1.0f;
 
         red_count += is_red;
         cyan_count += is_cyan;

@@ -51,9 +51,9 @@ typedef struct RenderPipelineRecord
     const char* shader_name;                    // Base name of the shader pair: <name>.vert and <name>.frag.
     SDL_GPUPrimitiveType primitive_type;        // How vertices are assembled into primitives.
     u32 vertex_pitch;                           // Size of one vertex, in bytes.
-    b32 depth_enabled;                          // Whether the pipeline tests and writes depth.
-    b32 cull_enabled;                           // Whether back faces are culled.
-    b32 blend_enabled;                          // Whether output is alpha-blended onto the target.
+    int depth_enabled;                          // Whether the pipeline tests and writes depth.
+    int cull_enabled;                           // Whether back faces are culled.
+    int blend_enabled;                          // Whether output is alpha-blended onto the target.
     u32 fragment_sampler_count;                 // Samplers used by the fragment shader: 0 or 1.
     u32 vertex_uniform_count;                   // Uniform buffers used by the vertex shader.
     u32 fragment_uniform_count;                 // Uniform buffers used by the fragment shader.

@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------------
 typedef struct App
 {
-    b32 is_evolving;                // True while the simulation advances; reserved for pausing.
+    int is_evolving;                // True while the simulation advances; reserved for pausing.
     f64 simulation_time;            // Real time not yet consumed by simulation steps, in seconds.
     Platform platform;              // Window, clock and input.
     Action action;                  // Fixed-step simulation driver.
@@ -77,6 +77,6 @@ void app_quit(App* app);
 // Reads:    app.platform.active
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 app_is_active(const App* app);
+int app_is_active(const App* app);
 
 #endif

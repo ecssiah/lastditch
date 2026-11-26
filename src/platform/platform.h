@@ -98,7 +98,7 @@ extern const MouseBindingRecord PLATFORM_MOUSE_BINDING_TABLE[PLATFORM_MOUSE_BIND
 // ----------------------------------------------------------------------------
 typedef struct Platform
 {
-    b32 active;                                 // False once the user has asked to quit.
+    int active;                                 // False once the user has asked to quit.
     f64 delta_time;                             // Real time since the previous frame, in seconds.
     f64 frame_time;                             // delta_time limited to FRAME_TIME_MAX; what the simulation consumes.
     f64 pointer_delta_x;                        // Horizontal pointer motion accumulated this frame.
@@ -109,7 +109,7 @@ typedef struct Platform
     SDL_Window* window;                         // The application window; NULL before platform_init.
     const char* base_path;                      // Directory of the executable, ending with a separator; owned by SDL.
     u64 time_previous_ns;                       // Clock reading at the previous frame, in nanoseconds.
-    b32 ignore_pointer_delta;                   // True to discard this frame's pointer motion (after a focus change).
+    int ignore_pointer_delta;                   // True to discard this frame's pointer motion (after a focus change).
     u8 button_current[BUTTON_TYPE_COUNT];       // Non-zero while the button is held, this frame; keyed by ButtonType.
     u8 button_previous[BUTTON_TYPE_COUNT];      // The same state as of the previous frame; keyed by ButtonType.
 } Platform;
@@ -168,7 +168,7 @@ void platform_get_framebuffer_size(const Platform* platform, s32* width, s32* he
 // Reads:    platform.button_current
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 platform_button_is_down(const Platform* platform, ButtonType button);
+int platform_button_is_down(const Platform* platform, ButtonType button);
 
 // ----------------------------------------------------------------------------
 // Function: platform_button_is_pressed
@@ -179,7 +179,7 @@ b32 platform_button_is_down(const Platform* platform, ButtonType button);
 // Reads:    platform.button_current, platform.button_previous
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 platform_button_is_pressed(const Platform* platform, ButtonType button);
+int platform_button_is_pressed(const Platform* platform, ButtonType button);
 
 // ----------------------------------------------------------------------------
 // Function: platform_button_is_released
@@ -190,7 +190,7 @@ b32 platform_button_is_pressed(const Platform* platform, ButtonType button);
 // Reads:    platform.button_current, platform.button_previous
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-b32 platform_button_is_released(const Platform* platform, ButtonType button);
+int platform_button_is_released(const Platform* platform, ButtonType button);
 
 // ----------------------------------------------------------------------------
 // Function: platform_resolve_path
@@ -206,6 +206,6 @@ b32 platform_button_is_released(const Platform* platform, ButtonType button);
 // Reads:    platform.base_path
 // Writes:   path
 // ----------------------------------------------------------------------------
-b32 platform_resolve_path(const Platform* platform, const char* relative_path, char* path, size_t path_capacity);
+int platform_resolve_path(const Platform* platform, const char* relative_path, char* path, size_t path_capacity);
 
 #endif
