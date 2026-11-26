@@ -17,6 +17,16 @@ make check
 The [build guide](build.md) also covers the vendored CMake build, reference
 tables, shaders, and tests.
 
+## Editor navigation
+
+To generate an Emacs tag table, run this from the repository root:
+
+```sh
+find src tests data -type f \( -name '*.c' -o -name '*.h' \) | etags -o TAGS -
+```
+
+Open `TAGS` with `M-x visit-tags-table`.
+
 ## Controls
 
 | Input | Action |

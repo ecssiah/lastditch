@@ -120,6 +120,7 @@ config/generated/
 # Temporary / Backup Files
 # =========================================================
 
+/TAGS
 *.tmp
 *.temp
 *.swp

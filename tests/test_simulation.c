@@ -595,16 +595,18 @@ test_simulation_control(Population* population)
         JUDGE_DEFAULT_MOVE_SPEED * JUDGE_DEFAULT_MOVE_SPEED, 1e-3f
     );
 
-    // Pointer motion turns the rotation target; pitch is limited.
-    test_simulation_press(&platform, BUTTON_TYPE_NONE, BUTTON_TYPE_NONE);
+    // Pointer motion turns the rotation target while moving forward.
+    test_simulation_press(&platform, BUTTON_TYPE_W, BUTTON_TYPE_NONE);
     platform.pointer_delta_x = 100.0;
     platform.pointer_delta_y = -50.0;
     control_update(&control, &platform, population);
 
+    TEST_CHECK_F32(actor->velocity[AXIS_Y][judge_row], JUDGE_DEFAULT_MOVE_SPEED, 1e-5f);
     TEST_CHECK_F32(actor->rotation_target[AXIS_Z][judge_row], 90.0f - 100.0f * CAMERA_SENSITIVITY_X, 1e-4f);
     TEST_CHECK_F32(actor->rotation_target[AXIS_X][judge_row], 50.0f * CAMERA_SENSITIVITY_Y, 1e-4f);
     TEST_CHECK_F32(control.rotation.z, actor->rotation_target[AXIS_Z][judge_row], 0.0f);
 
+    // Pitch is limited.
     test_simulation_press(&platform, BUTTON_TYPE_NONE, BUTTON_TYPE_NONE);
     platform.pointer_delta_y = -10000.0;
     control_update(&control, &platform, population);
