@@ -146,6 +146,7 @@ render_load_shader(const Render* render, const Platform* platform, const char* n
     char relative_path[RENDER_PATH_CAPACITY];
     char path[RENDER_PATH_CAPACITY];
     const char* extension;
+    const char* entrypoint;
     SDL_GPUShaderFormat selected_format;
     SDL_GPUShaderCreateInfo info;
     SDL_GPUShader* shader;
@@ -155,16 +156,19 @@ render_load_shader(const Render* render, const Platform* platform, const char* n
     if (render->shader_format & SDL_GPU_SHADERFORMAT_MSL)
     {
         extension = "msl";
+        entrypoint = "main0"; // SPIRV-Cross renames main for Metal.
         selected_format = SDL_GPU_SHADERFORMAT_MSL;
     }
     else if (render->shader_format & SDL_GPU_SHADERFORMAT_SPIRV)
     {
         extension = "spv";
+        entrypoint = "main";
         selected_format = SDL_GPU_SHADERFORMAT_SPIRV;
     }
     else
     {
         extension = "dxil";
+        entrypoint = NULL;
         selected_format = SDL_GPU_SHADERFORMAT_DXIL;
     }
 
@@ -183,7 +187,7 @@ render_load_shader(const Render* render, const Platform* platform, const char* n
     SDL_zero(info);
     info.code_size = code_size;
     info.code = (const Uint8*)code;
-    info.entrypoint = selected_format == SDL_GPU_SHADERFORMAT_SPIRV ? "main" : NULL;
+    info.entrypoint = entrypoint;
     info.format = selected_format;
     info.stage = stage;
     info.num_samplers = sampler_count;

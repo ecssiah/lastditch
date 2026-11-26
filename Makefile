@@ -83,17 +83,23 @@ FRAGMENT_SHADERS := $(wildcard $(SHADER_SOURCE_DIR)/*.frag.hlsl)
 
 RUNTIME_FILES := $(shell find assets data -path assets/shaders/compiled -prune -o -type f -print)
 STAGED_FILES := $(addprefix $(BUILD_DIR)/,$(RUNTIME_FILES))
-BUILD_RULES := Makefile
+BUILD_RULES := Makefile make/spirv.mk
 
 ifeq ($(PLATFORM),Linux)
 BUILD_RULES += make/linux.mk
 include make/linux.mk
+else ifeq ($(PLATFORM),Darwin)
+BUILD_RULES += make/macos.mk
+include make/macos.mk
 else
-$(error Make build is currently supported on Linux; detected $(PLATFORM))
+$(error Make build supports Linux and macOS; detected $(PLATFORM))
 endif
+include make/spirv.mk
 
-.PHONY: all run shaders check check-sdl
+.PHONY: all build run shaders check check-sdl
 all: $(GAME)
+
+build: all
 
 run: all
 	$(GAME)
