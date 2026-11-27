@@ -24,9 +24,12 @@
 // Notes:    A label beyond SCREEN_LABEL_CAPACITY is dropped.
 // ----------------------------------------------------------------------------
 static void
-screen_draw_text(Screen* screen, const char* text, const f32 x, const f32 y)
+screen_draw_text(Screen *screen,
+                 const char *text,
+                 const f32 x,
+                 const f32 y)
 {
-    ScreenLabelTable* label = &screen->label;
+    ScreenLabelTable *label = &screen->label;
     const s32 row = label->row_count;
 
     assert(row < SCREEN_LABEL_CAPACITY);
@@ -54,7 +57,8 @@ screen_draw_text(Screen* screen, const char* text, const f32 x, const f32 y)
 // Writes:   screen.label
 // ----------------------------------------------------------------------------
 static void
-screen_draw_debug_info(Screen* screen, const Control* control)
+screen_draw_debug_info(Screen *screen,
+                       const Control *control)
 {
     char position_text[SCREEN_LABEL_TEXT_CAPACITY];
     char cell_coordinate_text[SCREEN_LABEL_TEXT_CAPACITY] = "Cell - - -";
@@ -118,7 +122,8 @@ screen_draw_debug_info(Screen* screen, const Control* control)
 
 // Documented in src/app/screen.h.
 void
-screen_update(Screen* screen, const Control* control)
+screen_update(Screen *screen,
+              const Control *control)
 {
     screen->label.row_count = 0;
 

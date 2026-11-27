@@ -9,14 +9,15 @@
 
 // Documented in src/app/navigation.h.
 void
-navigation_init(struct World* world)
+navigation_init(struct World *world)
 {
     (void)world;
 }
 
 // Documented in src/app/navigation.h.
 void
-navigation_update(const struct World* world, const s32 expansion_budget)
+navigation_update(const struct World *world,
+                  const s32 expansion_budget)
 {
     (void)world;
     (void)expansion_budget;

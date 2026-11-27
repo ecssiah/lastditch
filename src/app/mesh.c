@@ -57,7 +57,8 @@ static const s32 VOXEL_VERTEX_INDEX_TABLE[SECTOR_VERTEX_COUNT_PER_QUAD] = { 0, 1
 // Writes:   table: column storage, row_capacity
 // ----------------------------------------------------------------------------
 static void
-sector_quad_table_reserve(SectorQuadTable* table, const s32 row_required)
+sector_quad_table_reserve(SectorQuadTable *table,
+                          const s32 row_required)
 {
     const s32 capacity = table_grow_capacity(table->row_capacity, row_required);
 
@@ -66,18 +67,20 @@ sector_quad_table_reserve(SectorQuadTable* table, const s32 row_required)
         return;
     }
 
-    table->local_x = (u8*)column_resize(table->local_x, sizeof(u8), capacity);
-    table->local_y = (u8*)column_resize(table->local_y, sizeof(u8), capacity);
-    table->local_z = (u8*)column_resize(table->local_z, sizeof(u8), capacity);
-    table->direction = (u8*)column_resize(table->direction, sizeof(u8), capacity);
-    table->face_type = (FaceType*)column_resize(table->face_type, sizeof(FaceType), capacity);
+    table->local_x = (u8 *)column_resize(table->local_x, sizeof(u8), capacity);
+    table->local_y = (u8 *)column_resize(table->local_y, sizeof(u8), capacity);
+    table->local_z = (u8 *)column_resize(table->local_z, sizeof(u8), capacity);
+    table->direction = (u8 *)column_resize(table->direction, sizeof(u8), capacity);
+    table->face_type = (FaceType *)column_resize(table->face_type, sizeof(FaceType), capacity);
 
     table->row_capacity = capacity;
 }
 
 // Documented in src/app/mesh.h.
 void
-mesh_build_sector_quads(const World* world, const s32 sector_index, SectorQuadTable* quad)
+mesh_build_sector_quads(const World *world,
+                        const s32 sector_index,
+                        SectorQuadTable *quad)
 {
     const IVec2 sector_coordinate = world_sector_index_to_coordinate(sector_index);
     const s32 origin_x = sector_coordinate.x * SECTOR_SIZE_IN_CELLS;
@@ -158,7 +161,8 @@ mesh_encode_face_texture_index(const FaceType face_type)
 
 // Documented in src/app/mesh.h.
 void
-mesh_build_sector_vertices(const SectorQuadTable* quad, VoxelVertexTable* vertex)
+mesh_build_sector_vertices(const SectorQuadTable *quad,
+                           VoxelVertexTable *vertex)
 {
     const s32 vertex_count = quad->row_count * SECTOR_VERTEX_COUNT_PER_QUAD;
     const s32 capacity = table_grow_capacity(vertex->row_capacity, vertex_count);
@@ -167,7 +171,7 @@ mesh_build_sector_vertices(const SectorQuadTable* quad, VoxelVertexTable* vertex
 
     if (capacity != vertex->row_capacity)
     {
-        vertex->vertex = (VoxelVertex*)column_resize(vertex->vertex, sizeof(VoxelVertex), capacity);
+        vertex->vertex = (VoxelVertex *)column_resize(vertex->vertex, sizeof(VoxelVertex), capacity);
         vertex->row_capacity = capacity;
     }
 
@@ -180,11 +184,11 @@ mesh_build_sector_vertices(const SectorQuadTable* quad, VoxelVertexTable* vertex
 
         for (index = 0; index < SECTOR_VERTEX_COUNT_PER_QUAD; ++index)
         {
-            const s32* corner = VOXEL_VERTEX_TABLE[direction][VOXEL_VERTEX_INDEX_TABLE[index]];
+            const s32 *corner = VOXEL_VERTEX_TABLE[direction][VOXEL_VERTEX_INDEX_TABLE[index]];
             const u32 position_x = (u32)(quad->local_x[row] + corner[0]);
             const u32 position_y = (u32)(quad->local_y[row] + corner[1]);
             const u32 position_z = (u32)(quad->local_z[row] + corner[2]);
-            VoxelVertex* voxel_vertex = &vertex->vertex[vertex->row_count++];
+            VoxelVertex *voxel_vertex = &vertex->vertex[vertex->row_count++];
 
             voxel_vertex->vertex =
                 (position_x & 63u) |
@@ -212,14 +216,18 @@ mesh_build_sector_vertices(const SectorQuadTable* quad, VoxelVertexTable* vertex
 // Writes:   column, count, capacity
 // ----------------------------------------------------------------------------
 static void
-mesh_append_f32(f32** column, s32* count, s32* capacity, const f32* values, const s32 value_count)
+mesh_append_f32(f32 **column,
+                s32 *count,
+                s32 *capacity,
+                const f32 *values,
+                const s32 value_count)
 {
     const s32 grown = table_grow_capacity(*capacity, *count + 1);
     s32 index;
 
     if (grown != *capacity)
     {
-        *column = (f32*)column_resize(*column, sizeof(f32) * (size_t)value_count, grown);
+        *column = (f32 *)column_resize(*column, sizeof(f32) * (size_t)value_count, grown);
         *capacity = grown;
     }
 
@@ -233,14 +241,15 @@ mesh_append_f32(f32** column, s32* count, s32* capacity, const f32* values, cons
 
 // Documented in src/app/mesh.h.
 int
-mesh_load_model(const char* path, ModelVertexTable* vertex)
+mesh_load_model(const char *path,
+                ModelVertexTable *vertex)
 {
     size_t file_size = 0;
-    char* file_data = (char*)SDL_LoadFile(path, &file_size);
-    char* line;
-    f32* position_array = NULL;
-    f32* normal_array = NULL;
-    f32* uv_array = NULL;
+    char *file_data = (char *)SDL_LoadFile(path, &file_size);
+    char *line;
+    f32 *position_array = NULL;
+    f32 *normal_array = NULL;
+    f32 *uv_array = NULL;
     s32 position_count = 0;
     s32 position_capacity = 0;
     s32 normal_count = 0;
@@ -261,8 +270,8 @@ mesh_load_model(const char* path, ModelVertexTable* vertex)
 
     while (*line != '\0')
     {
-        char* line_end = strchr(line, '\n');
-        char* next_line = line_end != NULL ? line_end + 1 : line + strlen(line);
+        char *line_end = strchr(line, '\n');
+        char *next_line = line_end != NULL ? line_end + 1 : line + strlen(line);
         f32 values[3];
 
         if (line_end != NULL)
@@ -319,16 +328,16 @@ mesh_load_model(const char* path, ModelVertexTable* vertex)
 
                 if (capacity != vertex->row_capacity)
                 {
-                    vertex->vertex = (ModelVertex*)column_resize(vertex->vertex, sizeof(ModelVertex), capacity);
+                    vertex->vertex = (ModelVertex *)column_resize(vertex->vertex, sizeof(ModelVertex), capacity);
                     vertex->row_capacity = capacity;
                 }
 
                 for (index = 0; index < 3; ++index)
                 {
-                    const f32* position = &position_array[(p[index] - 1) * 3];
-                    const f32* normal = &normal_array[(n[index] - 1) * 3];
-                    const f32* texture_uv = &uv_array[(uv[index] - 1) * 2];
-                    ModelVertex* model_vertex = &vertex->vertex[vertex->row_count++];
+                    const f32 *position = &position_array[(p[index] - 1) * 3];
+                    const f32 *normal = &normal_array[(n[index] - 1) * 3];
+                    const f32 *texture_uv = &uv_array[(uv[index] - 1) * 2];
+                    ModelVertex *model_vertex = &vertex->vertex[vertex->row_count++];
 
                     model_vertex->position[0] = position[0];
                     model_vertex->position[1] = position[1];
@@ -358,7 +367,7 @@ mesh_load_model(const char* path, ModelVertexTable* vertex)
 
 // Documented in src/app/mesh.h.
 void
-sector_quad_table_free(SectorQuadTable* table)
+sector_quad_table_free(SectorQuadTable *table)
 {
     column_free(table->local_x);
     column_free(table->local_y);
@@ -371,7 +380,7 @@ sector_quad_table_free(SectorQuadTable* table)
 
 // Documented in src/app/mesh.h.
 void
-voxel_vertex_table_free(VoxelVertexTable* table)
+voxel_vertex_table_free(VoxelVertexTable *table)
 {
     column_free(table->vertex);
 
@@ -380,7 +389,7 @@ voxel_vertex_table_free(VoxelVertexTable* table)
 
 // Documented in src/app/mesh.h.
 void
-model_vertex_table_free(ModelVertexTable* table)
+model_vertex_table_free(ModelVertexTable *table)
 {
     column_free(table->vertex);
 

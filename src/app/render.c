@@ -28,11 +28,16 @@
 // Constants: render tuning
 // Purpose:   Fixed sizes and settings used by the renderer.
 // ----------------------------------------------------------------------------
-#define RENDER_PATH_CAPACITY 1024               // Longest asset path, with terminator.
-#define RENDER_NAME_CAPACITY 64                 // Longest shader name, with terminator.
-#define RENDER_DYNAMIC_CAPACITY_MIN 256         // Smallest size of a dynamic GPU buffer, in bytes.
-#define RENDER_FONT_SIZE 22.0f                  // Point size of the heads-up display font.
-#define RENDER_BYTES_PER_PIXEL 4                // Bytes per texel of an RGBA8 texture.
+// Longest asset path, with terminator.
+#define RENDER_PATH_CAPACITY 1024
+// Longest shader name, with terminator.
+#define RENDER_NAME_CAPACITY 64
+// Smallest size of a dynamic GPU buffer, in bytes.
+#define RENDER_DYNAMIC_CAPACITY_MIN 256
+// Point size of the heads-up display font.
+#define RENDER_FONT_SIZE 22.0f
+// Bytes per texel of an RGBA8 texture.
+#define RENDER_BYTES_PER_PIXEL 4
 
 // ----------------------------------------------------------------------------
 // Constants: debug device
@@ -40,9 +45,11 @@
 //            NDEBUG is the standard macro that disables assert.
 // ----------------------------------------------------------------------------
 #ifdef NDEBUG
-#define RENDER_DEBUG_MODE false                 // Release builds: no GPU validation.
+// Release builds: no GPU validation.
+#define RENDER_DEBUG_MODE false
 #else
-#define RENDER_DEBUG_MODE true                  // Debug builds: GPU validation enabled.
+// Debug builds: GPU validation enabled.
+#define RENDER_DEBUG_MODE true
 #endif
 
 // ----------------------------------------------------------------------------
@@ -52,8 +59,10 @@
 // ----------------------------------------------------------------------------
 typedef struct CameraUniform
 {
-    Mat4 projection;                // View-to-clip transform.
-    Mat4 view;                      // World-to-view transform.
+    // View-to-clip transform.
+    Mat4 projection;
+    // World-to-view transform.
+    Mat4 view;
 } CameraUniform;
 
 // ----------------------------------------------------------------------------
@@ -63,7 +72,8 @@ typedef struct CameraUniform
 // ----------------------------------------------------------------------------
 typedef struct ObjectUniform
 {
-    Mat4 model;                     // Model-to-world transform of the object being drawn.
+    // Model-to-world transform of the object being drawn.
+    Mat4 model;
 } ObjectUniform;
 
 // ----------------------------------------------------------------------------
@@ -73,8 +83,10 @@ typedef struct ObjectUniform
 // ----------------------------------------------------------------------------
 typedef struct LayerUniform
 {
-    s32 layer;                      // Layer of the actor texture array to sample.
-    s32 padding[3];                 // Pads the buffer to 16 bytes.
+    // Layer of the actor texture array to sample.
+    s32 layer;
+    // Pads the buffer to 16 bytes.
+    s32 padding[3];
 } LayerUniform;
 
 const RenderPipelineRecord RENDER_PIPELINE_TABLE[RENDER_PIPELINE_COUNT] =
@@ -140,23 +152,29 @@ render_grow_dynamic_capacity(const size_t required)
 // Reads:    render.device, render.shader_format; the shader file
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-static SDL_GPUShader*
-render_load_shader(const Render* render, const Platform* platform, const char* name, const SDL_GPUShaderStage stage, const u32 sampler_count, const u32 uniform_count)
+static SDL_GPUShader
+*render_load_shader(const Render *render,
+                    const Platform *platform,
+                    const char *name,
+                    const SDL_GPUShaderStage stage,
+                    const u32 sampler_count,
+                    const u32 uniform_count)
 {
     char relative_path[RENDER_PATH_CAPACITY];
     char path[RENDER_PATH_CAPACITY];
-    const char* extension;
-    const char* entrypoint;
+    const char *extension;
+    const char *entrypoint;
     SDL_GPUShaderFormat selected_format;
     SDL_GPUShaderCreateInfo info;
-    SDL_GPUShader* shader;
+    SDL_GPUShader *shader;
     size_t code_size = 0;
-    void* code;
+    void *code;
 
     if (render->shader_format & SDL_GPU_SHADERFORMAT_MSL)
     {
         extension = "msl";
-        entrypoint = "main0"; // SPIRV-Cross renames main for Metal.
+        // SPIRV-Cross renames main for Metal.
+        entrypoint = "main0";
         selected_format = SDL_GPU_SHADERFORMAT_MSL;
     }
     else if (render->shader_format & SDL_GPU_SHADERFORMAT_SPIRV)
@@ -186,7 +204,7 @@ render_load_shader(const Render* render, const Platform* platform, const char* n
 
     SDL_zero(info);
     info.code_size = code_size;
-    info.code = (const Uint8*)code;
+    info.code = (const Uint8 *)code;
     info.entrypoint = entrypoint;
     info.format = selected_format;
     info.stage = stage;
@@ -220,18 +238,20 @@ render_load_shader(const Render* render, const Platform* platform, const char* n
 //           render.device, render.window, render.depth_format
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-static SDL_GPUGraphicsPipeline*
-render_create_pipeline(const Render* render, const Platform* platform, const RenderPipelineType pipeline_type)
+static SDL_GPUGraphicsPipeline
+*render_create_pipeline(const Render *render,
+                        const Platform *platform,
+                        const RenderPipelineType pipeline_type)
 {
-    const RenderPipelineRecord* record = &RENDER_PIPELINE_TABLE[pipeline_type];
+    const RenderPipelineRecord *record = &RENDER_PIPELINE_TABLE[pipeline_type];
     char shader_name[RENDER_NAME_CAPACITY];
-    SDL_GPUShader* vertex_shader;
-    SDL_GPUShader* fragment_shader;
+    SDL_GPUShader *vertex_shader;
+    SDL_GPUShader *fragment_shader;
     SDL_GPUVertexBufferDescription buffer_description;
     SDL_GPUVertexAttribute attribute_array[RENDER_VERTEX_ATTRIBUTE_COUNT];
     SDL_GPUColorTargetDescription color_target;
     SDL_GPUGraphicsPipelineCreateInfo info;
-    SDL_GPUGraphicsPipeline* pipeline;
+    SDL_GPUGraphicsPipeline *pipeline;
     u32 attribute_count = 0;
     s32 row;
 
@@ -260,7 +280,7 @@ render_create_pipeline(const Render* render, const Platform* platform, const Ren
 
     for (row = 0; row < RENDER_VERTEX_ATTRIBUTE_COUNT; ++row)
     {
-        const RenderVertexAttributeRecord* attribute = &RENDER_VERTEX_ATTRIBUTE_TABLE[row];
+        const RenderVertexAttributeRecord *attribute = &RENDER_VERTEX_ATTRIBUTE_TABLE[row];
 
         if (attribute->pipeline_type != pipeline_type)
         {
@@ -335,11 +355,12 @@ render_create_pipeline(const Render* render, const Platform* platform, const Ren
 // Reads:    render.device
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-static SDL_GPUSampler*
-render_create_sampler(const Render* render, const SDL_GPUSamplerAddressMode address_mode)
+static SDL_GPUSampler
+*render_create_sampler(const Render *render,
+                       const SDL_GPUSamplerAddressMode address_mode)
 {
     SDL_GPUSamplerCreateInfo info;
-    SDL_GPUSampler* sampler;
+    SDL_GPUSampler *sampler;
 
     SDL_zero(info);
     info.min_filter = SDL_GPU_FILTER_NEAREST;
@@ -366,18 +387,20 @@ render_create_sampler(const Render* render, const SDL_GPUSamplerAddressMode addr
 // Reads:    data; render.device
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-static SDL_GPUBuffer*
-render_create_static_buffer(const Render* render, const void* data, const size_t size)
+static SDL_GPUBuffer
+*render_create_static_buffer(const Render *render,
+                             const void *data,
+                             const size_t size)
 {
     SDL_GPUBufferCreateInfo buffer_info;
     SDL_GPUTransferBufferCreateInfo transfer_info;
     SDL_GPUTransferBufferLocation source;
     SDL_GPUBufferRegion destination;
-    SDL_GPUBuffer* buffer;
-    SDL_GPUTransferBuffer* transfer;
-    SDL_GPUCommandBuffer* commands;
-    SDL_GPUCopyPass* copy;
-    void* mapped;
+    SDL_GPUBuffer *buffer;
+    SDL_GPUTransferBuffer *transfer;
+    SDL_GPUCommandBuffer *commands;
+    SDL_GPUCopyPass *copy;
+    void *mapped;
 
     assert(size > 0 && size <= 0xFFFFFFFFu);
 
@@ -446,19 +469,26 @@ render_create_static_buffer(const Render* render, const void* data, const size_t
 // Reads:    the image files; render.device
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-static SDL_GPUTexture*
-render_create_texture_array(const Render* render, const Platform* platform, const u32 width, const u32 height, const u32 layer_count, const char* directory, const char* const* name_array, const int flip_vertical)
+static SDL_GPUTexture
+*render_create_texture_array(const Render *render,
+                             const Platform *platform,
+                             const u32 width,
+                             const u32 height,
+                             const u32 layer_count,
+                             const char *directory,
+                             const char *const *name_array,
+                             const int flip_vertical)
 {
     const size_t row_size = (size_t)width * RENDER_BYTES_PER_PIXEL;
     const size_t layer_size = row_size * height;
     const size_t total_size = layer_size * layer_count;
     SDL_GPUTextureCreateInfo texture_info;
     SDL_GPUTransferBufferCreateInfo transfer_info;
-    SDL_GPUTexture* texture;
-    SDL_GPUTransferBuffer* transfer;
-    SDL_GPUCommandBuffer* commands;
-    SDL_GPUCopyPass* copy;
-    u8* mapped;
+    SDL_GPUTexture *texture;
+    SDL_GPUTransferBuffer *transfer;
+    SDL_GPUCommandBuffer *commands;
+    SDL_GPUCopyPass *copy;
+    u8 *mapped;
     u32 layer;
 
     SDL_zero(texture_info);
@@ -483,7 +513,7 @@ render_create_texture_array(const Render* render, const Platform* platform, cons
 
     assert(transfer != NULL);
 
-    mapped = (u8*)SDL_MapGPUTransferBuffer(render->device, transfer, false);
+    mapped = (u8 *)SDL_MapGPUTransferBuffer(render->device, transfer, false);
 
     assert(mapped != NULL);
 
@@ -491,9 +521,9 @@ render_create_texture_array(const Render* render, const Platform* platform, cons
     {
         char relative_path[RENDER_PATH_CAPACITY];
         char path[RENDER_PATH_CAPACITY];
-        SDL_Surface* loaded;
-        SDL_Surface* surface;
-        const u8* pixels;
+        SDL_Surface *loaded;
+        SDL_Surface *surface;
+        const u8 *pixels;
         size_t source_pitch;
         int must_unlock;
         u32 row;
@@ -556,7 +586,7 @@ render_create_texture_array(const Render* render, const Platform* platform, cons
         }
 
         source_pitch = (size_t)surface->pitch;
-        pixels = (const u8*)surface->pixels;
+        pixels = (const u8 *)surface->pixels;
 
         for (row = 0; row < height; ++row)
         {
@@ -627,12 +657,17 @@ render_create_texture_array(const Render* render, const Platform* platform, cons
 // Writes:   target
 // ----------------------------------------------------------------------------
 static void
-render_upload_dynamic_buffer(const Render* render, DynamicGpuBuffer* target, const void* data, const size_t size, const SDL_GPUBufferUsageFlags usage, SDL_GPUCommandBuffer* commands)
+render_upload_dynamic_buffer(const Render *render,
+                             DynamicGpuBuffer *target,
+                             const void *data,
+                             const size_t size,
+                             const SDL_GPUBufferUsageFlags usage,
+                             SDL_GPUCommandBuffer *commands)
 {
     SDL_GPUTransferBufferLocation source;
     SDL_GPUBufferRegion destination;
-    SDL_GPUCopyPass* copy;
-    void* mapped;
+    SDL_GPUCopyPass *copy;
+    void *mapped;
 
     if (size == 0)
     {
@@ -701,7 +736,8 @@ render_upload_dynamic_buffer(const Render* render, DynamicGpuBuffer* target, con
 // Writes:   target
 // ----------------------------------------------------------------------------
 static void
-render_release_dynamic_buffer(const Render* render, DynamicGpuBuffer* target)
+render_release_dynamic_buffer(const Render *render,
+                              DynamicGpuBuffer *target)
 {
     if (target->buffer != NULL)
     {
@@ -731,7 +767,9 @@ render_release_dynamic_buffer(const Render* render, DynamicGpuBuffer* target)
 //           render.drawable_height
 // ----------------------------------------------------------------------------
 static void
-render_recreate_depth_texture(Render* render, const u32 width, const u32 height)
+render_recreate_depth_texture(Render *render,
+                              const u32 width,
+                              const u32 height)
 {
     SDL_GPUTextureCreateInfo info;
 
@@ -769,9 +807,10 @@ render_recreate_depth_texture(Render* render, const u32 width, const u32 height)
 // Writes:   render.voxel_context.texture
 // ----------------------------------------------------------------------------
 static void
-render_load_face_textures(Render* render, const Platform* platform)
+render_load_face_textures(Render *render,
+                          const Platform *platform)
 {
-    const char* name_array[FACE_TYPE_COUNT];
+    const char *name_array[FACE_TYPE_COUNT];
     u32 layer_count = 0;
     s32 face_type_index;
 
@@ -807,7 +846,8 @@ render_load_face_textures(Render* render, const Platform* platform)
 // Writes:   render.model_context.texture
 // ----------------------------------------------------------------------------
 static void
-render_load_actor_textures(Render* render, const Platform* platform)
+render_load_actor_textures(Render *render,
+                           const Platform *platform)
 {
     render->model_context.texture = render_create_texture_array(
         render, platform,
@@ -828,12 +868,14 @@ render_load_actor_textures(Render* render, const Platform* platform)
 // Writes:   render.model_context.model, render.model_context.vertex
 // ----------------------------------------------------------------------------
 static void
-render_load_model_data(Render* render, const Platform* platform, const s32 nation_type_index)
+render_load_model_data(Render *render,
+                       const Platform *platform,
+                       const s32 nation_type_index)
 {
     static const char relative_path[] = "assets/model/actor.obj";
 
-    ModelGpuTable* model = &render->model_context.model;
-    ModelVertexTable* vertex = &render->model_context.vertex;
+    ModelGpuTable *model = &render->model_context.model;
+    ModelVertexTable *vertex = &render->model_context.vertex;
     char path[RENDER_PATH_CAPACITY];
 
     platform_resolve_path(platform, relative_path, path, sizeof(path));
@@ -865,9 +907,11 @@ render_load_model_data(Render* render, const Platform* platform, const s32 natio
 // Writes:   render.voxel_context
 // ----------------------------------------------------------------------------
 static void
-render_init_voxel_render(Render* render, const Platform* platform, const World* world)
+render_init_voxel_render(Render *render,
+                         const Platform *platform,
+                         const World *world)
 {
-    VoxelContext* context = &render->voxel_context;
+    VoxelContext *context = &render->voxel_context;
     s32 sector_index;
 
     render_load_face_textures(render, platform);
@@ -901,7 +945,8 @@ render_init_voxel_render(Render* render, const Platform* platform, const World* 
 // Writes:   render.model_context
 // ----------------------------------------------------------------------------
 static void
-render_init_model_render(Render* render, const Platform* platform)
+render_init_model_render(Render *render,
+                         const Platform *platform)
 {
     s32 nation_type_index;
 
@@ -924,11 +969,12 @@ render_init_model_render(Render* render, const Platform* platform)
 // Writes:   render.text_context.font, render.text_context.engine
 // ----------------------------------------------------------------------------
 static void
-render_init_text_render(Render* render, const Platform* platform)
+render_init_text_render(Render *render,
+                        const Platform *platform)
 {
     static const char relative_path[] = "assets/fonts/Prompt-Regular.ttf";
 
-    TextContext* context = &render->text_context;
+    TextContext *context = &render->text_context;
     char path[RENDER_PATH_CAPACITY];
 
     if (!TTF_Init())
@@ -969,20 +1015,20 @@ render_init_text_render(Render* render, const Platform* platform)
 // Writes:   render.text_context: cache, vertex, index, batch
 // ----------------------------------------------------------------------------
 static void
-render_prepare_text_geometry(Render* render)
+render_prepare_text_geometry(Render *render)
 {
-    const ScreenLabelTable* label = &render->screen.label;
-    TextContext* context = &render->text_context;
-    TextCacheTable* cache = &context->cache;
-    TextVertexTable* vertex = &context->vertex;
-    TextIndexTable* index = &context->index;
-    DrawBatchTable* batch = &context->batch;
+    const ScreenLabelTable *label = &render->screen.label;
+    TextContext *context = &render->text_context;
+    TextCacheTable *cache = &context->cache;
+    TextVertexTable *vertex = &context->vertex;
+    TextIndexTable *index = &context->index;
+    DrawBatchTable *batch = &context->batch;
     s32 label_row;
 
     // Match the number of cached text objects to the number of labels.
     while (cache->row_count < label->row_count)
     {
-        TTF_Text* text = TTF_CreateText(context->engine, context->font, "", 0);
+        TTF_Text *text = TTF_CreateText(context->engine, context->font, "", 0);
 
         if (text == NULL)
         {
@@ -1009,8 +1055,8 @@ render_prepare_text_geometry(Render* render)
 
     for (label_row = 0; label_row < label->row_count; ++label_row)
     {
-        TTF_Text* text = cache->ttf_text[label_row];
-        TTF_GPUAtlasDrawSequence* sequence;
+        TTF_Text *text = cache->ttf_text[label_row];
+        TTF_GPUAtlasDrawSequence *sequence;
 
         if (strcmp(cache->text[label_row], label->text[label_row]) != 0)
         {
@@ -1047,13 +1093,13 @@ render_prepare_text_geometry(Render* render)
 
             if (capacity != vertex->row_capacity)
             {
-                vertex->vertex = (TextVertex*)column_resize(vertex->vertex, sizeof(TextVertex), capacity);
+                vertex->vertex = (TextVertex *)column_resize(vertex->vertex, sizeof(TextVertex), capacity);
                 vertex->row_capacity = capacity;
             }
 
             for (element = 0; element < sequence->num_vertices; ++element)
             {
-                TextVertex* text_vertex = &vertex->vertex[vertex->row_count++];
+                TextVertex *text_vertex = &vertex->vertex[vertex->row_count++];
 
                 // SDL_ttf lays text out with Y pointing up; the screen has
                 // Y pointing down.
@@ -1067,7 +1113,7 @@ render_prepare_text_geometry(Render* render)
 
             if (capacity != index->row_capacity)
             {
-                index->index = (u32*)column_resize(index->index, sizeof(u32), capacity);
+                index->index = (u32 *)column_resize(index->index, sizeof(u32), capacity);
                 index->row_capacity = capacity;
             }
 
@@ -1082,10 +1128,10 @@ render_prepare_text_geometry(Render* render)
 
             if (capacity != batch->row_capacity)
             {
-                batch->index_count = (u32*)column_resize(batch->index_count, sizeof(u32), capacity);
-                batch->first_index = (u32*)column_resize(batch->first_index, sizeof(u32), capacity);
-                batch->vertex_offset = (s32*)column_resize(batch->vertex_offset, sizeof(s32), capacity);
-                batch->texture = (SDL_GPUTexture**)column_resize(batch->texture, sizeof(SDL_GPUTexture*), capacity);
+                batch->index_count = (u32 *)column_resize(batch->index_count, sizeof(u32), capacity);
+                batch->first_index = (u32 *)column_resize(batch->first_index, sizeof(u32), capacity);
+                batch->vertex_offset = (s32 *)column_resize(batch->vertex_offset, sizeof(s32), capacity);
+                batch->texture = (SDL_GPUTexture **)column_resize(batch->texture, sizeof(SDL_GPUTexture *), capacity);
                 batch->row_capacity = capacity;
             }
 
@@ -1109,7 +1155,8 @@ render_prepare_text_geometry(Render* render)
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static void
-render_push_camera(SDL_GPUCommandBuffer* commands, const Control* control)
+render_push_camera(SDL_GPUCommandBuffer *commands,
+                   const Control *control)
 {
     CameraUniform camera;
 
@@ -1131,7 +1178,10 @@ render_push_camera(SDL_GPUCommandBuffer* commands, const Control* control)
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static void
-render_draw_debug(const Render* render, SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control* control)
+render_draw_debug(const Render *render,
+                  SDL_GPURenderPass *pass,
+                  SDL_GPUCommandBuffer *commands,
+                  const Control *control)
 {
     ObjectUniform object;
     SDL_GPUBufferBinding binding;
@@ -1167,9 +1217,12 @@ render_draw_debug(const Render* render, SDL_GPURenderPass* pass, SDL_GPUCommandB
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static void
-render_draw_voxels(const Render* render, SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control* control)
+render_draw_voxels(const Render *render,
+                   SDL_GPURenderPass *pass,
+                   SDL_GPUCommandBuffer *commands,
+                   const Control *control)
 {
-    const SectorGpuTable* sector = &render->voxel_context.sector;
+    const SectorGpuTable *sector = &render->voxel_context.sector;
     SDL_GPUTextureSamplerBinding texture;
     s32 sector_index;
 
@@ -1229,10 +1282,14 @@ render_draw_voxels(const Render* render, SDL_GPURenderPass* pass, SDL_GPUCommand
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static void
-render_draw_models(const Render* render, SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const Control* control, const Population* population)
+render_draw_models(const Render *render,
+                   SDL_GPURenderPass *pass,
+                   SDL_GPUCommandBuffer *commands,
+                   const Control *control,
+                   const Population *population)
 {
-    const ModelGpuTable* model = &render->model_context.model;
-    const ActorTable* actor = &population->actor;
+    const ModelGpuTable *model = &render->model_context.model;
+    const ActorTable *actor = &population->actor;
     SDL_GPUTextureSamplerBinding texture;
     s32 row;
 
@@ -1287,10 +1344,14 @@ render_draw_models(const Render* render, SDL_GPURenderPass* pass, SDL_GPUCommand
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static void
-render_draw_text(const Render* render, SDL_GPURenderPass* pass, SDL_GPUCommandBuffer* commands, const u32 width, const u32 height)
+render_draw_text(const Render *render,
+                 SDL_GPURenderPass *pass,
+                 SDL_GPUCommandBuffer *commands,
+                 const u32 width,
+                 const u32 height)
 {
-    const TextContext* context = &render->text_context;
-    const DrawBatchTable* batch = &context->batch;
+    const TextContext *context = &render->text_context;
+    const DrawBatchTable *batch = &context->batch;
     SDL_GPUBufferBinding vertex_binding;
     SDL_GPUBufferBinding index_binding;
     Mat4 projection;
@@ -1342,7 +1403,10 @@ render_draw_text(const Render* render, SDL_GPURenderPass* pass, SDL_GPUCommandBu
 
 // Documented in src/app/render.h.
 void
-render_init(Render* render, const Platform* platform, const Control* control, const World* world)
+render_init(Render *render,
+            const Platform *platform,
+            const Control *control,
+            const World *world)
 {
     const SDL_GPUShaderFormat formats =
         SDL_GPU_SHADERFORMAT_MSL | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_SPIRV;
@@ -1387,7 +1451,7 @@ render_init(Render* render, const Platform* platform, const Control* control, co
 
     for (pipeline_type = 0; pipeline_type < RENDER_PIPELINE_COUNT; ++pipeline_type)
     {
-        const RenderPipelineRecord* record = &RENDER_PIPELINE_TABLE[pipeline_type];
+        const RenderPipelineRecord *record = &RENDER_PIPELINE_TABLE[pipeline_type];
 
         render->pipeline[pipeline_type] = render_create_pipeline(render, platform, (RenderPipelineType)pipeline_type);
         render->sampler[pipeline_type] = NULL;
@@ -1409,13 +1473,15 @@ render_init(Render* render, const Platform* platform, const Control* control, co
 
 // Documented in src/app/render.h.
 void
-render_update(Render* render, const Control* control, const Population* population)
+render_update(Render *render,
+              const Control *control,
+              const Population *population)
 {
-    SDL_GPUCommandBuffer* commands;
-    SDL_GPUTexture* swapchain = NULL;
+    SDL_GPUCommandBuffer *commands;
+    SDL_GPUTexture *swapchain = NULL;
     SDL_GPUColorTargetInfo color_target;
     SDL_GPUDepthStencilTargetInfo depth_target;
-    SDL_GPURenderPass* pass;
+    SDL_GPURenderPass *pass;
     Uint32 width = 0;
     Uint32 height = 0;
 
@@ -1516,9 +1582,9 @@ render_update(Render* render, const Control* control, const Population* populati
 
 // Documented in src/app/render.h.
 void
-render_quit(Render* render)
+render_quit(Render *render)
 {
-    TextContext* text = &render->text_context;
+    TextContext *text = &render->text_context;
     s32 row;
 
     if (render->device == NULL)

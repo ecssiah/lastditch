@@ -16,10 +16,14 @@
 // ----------------------------------------------------------------------------
 typedef struct Quaternion
 {
-    f32 x;                          // Coefficient of i.
-    f32 y;                          // Coefficient of j.
-    f32 z;                          // Coefficient of k.
-    f32 w;                          // Real part.
+    // Coefficient of i.
+    f32 x;
+    // Coefficient of j.
+    f32 y;
+    // Coefficient of k.
+    f32 z;
+    // Real part.
+    f32 w;
 } Quaternion;
 
 // ----------------------------------------------------------------------------

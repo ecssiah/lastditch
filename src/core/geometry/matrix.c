@@ -31,7 +31,8 @@ mat4_diagonal(const f32 scalar)
 
 // Documented in src/core/geometry/matrix.h.
 Mat4
-mat4_multiply(const Mat4 left, const Mat4 right)
+mat4_multiply(const Mat4 left,
+              const Mat4 right)
 {
     Mat4 result = mat4_diagonal(0.0f);
     s32 column;
@@ -54,7 +55,8 @@ mat4_multiply(const Mat4 left, const Mat4 right)
 
 // Documented in src/core/geometry/matrix.h.
 Mat4
-mat4_translate(const Mat4 matrix, const Vec3 translation)
+mat4_translate(const Mat4 matrix,
+               const Vec3 translation)
 {
     Mat4 translation_matrix = mat4_diagonal(1.0f);
 
@@ -67,7 +69,9 @@ mat4_translate(const Mat4 matrix, const Vec3 translation)
 
 // Documented in src/core/geometry/matrix.h.
 Mat4
-mat4_rotate(const Mat4 matrix, const f32 angle, const Vec3 axis)
+mat4_rotate(const Mat4 matrix,
+            const f32 angle,
+            const Vec3 axis)
 {
     const Vec3 n = vec3_normalize(axis);
     const SinCos sin_cos = f32_sin_cos(angle);
@@ -95,7 +99,9 @@ mat4_rotate(const Mat4 matrix, const f32 angle, const Vec3 axis)
 
 // Documented in src/core/geometry/matrix.h.
 Mat4
-mat4_look_at(const Vec3 position, const Vec3 target, const Vec3 up)
+mat4_look_at(const Vec3 position,
+             const Vec3 target,
+             const Vec3 up)
 {
     const Vec3 camera_forward = vec3_normalize(vec3_subtract(target, position));
     const Vec3 camera_right = vec3_normalize(vec3_cross(camera_forward, up));
@@ -125,7 +131,8 @@ mat4_look_at(const Vec3 position, const Vec3 target, const Vec3 up)
 
 // Documented in src/core/geometry/matrix.h.
 Mat4
-mat4_view(const Vec3 position, const Quaternion orientation)
+mat4_view(const Vec3 position,
+          const Quaternion orientation)
 {
     return mat4_look_at(
         position,
@@ -136,7 +143,10 @@ mat4_view(const Vec3 position, const Quaternion orientation)
 
 // Documented in src/core/geometry/matrix.h.
 Mat4
-mat4_orthographic(const Vec2 min, const Vec2 max, const f32 near_plane, const f32 far_plane)
+mat4_orthographic(const Vec2 min,
+                  const Vec2 max,
+                  const f32 near_plane,
+                  const f32 far_plane)
 {
     Mat4 result = mat4_diagonal(0.0f);
 
@@ -153,7 +163,10 @@ mat4_orthographic(const Vec2 min, const Vec2 max, const f32 near_plane, const f3
 
 // Documented in src/core/geometry/matrix.h.
 Mat4
-mat4_projection(const f32 fov_y, const f32 aspect, const f32 near_plane, const f32 far_plane)
+mat4_projection(const f32 fov_y,
+                const f32 aspect,
+                const f32 near_plane,
+                const f32 far_plane)
 {
     const f32 tan_half_fov_y = f32_tan(fov_y / 2.0f);
     Mat4 result = mat4_diagonal(0.0f);

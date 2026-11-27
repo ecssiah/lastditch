@@ -22,7 +22,8 @@ cbuffer Object : register(b1, space1)
     float4x4 model;
 };
 
-float3 uv_axis(uint direction, bool second)
+float3 uv_axis(uint direction,
+               bool second)
 {
     if (direction == 0) return second ? float3(0,0,1) : float3(0,1,0);
     if (direction == 1) return second ? float3(0,0,1) : float3(0,-1,0);

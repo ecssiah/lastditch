@@ -17,10 +17,17 @@
 // Constants: camera projection
 // Purpose:   Parameters of the perspective projection.
 // ----------------------------------------------------------------------------
-#define CONTROL_FIELD_OF_VIEW 60.0f     // Vertical field of view, in degrees.
-#define CONTROL_NEAR_PLANE 0.1f         // Distance of the near clipping plane.
-#define CONTROL_FAR_PLANE 1000.0f       // Distance of the far clipping plane.
-#define CONTROL_EYE_HEIGHT 0.7f         // Height of an actor's eyes above its collider center.
+// Vertical field of view, in degrees.
+#define CONTROL_FIELD_OF_VIEW 60.0f
+
+// Distance of the near clipping plane.
+#define CONTROL_NEAR_PLANE 0.1f
+
+// Distance of the far clipping plane.
+#define CONTROL_FAR_PLANE 1000.0f
+
+// Height of an actor's eyes above its collider center.
+#define CONTROL_EYE_HEIGHT 0.7f
 
 // ----------------------------------------------------------------------------
 // Function: control_gather_inputs
@@ -32,9 +39,10 @@
 // Writes:   control.input
 // ----------------------------------------------------------------------------
 static void
-control_gather_inputs(Control* control, const Platform* platform)
+control_gather_inputs(Control *control,
+                      const Platform *platform)
 {
-    Inputs* input = &control->input;
+    Inputs *input = &control->input;
 
     input->move = vec3_make(0.0f, 0.0f, 0.0f);
     input->rotate = vec2_make(0.0f, 0.0f);
@@ -79,7 +87,7 @@ control_gather_inputs(Control* control, const Platform* platform)
         input->rotate.x = (f32)platform->pointer_delta_x;
         input->rotate.y = (f32)platform->pointer_delta_y;
     }
-
+    
     if (platform_button_is_pressed(platform, BUTTON_TYPE_SPACE))
     {
         input->jump = 1.0f;
@@ -120,9 +128,9 @@ control_clamp_pitch(const f32 pitch)
 // Writes:   control.position, control.rotation, control.orientation
 // ----------------------------------------------------------------------------
 static void
-control_drive(Control* control)
+control_drive(Control *control)
 {
-    const Inputs* input = &control->input;
+    const Inputs *input = &control->input;
 
     const Vec3 direction = vec3_add(
         vec3_add(
@@ -162,9 +170,11 @@ control_drive(Control* control)
 // Writes:   actor.velocity, actor.rotation_target
 // ----------------------------------------------------------------------------
 static void
-control_drive_actor(const Control* control, ActorTable* actor, const s32 row)
+control_drive_actor(const Control *control,
+                    ActorTable *actor,
+                    const s32 row)
 {
-    const Inputs* input = &control->input;
+    const Inputs *input = &control->input;
 
     const Vec3 movement_rotation = vec3_make(0.0f, 0.0f, actor->movement_yaw[row]);
     const Vec3 forward = rotation_get_forward(movement_rotation);
@@ -204,7 +214,9 @@ control_drive_actor(const Control* control, ActorTable* actor, const s32 row)
 // Writes:   control.position, control.rotation, control.orientation
 // ----------------------------------------------------------------------------
 static void
-control_sync_to_actor(Control* control, const ActorTable* actor, const s32 row)
+control_sync_to_actor(Control *control,
+                      const ActorTable *actor,
+                      const s32 row)
 {
     const Vec3 eye_offset = vec3_make(0.0f, 0.0f, CONTROL_EYE_HEIGHT);
 
@@ -225,9 +237,10 @@ control_sync_to_actor(Control* control, const ActorTable* actor, const s32 row)
 // Writes:   control.actor_id; the judge's move_speed and velocity
 // ----------------------------------------------------------------------------
 static void
-control_toggle_possession(Control* control, Population* population)
+control_toggle_possession(Control *control,
+                          Population *population)
 {
-    ActorTable* actor = &population->actor;
+    ActorTable *actor = &population->actor;
     const int is_taking = control->actor_id == TABLE_KEY_NONE;
     const s32 actor_id = is_taking ? population->judge_id : control->actor_id;
     const s32 row = actor_table_find_row(actor, actor_id);
@@ -248,7 +261,8 @@ control_toggle_possession(Control* control, Population* population)
 
 // Documented in src/app/control.h.
 void
-control_init(Control* control, const Population* population)
+control_init(Control *control,
+             const Population *population)
 {
     memset(control, 0, sizeof(*control));
 
@@ -272,7 +286,9 @@ control_init(Control* control, const Population* population)
 
 // Documented in src/app/control.h.
 void
-control_update(Control* control, const Platform* platform, Population* population)
+control_update(Control *control,
+               const Platform *platform,
+               Population *population)
 {
     control->projection_matrix = mat4_projection(
         f32_to_radians(CONTROL_FIELD_OF_VIEW),

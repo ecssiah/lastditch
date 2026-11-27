@@ -13,43 +13,76 @@
 //            five bands, and short names for the three band widths, so that
 //            the rows of SECTION_TABLE read as grid positions.
 // ----------------------------------------------------------------------------
-#define BAND_0 TOWER_BORDER                         // Start of the first outer hall band.
-#define BAND_1 (BAND_0 + TOWER_OUTER_HALL_SIZE)     // Start of the first quadrant band.
-#define BAND_2 (BAND_1 + TOWER_QUADRANT_SIZE)       // Start of the center hall band.
-#define BAND_3 (BAND_2 + TOWER_CENTER_HALL_SIZE)    // Start of the second quadrant band.
-#define BAND_4 (BAND_3 + TOWER_QUADRANT_SIZE)       // Start of the second outer hall band.
-#define OUTER TOWER_OUTER_HALL_SIZE                 // Width of an outer hall band.
-#define QUAD TOWER_QUADRANT_SIZE                    // Width of a quadrant band.
-#define HALL TOWER_CENTER_HALL_SIZE                 // Width of the center hall band.
+// Start of the first outer hall band.
+#define BAND_0 TOWER_BORDER
+// Start of the first quadrant band.
+#define BAND_1 (BAND_0 + TOWER_OUTER_HALL_SIZE)
+// Start of the center hall band.
+#define BAND_2 (BAND_1 + TOWER_QUADRANT_SIZE)
+// Start of the second quadrant band.
+#define BAND_3 (BAND_2 + TOWER_CENTER_HALL_SIZE)
+// Start of the second outer hall band.
+#define BAND_4 (BAND_3 + TOWER_QUADRANT_SIZE)
+// Width of an outer hall band.
+#define OUTER TOWER_OUTER_HALL_SIZE
+// Width of a quadrant band.
+#define QUAD TOWER_QUADRANT_SIZE
+// Width of the center hall band.
+#define HALL TOWER_CENTER_HALL_SIZE
 
 const SectionRecord SECTION_TABLE[SECTION_TYPE_COUNT] =
 {
     // origin                size              area type               section
-    { { BAND_2, BAND_2 }, { HALL,  HALL  }, AREA_TYPE_FREE },       // CENTER
-    { { BAND_3, BAND_2 }, { QUAD,  HALL  }, AREA_TYPE_FREE },       // CENTER_HALL_1
-    { { BAND_2, BAND_3 }, { HALL,  QUAD  }, AREA_TYPE_FREE },       // CENTER_HALL_2
-    { { BAND_1, BAND_2 }, { QUAD,  HALL  }, AREA_TYPE_FREE },       // CENTER_HALL_3
-    { { BAND_2, BAND_1 }, { HALL,  QUAD  }, AREA_TYPE_FREE },       // CENTER_HALL_4
-    { { BAND_3, BAND_3 }, { QUAD,  QUAD  }, AREA_TYPE_ROOM },       // QUADRANT_1
-    { { BAND_1, BAND_3 }, { QUAD,  QUAD  }, AREA_TYPE_ROOM },       // QUADRANT_2
-    { { BAND_1, BAND_1 }, { QUAD,  QUAD  }, AREA_TYPE_ROOM },       // QUADRANT_3
-    { { BAND_3, BAND_1 }, { QUAD,  QUAD  }, AREA_TYPE_ROOM },       // QUADRANT_4
-    { { BAND_4, BAND_1 }, { OUTER, QUAD  }, AREA_TYPE_FREE },       // EAST_1
-    { { BAND_4, BAND_2 }, { OUTER, HALL  }, AREA_TYPE_FREE },       // EAST_2
-    { { BAND_4, BAND_3 }, { OUTER, QUAD  }, AREA_TYPE_FREE },       // EAST_3
-    { { BAND_4, BAND_4 }, { OUTER, OUTER }, AREA_TYPE_FREE },       // NORTH_EAST
-    { { BAND_3, BAND_4 }, { QUAD,  OUTER }, AREA_TYPE_FREE },       // NORTH_1
-    { { BAND_2, BAND_4 }, { HALL,  OUTER }, AREA_TYPE_FREE },       // NORTH_2
-    { { BAND_1, BAND_4 }, { QUAD,  OUTER }, AREA_TYPE_FREE },       // NORTH_3
-    { { BAND_0, BAND_4 }, { OUTER, OUTER }, AREA_TYPE_FREE },       // NORTH_WEST
-    { { BAND_0, BAND_3 }, { OUTER, QUAD  }, AREA_TYPE_FREE },       // WEST_1
-    { { BAND_0, BAND_2 }, { OUTER, HALL  }, AREA_TYPE_FREE },       // WEST_2
-    { { BAND_0, BAND_1 }, { OUTER, QUAD  }, AREA_TYPE_FREE },       // WEST_3
-    { { BAND_0, BAND_0 }, { OUTER, OUTER }, AREA_TYPE_FREE },       // SOUTH_WEST
-    { { BAND_1, BAND_0 }, { QUAD,  OUTER }, AREA_TYPE_FREE },       // SOUTH_1
-    { { BAND_2, BAND_0 }, { HALL,  OUTER }, AREA_TYPE_FREE },       // SOUTH_2
-    { { BAND_3, BAND_0 }, { QUAD,  OUTER }, AREA_TYPE_FREE },       // SOUTH_3
-    { { BAND_4, BAND_0 }, { OUTER, OUTER }, AREA_TYPE_FREE }        // SOUTH_EAST
+    // CENTER
+    { { BAND_2, BAND_2 }, { HALL,  HALL  }, AREA_TYPE_FREE },
+    // CENTER_HALL_1
+    { { BAND_3, BAND_2 }, { QUAD,  HALL  }, AREA_TYPE_FREE },
+    // CENTER_HALL_2
+    { { BAND_2, BAND_3 }, { HALL,  QUAD  }, AREA_TYPE_FREE },
+    // CENTER_HALL_3
+    { { BAND_1, BAND_2 }, { QUAD,  HALL  }, AREA_TYPE_FREE },
+    // CENTER_HALL_4
+    { { BAND_2, BAND_1 }, { HALL,  QUAD  }, AREA_TYPE_FREE },
+    // QUADRANT_1
+    { { BAND_3, BAND_3 }, { QUAD,  QUAD  }, AREA_TYPE_ROOM },
+    // QUADRANT_2
+    { { BAND_1, BAND_3 }, { QUAD,  QUAD  }, AREA_TYPE_ROOM },
+    // QUADRANT_3
+    { { BAND_1, BAND_1 }, { QUAD,  QUAD  }, AREA_TYPE_ROOM },
+    // QUADRANT_4
+    { { BAND_3, BAND_1 }, { QUAD,  QUAD  }, AREA_TYPE_ROOM },
+    // EAST_1
+    { { BAND_4, BAND_1 }, { OUTER, QUAD  }, AREA_TYPE_FREE },
+    // EAST_2
+    { { BAND_4, BAND_2 }, { OUTER, HALL  }, AREA_TYPE_FREE },
+    // EAST_3
+    { { BAND_4, BAND_3 }, { OUTER, QUAD  }, AREA_TYPE_FREE },
+    // NORTH_EAST
+    { { BAND_4, BAND_4 }, { OUTER, OUTER }, AREA_TYPE_FREE },
+    // NORTH_1
+    { { BAND_3, BAND_4 }, { QUAD,  OUTER }, AREA_TYPE_FREE },
+    // NORTH_2
+    { { BAND_2, BAND_4 }, { HALL,  OUTER }, AREA_TYPE_FREE },
+    // NORTH_3
+    { { BAND_1, BAND_4 }, { QUAD,  OUTER }, AREA_TYPE_FREE },
+    // NORTH_WEST
+    { { BAND_0, BAND_4 }, { OUTER, OUTER }, AREA_TYPE_FREE },
+    // WEST_1
+    { { BAND_0, BAND_3 }, { OUTER, QUAD  }, AREA_TYPE_FREE },
+    // WEST_2
+    { { BAND_0, BAND_2 }, { OUTER, HALL  }, AREA_TYPE_FREE },
+    // WEST_3
+    { { BAND_0, BAND_1 }, { OUTER, QUAD  }, AREA_TYPE_FREE },
+    // SOUTH_WEST
+    { { BAND_0, BAND_0 }, { OUTER, OUTER }, AREA_TYPE_FREE },
+    // SOUTH_1
+    { { BAND_1, BAND_0 }, { QUAD,  OUTER }, AREA_TYPE_FREE },
+    // SOUTH_2
+    { { BAND_2, BAND_0 }, { HALL,  OUTER }, AREA_TYPE_FREE },
+    // SOUTH_3
+    { { BAND_3, BAND_0 }, { QUAD,  OUTER }, AREA_TYPE_FREE },
+    // SOUTH_EAST
+    { { BAND_4, BAND_0 }, { OUTER, OUTER }, AREA_TYPE_FREE }
 };
 
 // ----------------------------------------------------------------------------
@@ -57,11 +90,16 @@ const SectionRecord SECTION_TABLE[SECTION_TYPE_COUNT] =
 // Purpose:   Short names used only to keep the rows of AREA_STRUCTURE_TABLE
 //            aligned and readable.
 // ----------------------------------------------------------------------------
-#define CUBE STRUCTURE_SHAPE_CUBE                   // Solid region.
-#define BOX STRUCTURE_SHAPE_BOX                     // Shell of the region.
-#define WIRE STRUCTURE_SHAPE_WIREFRAME              // Edges of the region.
-#define FLOOR_TOP (FLOOR_SIZE_Z - 1)                // Offset of a floor's topmost layer.
-#define SHAFT_Z (FLOOR_SIZE_Z - 4)                  // Height of an elevator door opening.
+// Solid region.
+#define CUBE STRUCTURE_SHAPE_CUBE
+// Shell of the region.
+#define BOX STRUCTURE_SHAPE_BOX
+// Edges of the region.
+#define WIRE STRUCTURE_SHAPE_WIREFRAME
+// Offset of a floor's topmost layer.
+#define FLOOR_TOP (FLOOR_SIZE_Z - 1)
+// Height of an elevator door opening.
+#define SHAFT_Z (FLOOR_SIZE_Z - 4)
 
 const AreaStructureRecord AREA_STRUCTURE_TABLE[AREA_STRUCTURE_COUNT] =
 {
@@ -106,12 +144,18 @@ const AreaStructureRecord AREA_STRUCTURE_TABLE[AREA_STRUCTURE_COUNT] =
 //            the east and west sides are rotated a quarter turn, so their
 //            long edge runs along Y.
 // ----------------------------------------------------------------------------
-#define TEMPLE_CENTERED (WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2)      // Lower coordinate of a centered temple's long edge.
-#define TEMPLE_NEAR (TOWER_BORDER + TEMPLE_BORDER_OFFSET)           // Lower coordinate of a west or south temple.
-#define TEMPLE_FAR (TOWER_SIZE - TEMPLE_BORDER_OFFSET)              // Lower coordinate of an east or north temple.
-#define PLATFORM_CENTERED (WORLD_CENTER_S32 - PLATFORM_SIZE_X / 2)  // Lower coordinate of a centered platform's long edge.
-#define PLATFORM_NEAR (TOWER_BORDER - PLATFORM_SIZE_Y)              // Lower coordinate of a west or south platform.
-#define PLATFORM_FAR (TOWER_BORDER + TOWER_SIZE)                    // Lower coordinate of an east or north platform.
+// Lower coordinate of a centered temple's long edge.
+#define TEMPLE_CENTERED (WORLD_CENTER_S32 - TEMPLE_SIZE_X / 2)
+// Lower coordinate of a west or south temple.
+#define TEMPLE_NEAR (TOWER_BORDER + TEMPLE_BORDER_OFFSET)
+// Lower coordinate of an east or north temple.
+#define TEMPLE_FAR (TOWER_SIZE - TEMPLE_BORDER_OFFSET)
+// Lower coordinate of a centered platform's long edge.
+#define PLATFORM_CENTERED (WORLD_CENTER_S32 - PLATFORM_SIZE_X / 2)
+// Lower coordinate of a west or south platform.
+#define PLATFORM_NEAR (TOWER_BORDER - PLATFORM_SIZE_Y)
+// Lower coordinate of an east or north platform.
+#define PLATFORM_FAR (TOWER_BORDER + TOWER_SIZE)
 
 const TerritoryRecord TERRITORY_TABLE[TERRITORY_COUNT] =
 {
@@ -168,8 +212,10 @@ const TerritoryStampRecord TERRITORY_STAMP_TABLE[TERRITORY_STAMP_COUNT] =
 // Constants: test area row shorthands
 // Purpose:   Lower corner of the outer test area, north-west of the center.
 // ----------------------------------------------------------------------------
-#define TEST_X (WORLD_CENTER_S32 - 20)              // Lower X of the outer test area.
-#define TEST_Y (WORLD_CENTER_S32 + 20)              // Lower Y of the outer test area.
+// Lower X of the outer test area.
+#define TEST_X (WORLD_CENTER_S32 - 20)
+// Lower Y of the outer test area.
+#define TEST_Y (WORLD_CENTER_S32 + 20)
 
 const IBounds2 TEST_AREA_TABLE[TEST_AREA_COUNT] =
 {

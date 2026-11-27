@@ -21,10 +21,14 @@
 // ----------------------------------------------------------------------------
 typedef struct Population
 {
-    Random random;                  // Random stream of the population, seeded with POPULATION_SEED.
-    s32 judge_id;                   // [FK -> ActorTable.actor_id] The judge; TABLE_KEY_NONE before population_init.
-    ActorTable actor;               // Every actor.
-    DecisionTable decision;         // The actors that steer themselves.
+    // Random stream of the population, seeded with POPULATION_SEED.
+    Random random;
+    // [FK -> ActorTable.actor_id] The judge; TABLE_KEY_NONE before population_init.
+    s32 judge_id;
+    // Every actor.
+    ActorTable actor;
+    // The actors that steer themselves.
+    DecisionTable decision;
 } Population;
 
 // ----------------------------------------------------------------------------
@@ -38,7 +42,7 @@ typedef struct Population
 // Writes:   population: actor, decision, judge_id, random
 // Notes:    Deterministic: the result depends only on POPULATION_SEED.
 // ----------------------------------------------------------------------------
-void population_init(Population* population);
+void population_init(Population *population);
 
 // ----------------------------------------------------------------------------
 // Function: population_quit
@@ -48,6 +52,6 @@ void population_init(Population* population);
 // Reads:    population
 // Writes:   population
 // ----------------------------------------------------------------------------
-void population_quit(Population* population);
+void population_quit(Population *population);
 
 #endif

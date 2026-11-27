@@ -19,10 +19,14 @@
 // ----------------------------------------------------------------------------
 typedef enum Axis
 {
-    AXIS_X,                         // East-west axis; east is positive.
-    AXIS_Y,                         // North-south axis; north is positive.
-    AXIS_Z,                         // Vertical axis; up is positive.
-    AXIS_COUNT                      // Number of axes.
+    // East-west axis; east is positive.
+    AXIS_X,
+    // North-south axis; north is positive.
+    AXIS_Y,
+    // Vertical axis; up is positive.
+    AXIS_Z,
+    // Number of axes.
+    AXIS_COUNT
 } Axis;
 
 // ----------------------------------------------------------------------------
@@ -31,8 +35,10 @@ typedef enum Axis
 // ----------------------------------------------------------------------------
 typedef struct Vec2
 {
-    f32 x;                          // Component along AXIS_X.
-    f32 y;                          // Component along AXIS_Y.
+    // Component along AXIS_X.
+    f32 x;
+    // Component along AXIS_Y.
+    f32 y;
 } Vec2;
 
 // ----------------------------------------------------------------------------
@@ -42,9 +48,12 @@ typedef struct Vec2
 // ----------------------------------------------------------------------------
 typedef struct Vec3
 {
-    f32 x;                          // Component along AXIS_X.
-    f32 y;                          // Component along AXIS_Y.
-    f32 z;                          // Component along AXIS_Z.
+    // Component along AXIS_X.
+    f32 x;
+    // Component along AXIS_Y.
+    f32 y;
+    // Component along AXIS_Z.
+    f32 z;
 } Vec3;
 
 // ----------------------------------------------------------------------------
@@ -54,8 +63,10 @@ typedef struct Vec3
 // ----------------------------------------------------------------------------
 typedef struct IVec2
 {
-    s32 x;                          // Component along AXIS_X.
-    s32 y;                          // Component along AXIS_Y.
+    // Component along AXIS_X.
+    s32 x;
+    // Component along AXIS_Y.
+    s32 y;
 } IVec2;
 
 // ----------------------------------------------------------------------------
@@ -64,9 +75,12 @@ typedef struct IVec2
 // ----------------------------------------------------------------------------
 typedef struct IVec3
 {
-    s32 x;                          // Component along AXIS_X.
-    s32 y;                          // Component along AXIS_Y.
-    s32 z;                          // Component along AXIS_Z.
+    // Component along AXIS_X.
+    s32 x;
+    // Component along AXIS_Y.
+    s32 y;
+    // Component along AXIS_Z.
+    s32 z;
 } IVec3;
 
 // ----------------------------------------------------------------------------

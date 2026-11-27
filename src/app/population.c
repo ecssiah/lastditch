@@ -20,7 +20,7 @@
 // Writes:   population.actor, population.judge_id
 // ----------------------------------------------------------------------------
 static void
-population_init_judge(Population* population)
+population_init_judge(Population *population)
 {
     ActorRecord judge;
 
@@ -64,14 +64,14 @@ population_init_judge(Population* population)
 // Writes:   population.actor, population.decision, population.random
 // ----------------------------------------------------------------------------
 static void
-population_init_agents(Population* population)
+population_init_agents(Population *population)
 {
     s32 nation_row;
     s32 agent_index;
 
     for (nation_row = 0; nation_row < NATION_TYPE_COUNT; ++nation_row)
     {
-        const NationRecord* nation = &NATION_TABLE[nation_row];
+        const NationRecord *nation = &NATION_TABLE[nation_row];
 
         for (agent_index = 0; agent_index < INITIAL_POPULATION_SIZE; ++agent_index)
         {
@@ -126,7 +126,7 @@ population_init_agents(Population* population)
 
 // Documented in src/app/population.h.
 void
-population_init(Population* population)
+population_init(Population *population)
 {
     random_seed(&population->random, POPULATION_SEED);
 
@@ -140,7 +140,7 @@ population_init(Population* population)
 
 // Documented in src/app/population.h.
 void
-population_quit(Population* population)
+population_quit(Population *population)
 {
     actor_table_free(&population->actor);
     decision_table_free(&population->decision);

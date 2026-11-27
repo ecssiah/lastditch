@@ -22,15 +22,24 @@ A runtime table is a struct that holds a row count and one array per column
 ```c
 typedef struct AreaTable
 {
-    s32 row_count;                      // Number of rows stored.
-    s32 row_capacity;                   // Number of rows the columns can hold.
-    u32 revision;                       // Incremented by every insert and delete ...
-    Sequence id_sequence;               // Issues area_id values.
-    s32* area_id;                       // [PK] Key of the area.
-    u8* area_type;                      // AreaType of the area.
-    s32* floor_number;                  // Floor the area lies on ...
-    s32* bounds_min[AREA_AXIS_COUNT];   // Inclusive lower corner, one column per axis.
-    s32* bounds_max[AREA_AXIS_COUNT];   // Exclusive upper corner, one column per axis.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // Incremented by every insert and delete ...
+    u32 revision;
+    // Issues area_id values.
+    Sequence id_sequence;
+    // [PK] Key of the area.
+    s32 *area_id;
+    // AreaType of the area.
+    u8 *area_type;
+    // Floor the area lies on ...
+    s32 *floor_number;
+    // Inclusive lower corner, one column per axis.
+    s32 *bounds_min[AREA_AXIS_COUNT];
+    // Exclusive upper corner, one column per axis.
+    s32 *bounds_max[AREA_AXIS_COUNT];
 } AreaTable;
 ```
 

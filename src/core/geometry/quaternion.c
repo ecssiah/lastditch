@@ -11,7 +11,10 @@
 
 // Documented in src/core/geometry/quaternion.h.
 Quaternion
-quaternion_make(const f32 x, const f32 y, const f32 z, const f32 w)
+quaternion_make(const f32 x,
+                const f32 y,
+                const f32 z,
+                const f32 w)
 {
     Quaternion quaternion;
 
@@ -55,7 +58,8 @@ quaternion_normalize(const Quaternion value)
 
 // Documented in src/core/geometry/quaternion.h.
 f32
-quaternion_dot(const Quaternion left, const Quaternion right)
+quaternion_dot(const Quaternion left,
+               const Quaternion right)
 {
     return
         left.x * right.x +
@@ -73,7 +77,8 @@ quaternion_negate(const Quaternion value)
 
 // Documented in src/core/geometry/quaternion.h.
 Quaternion
-quaternion_multiply(const Quaternion left, const Quaternion right)
+quaternion_multiply(const Quaternion left,
+                    const Quaternion right)
 {
     const f32 x = left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y;
     const f32 y = left.w * right.y - left.x * right.z + left.y * right.w + left.z * right.x;
@@ -85,7 +90,9 @@ quaternion_multiply(const Quaternion left, const Quaternion right)
 
 // Documented in src/core/geometry/quaternion.h.
 Quaternion
-quaternion_from_euler_radians(const f32 pitch, const f32 roll, const f32 yaw)
+quaternion_from_euler_radians(const f32 pitch,
+                              const f32 roll,
+                              const f32 yaw)
 {
     const SinCos pitch_half = f32_sin_cos(pitch * 0.5f);
     const SinCos roll_half = f32_sin_cos(roll * 0.5f);
@@ -103,7 +110,9 @@ quaternion_from_euler_radians(const f32 pitch, const f32 roll, const f32 yaw)
 
 // Documented in src/core/geometry/quaternion.h.
 Quaternion
-quaternion_from_euler_degrees(const f32 pitch, const f32 roll, const f32 yaw)
+quaternion_from_euler_degrees(const f32 pitch,
+                              const f32 roll,
+                              const f32 yaw)
 {
     return quaternion_from_euler_radians(
         f32_to_radians(pitch),

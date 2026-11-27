@@ -27,8 +27,8 @@
 //           actor.collider_radius, actor.collision_enabled
 // Writes:   actor.velocity, actor.position, actor.is_grounded
 // ----------------------------------------------------------------------------
-void physics_update_actor(const World* world,
-			  ActorTable* actor,
+void physics_update_actor(const World *world,
+			  ActorTable *actor,
 			  s32 row);
 
 #endif

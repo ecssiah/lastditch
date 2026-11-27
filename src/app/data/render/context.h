@@ -28,9 +28,12 @@
 // ----------------------------------------------------------------------------
 typedef struct DynamicGpuBuffer
 {
-    SDL_GPUBuffer* buffer;              // Buffer bound for drawing; NULL until first used.
-    SDL_GPUTransferBuffer* transfer;    // Staging buffer the data is copied through; NULL until first used.
-    size_t capacity;                    // Size of both buffers, in bytes.
+    // Buffer bound for drawing; NULL until first used.
+    SDL_GPUBuffer *buffer;
+    // Staging buffer the data is copied through; NULL until first used.
+    SDL_GPUTransferBuffer *transfer;
+    // Size of both buffers, in bytes.
+    size_t capacity;
 } DynamicGpuBuffer;
 
 // ----------------------------------------------------------------------------
@@ -43,8 +46,10 @@ typedef struct DynamicGpuBuffer
 // ----------------------------------------------------------------------------
 typedef struct SectorGpuTable
 {
-    SDL_GPUBuffer* buffer[WORLD_AREA_IN_SECTORS];   // Vertex buffer of the sector; NULL when the sector has no visible faces.
-    u32 vertex_count[WORLD_AREA_IN_SECTORS];        // Number of vertices in the buffer.
+    // Vertex buffer of the sector; NULL when the sector has no visible faces.
+    SDL_GPUBuffer *buffer[WORLD_AREA_IN_SECTORS];
+    // Number of vertices in the buffer.
+    u32 vertex_count[WORLD_AREA_IN_SECTORS];
 } SectorGpuTable;
 
 // ----------------------------------------------------------------------------
@@ -57,9 +62,12 @@ typedef struct SectorGpuTable
 // ----------------------------------------------------------------------------
 typedef struct ModelGpuTable
 {
-    s32 texture_layer[NATION_TYPE_COUNT];           // Layer of the nation's texture in the actor texture array.
-    SDL_GPUBuffer* buffer[NATION_TYPE_COUNT];       // Vertex buffer of the nation's model.
-    u32 vertex_count[NATION_TYPE_COUNT];            // Number of vertices in the buffer.
+    // Layer of the nation's texture in the actor texture array.
+    s32 texture_layer[NATION_TYPE_COUNT];
+    // Vertex buffer of the nation's model.
+    SDL_GPUBuffer *buffer[NATION_TYPE_COUNT];
+    // Number of vertices in the buffer.
+    u32 vertex_count[NATION_TYPE_COUNT];
 } ModelGpuTable;
 
 // ----------------------------------------------------------------------------
@@ -73,9 +81,12 @@ typedef struct ModelGpuTable
 // ----------------------------------------------------------------------------
 typedef struct TextCacheTable
 {
-    s32 row_count;                                                  // Number of text objects alive.
-    TTF_Text* ttf_text[SCREEN_LABEL_CAPACITY];                      // SDL_ttf text object of the label.
-    char text[SCREEN_LABEL_CAPACITY][SCREEN_LABEL_TEXT_CAPACITY];   // Text the object was last laid out with.
+    // Number of text objects alive.
+    s32 row_count;
+    // SDL_ttf text object of the label.
+    TTF_Text *ttf_text[SCREEN_LABEL_CAPACITY];
+    // Text the object was last laid out with.
+    char text[SCREEN_LABEL_CAPACITY][SCREEN_LABEL_TEXT_CAPACITY];
 } TextCacheTable;
 
 // ----------------------------------------------------------------------------
@@ -88,12 +99,18 @@ typedef struct TextCacheTable
 // ----------------------------------------------------------------------------
 typedef struct DrawBatchTable
 {
-    s32 row_count;                  // Number of rows stored.
-    s32 row_capacity;               // Number of rows the columns can hold.
-    u32* index_count;               // Number of indices the batch draws.
-    u32* first_index;               // Position of the batch's first index in the text index buffer.
-    s32* vertex_offset;             // Value added to each index: the batch's first vertex.
-    SDL_GPUTexture** texture;       // Glyph atlas texture the batch samples; owned by SDL_ttf.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // Number of indices the batch draws.
+    u32 *index_count;
+    // Position of the batch's first index in the text index buffer.
+    u32 *first_index;
+    // Value added to each index: the batch's first vertex.
+    s32 *vertex_offset;
+    // Glyph atlas texture the batch samples; owned by SDL_ttf.
+    SDL_GPUTexture **texture;
 } DrawBatchTable;
 
 // ----------------------------------------------------------------------------
@@ -106,9 +123,12 @@ typedef struct DrawBatchTable
 // ----------------------------------------------------------------------------
 typedef struct TextVertexTable
 {
-    s32 row_count;                  // Number of vertices stored.
-    s32 row_capacity;               // Number of vertices the column can hold.
-    TextVertex* vertex;             // Vertices, in GPU layout.
+    // Number of vertices stored.
+    s32 row_count;
+    // Number of vertices the column can hold.
+    s32 row_capacity;
+    // Vertices, in GPU layout.
+    TextVertex *vertex;
 } TextVertexTable;
 
 // ----------------------------------------------------------------------------
@@ -121,9 +141,12 @@ typedef struct TextVertexTable
 // ----------------------------------------------------------------------------
 typedef struct TextIndexTable
 {
-    s32 row_count;                  // Number of indices stored.
-    s32 row_capacity;               // Number of indices the column can hold.
-    u32* index;                     // Vertex indices, relative to their batch's vertex_offset.
+    // Number of indices stored.
+    s32 row_count;
+    // Number of indices the column can hold.
+    s32 row_capacity;
+    // Vertex indices, relative to their batch's vertex_offset.
+    u32 *index;
 } TextIndexTable;
 
 // ----------------------------------------------------------------------------
@@ -132,8 +155,10 @@ typedef struct TextIndexTable
 // ----------------------------------------------------------------------------
 typedef struct DebugContext
 {
-    DynamicGpuBuffer vertex_buffer; // The overlay's line vertices, uploaded every frame.
-    u32 vertex_count;               // Number of vertices uploaded this frame.
+    // The overlay's line vertices, uploaded every frame.
+    DynamicGpuBuffer vertex_buffer;
+    // Number of vertices uploaded this frame.
+    u32 vertex_count;
 } DebugContext;
 
 // ----------------------------------------------------------------------------
@@ -142,10 +167,14 @@ typedef struct DebugContext
 // ----------------------------------------------------------------------------
 typedef struct VoxelContext
 {
-    SDL_GPUTexture* texture;        // Texture array with one layer per face type that has a texture.
-    SectorGpuTable sector;          // The uploaded sector meshes.
-    SectorQuadTable quad;           // Staging: visible faces of the sector being meshed.
-    VoxelVertexTable vertex;        // Staging: vertices of the sector being meshed.
+    // Texture array with one layer per face type that has a texture.
+    SDL_GPUTexture *texture;
+    // The uploaded sector meshes.
+    SectorGpuTable sector;
+    // Staging: visible faces of the sector being meshed.
+    SectorQuadTable quad;
+    // Staging: vertices of the sector being meshed.
+    VoxelVertexTable vertex;
 } VoxelContext;
 
 // ----------------------------------------------------------------------------
@@ -154,9 +183,12 @@ typedef struct VoxelContext
 // ----------------------------------------------------------------------------
 typedef struct ModelContext
 {
-    SDL_GPUTexture* texture;        // Texture array with one layer per nation.
-    ModelGpuTable model;            // The uploaded models.
-    ModelVertexTable vertex;        // Staging: vertices of the model being loaded.
+    // Texture array with one layer per nation.
+    SDL_GPUTexture *texture;
+    // The uploaded models.
+    ModelGpuTable model;
+    // Staging: vertices of the model being loaded.
+    ModelVertexTable vertex;
 } ModelContext;
 
 // ----------------------------------------------------------------------------
@@ -165,14 +197,22 @@ typedef struct ModelContext
 // ----------------------------------------------------------------------------
 typedef struct TextContext
 {
-    DynamicGpuBuffer vertex_buffer; // This frame's text vertices.
-    DynamicGpuBuffer index_buffer;  // This frame's text indices.
-    TTF_Font* font;                 // Font of the heads-up display.
-    TTF_TextEngine* engine;         // SDL_ttf engine that lays text out for the GPU.
-    TextCacheTable cache;           // Text objects kept between frames.
-    DrawBatchTable batch;           // Staging: this frame's draw calls.
-    TextVertexTable vertex;         // Staging: this frame's vertices.
-    TextIndexTable index;           // Staging: this frame's indices.
+    // This frame's text vertices.
+    DynamicGpuBuffer vertex_buffer;
+    // This frame's text indices.
+    DynamicGpuBuffer index_buffer;
+    // Font of the heads-up display.
+    TTF_Font *font;
+    // SDL_ttf engine that lays text out for the GPU.
+    TTF_TextEngine *engine;
+    // Text objects kept between frames.
+    TextCacheTable cache;
+    // Staging: this frame's draw calls.
+    DrawBatchTable batch;
+    // Staging: this frame's vertices.
+    TextVertexTable vertex;
+    // Staging: this frame's indices.
+    TextIndexTable index;
 } TextContext;
 
 #endif

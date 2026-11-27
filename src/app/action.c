@@ -23,10 +23,11 @@ const WorkRecord WORK_TABLE[WORK_COUNT] =
 
 // Documented in src/app/action.h.
 void
-work_decide(World* world, Population* population)
+work_decide(World *world,
+            Population *population)
 {
-    DecisionTable* decision = &population->decision;
-    ActorTable* actor = &population->actor;
+    DecisionTable *decision = &population->decision;
+    ActorTable *actor = &population->actor;
     s32 decision_row;
 
     (void)world;
@@ -81,9 +82,10 @@ work_decide(World* world, Population* population)
 
 // Documented in src/app/action.h.
 void
-work_orient(World* world, Population* population)
+work_orient(World *world,
+            Population *population)
 {
-    ActorTable* actor = &population->actor;
+    ActorTable *actor = &population->actor;
     s32 row;
 
     (void)world;
@@ -113,9 +115,10 @@ work_orient(World* world, Population* population)
 
 // Documented in src/app/action.h.
 void
-work_move(World* world, Population* population)
+work_move(World *world,
+          Population *population)
 {
-    ActorTable* actor = &population->actor;
+    ActorTable *actor = &population->actor;
     s32 row;
 
     for (row = 0; row < actor->row_count; ++row)
@@ -126,7 +129,8 @@ work_move(World* world, Population* population)
 
 // Documented in src/app/action.h.
 void
-action_init(Action* action, World* world)
+action_init(Action *action,
+            World *world)
 {
     random_seed(&action->random, WORK_SEED);
 
@@ -137,7 +141,9 @@ action_init(Action* action, World* world)
 
 // Documented in src/app/action.h.
 void
-action_update(Action* action, World* world, Population* population)
+action_update(Action *action,
+              World *world,
+              Population *population)
 {
     s32 work_row;
 
@@ -145,7 +151,7 @@ action_update(Action* action, World* world, Population* population)
 
     for (work_row = 0; work_row < WORK_COUNT; ++work_row)
     {
-        const WorkRecord* work = &WORK_TABLE[work_row];
+        const WorkRecord *work = &WORK_TABLE[work_row];
 
         if (action_is_due(action, work))
         {
@@ -156,7 +162,8 @@ action_update(Action* action, World* world, Population* population)
 
 // Documented in src/app/action.h.
 int
-action_is_due(const Action* action, const WorkRecord* work)
+action_is_due(const Action *action,
+              const WorkRecord *work)
 {
     return (action->tick_count + (u64)work->phase) % (u64)work->frequency == 0;
 }

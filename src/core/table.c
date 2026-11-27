@@ -14,10 +14,12 @@
 #include "core/log.h"
 
 // Documented in src/core/table.h.
-void*
-column_resize(void* column, const size_t element_size, const s32 row_capacity)
+void
+*column_resize(void *column,
+               const size_t element_size,
+               const s32 row_capacity)
 {
-    void* resized;
+    void *resized;
     size_t byte_count;
 
     assert(element_size > 0);
@@ -44,14 +46,15 @@ column_resize(void* column, const size_t element_size, const s32 row_capacity)
 
 // Documented in src/core/table.h.
 void
-column_free(void* column)
+column_free(void *column)
 {
     free(column);
 }
 
 // Documented in src/core/table.h.
 s32
-table_grow_capacity(const s32 row_capacity, const s32 row_required)
+table_grow_capacity(const s32 row_capacity,
+                    const s32 row_required)
 {
     s32 capacity;
 
@@ -72,14 +75,16 @@ table_grow_capacity(const s32 row_capacity, const s32 row_required)
 
 // Documented in src/core/table.h.
 s32
-sequence_next(Sequence* sequence)
+sequence_next(Sequence *sequence)
 {
     return sequence->next_value++;
 }
 
 // Documented in src/core/table.h.
 s32
-key_column_find_insert_row(const s32* key_column, const s32 row_count, const s32 key)
+key_column_find_insert_row(const s32 *key_column,
+                           const s32 row_count,
+                           const s32 key)
 {
     s32 low;
     s32 high;
@@ -106,7 +111,9 @@ key_column_find_insert_row(const s32* key_column, const s32 row_count, const s32
 
 // Documented in src/core/table.h.
 s32
-key_column_find_row(const s32* key_column, const s32 row_count, const s32 key)
+key_column_find_row(const s32 *key_column,
+                    const s32 row_count,
+                    const s32 key)
 {
     const s32 row = key_column_find_insert_row(key_column, row_count, key);
 
@@ -120,13 +127,16 @@ key_column_find_row(const s32* key_column, const s32 row_count, const s32 key)
 
 // Documented in src/core/table.h.
 void
-column_open_row(void* column, const size_t element_size, const s32 row_count, const s32 row)
+column_open_row(void *column,
+                const size_t element_size,
+                const s32 row_count,
+                const s32 row)
 {
-    u8* bytes;
+    u8 *bytes;
 
     assert(row >= 0 && row <= row_count);
 
-    bytes = (u8*)column;
+    bytes = (u8 *)column;
 
     memmove(
         bytes + (size_t)(row + 1) * element_size,
@@ -137,13 +147,16 @@ column_open_row(void* column, const size_t element_size, const s32 row_count, co
 
 // Documented in src/core/table.h.
 void
-column_close_row(void* column, const size_t element_size, const s32 row_count, const s32 row)
+column_close_row(void *column,
+                 const size_t element_size,
+                 const s32 row_count,
+                 const s32 row)
 {
-    u8* bytes;
+    u8 *bytes;
 
     assert(row >= 0 && row < row_count);
 
-    bytes = (u8*)column;
+    bytes = (u8 *)column;
 
     memmove(
         bytes + (size_t)row * element_size,

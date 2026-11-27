@@ -18,9 +18,12 @@
 // ----------------------------------------------------------------------------
 typedef struct Inputs
 {
-    Vec3 move;                      // Requested motion: x strafes right, y moves forward, z moves up; x and y are normalized together.
-    Vec2 rotate;                    // Pointer motion since the last frame: x turns, y pitches.
-    f32 jump;                       // 1 on the frame a jump was requested, else 0.
+    // Requested motion: x strafes right, y moves forward, z moves up; x and y are normalized together.
+    Vec3 move;
+    // Pointer motion since the last frame: x turns, y pitches.
+    Vec2 rotate;
+    // 1 on the frame a jump was requested, else 0.
+    f32 jump;
 } Inputs;
 
 #endif

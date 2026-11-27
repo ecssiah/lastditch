@@ -30,7 +30,12 @@
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static AreaRecord
-test_data_make_area(const s32 area_id, const s32 floor_number, const s32 min_x, const s32 min_y, const s32 max_x, const s32 max_y)
+test_data_make_area(const s32 area_id,
+                    const s32 floor_number,
+                    const s32 min_x,
+                    const s32 min_y,
+                    const s32 max_x,
+                    const s32 max_y)
 {
     AreaRecord record;
 
@@ -202,7 +207,7 @@ test_data_link_table_and_indexes(void)
     AreaLinkIndex link_index;
     AreaRecord area_record;
     LinkRecord link_record;
-    const s32* row_array;
+    const s32 *row_array;
     s32 row_count;
 
     memset(&area, 0, sizeof(area));
@@ -412,7 +417,7 @@ test_data_reference_tables(void)
     for (direction = 0; direction < DIRECTION_COUNT; ++direction)
     {
         const s32 opposite = DIRECTION_OPPOSITE[direction];
-        const s32* normal = DIRECTION_NORMAL[direction];
+        const s32 *normal = DIRECTION_NORMAL[direction];
 
         TEST_CHECK_S32(DIRECTION_OPPOSITE[opposite], direction);
         TEST_CHECK_S32(DIRECTION_NORMAL[opposite][AXIS_X], -normal[AXIS_X]);
@@ -476,7 +481,7 @@ test_data_reference_tables(void)
 
     for (row = 0; row < SECTION_TYPE_COUNT; ++row)
     {
-        const SectionRecord* section = &SECTION_TABLE[row];
+        const SectionRecord *section = &SECTION_TABLE[row];
         const int is_quadrant = row >= SECTION_TYPE_QUADRANT_1 && row <= SECTION_TYPE_QUADRANT_4;
 
         TEST_CHECK((section->area_type == AREA_TYPE_ROOM) == is_quadrant);
@@ -505,7 +510,7 @@ test_data_reference_tables(void)
     // Structures: rows are grouped by area type and use valid keys.
     for (row = 0; row < AREA_STRUCTURE_COUNT; ++row)
     {
-        const AreaStructureRecord* structure = &AREA_STRUCTURE_TABLE[row];
+        const AreaStructureRecord *structure = &AREA_STRUCTURE_TABLE[row];
 
         TEST_CHECK(structure->area_type > AREA_TYPE_FREE && structure->area_type < AREA_TYPE_COUNT);
         TEST_CHECK(structure->shape < STRUCTURE_SHAPE_COUNT);

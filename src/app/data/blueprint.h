@@ -25,12 +25,18 @@
 // Purpose:   Row counts of the blueprint reference tables whose size is not
 //            given by an enum.
 // ----------------------------------------------------------------------------
-#define AREA_STRUCTURE_COUNT 20     // Rows of AREA_STRUCTURE_TABLE.
-#define TERRITORY_COUNT 4           // Rows of TERRITORY_TABLE.
-#define TERRITORY_STAMP_COUNT 12    // Rows of TERRITORY_STAMP_TABLE.
-#define TEST_AREA_COUNT 2           // Rows of TEST_AREA_TABLE.
-#define TEST_BLOCK_COUNT 9          // Rows of TEST_BLOCK_TABLE.
-#define CONTENT_BLOCK_COUNT 13      // Rows of CONTENT_BLOCK_TABLE.
+// Rows of AREA_STRUCTURE_TABLE.
+#define AREA_STRUCTURE_COUNT 20
+// Rows of TERRITORY_TABLE.
+#define TERRITORY_COUNT 4
+// Rows of TERRITORY_STAMP_TABLE.
+#define TERRITORY_STAMP_COUNT 12
+// Rows of TEST_AREA_TABLE.
+#define TEST_AREA_COUNT 2
+// Rows of TEST_BLOCK_TABLE.
+#define TEST_BLOCK_COUNT 9
+// Rows of CONTENT_BLOCK_TABLE.
+#define CONTENT_BLOCK_COUNT 13
 
 // ----------------------------------------------------------------------------
 // Enum:    SectionType
@@ -40,32 +46,58 @@
 // ----------------------------------------------------------------------------
 typedef enum SectionType
 {
-    SECTION_TYPE_CENTER,            // Middle of the floor, around the elevator.
-    SECTION_TYPE_CENTER_HALL_1,     // Center hall, east arm.
-    SECTION_TYPE_CENTER_HALL_2,     // Center hall, north arm.
-    SECTION_TYPE_CENTER_HALL_3,     // Center hall, west arm.
-    SECTION_TYPE_CENTER_HALL_4,     // Center hall, south arm.
-    SECTION_TYPE_QUADRANT_1,        // Room quadrant, north-east.
-    SECTION_TYPE_QUADRANT_2,        // Room quadrant, north-west.
-    SECTION_TYPE_QUADRANT_3,        // Room quadrant, south-west.
-    SECTION_TYPE_QUADRANT_4,        // Room quadrant, south-east.
-    SECTION_TYPE_EAST_1,            // Outer hall, east side, southern part.
-    SECTION_TYPE_EAST_2,            // Outer hall, east side, middle part.
-    SECTION_TYPE_EAST_3,            // Outer hall, east side, northern part.
-    SECTION_TYPE_NORTH_EAST,        // Outer hall, north-east corner.
-    SECTION_TYPE_NORTH_1,           // Outer hall, north side, eastern part.
-    SECTION_TYPE_NORTH_2,           // Outer hall, north side, middle part.
-    SECTION_TYPE_NORTH_3,           // Outer hall, north side, western part.
-    SECTION_TYPE_NORTH_WEST,        // Outer hall, north-west corner.
-    SECTION_TYPE_WEST_1,            // Outer hall, west side, northern part.
-    SECTION_TYPE_WEST_2,            // Outer hall, west side, middle part.
-    SECTION_TYPE_WEST_3,            // Outer hall, west side, southern part.
-    SECTION_TYPE_SOUTH_WEST,        // Outer hall, south-west corner.
-    SECTION_TYPE_SOUTH_1,           // Outer hall, south side, western part.
-    SECTION_TYPE_SOUTH_2,           // Outer hall, south side, middle part.
-    SECTION_TYPE_SOUTH_3,           // Outer hall, south side, eastern part.
-    SECTION_TYPE_SOUTH_EAST,        // Outer hall, south-east corner.
-    SECTION_TYPE_COUNT              // Number of sections.
+    // Middle of the floor, around the elevator.
+    SECTION_TYPE_CENTER,
+    // Center hall, east arm.
+    SECTION_TYPE_CENTER_HALL_1,
+    // Center hall, north arm.
+    SECTION_TYPE_CENTER_HALL_2,
+    // Center hall, west arm.
+    SECTION_TYPE_CENTER_HALL_3,
+    // Center hall, south arm.
+    SECTION_TYPE_CENTER_HALL_4,
+    // Room quadrant, north-east.
+    SECTION_TYPE_QUADRANT_1,
+    // Room quadrant, north-west.
+    SECTION_TYPE_QUADRANT_2,
+    // Room quadrant, south-west.
+    SECTION_TYPE_QUADRANT_3,
+    // Room quadrant, south-east.
+    SECTION_TYPE_QUADRANT_4,
+    // Outer hall, east side, southern part.
+    SECTION_TYPE_EAST_1,
+    // Outer hall, east side, middle part.
+    SECTION_TYPE_EAST_2,
+    // Outer hall, east side, northern part.
+    SECTION_TYPE_EAST_3,
+    // Outer hall, north-east corner.
+    SECTION_TYPE_NORTH_EAST,
+    // Outer hall, north side, eastern part.
+    SECTION_TYPE_NORTH_1,
+    // Outer hall, north side, middle part.
+    SECTION_TYPE_NORTH_2,
+    // Outer hall, north side, western part.
+    SECTION_TYPE_NORTH_3,
+    // Outer hall, north-west corner.
+    SECTION_TYPE_NORTH_WEST,
+    // Outer hall, west side, northern part.
+    SECTION_TYPE_WEST_1,
+    // Outer hall, west side, middle part.
+    SECTION_TYPE_WEST_2,
+    // Outer hall, west side, southern part.
+    SECTION_TYPE_WEST_3,
+    // Outer hall, south-west corner.
+    SECTION_TYPE_SOUTH_WEST,
+    // Outer hall, south side, western part.
+    SECTION_TYPE_SOUTH_1,
+    // Outer hall, south side, middle part.
+    SECTION_TYPE_SOUTH_2,
+    // Outer hall, south side, eastern part.
+    SECTION_TYPE_SOUTH_3,
+    // Outer hall, south-east corner.
+    SECTION_TYPE_SOUTH_EAST,
+    // Number of sections.
+    SECTION_TYPE_COUNT
 } SectionType;
 
 // ----------------------------------------------------------------------------
@@ -75,10 +107,14 @@ typedef enum SectionType
 // ----------------------------------------------------------------------------
 typedef enum StructureShape
 {
-    STRUCTURE_SHAPE_CUBE,           // Every cell of the region.
-    STRUCTURE_SHAPE_BOX,            // The six faces of the region; the interior is left alone.
-    STRUCTURE_SHAPE_WIREFRAME,      // The twelve edges of the region.
-    STRUCTURE_SHAPE_COUNT           // Number of shapes.
+    // Every cell of the region.
+    STRUCTURE_SHAPE_CUBE,
+    // The six faces of the region; the interior is left alone.
+    STRUCTURE_SHAPE_BOX,
+    // The twelve edges of the region.
+    STRUCTURE_SHAPE_WIREFRAME,
+    // Number of shapes.
+    STRUCTURE_SHAPE_COUNT
 } StructureShape;
 
 // ----------------------------------------------------------------------------
@@ -87,9 +123,12 @@ typedef enum StructureShape
 // ----------------------------------------------------------------------------
 typedef struct SectionRecord
 {
-    IVec2 origin;                   // Lower corner of the section, in cells.
-    IVec2 size;                     // Extent of the section, in cells.
-    AreaType area_type;             // Type of the area laid out for the section.
+    // Lower corner of the section, in cells.
+    IVec2 origin;
+    // Extent of the section, in cells.
+    IVec2 size;
+    // Type of the area laid out for the section.
+    AreaType area_type;
 } SectionRecord;
 
 // ----------------------------------------------------------------------------
@@ -101,17 +140,28 @@ typedef struct SectionRecord
 // ----------------------------------------------------------------------------
 typedef struct AreaStructureRecord
 {
-    AreaType area_type;             // Area type the operation belongs to.
-    StructureShape shape;           // Which cells of the region are written.
-    s32 offset_x;                   // Region origin relative to the area's lower corner, along X.
-    s32 offset_y;                   // Region origin relative to the area's lower corner, along Y.
-    s32 offset_z;                   // Region origin relative to the area's floor height.
-    s32 scale_x;                    // 1 to include the area's X size in the region size, else 0.
-    s32 scale_y;                    // 1 to include the area's Y size in the region size, else 0.
-    s32 extent_x;                   // Constant part of the region size along X.
-    s32 extent_y;                   // Constant part of the region size along Y.
-    s32 extent_z;                   // Region size along Z.
-    BlockType block_type;           // Block written; BLOCK_TYPE_NONE carves.
+    // Area type the operation belongs to.
+    AreaType area_type;
+    // Which cells of the region are written.
+    StructureShape shape;
+    // Region origin relative to the area's lower corner, along X.
+    s32 offset_x;
+    // Region origin relative to the area's lower corner, along Y.
+    s32 offset_y;
+    // Region origin relative to the area's floor height.
+    s32 offset_z;
+    // 1 to include the area's X size in the region size, else 0.
+    s32 scale_x;
+    // 1 to include the area's Y size in the region size, else 0.
+    s32 scale_y;
+    // Constant part of the region size along X.
+    s32 extent_x;
+    // Constant part of the region size along Y.
+    s32 extent_y;
+    // Region size along Z.
+    s32 extent_z;
+    // Block written; BLOCK_TYPE_NONE carves.
+    BlockType block_type;
 } AreaStructureRecord;
 
 // ----------------------------------------------------------------------------
@@ -121,14 +171,22 @@ typedef struct AreaStructureRecord
 // ----------------------------------------------------------------------------
 typedef struct TerritoryRecord
 {
-    NationType nation_type;         // Nation that owns the territory.
-    IVec2 temple_origin;            // Lower corner of the temple.
-    IVec2 temple_size;              // Extent of the temple.
-    BlockType stone_block_type;     // Block of the temple's floor and ceiling rim.
-    BlockType symbol_block_type;    // Block of the temple's four pillars.
-    IVec2 platform_origin;          // Lower corner of the platform.
-    IVec2 platform_size;            // Extent of the platform.
-    AreaType platform_area_type;    // Area type laid out for the platform.
+    // Nation that owns the territory.
+    NationType nation_type;
+    // Lower corner of the temple.
+    IVec2 temple_origin;
+    // Extent of the temple.
+    IVec2 temple_size;
+    // Block of the temple's floor and ceiling rim.
+    BlockType stone_block_type;
+    // Block of the temple's four pillars.
+    BlockType symbol_block_type;
+    // Lower corner of the platform.
+    IVec2 platform_origin;
+    // Extent of the platform.
+    IVec2 platform_size;
+    // Area type laid out for the platform.
+    AreaType platform_area_type;
 } TerritoryRecord;
 
 // ----------------------------------------------------------------------------
@@ -138,10 +196,14 @@ typedef struct TerritoryRecord
 // ----------------------------------------------------------------------------
 typedef struct TerritoryStampRecord
 {
-    NationType nation_type;         // Territory the stamp belongs to.
-    IVec3 offset;                   // Box origin relative to the platform origin at roof height.
-    IVec3 size;                     // Extent of the box.
-    BlockType block_type;           // Block written; BLOCK_TYPE_NONE carves.
+    // Territory the stamp belongs to.
+    NationType nation_type;
+    // Box origin relative to the platform origin at roof height.
+    IVec3 offset;
+    // Extent of the box.
+    IVec3 size;
+    // Block written; BLOCK_TYPE_NONE carves.
+    BlockType block_type;
 } TerritoryStampRecord;
 
 // ----------------------------------------------------------------------------
@@ -150,8 +212,10 @@ typedef struct TerritoryStampRecord
 // ----------------------------------------------------------------------------
 typedef struct TestBlockRecord
 {
-    IVec3 coordinate;               // Cell the block is placed in.
-    BlockType block_type;           // Block placed.
+    // Cell the block is placed in.
+    IVec3 coordinate;
+    // Block placed.
+    BlockType block_type;
 } TestBlockRecord;
 
 // ----------------------------------------------------------------------------
@@ -161,8 +225,10 @@ typedef struct TestBlockRecord
 // ----------------------------------------------------------------------------
 typedef struct ContentBlockRecord
 {
-    s32 content_level;              // Content level the block belongs to; see world_get_content_level.
-    BlockType block_type;           // Block that stacks of this level may use.
+    // Content level the block belongs to; see world_get_content_level.
+    s32 content_level;
+    // Block that stacks of this level may use.
+    BlockType block_type;
 } ContentBlockRecord;
 
 // ----------------------------------------------------------------------------

@@ -26,9 +26,12 @@
 // ----------------------------------------------------------------------------
 typedef struct DebugVertexTable
 {
-    s32 row_count;                  // Number of vertices stored; always even.
-    s32 row_capacity;               // Number of vertices the column can hold.
-    DebugVertex* vertex;            // End point position and color, in GPU layout.
+    // Number of vertices stored; always even.
+    s32 row_count;
+    // Number of vertices the column can hold.
+    s32 row_capacity;
+    // End point position and color, in GPU layout.
+    DebugVertex *vertex;
 } DebugVertexTable;
 
 // ----------------------------------------------------------------------------
@@ -37,7 +40,8 @@ typedef struct DebugVertexTable
 // ----------------------------------------------------------------------------
 typedef struct Debug
 {
-    DebugVertexTable line;          // The lines of the overlay.
+    // The lines of the overlay.
+    DebugVertexTable line;
 } Debug;
 
 // ----------------------------------------------------------------------------
@@ -52,7 +56,7 @@ typedef struct Debug
 //           world.area_link_index
 // Writes:   debug.line
 // ----------------------------------------------------------------------------
-void debug_init(Debug* debug, const World* world);
+void debug_init(Debug *debug, const World *world);
 
 // ----------------------------------------------------------------------------
 // Function: debug_update
@@ -63,7 +67,7 @@ void debug_init(Debug* debug, const World* world);
 // Reads:    nothing
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-void debug_update(Debug* debug);
+void debug_update(Debug *debug);
 
 // ----------------------------------------------------------------------------
 // Function: debug_quit
@@ -73,6 +77,6 @@ void debug_update(Debug* debug);
 // Reads:    debug
 // Writes:   debug
 // ----------------------------------------------------------------------------
-void debug_quit(Debug* debug);
+void debug_quit(Debug *debug);
 
 #endif

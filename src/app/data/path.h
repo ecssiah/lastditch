@@ -19,10 +19,14 @@
 // ----------------------------------------------------------------------------
 typedef enum PathStatus
 {
-    PATH_STATUS_PENDING,            // Requested; the search has not finished.
-    PATH_STATUS_UNREACHABLE,        // The search finished without finding a route.
-    PATH_STATUS_CANCELLED,          // The request was withdrawn.
-    PATH_STATUS_READY               // A route was found; its waypoints are available.
+    // Requested; the search has not finished.
+    PATH_STATUS_PENDING,
+    // The search finished without finding a route.
+    PATH_STATUS_UNREACHABLE,
+    // The request was withdrawn.
+    PATH_STATUS_CANCELLED,
+    // A route was found; its waypoints are available.
+    PATH_STATUS_READY
 } PathStatus;
 
 // ----------------------------------------------------------------------------
@@ -34,12 +38,18 @@ typedef enum PathStatus
 // ----------------------------------------------------------------------------
 typedef struct PathTable
 {
-    s32 row_count;                  // Number of rows stored.
-    s32 row_capacity;               // Number of rows the columns can hold.
-    Sequence id_sequence;           // Issues path_id values.
-    s32* path_id;                   // [PK] Key of the path.
-    u8* status;                     // PathStatus of the request.
-    s32* waypoint_index;            // Position, within the path's waypoints, of the next one to reach.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // Issues path_id values.
+    Sequence id_sequence;
+    // [PK] Key of the path.
+    s32 *path_id;
+    // PathStatus of the request.
+    u8 *status;
+    // Position, within the path's waypoints, of the next one to reach.
+    s32 *waypoint_index;
 } PathTable;
 
 // ----------------------------------------------------------------------------
@@ -51,11 +61,16 @@ typedef struct PathTable
 // ----------------------------------------------------------------------------
 typedef struct WaypointTable
 {
-    s32 row_count;                  // Number of rows stored.
-    s32 row_capacity;               // Number of rows the columns can hold.
-    s32* path_id;                   // [PK] [FK -> PathTable.path_id] Path the waypoint belongs to.
-    s32* sequence_number;           // [PK] Position of the waypoint along its path, starting at 0.
-    s32* coordinate[AXIS_COUNT];    // Cell of the waypoint, one column per axis.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // [PK] [FK -> PathTable.path_id] Path the waypoint belongs to.
+    s32 *path_id;
+    // [PK] Position of the waypoint along its path, starting at 0.
+    s32 *sequence_number;
+    // Cell of the waypoint, one column per axis.
+    s32 *coordinate[AXIS_COUNT];
 } WaypointTable;
 
 #endif

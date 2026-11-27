@@ -15,7 +15,7 @@
 // Constants: debug overlay size
 // Purpose:   Row count of DEBUG_FLOOR_TABLE.
 // ----------------------------------------------------------------------------
-#define DEBUG_FLOOR_COUNT 7         // Rows of DEBUG_FLOOR_TABLE.
+#define DEBUG_FLOOR_COUNT 7
 
 // ----------------------------------------------------------------------------
 // Reference: DEBUG_FLOOR_TABLE
@@ -38,15 +38,18 @@ static const s32 DEBUG_FLOOR_TABLE[DEBUG_FLOOR_COUNT] = { 0, 1, 2, 3, 4, 5, 6 };
 // Writes:   debug.line
 // ----------------------------------------------------------------------------
 static void
-debug_add_line(Debug* debug, const Vec3 a, const Vec3 b, const Color color)
+debug_add_line(Debug *debug,
+               const Vec3 a,
+               const Vec3 b,
+               const Color color)
 {
-    DebugVertexTable* line = &debug->line;
+    DebugVertexTable *line = &debug->line;
     const s32 capacity = table_grow_capacity(line->row_capacity, line->row_count + 2);
-    DebugVertex* vertex;
+    DebugVertex *vertex;
 
     if (capacity != line->row_capacity)
     {
-        line->vertex = (DebugVertex*)column_resize(line->vertex, sizeof(DebugVertex), capacity);
+        line->vertex = (DebugVertex *)column_resize(line->vertex, sizeof(DebugVertex), capacity);
         line->row_capacity = capacity;
     }
 
@@ -81,7 +84,10 @@ debug_add_line(Debug* debug, const Vec3 a, const Vec3 b, const Color color)
 // Writes:   debug.line
 // ----------------------------------------------------------------------------
 static void
-debug_add_box(Debug* debug, const Vec3 min, const Vec3 max, const Color color)
+debug_add_box(Debug *debug,
+              const Vec3 min,
+              const Vec3 max,
+              const Color color)
 {
     const Vec3 v000 = vec3_make(min.x, min.y, min.z);
     const Vec3 v100 = vec3_make(max.x, min.y, min.z);
@@ -111,10 +117,11 @@ debug_add_box(Debug* debug, const Vec3 min, const Vec3 max, const Color color)
 
 // Documented in src/app/debug.h.
 void
-debug_init(Debug* debug, const World* world)
+debug_init(Debug *debug,
+           const World *world)
 {
-    const AreaTable* area = &world->area;
-    const LinkTable* link = &world->link;
+    const AreaTable *area = &world->area;
+    const LinkTable *link = &world->link;
     s32 floor_row;
 
     if (!DEBUG_SHOW_AREAS)
@@ -126,7 +133,7 @@ debug_init(Debug* debug, const World* world)
     {
         const s32 floor_number = DEBUG_FLOOR_TABLE[floor_row];
         s32 area_count;
-        const s32* area_row_array =
+        const s32 *area_row_array =
             area_floor_index_get_rows(&world->area_floor_index, area, floor_number, &area_count);
         s32 area_index;
 
@@ -136,7 +143,7 @@ debug_init(Debug* debug, const World* world)
             const IBounds2 bounds = area_table_get_bounds(area, area_row);
             const f32 floor_z = (f32)world_get_height(area->floor_number[area_row]);
             s32 link_count;
-            const s32* link_row_array =
+            const s32 *link_row_array =
                 area_link_index_get_rows(&world->area_link_index, area, link, area_row, &link_count);
             s32 link_index;
 
@@ -179,14 +186,14 @@ debug_init(Debug* debug, const World* world)
 
 // Documented in src/app/debug.h.
 void
-debug_update(Debug* debug)
+debug_update(Debug *debug)
 {
     (void)debug;
 }
 
 // Documented in src/app/debug.h.
 void
-debug_quit(Debug* debug)
+debug_quit(Debug *debug)
 {
     column_free(debug->line.vertex);
 

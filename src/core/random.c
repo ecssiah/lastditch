@@ -14,11 +14,16 @@
 // Purpose:   Parameters of the MT19937 recurrence and tempering transform,
 //            as published by Matsumoto and Nishimura.
 // ----------------------------------------------------------------------------
-#define RANDOM_SHIFT_COUNT 397              // Distance of the recurrence's middle term.
-#define RANDOM_MATRIX_A 0x9908B0DFu         // Coefficients of the twist matrix.
-#define RANDOM_UPPER_MASK 0x80000000u       // Most significant bit of a state word.
-#define RANDOM_LOWER_MASK 0x7FFFFFFFu       // Remaining 31 bits of a state word.
-#define RANDOM_SEED_MULTIPLIER 1812433253u  // Multiplier of the seeding recurrence.
+// Distance of the recurrence's middle term.
+#define RANDOM_SHIFT_COUNT 397
+// Coefficients of the twist matrix.
+#define RANDOM_MATRIX_A 0x9908B0DFu
+// Most significant bit of a state word.
+#define RANDOM_UPPER_MASK 0x80000000u
+// Remaining 31 bits of a state word.
+#define RANDOM_LOWER_MASK 0x7FFFFFFFu
+// Multiplier of the seeding recurrence.
+#define RANDOM_SEED_MULTIPLIER 1812433253u
 
 // ----------------------------------------------------------------------------
 // Function: random_refill
@@ -30,9 +35,9 @@
 // Writes:   random
 // ----------------------------------------------------------------------------
 static void
-random_refill(Random* random)
+random_refill(Random *random)
 {
-    u32* state = random->state_array;
+    u32 *state = random->state_array;
     s32 index;
 
     for (index = 0; index < RANDOM_STATE_COUNT; ++index)
@@ -56,9 +61,10 @@ random_refill(Random* random)
 
 // Documented in src/core/random.h.
 void
-random_seed(Random* random, const u32 seed)
+random_seed(Random *random,
+            const u32 seed)
 {
-    u32* state = random->state_array;
+    u32 *state = random->state_array;
     s32 index;
 
     state[0] = seed;
@@ -75,7 +81,7 @@ random_seed(Random* random, const u32 seed)
 
 // Documented in src/core/random.h.
 u32
-random_next_u32(Random* random)
+random_next_u32(Random *random)
 {
     u32 value;
 
@@ -96,7 +102,9 @@ random_next_u32(Random* random)
 
 // Documented in src/core/random.h.
 s32
-random_uniform_s32(Random* random, const s32 min, const s32 max)
+random_uniform_s32(Random *random,
+                   const s32 min,
+                   const s32 max)
 {
     const u32 range = (u32)max - (u32)min + 1u;
     u32 bit_count;
@@ -137,7 +145,9 @@ random_uniform_s32(Random* random, const s32 min, const s32 max)
 
 // Documented in src/core/random.h.
 f32
-random_uniform_f32(Random* random, const f32 min, const f32 max)
+random_uniform_f32(Random *random,
+                   const f32 min,
+                   const f32 max)
 {
     const f32 draw = (f32)random_next_u32(random);
     const f32 canonical = draw / 4294967296.0f;

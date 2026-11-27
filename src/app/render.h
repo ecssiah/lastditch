@@ -25,7 +25,8 @@
 // Constants: render limits
 // Purpose:   Fixed sizes of the renderer's reference tables.
 // ----------------------------------------------------------------------------
-#define RENDER_VERTEX_ATTRIBUTE_COUNT 9     // Rows of RENDER_VERTEX_ATTRIBUTE_TABLE.
+// Rows of RENDER_VERTEX_ATTRIBUTE_TABLE.
+#define RENDER_VERTEX_ATTRIBUTE_COUNT 9
 
 // ----------------------------------------------------------------------------
 // Enum:    RenderPipelineType
@@ -34,11 +35,16 @@
 // ----------------------------------------------------------------------------
 typedef enum RenderPipelineType
 {
-    RENDER_PIPELINE_DEBUG,          // Debug overlay lines.
-    RENDER_PIPELINE_SECTOR,         // Voxel world.
-    RENDER_PIPELINE_MODEL,          // Actor models.
-    RENDER_PIPELINE_TEXT,           // Screen text.
-    RENDER_PIPELINE_COUNT           // Number of pipelines.
+    // Debug overlay lines.
+    RENDER_PIPELINE_DEBUG,
+    // Voxel world.
+    RENDER_PIPELINE_SECTOR,
+    // Actor models.
+    RENDER_PIPELINE_MODEL,
+    // Screen text.
+    RENDER_PIPELINE_TEXT,
+    // Number of pipelines.
+    RENDER_PIPELINE_COUNT
 } RenderPipelineType;
 
 // ----------------------------------------------------------------------------
@@ -48,16 +54,26 @@ typedef enum RenderPipelineType
 // ----------------------------------------------------------------------------
 typedef struct RenderPipelineRecord
 {
-    const char* shader_name;                    // Base name of the shader pair: <name>.vert and <name>.frag.
-    SDL_GPUPrimitiveType primitive_type;        // How vertices are assembled into primitives.
-    u32 vertex_pitch;                           // Size of one vertex, in bytes.
-    int depth_enabled;                          // Whether the pipeline tests and writes depth.
-    int cull_enabled;                           // Whether back faces are culled.
-    int blend_enabled;                          // Whether output is alpha-blended onto the target.
-    u32 fragment_sampler_count;                 // Samplers used by the fragment shader: 0 or 1.
-    u32 vertex_uniform_count;                   // Uniform buffers used by the vertex shader.
-    u32 fragment_uniform_count;                 // Uniform buffers used by the fragment shader.
-    SDL_GPUSamplerAddressMode address_mode;     // Texture addressing of the pipeline's sampler, when it has one.
+    // Base name of the shader pair: <name>.vert and <name>.frag.
+    const char *shader_name;
+    // How vertices are assembled into primitives.
+    SDL_GPUPrimitiveType primitive_type;
+    // Size of one vertex, in bytes.
+    u32 vertex_pitch;
+    // Whether the pipeline tests and writes depth.
+    int depth_enabled;
+    // Whether back faces are culled.
+    int cull_enabled;
+    // Whether output is alpha-blended onto the target.
+    int blend_enabled;
+    // Samplers used by the fragment shader: 0 or 1.
+    u32 fragment_sampler_count;
+    // Uniform buffers used by the vertex shader.
+    u32 vertex_uniform_count;
+    // Uniform buffers used by the fragment shader.
+    u32 fragment_uniform_count;
+    // Texture addressing of the pipeline's sampler, when it has one.
+    SDL_GPUSamplerAddressMode address_mode;
 } RenderPipelineRecord;
 
 // ----------------------------------------------------------------------------
@@ -67,10 +83,14 @@ typedef struct RenderPipelineRecord
 // ----------------------------------------------------------------------------
 typedef struct RenderVertexAttributeRecord
 {
-    RenderPipelineType pipeline_type;           // Pipeline the attribute belongs to.
-    u32 location;                               // Shader input location.
-    SDL_GPUVertexElementFormat format;          // Data type of the attribute.
-    u32 offset;                                 // Offset of the attribute within the vertex, in bytes.
+    // Pipeline the attribute belongs to.
+    RenderPipelineType pipeline_type;
+    // Shader input location.
+    u32 location;
+    // Data type of the attribute.
+    SDL_GPUVertexElementFormat format;
+    // Offset of the attribute within the vertex, in bytes.
+    u32 offset;
 } RenderVertexAttributeRecord;
 
 // ----------------------------------------------------------------------------
@@ -101,22 +121,38 @@ extern const RenderVertexAttributeRecord RENDER_VERTEX_ATTRIBUTE_TABLE[RENDER_VE
 // ----------------------------------------------------------------------------
 typedef struct Render
 {
-    Debug debug;                                                // The debug overlay's geometry.
-    Screen screen;                                              // The heads-up display's labels.
-    Color clear_color;                                          // Color the frame is cleared to: the sky.
-    SDL_Window* window;                                         // Window drawn into; owned by Platform.
-    SDL_GPUDevice* device;                                      // The GPU device; NULL before render_init.
-    SDL_GPUTexture* depth_texture;                              // Depth buffer matching the drawable size.
-    SDL_GPUTextureFormat depth_format;                          // Format of the depth buffer.
-    SDL_GPUShaderFormat shader_format;                          // Shader formats the device accepts.
-    u32 drawable_width;                                         // Width the depth buffer was created for, in pixels.
-    u32 drawable_height;                                        // Height the depth buffer was created for, in pixels.
-    SDL_GPUGraphicsPipeline* pipeline[RENDER_PIPELINE_COUNT];   // Graphics pipeline; keyed by RenderPipelineType.
-    SDL_GPUSampler* sampler[RENDER_PIPELINE_COUNT];             // Sampler of the pipeline, or NULL; keyed by RenderPipelineType.
-    DebugContext debug_context;                                 // GPU resources of the debug overlay.
-    VoxelContext voxel_context;                                 // GPU resources of the voxel world.
-    ModelContext model_context;                                 // GPU resources of the actor models.
-    TextContext text_context;                                   // GPU resources of the screen text.
+    // The debug overlay's geometry.
+    Debug debug;
+    // The heads-up display's labels.
+    Screen screen;
+    // Color the frame is cleared to: the sky.
+    Color clear_color;
+    // Window drawn into; owned by Platform.
+    SDL_Window *window;
+    // The GPU device; NULL before render_init.
+    SDL_GPUDevice *device;
+    // Depth buffer matching the drawable size.
+    SDL_GPUTexture *depth_texture;
+    // Format of the depth buffer.
+    SDL_GPUTextureFormat depth_format;
+    // Shader formats the device accepts.
+    SDL_GPUShaderFormat shader_format;
+    // Width the depth buffer was created for, in pixels.
+    u32 drawable_width;
+    // Height the depth buffer was created for, in pixels.
+    u32 drawable_height;
+    // Graphics pipeline; keyed by RenderPipelineType.
+    SDL_GPUGraphicsPipeline *pipeline[RENDER_PIPELINE_COUNT];
+    // Sampler of the pipeline, or NULL; keyed by RenderPipelineType.
+    SDL_GPUSampler *sampler[RENDER_PIPELINE_COUNT];
+    // GPU resources of the debug overlay.
+    DebugContext debug_context;
+    // GPU resources of the voxel world.
+    VoxelContext voxel_context;
+    // GPU resources of the actor models.
+    ModelContext model_context;
+    // GPU resources of the screen text.
+    TextContext text_context;
 } Render;
 
 // ----------------------------------------------------------------------------
@@ -134,7 +170,7 @@ typedef struct Render
 //           FACE_TYPE_NAME, NATION_TEXTURE_NAME, BLOCK_FACE_TYPE
 // Writes:   render
 // ----------------------------------------------------------------------------
-void render_init(Render* render, const Platform* platform, const Control* control, const World* world);
+void render_init(Render *render, const Platform *platform, const Control *control, const World *world);
 
 // ----------------------------------------------------------------------------
 // Function: render_update
@@ -150,7 +186,7 @@ void render_init(Render* render, const Platform* platform, const Control* contro
 //           actor.movement_yaw
 // Writes:   render: screen, staging tables, dynamic buffers
 // ----------------------------------------------------------------------------
-void render_update(Render* render, const Control* control, const Population* population);
+void render_update(Render *render, const Control *control, const Population *population);
 
 // ----------------------------------------------------------------------------
 // Function: render_quit
@@ -160,6 +196,6 @@ void render_update(Render* render, const Control* control, const Population* pop
 // Reads:    render
 // Writes:   render
 // ----------------------------------------------------------------------------
-void render_quit(Render* render);
+void render_quit(Render *render);
 
 #endif

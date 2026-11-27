@@ -19,7 +19,7 @@ struct Population;
 //          is a transform over tables: it receives the world and population
 //          databases and updates rows in place.
 // ----------------------------------------------------------------------------
-typedef void (*WorkFunction)(struct World* world, struct Population* population);
+typedef void (*WorkFunction)(struct World *world, struct Population *population);
 
 // ----------------------------------------------------------------------------
 // Record:  WorkRecord
@@ -28,9 +28,12 @@ typedef void (*WorkFunction)(struct World* world, struct Population* population)
 // ----------------------------------------------------------------------------
 typedef struct WorkRecord
 {
-    s32 frequency;                  // Run once every this many simulation steps; at least 1.
-    s32 phase;                      // Offset added to the step number before testing the frequency.
-    WorkFunction work_function;     // System to run.
+    // Run once every this many simulation steps; at least 1.
+    s32 frequency;
+    // Offset added to the step number before testing the frequency.
+    s32 phase;
+    // System to run.
+    WorkFunction work_function;
 } WorkRecord;
 
 #endif

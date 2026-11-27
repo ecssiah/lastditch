@@ -17,8 +17,10 @@
 // Constants: test program limits
 // Purpose:   Fixed sizes used by the test framework.
 // ----------------------------------------------------------------------------
-#define TEST_SUITE_COUNT 5                  // Rows of TEST_SUITE_TABLE.
-#define TEST_PATH_CAPACITY 1024             // Longest asset directory, with terminator.
+// Rows of TEST_SUITE_TABLE.
+#define TEST_SUITE_COUNT 5
+// Longest asset directory, with terminator.
+#define TEST_PATH_CAPACITY 1024
 
 // ----------------------------------------------------------------------------
 // Record:  TestSuiteRecord
@@ -26,8 +28,10 @@
 // ----------------------------------------------------------------------------
 typedef struct TestSuiteRecord
 {
-    const char* name;               // Name printed when the suite runs.
-    TestSuiteFunction run;          // The suite.
+    // Name printed when the suite runs.
+    const char *name;
+    // The suite.
+    TestSuiteFunction run;
 } TestSuiteRecord;
 
 // ----------------------------------------------------------------------------
@@ -36,11 +40,16 @@ typedef struct TestSuiteRecord
 // ----------------------------------------------------------------------------
 typedef struct TestState
 {
-    s32 check_count;                            // Checks evaluated so far.
-    s32 failure_count;                          // Checks that failed so far.
-    int world_is_generated;                     // Whether the shared world has been generated.
-    World world;                                // The shared world fixture.
-    char asset_directory[TEST_PATH_CAPACITY];   // Asset directory, ending with a separator.
+    // Checks evaluated so far.
+    s32 check_count;
+    // Checks that failed so far.
+    s32 failure_count;
+    // Whether the shared world has been generated.
+    int world_is_generated;
+    // The shared world fixture.
+    World world;
+    // Asset directory, ending with a separator.
+    char asset_directory[TEST_PATH_CAPACITY];
 } TestState;
 
 // ----------------------------------------------------------------------------
@@ -67,7 +76,10 @@ static TestState test_state;
 
 // Documented in tests/test.h.
 void
-test_check(const int passed, const char* expression, const char* file, const int line)
+test_check(const int passed,
+           const char *expression,
+           const char *file,
+           const int line)
 {
     test_state.check_count++;
 
@@ -81,7 +93,11 @@ test_check(const int passed, const char* expression, const char* file, const int
 
 // Documented in tests/test.h.
 void
-test_check_s32(const s32 actual, const s32 expected, const char* expression, const char* file, const int line)
+test_check_s32(const s32 actual,
+               const s32 expected,
+               const char *expression,
+               const char *file,
+               const int line)
 {
     test_state.check_count++;
 
@@ -95,7 +111,12 @@ test_check_s32(const s32 actual, const s32 expected, const char* expression, con
 
 // Documented in tests/test.h.
 void
-test_check_f32(const f32 actual, const f32 expected, const f32 tolerance, const char* expression, const char* file, const int line)
+test_check_f32(const f32 actual,
+               const f32 expected,
+               const f32 tolerance,
+               const char *expression,
+               const char *file,
+               const int line)
 {
     test_state.check_count++;
 
@@ -110,7 +131,8 @@ test_check_f32(const f32 actual, const f32 expected, const f32 tolerance, const 
 
 // Documented in tests/test.h.
 u64
-test_make_u64(const u32 high, const u32 low)
+test_make_u64(const u32 high,
+              const u32 low)
 {
     return ((u64)high << 32) | (u64)low;
 }
@@ -124,10 +146,12 @@ test_hash_begin(void)
 
 // Documented in tests/test.h.
 u64
-test_hash_bytes(u64 hash, const void* data, const size_t size)
+test_hash_bytes(u64 hash,
+                const void *data,
+                const size_t size)
 {
     const u64 prime = test_make_u64(0x00000100u, 0x000001B3u);
-    const u8* bytes = (const u8*)data;
+    const u8 *bytes = (const u8 *)data;
     size_t index;
 
     for (index = 0; index < size; ++index)
@@ -140,8 +164,8 @@ test_hash_bytes(u64 hash, const void* data, const size_t size)
 }
 
 // Documented in tests/test.h.
-World*
-test_get_world(void)
+World
+*test_get_world(void)
 {
     if (!test_state.world_is_generated)
     {
@@ -154,8 +178,8 @@ test_get_world(void)
 }
 
 // Documented in tests/test.h.
-const char*
-test_get_asset_directory(void)
+const char
+*test_get_asset_directory(void)
 {
     return test_state.asset_directory;
 }
@@ -171,9 +195,10 @@ test_get_asset_directory(void)
 // Writes:   test_state; stdout and stderr
 // ----------------------------------------------------------------------------
 int
-main(int argc, char** argv)
+main(int argc,
+     char **argv)
 {
-    const char* asset_directory = argc > 1 ? argv[1] : "assets";
+    const char *asset_directory = argc > 1 ? argv[1] : "assets";
     size_t length = strlen(asset_directory);
     s32 row;
 

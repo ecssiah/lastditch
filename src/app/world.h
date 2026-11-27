@@ -28,13 +28,20 @@
 // ----------------------------------------------------------------------------
 typedef struct World
 {
-    Random random;                      // Random stream of world generation, seeded with WORLD_SEED.
-    CellTable cell;                     // The voxel grid.
-    AreaTable area;                     // Rectangular areas of each floor.
-    LinkTable link;                     // Doorway positions between adjacent areas.
-    AreaFloorIndex area_floor_index;    // Areas grouped by floor; valid once world_init returns.
-    AreaLinkIndex area_link_index;      // Links grouped by area; valid once world_init returns.
-    AreaChangeSet area_change_set;      // Scratch batch used while editing the area table; empty between passes.
+    // Random stream of world generation, seeded with WORLD_SEED.
+    Random random;
+    // The voxel grid.
+    CellTable cell;
+    // Rectangular areas of each floor.
+    AreaTable area;
+    // Doorway positions between adjacent areas.
+    LinkTable link;
+    // Areas grouped by floor; valid once world_init returns.
+    AreaFloorIndex area_floor_index;
+    // Links grouped by area; valid once world_init returns.
+    AreaLinkIndex area_link_index;
+    // Scratch batch used while editing the area table; empty between passes.
+    AreaChangeSet area_change_set;
 } World;
 
 // ----------------------------------------------------------------------------
@@ -48,7 +55,7 @@ typedef struct World
 // Notes:    Deterministic: the result depends only on WORLD_SEED and the
 //           blueprint tables.
 // ----------------------------------------------------------------------------
-void world_init(World* world);
+void world_init(World *world);
 
 // ----------------------------------------------------------------------------
 // Function: world_quit
@@ -58,7 +65,7 @@ void world_init(World* world);
 // Reads:    world
 // Writes:   world
 // ----------------------------------------------------------------------------
-void world_quit(World* world);
+void world_quit(World *world);
 
 // ----------------------------------------------------------------------------
 // Function: world_cell_coordinate_is_valid
@@ -238,7 +245,7 @@ s32 world_get_content_level(s32 z);
 // Reads:    FACE_TYPE_NAME
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-s32 world_face_type_index_from_string(const char* face_type_string);
+s32 world_face_type_index_from_string(const char *face_type_string);
 
 // ----------------------------------------------------------------------------
 // Function: world_get_block_type
@@ -251,7 +258,7 @@ s32 world_face_type_index_from_string(const char* face_type_string);
 // Reads:    world.cell.block_type
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-BlockType world_get_block_type(const World* world, s32 x, s32 y, s32 z);
+BlockType world_get_block_type(const World *world, s32 x, s32 y, s32 z);
 
 // ----------------------------------------------------------------------------
 // Function: world_is_solid
@@ -265,7 +272,7 @@ BlockType world_get_block_type(const World* world, s32 x, s32 y, s32 z);
 // Reads:    world.cell.block_type
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-int world_is_solid(const World* world, s32 x, s32 y, s32 z);
+int world_is_solid(const World *world, s32 x, s32 y, s32 z);
 
 // ----------------------------------------------------------------------------
 // Function: world_is_clear
@@ -280,7 +287,7 @@ int world_is_solid(const World* world, s32 x, s32 y, s32 z);
 // Reads:    world.cell.block_type, DIRECTION_NORMAL
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-int world_is_clear(const World* world, s32 x, s32 y, s32 z, u8 direction_mask);
+int world_is_clear(const World *world, s32 x, s32 y, s32 z, u8 direction_mask);
 
 // ----------------------------------------------------------------------------
 // Function: world_set_block
@@ -296,7 +303,7 @@ int world_is_clear(const World* world, s32 x, s32 y, s32 z, u8 direction_mask);
 // Notes:    Does not update direction_mask; world generation recomputes all
 //           masks in its final pass.
 // ----------------------------------------------------------------------------
-void world_set_block(World* world, s32 x, s32 y, s32 z, BlockType block_type);
+void world_set_block(World *world, s32 x, s32 y, s32 z, BlockType block_type);
 
 // ----------------------------------------------------------------------------
 // Function: world_set_shape
@@ -312,7 +319,7 @@ void world_set_block(World* world, s32 x, s32 y, s32 z, BlockType block_type);
 // Reads:    arguments only
 // Writes:   world.cell.block_type
 // ----------------------------------------------------------------------------
-void world_set_shape(World* world, StructureShape shape, IVec3 origin, IVec3 size, BlockType block_type);
+void world_set_shape(World *world, StructureShape shape, IVec3 origin, IVec3 size, BlockType block_type);
 
 // ----------------------------------------------------------------------------
 // Function: world_calculate_border
@@ -325,7 +332,7 @@ void world_set_shape(World* world, StructureShape shape, IVec3 origin, IVec3 siz
 // Reads:    arguments only
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-Border world_calculate_border(const AreaRecord* area_left, const AreaRecord* area_right);
+Border world_calculate_border(const AreaRecord *area_left, const AreaRecord *area_right);
 
 // ----------------------------------------------------------------------------
 // Function: world_add_link
@@ -337,7 +344,7 @@ Border world_calculate_border(const AreaRecord* area_left, const AreaRecord* are
 // Reads:    world.area
 // Writes:   world.link
 // ----------------------------------------------------------------------------
-void world_add_link(World* world, const LinkRecord* record);
+void world_add_link(World *world, const LinkRecord *record);
 
 // ----------------------------------------------------------------------------
 // Function: world_place_area
@@ -353,7 +360,7 @@ void world_add_link(World* world, const LinkRecord* record);
 // Notes:    The remaining pieces keep the type of the area they came from
 //           and receive new keys. Invalidates both area indexes.
 // ----------------------------------------------------------------------------
-void world_place_area(World* world, const AreaRecord* record);
+void world_place_area(World *world, const AreaRecord *record);
 
 // ----------------------------------------------------------------------------
 // Function: world_place_content
@@ -368,7 +375,7 @@ void world_place_area(World* world, const AreaRecord* record);
 // Notes:    Not part of world_init: room content is not enabled yet, and
 //           running this pass changes the sequence of world.random.
 // ----------------------------------------------------------------------------
-void world_place_content(World* world, s32 floor_number);
+void world_place_content(World *world, s32 floor_number);
 
 // ----------------------------------------------------------------------------
 // Function: world_calculate_direction_masks
@@ -379,6 +386,6 @@ void world_place_content(World* world, s32 floor_number);
 // Reads:    world.cell.block_type, DIRECTION_NORMAL, DIRECTION_STRIDE
 // Writes:   world.cell.direction_mask
 // ----------------------------------------------------------------------------
-void world_calculate_direction_masks(World* world);
+void world_calculate_direction_masks(World *world);
 
 #endif

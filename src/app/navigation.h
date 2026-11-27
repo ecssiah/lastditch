@@ -23,7 +23,7 @@ struct World;
 // Reads:    nothing
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-void navigation_init(struct World* world);
+void navigation_init(struct World *world);
 
 // ----------------------------------------------------------------------------
 // Function: navigation_update
@@ -34,6 +34,6 @@ void navigation_init(struct World* world);
 // Reads:    nothing
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-void navigation_update(const struct World* world, s32 expansion_budget);
+void navigation_update(const struct World *world, s32 expansion_budget);
 
 #endif

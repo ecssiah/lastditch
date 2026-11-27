@@ -21,21 +21,30 @@
 // ----------------------------------------------------------------------------
 typedef enum Direction
 {
-    DIRECTION_EAST,                 // +X.
-    DIRECTION_WEST,                 // -X.
-    DIRECTION_NORTH,                // +Y.
-    DIRECTION_SOUTH,                // -Y.
-    DIRECTION_UP,                   // +Z.
-    DIRECTION_DOWN,                 // -Z.
-    DIRECTION_COUNT                 // Number of directions.
+    // +X.
+    DIRECTION_EAST,
+    // -X.
+    DIRECTION_WEST,
+    // +Y.
+    DIRECTION_NORTH,
+    // -Y.
+    DIRECTION_SOUTH,
+    // +Z.
+    DIRECTION_UP,
+    // -Z.
+    DIRECTION_DOWN,
+    // Number of directions.
+    DIRECTION_COUNT
 } Direction;
 
 // ----------------------------------------------------------------------------
 // Constants: direction masks
 // Purpose:   Values of a direction mask, a u8 with one bit per Direction.
 // ----------------------------------------------------------------------------
-#define DIRECTION_MASK_NONE 0x00u   // No direction.
-#define DIRECTION_MASK_ALL 0x3Fu    // All six directions.
+// No direction.
+#define DIRECTION_MASK_NONE 0x00u
+// All six directions.
+#define DIRECTION_MASK_ALL 0x3Fu
 
 // ----------------------------------------------------------------------------
 // Reference: DIRECTION_NORMAL
@@ -72,7 +81,7 @@ extern const s32 DIRECTION_STRIDE[DIRECTION_COUNT];
 // Order:     rows in Direction order
 // Lifetime:  compiled in, read-only
 // ----------------------------------------------------------------------------
-extern const char* const DIRECTION_NAME[DIRECTION_COUNT];
+extern const char *const DIRECTION_NAME[DIRECTION_COUNT];
 
 // ----------------------------------------------------------------------------
 // Function: direction_from_mask

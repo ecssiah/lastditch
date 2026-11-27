@@ -1,4 +1,4 @@
-# Last Ditch development build. GNU Make 4.3 or newer is required.
+# Last Ditch development build. Compatible with GNU Make 3.81.
 .DEFAULT_GOAL := all
 .DELETE_ON_ERROR:
 
@@ -88,11 +88,13 @@ BUILD_RULES := Makefile make/spirv.mk
 ifeq ($(PLATFORM),Linux)
 BUILD_RULES += make/linux.mk
 include make/linux.mk
-else ifeq ($(PLATFORM),Darwin)
+else
+ifeq ($(PLATFORM),Darwin)
 BUILD_RULES += make/macos.mk
 include make/macos.mk
 else
 $(error Make build supports Linux and macOS; detected $(PLATFORM))
+endif
 endif
 include make/spirv.mk
 

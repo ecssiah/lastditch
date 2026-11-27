@@ -41,7 +41,7 @@ const s32 DIRECTION_STRIDE[DIRECTION_COUNT] =
     -WORLD_STRIDE_Z
 };
 
-const char* const DIRECTION_NAME[DIRECTION_COUNT] =
+const char *const DIRECTION_NAME[DIRECTION_COUNT] =
 {
     "East",
     "West",
@@ -82,7 +82,9 @@ direction_from_angle(const f32 rotation_degrees)
 
 // Documented in src/app/data/direction.h.
 IVec2
-direction_rotate_point(const IVec2 point, const IVec2 pivot, const Direction direction)
+direction_rotate_point(const IVec2 point,
+                       const IVec2 pivot,
+                       const Direction direction)
 {
     const IVec2 position = ivec2_subtract(point, pivot);
 

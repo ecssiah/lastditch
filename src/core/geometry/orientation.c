@@ -34,7 +34,8 @@ rotation_get_right(const Vec3 rotation)
 
 // Documented in src/core/geometry/orientation.h.
 Vec3
-quaternion_rotate_vector(const Quaternion orientation, const Vec3 vector)
+quaternion_rotate_vector(const Quaternion orientation,
+                         const Vec3 vector)
 {
     const Vec3 imaginary = vec3_make(orientation.x, orientation.y, orientation.z);
     const Vec3 twice_cross = vec3_scale(2.0f, vec3_cross(imaginary, vector));

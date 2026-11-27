@@ -11,7 +11,10 @@
 
 // Documented in src/core/geometry/bounds.h.
 IBounds2
-ibounds2_make(const s32 min_x, const s32 min_y, const s32 max_x, const s32 max_y)
+ibounds2_make(const s32 min_x,
+              const s32 min_y,
+              const s32 max_x,
+              const s32 max_y)
 {
     IBounds2 bounds;
 
@@ -30,7 +33,8 @@ ibounds2_size(const IBounds2 bounds)
 
 // Documented in src/core/geometry/bounds.h.
 int
-ibounds2_overlaps(const IBounds2 left, const IBounds2 right)
+ibounds2_overlaps(const IBounds2 left,
+                  const IBounds2 right)
 {
     const int is_clear =
         left.max.x <= right.min.x ||
@@ -43,7 +47,8 @@ ibounds2_overlaps(const IBounds2 left, const IBounds2 right)
 
 // Documented in src/core/geometry/bounds.h.
 IBounds2
-ibounds2_intersection(const IBounds2 left, const IBounds2 right)
+ibounds2_intersection(const IBounds2 left,
+                      const IBounds2 right)
 {
     return ibounds2_make(
         s32_max(left.min.x, right.min.x),
@@ -55,7 +60,8 @@ ibounds2_intersection(const IBounds2 left, const IBounds2 right)
 
 // Documented in src/core/geometry/bounds.h.
 IBounds2List
-ibounds2_subtract(const IBounds2 left, const IBounds2 right)
+ibounds2_subtract(const IBounds2 left,
+                  const IBounds2 right)
 {
     IBounds2List list;
     IBounds2 intersection;

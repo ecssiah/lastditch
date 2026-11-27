@@ -20,11 +20,16 @@
 // ----------------------------------------------------------------------------
 typedef enum LogLevel
 {
-    LOG_LEVEL_TRACE,                // Fine-grained diagnostic output.
-    LOG_LEVEL_INFO,                 // Normal progress messages.
-    LOG_LEVEL_WARN,                 // Something unexpected but recoverable.
-    LOG_LEVEL_ERROR,                // An operation failed.
-    LOG_LEVEL_FATAL                 // Unrecoverable; the process exits after logging.
+    // Fine-grained diagnostic output.
+    LOG_LEVEL_TRACE,
+    // Normal progress messages.
+    LOG_LEVEL_INFO,
+    // Something unexpected but recoverable.
+    LOG_LEVEL_WARN,
+    // An operation failed.
+    LOG_LEVEL_ERROR,
+    // Unrecoverable; the process exits after logging.
+    LOG_LEVEL_FATAL
 } LogLevel;
 
 // ----------------------------------------------------------------------------
@@ -33,7 +38,7 @@ typedef enum LogLevel
 //          It exists so that the LOG_* macros can accept a variable number
 //          of arguments without variadic macros, which ANSI C89 lacks.
 // ----------------------------------------------------------------------------
-typedef void (*LogWriter)(const char* format, ...);
+typedef void (*LogWriter)(const char *format, ...);
 
 // ----------------------------------------------------------------------------
 // Macro:   LOG_TRACE, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL
@@ -85,7 +90,7 @@ void log_quit(void);
 // Reads:    nothing
 // Writes:   the pending call site in the log state
 // ----------------------------------------------------------------------------
-LogWriter log_begin(LogLevel level, const char* file, int line);
+LogWriter log_begin(LogLevel level, const char *file, int line);
 
 // ----------------------------------------------------------------------------
 // Function: log_write
@@ -101,6 +106,6 @@ LogWriter log_begin(LogLevel level, const char* file, int line);
 // Notes:    Messages longer than LOG_MESSAGE_CAPACITY - 1 characters are
 //           truncated.
 // ----------------------------------------------------------------------------
-void log_write(const char* format, ...);
+void log_write(const char *format, ...);
 
 #endif

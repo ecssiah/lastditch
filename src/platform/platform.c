@@ -92,7 +92,9 @@ platform_button_from_mouse(const u8 mouse_button)
 // Writes:   platform.button_current
 // ----------------------------------------------------------------------------
 static void
-platform_set_button(Platform* platform, const ButtonType button, const int is_down)
+platform_set_button(Platform *platform,
+                    const ButtonType button,
+                    const int is_down)
 {
     if (button != BUTTON_TYPE_NONE)
     {
@@ -111,7 +113,7 @@ platform_set_button(Platform* platform, const ButtonType button, const int is_do
 //           platform.aspect_ratio
 // ----------------------------------------------------------------------------
 static void
-platform_update_framebuffer_size(Platform* platform)
+platform_update_framebuffer_size(Platform *platform)
 {
     int width = 0;
     int height = 0;
@@ -138,7 +140,7 @@ platform_update_framebuffer_size(Platform* platform)
 //           platform.time_previous_ns
 // ----------------------------------------------------------------------------
 static void
-platform_update_time(Platform* platform)
+platform_update_time(Platform *platform)
 {
     const u64 time_current_ns = SDL_GetTicksNS();
 
@@ -157,7 +159,8 @@ platform_update_time(Platform* platform)
 // Writes:   platform
 // ----------------------------------------------------------------------------
 static void
-platform_handle_event(Platform* platform, const SDL_Event* event)
+platform_handle_event(Platform *platform,
+                      const SDL_Event *event)
 {
     switch (event->type)
     {
@@ -208,7 +211,7 @@ platform_handle_event(Platform* platform, const SDL_Event* event)
 
 // Documented in src/platform/platform.h.
 void
-platform_init(Platform* platform)
+platform_init(Platform *platform)
 {
     memset(platform, 0, sizeof(*platform));
 
@@ -257,7 +260,7 @@ platform_init(Platform* platform)
 
 // Documented in src/platform/platform.h.
 void
-platform_quit(Platform* platform)
+platform_quit(Platform *platform)
 {
     if (platform->window != NULL)
     {
@@ -270,7 +273,7 @@ platform_quit(Platform* platform)
 
 // Documented in src/platform/platform.h.
 void
-platform_begin_frame(Platform* platform)
+platform_begin_frame(Platform *platform)
 {
     SDL_Event event;
 
@@ -301,7 +304,9 @@ platform_begin_frame(Platform* platform)
 
 // Documented in src/platform/platform.h.
 void
-platform_get_framebuffer_size(const Platform* platform, s32* width, s32* height)
+platform_get_framebuffer_size(const Platform *platform,
+                              s32 *width,
+                              s32 *height)
 {
     int pixel_width = 0;
     int pixel_height = 0;
@@ -314,30 +319,36 @@ platform_get_framebuffer_size(const Platform* platform, s32* width, s32* height)
 
 // Documented in src/platform/platform.h.
 int
-platform_button_is_down(const Platform* platform, const ButtonType button)
+platform_button_is_down(const Platform *platform,
+                        const ButtonType button)
 {
     return platform->button_current[button] != 0;
 }
 
 // Documented in src/platform/platform.h.
 int
-platform_button_is_pressed(const Platform* platform, const ButtonType button)
+platform_button_is_pressed(const Platform *platform,
+                           const ButtonType button)
 {
     return platform->button_current[button] != 0 && platform->button_previous[button] == 0;
 }
 
 // Documented in src/platform/platform.h.
 int
-platform_button_is_released(const Platform* platform, const ButtonType button)
+platform_button_is_released(const Platform *platform,
+                            const ButtonType button)
 {
     return platform->button_current[button] == 0 && platform->button_previous[button] != 0;
 }
 
 // Documented in src/platform/platform.h.
 int
-platform_resolve_path(const Platform* platform, const char* relative_path, char* path, const size_t path_capacity)
+platform_resolve_path(const Platform *platform,
+                      const char *relative_path,
+                      char *path,
+                      const size_t path_capacity)
 {
-    const char* base_path = platform->base_path != NULL ? platform->base_path : "";
+    const char *base_path = platform->base_path != NULL ? platform->base_path : "";
     const size_t length = strlen(base_path) + strlen(relative_path);
 
     if (path_capacity == 0)

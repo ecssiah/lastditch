@@ -25,14 +25,22 @@
 // ----------------------------------------------------------------------------
 typedef struct App
 {
-    int is_evolving;                // True while the simulation advances; reserved for pausing.
-    f64 simulation_time;            // Real time not yet consumed by simulation steps, in seconds.
-    Platform platform;              // Window, clock and input.
-    Action action;                  // Fixed-step simulation driver.
-    World world;                    // World database.
-    Population population;          // Population database.
-    Control control;                // Player control and camera.
-    Render render;                  // Renderer.
+    // True while the simulation advances; reserved for pausing.
+    int is_evolving;
+    // Real time not yet consumed by simulation steps, in seconds.
+    f64 simulation_time;
+    // Window, clock and input.
+    Platform platform;
+    // Fixed-step simulation driver.
+    Action action;
+    // World database.
+    World world;
+    // Population database.
+    Population population;
+    // Player control and camera.
+    Control control;
+    // Renderer.
+    Render render;
 } App;
 
 // ----------------------------------------------------------------------------
@@ -45,7 +53,7 @@ typedef struct App
 // Reads:    the asset files and reference tables, through the subsystems
 // Writes:   app
 // ----------------------------------------------------------------------------
-void app_init(App* app);
+void app_init(App *app);
 
 // ----------------------------------------------------------------------------
 // Function: app_update
@@ -57,7 +65,7 @@ void app_init(App* app);
 // Reads:    app
 // Writes:   app
 // ----------------------------------------------------------------------------
-void app_update(App* app);
+void app_update(App *app);
 
 // ----------------------------------------------------------------------------
 // Function: app_quit
@@ -67,7 +75,7 @@ void app_update(App* app);
 // Reads:    app
 // Writes:   app
 // ----------------------------------------------------------------------------
-void app_quit(App* app);
+void app_quit(App *app);
 
 // ----------------------------------------------------------------------------
 // Function: app_is_active
@@ -77,6 +85,6 @@ void app_quit(App* app);
 // Reads:    app.platform.active
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-int app_is_active(const App* app);
+int app_is_active(const App *app);
 
 #endif

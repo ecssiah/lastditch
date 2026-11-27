@@ -28,7 +28,7 @@
 //           BLOCK_FACE_TYPE
 // Writes:   quad
 // ----------------------------------------------------------------------------
-void mesh_build_sector_quads(const World* world, s32 sector_index, SectorQuadTable* quad);
+void mesh_build_sector_quads(const World *world, s32 sector_index, SectorQuadTable *quad);
 
 // ----------------------------------------------------------------------------
 // Function: mesh_build_sector_vertices
@@ -39,7 +39,7 @@ void mesh_build_sector_quads(const World* world, s32 sector_index, SectorQuadTab
 // Reads:    quad, VOXEL_VERTEX_TABLE, VOXEL_VERTEX_INDEX_TABLE
 // Writes:   vertex
 // ----------------------------------------------------------------------------
-void mesh_build_sector_vertices(const SectorQuadTable* quad, VoxelVertexTable* vertex);
+void mesh_build_sector_vertices(const SectorQuadTable *quad, VoxelVertexTable *vertex);
 
 // ----------------------------------------------------------------------------
 // Function: mesh_encode_face_texture_index
@@ -67,7 +67,7 @@ u32 mesh_encode_face_texture_index(FaceType face_type);
 //           skipped, as are faces that reference elements the file has not
 //           defined.
 // ----------------------------------------------------------------------------
-int mesh_load_model(const char* path, ModelVertexTable* vertex);
+int mesh_load_model(const char *path, ModelVertexTable *vertex);
 
 // ----------------------------------------------------------------------------
 // Function: sector_quad_table_free
@@ -77,7 +77,7 @@ int mesh_load_model(const char* path, ModelVertexTable* vertex);
 // Reads:    table
 // Writes:   table
 // ----------------------------------------------------------------------------
-void sector_quad_table_free(SectorQuadTable* table);
+void sector_quad_table_free(SectorQuadTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: voxel_vertex_table_free
@@ -88,7 +88,7 @@ void sector_quad_table_free(SectorQuadTable* table);
 // Reads:    table
 // Writes:   table
 // ----------------------------------------------------------------------------
-void voxel_vertex_table_free(VoxelVertexTable* table);
+void voxel_vertex_table_free(VoxelVertexTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: model_vertex_table_free
@@ -99,6 +99,6 @@ void voxel_vertex_table_free(VoxelVertexTable* table);
 // Reads:    table
 // Writes:   table
 // ----------------------------------------------------------------------------
-void model_vertex_table_free(ModelVertexTable* table);
+void model_vertex_table_free(ModelVertexTable *table);
 
 #endif

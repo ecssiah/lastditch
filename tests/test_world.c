@@ -19,12 +19,18 @@
 //            so they are the same on every platform. A change to any of
 //            them means world generation no longer produces the same world.
 // ----------------------------------------------------------------------------
-#define TEST_WORLD_AREA_COUNT 1020                  // Rows of the area table.
-#define TEST_WORLD_LINK_COUNT 2737                  // Rows of the link table.
-#define TEST_WORLD_BLOCK_HASH_HIGH 0x0FAC2304u      // FNV-1a hash of cell.block_type, upper half.
-#define TEST_WORLD_BLOCK_HASH_LOW 0x1F62A1FDu       // FNV-1a hash of cell.block_type, lower half.
-#define TEST_WORLD_MASK_HASH_HIGH 0x66976A61u       // FNV-1a hash of cell.direction_mask, upper half.
-#define TEST_WORLD_MASK_HASH_LOW 0xD8281203u        // FNV-1a hash of cell.direction_mask, lower half.
+// Rows of the area table.
+#define TEST_WORLD_AREA_COUNT 1020
+// Rows of the link table.
+#define TEST_WORLD_LINK_COUNT 2737
+// FNV-1a hash of cell.block_type, upper half.
+#define TEST_WORLD_BLOCK_HASH_HIGH 0x0FAC2304u
+// FNV-1a hash of cell.block_type, lower half.
+#define TEST_WORLD_BLOCK_HASH_LOW 0x1F62A1FDu
+// FNV-1a hash of cell.direction_mask, upper half.
+#define TEST_WORLD_MASK_HASH_HIGH 0x66976A61u
+// FNV-1a hash of cell.direction_mask, lower half.
+#define TEST_WORLD_MASK_HASH_LOW 0xD8281203u
 
 // ----------------------------------------------------------------------------
 // Function: test_world_coordinates
@@ -97,7 +103,10 @@ test_world_coordinates(void)
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static s32
-test_world_count_blocks(const World* world, const IVec3 origin, const IVec3 size, const BlockType block_type)
+test_world_count_blocks(const World *world,
+                        const IVec3 origin,
+                        const IVec3 size,
+                        const BlockType block_type)
 {
     s32 count = 0;
     s32 x;
@@ -323,10 +332,10 @@ test_world_borders(void)
 // Writes:   the check counters
 // ----------------------------------------------------------------------------
 static void
-test_world_generated_areas(const World* world)
+test_world_generated_areas(const World *world)
 {
-    const AreaTable* area = &world->area;
-    const LinkTable* link = &world->link;
+    const AreaTable *area = &world->area;
+    const LinkTable *link = &world->link;
     s32 indexed_area_count = 0;
     s32 indexed_link_count = 0;
     s32 floor_number;
@@ -353,7 +362,7 @@ test_world_generated_areas(const World* world)
     for (floor_number = 0; floor_number < FLOOR_COUNT; ++floor_number)
     {
         s32 row_count;
-        const s32* row_array = area_floor_index_get_rows(&world->area_floor_index, area, floor_number, &row_count);
+        const s32 *row_array = area_floor_index_get_rows(&world->area_floor_index, area, floor_number, &row_count);
         s32 floor_area = 0;
         s32 first;
         s32 second;
@@ -427,7 +436,7 @@ test_world_generated_areas(const World* world)
     for (row = 0; row < area->row_count; ++row)
     {
         s32 link_count;
-        const s32* link_row_array = area_link_index_get_rows(&world->area_link_index, area, link, row, &link_count);
+        const s32 *link_row_array = area_link_index_get_rows(&world->area_link_index, area, link, row, &link_count);
         s32 index;
 
         indexed_link_count += link_count;
@@ -455,9 +464,9 @@ test_world_generated_areas(const World* world)
 // Writes:   the check counters
 // ----------------------------------------------------------------------------
 static void
-test_world_generated_cells(const World* world)
+test_world_generated_cells(const World *world)
 {
-    const CellTable* cell = &world->cell;
+    const CellTable *cell = &world->cell;
     const u64 block_hash = test_hash_bytes(test_hash_begin(), cell->block_type, (size_t)WORLD_VOLUME_IN_CELLS * sizeof(BlockType));
     const u64 mask_hash = test_hash_bytes(test_hash_begin(), cell->direction_mask, (size_t)WORLD_VOLUME_IN_CELLS * sizeof(u8));
     const s32 elevator_min = WORLD_CENTER_S32 - ELEVATOR_SIZE / 2;
@@ -474,14 +483,14 @@ test_world_generated_cells(const World* world)
     // Landmarks from the blueprint tables.
     for (row = 0; row < TEST_BLOCK_COUNT; ++row)
     {
-        const TestBlockRecord* block = &TEST_BLOCK_TABLE[row];
+        const TestBlockRecord *block = &TEST_BLOCK_TABLE[row];
 
         TEST_CHECK_S32(world_get_block_type(world, block->coordinate.x, block->coordinate.y, block->coordinate.z), block->block_type);
     }
 
     for (row = 0; row < TERRITORY_COUNT; ++row)
     {
-        const TerritoryRecord* territory = &TERRITORY_TABLE[row];
+        const TerritoryRecord *territory = &TERRITORY_TABLE[row];
 
         // Temple floor rim, inlay and a pillar that pierces the ceiling.
         TEST_CHECK_S32(world_get_block_type(world, territory->temple_origin.x, territory->temple_origin.y, ROOF_Z), territory->stone_block_type);
@@ -546,7 +555,7 @@ test_world_generated_cells(const World* world)
 
         for (direction = 0; direction < DIRECTION_COUNT; ++direction)
         {
-            const s32* normal = DIRECTION_NORMAL[direction];
+            const s32 *normal = DIRECTION_NORMAL[direction];
 
             if (!world_is_solid(world, coordinate.x + normal[AXIS_X], coordinate.y + normal[AXIS_Y], coordinate.z + normal[AXIS_Z]))
             {
@@ -656,7 +665,7 @@ test_world_content(void)
 void
 test_world_run(void)
 {
-    const World* world = test_get_world();
+    const World *world = test_get_world();
 
     test_world_coordinates();
     test_world_shapes_and_queries();

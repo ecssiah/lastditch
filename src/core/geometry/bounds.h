@@ -16,7 +16,8 @@
 // Constants: bounds limits
 // Purpose:   Capacities of the fixed-size bounds containers.
 // ----------------------------------------------------------------------------
-#define IBOUNDS2_LIST_CAPACITY 4    // Most pieces a rectangle subtraction can produce.
+// Most pieces a rectangle subtraction can produce.
+#define IBOUNDS2_LIST_CAPACITY 4
 
 // ----------------------------------------------------------------------------
 // Value:   IBounds2
@@ -24,8 +25,10 @@
 // ----------------------------------------------------------------------------
 typedef struct IBounds2
 {
-    IVec2 min;                      // Inclusive lower corner.
-    IVec2 max;                      // Exclusive upper corner.
+    // Inclusive lower corner.
+    IVec2 min;
+    // Exclusive upper corner.
+    IVec2 max;
 } IBounds2;
 
 // ----------------------------------------------------------------------------
@@ -35,8 +38,10 @@ typedef struct IBounds2
 // ----------------------------------------------------------------------------
 typedef struct IBounds2List
 {
-    IBounds2 values[IBOUNDS2_LIST_CAPACITY];    // The rectangles; the first count are valid.
-    s32 count;                                  // Number of valid rectangles.
+    // The rectangles; the first count are valid.
+    IBounds2 values[IBOUNDS2_LIST_CAPACITY];
+    // Number of valid rectangles.
+    s32 count;
 } IBounds2List;
 
 // ----------------------------------------------------------------------------

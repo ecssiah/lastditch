@@ -12,7 +12,7 @@
 
 // Documented in src/app/app.h.
 void
-app_init(App* app)
+app_init(App *app)
 {
     app->is_evolving = true;
     app->simulation_time = 0.0;
@@ -32,7 +32,7 @@ app_init(App* app)
 
 // Documented in src/app/app.h.
 void
-app_update(App* app)
+app_update(App *app)
 {
     platform_begin_frame(&app->platform);
 
@@ -51,7 +51,7 @@ app_update(App* app)
 
 // Documented in src/app/app.h.
 void
-app_quit(App* app)
+app_quit(App *app)
 {
     render_quit(&app->render);
     platform_quit(&app->platform);
@@ -64,7 +64,7 @@ app_quit(App* app)
 
 // Documented in src/app/app.h.
 int
-app_is_active(const App* app)
+app_is_active(const App *app)
 {
     return app->platform.active;
 }

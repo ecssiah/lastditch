@@ -17,16 +17,21 @@
 // Constants: window defaults
 // Purpose:   Size of the window when the application starts.
 // ----------------------------------------------------------------------------
-#define WINDOW_WIDTH 1024                                               // Initial window width, in window coordinates.
-#define WINDOW_HEIGHT 768                                               // Initial window height, in window coordinates.
-#define WINDOW_ASPECT_RATIO ((f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT)    // Initial width divided by height.
+// Initial window width, in window coordinates.
+#define WINDOW_WIDTH 1024
+// Initial window height, in window coordinates.
+#define WINDOW_HEIGHT 768
+// Initial width divided by height.
+#define WINDOW_ASPECT_RATIO ((f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT)
 
 // ----------------------------------------------------------------------------
 // Constants: platform limits
 // Purpose:   Fixed sizes of the platform's reference tables.
 // ----------------------------------------------------------------------------
-#define PLATFORM_KEY_BINDING_COUNT 9        // Rows of PLATFORM_KEY_BINDING_TABLE.
-#define PLATFORM_MOUSE_BINDING_COUNT 3      // Rows of PLATFORM_MOUSE_BINDING_TABLE.
+// Rows of PLATFORM_KEY_BINDING_TABLE.
+#define PLATFORM_KEY_BINDING_COUNT 9
+// Rows of PLATFORM_MOUSE_BINDING_TABLE.
+#define PLATFORM_MOUSE_BINDING_COUNT 3
 
 // ----------------------------------------------------------------------------
 // Enum:    ButtonType
@@ -36,20 +41,34 @@
 // ----------------------------------------------------------------------------
 typedef enum ButtonType
 {
-    BUTTON_TYPE_NONE,               // No button; physical inputs without a binding map here.
-    BUTTON_TYPE_A,                  // Strafe left.
-    BUTTON_TYPE_D,                  // Strafe right.
-    BUTTON_TYPE_E,                  // Fly up (free camera).
-    BUTTON_TYPE_ESCAPE,             // Quit.
-    BUTTON_TYPE_MOUSE_1,            // Left mouse button.
-    BUTTON_TYPE_MOUSE_2,            // Right mouse button.
-    BUTTON_TYPE_MOUSE_3,            // Middle mouse button.
-    BUTTON_TYPE_S,                  // Move backward.
-    BUTTON_TYPE_SPACE,              // Jump.
-    BUTTON_TYPE_TAB,                // Toggle between the judge and the free camera.
-    BUTTON_TYPE_Q,                  // Fly down (free camera).
-    BUTTON_TYPE_W,                  // Move forward.
-    BUTTON_TYPE_COUNT               // Number of buttons.
+    // No button; physical inputs without a binding map here.
+    BUTTON_TYPE_NONE,
+    // Strafe left.
+    BUTTON_TYPE_A,
+    // Strafe right.
+    BUTTON_TYPE_D,
+    // Fly up (free camera).
+    BUTTON_TYPE_E,
+    // Quit.
+    BUTTON_TYPE_ESCAPE,
+    // Left mouse button.
+    BUTTON_TYPE_MOUSE_1,
+    // Right mouse button.
+    BUTTON_TYPE_MOUSE_2,
+    // Middle mouse button.
+    BUTTON_TYPE_MOUSE_3,
+    // Move backward.
+    BUTTON_TYPE_S,
+    // Jump.
+    BUTTON_TYPE_SPACE,
+    // Toggle between the judge and the free camera.
+    BUTTON_TYPE_TAB,
+    // Fly down (free camera).
+    BUTTON_TYPE_Q,
+    // Move forward.
+    BUTTON_TYPE_W,
+    // Number of buttons.
+    BUTTON_TYPE_COUNT
 } ButtonType;
 
 // ----------------------------------------------------------------------------
@@ -58,8 +77,10 @@ typedef enum ButtonType
 // ----------------------------------------------------------------------------
 typedef struct KeyBindingRecord
 {
-    SDL_Scancode scancode;          // Physical key, by keyboard position.
-    ButtonType button;              // Button the key drives.
+    // Physical key, by keyboard position.
+    SDL_Scancode scancode;
+    // Button the key drives.
+    ButtonType button;
 } KeyBindingRecord;
 
 // ----------------------------------------------------------------------------
@@ -68,8 +89,10 @@ typedef struct KeyBindingRecord
 // ----------------------------------------------------------------------------
 typedef struct MouseBindingRecord
 {
-    u8 mouse_button;                // SDL mouse button number.
-    ButtonType button;              // Button the mouse button drives.
+    // SDL mouse button number.
+    u8 mouse_button;
+    // Button the mouse button drives.
+    ButtonType button;
 } MouseBindingRecord;
 
 // ----------------------------------------------------------------------------
@@ -98,20 +121,34 @@ extern const MouseBindingRecord PLATFORM_MOUSE_BINDING_TABLE[PLATFORM_MOUSE_BIND
 // ----------------------------------------------------------------------------
 typedef struct Platform
 {
-    int active;                                 // False once the user has asked to quit.
-    f64 delta_time;                             // Real time since the previous frame, in seconds.
-    f64 frame_time;                             // delta_time limited to FRAME_TIME_MAX; what the simulation consumes.
-    f64 pointer_delta_x;                        // Horizontal pointer motion accumulated this frame.
-    f64 pointer_delta_y;                        // Vertical pointer motion accumulated this frame.
-    s32 window_width;                           // Drawable width, in pixels.
-    s32 window_height;                          // Drawable height, in pixels.
-    f32 aspect_ratio;                           // Drawable width divided by height.
-    SDL_Window* window;                         // The application window; NULL before platform_init.
-    const char* base_path;                      // Directory of the executable, ending with a separator; owned by SDL.
-    u64 time_previous_ns;                       // Clock reading at the previous frame, in nanoseconds.
-    int ignore_pointer_delta;                   // True to discard this frame's pointer motion (after a focus change).
-    u8 button_current[BUTTON_TYPE_COUNT];       // Non-zero while the button is held, this frame; keyed by ButtonType.
-    u8 button_previous[BUTTON_TYPE_COUNT];      // The same state as of the previous frame; keyed by ButtonType.
+    // False once the user has asked to quit.
+    int active;
+    // Real time since the previous frame, in seconds.
+    f64 delta_time;
+    // delta_time limited to FRAME_TIME_MAX; what the simulation consumes.
+    f64 frame_time;
+    // Horizontal pointer motion accumulated this frame.
+    f64 pointer_delta_x;
+    // Vertical pointer motion accumulated this frame.
+    f64 pointer_delta_y;
+    // Drawable width, in pixels.
+    s32 window_width;
+    // Drawable height, in pixels.
+    s32 window_height;
+    // Drawable width divided by height.
+    f32 aspect_ratio;
+    // The application window; NULL before platform_init.
+    SDL_Window *window;
+    // Directory of the executable, ending with a separator; owned by SDL.
+    const char *base_path;
+    // Clock reading at the previous frame, in nanoseconds.
+    u64 time_previous_ns;
+    // True to discard this frame's pointer motion (after a focus change).
+    int ignore_pointer_delta;
+    // Non-zero while the button is held, this frame; keyed by ButtonType.
+    u8 button_current[BUTTON_TYPE_COUNT];
+    // The same state as of the previous frame; keyed by ButtonType.
+    u8 button_previous[BUTTON_TYPE_COUNT];
 } Platform;
 
 // ----------------------------------------------------------------------------
@@ -123,7 +160,7 @@ typedef struct Platform
 // Reads:    nothing
 // Writes:   platform
 // ----------------------------------------------------------------------------
-void platform_init(Platform* platform);
+void platform_init(Platform *platform);
 
 // ----------------------------------------------------------------------------
 // Function: platform_quit
@@ -133,7 +170,7 @@ void platform_init(Platform* platform);
 // Reads:    platform.window
 // Writes:   platform.window
 // ----------------------------------------------------------------------------
-void platform_quit(Platform* platform);
+void platform_quit(Platform *platform);
 
 // ----------------------------------------------------------------------------
 // Function: platform_begin_frame
@@ -145,7 +182,7 @@ void platform_quit(Platform* platform);
 // Reads:    the SDL event queue, the SDL clock, the binding tables
 // Writes:   platform
 // ----------------------------------------------------------------------------
-void platform_begin_frame(Platform* platform);
+void platform_begin_frame(Platform *platform);
 
 // ----------------------------------------------------------------------------
 // Function: platform_get_framebuffer_size
@@ -157,7 +194,7 @@ void platform_begin_frame(Platform* platform);
 // Reads:    platform.window
 // Writes:   width, height
 // ----------------------------------------------------------------------------
-void platform_get_framebuffer_size(const Platform* platform, s32* width, s32* height);
+void platform_get_framebuffer_size(const Platform *platform, s32 *width, s32 *height);
 
 // ----------------------------------------------------------------------------
 // Function: platform_button_is_down
@@ -168,7 +205,7 @@ void platform_get_framebuffer_size(const Platform* platform, s32* width, s32* he
 // Reads:    platform.button_current
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-int platform_button_is_down(const Platform* platform, ButtonType button);
+int platform_button_is_down(const Platform *platform, ButtonType button);
 
 // ----------------------------------------------------------------------------
 // Function: platform_button_is_pressed
@@ -179,7 +216,7 @@ int platform_button_is_down(const Platform* platform, ButtonType button);
 // Reads:    platform.button_current, platform.button_previous
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-int platform_button_is_pressed(const Platform* platform, ButtonType button);
+int platform_button_is_pressed(const Platform *platform, ButtonType button);
 
 // ----------------------------------------------------------------------------
 // Function: platform_button_is_released
@@ -190,7 +227,7 @@ int platform_button_is_pressed(const Platform* platform, ButtonType button);
 // Reads:    platform.button_current, platform.button_previous
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-int platform_button_is_released(const Platform* platform, ButtonType button);
+int platform_button_is_released(const Platform *platform, ButtonType button);
 
 // ----------------------------------------------------------------------------
 // Function: platform_resolve_path
@@ -206,6 +243,6 @@ int platform_button_is_released(const Platform* platform, ButtonType button);
 // Reads:    platform.base_path
 // Writes:   path
 // ----------------------------------------------------------------------------
-int platform_resolve_path(const Platform* platform, const char* relative_path, char* path, size_t path_capacity);
+int platform_resolve_path(const Platform *platform, const char *relative_path, char *path, size_t path_capacity);
 
 #endif

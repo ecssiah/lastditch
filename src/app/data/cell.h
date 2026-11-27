@@ -25,8 +25,10 @@
 // ----------------------------------------------------------------------------
 typedef struct CellTable
 {
-    BlockType* block_type;          // [FK -> BLOCK_TYPE_NAME] Block occupying the cell; BLOCK_TYPE_NONE when empty.
-    u8* direction_mask;             // [derived] Direction bits whose neighbouring cell is empty or outside the world.
+    // [FK -> BLOCK_TYPE_NAME] Block occupying the cell; BLOCK_TYPE_NONE when empty.
+    BlockType *block_type;
+    // [derived] Direction bits whose neighbouring cell is empty or outside the world.
+    u8 *direction_mask;
 } CellTable;
 
 // ----------------------------------------------------------------------------
@@ -37,7 +39,7 @@ typedef struct CellTable
 // Reads:    nothing
 // Writes:   table, all rows of block_type and direction_mask
 // ----------------------------------------------------------------------------
-void cell_table_init(CellTable* table);
+void cell_table_init(CellTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: cell_table_free
@@ -47,6 +49,6 @@ void cell_table_init(CellTable* table);
 // Reads:    table
 // Writes:   table; its columns become NULL
 // ----------------------------------------------------------------------------
-void cell_table_free(CellTable* table);
+void cell_table_free(CellTable *table);
 
 #endif

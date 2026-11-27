@@ -20,7 +20,8 @@
 // Constants: sector mesh geometry
 // Purpose:   How block faces become triangles.
 // ----------------------------------------------------------------------------
-#define SECTOR_VERTEX_COUNT_PER_QUAD 6      // Vertices emitted per visible face: two triangles.
+// Vertices emitted per visible face: two triangles.
+#define SECTOR_VERTEX_COUNT_PER_QUAD 6
 
 // ----------------------------------------------------------------------------
 // Table:    SectorQuadTable
@@ -33,13 +34,20 @@
 // ----------------------------------------------------------------------------
 typedef struct SectorQuadTable
 {
-    s32 row_count;                  // Number of rows stored.
-    s32 row_capacity;               // Number of rows the columns can hold.
-    u8* local_x;                    // Cell X relative to the sector origin, 0 <= x < SECTOR_SIZE_IN_CELLS.
-    u8* local_y;                    // Cell Y relative to the sector origin, 0 <= y < SECTOR_SIZE_IN_CELLS.
-    u8* local_z;                    // Cell Z, 0 <= z < SECTOR_HEIGHT_IN_CELLS.
-    u8* direction;                  // Direction the face points in.
-    FaceType* face_type;            // [FK -> FACE_TYPE_NAME] Appearance of the face; never FACE_TYPE_NONE.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // Cell X relative to the sector origin, 0 <= x < SECTOR_SIZE_IN_CELLS.
+    u8 *local_x;
+    // Cell Y relative to the sector origin, 0 <= y < SECTOR_SIZE_IN_CELLS.
+    u8 *local_y;
+    // Cell Z, 0 <= z < SECTOR_HEIGHT_IN_CELLS.
+    u8 *local_z;
+    // Direction the face points in.
+    u8 *direction;
+    // [FK -> FACE_TYPE_NAME] Appearance of the face; never FACE_TYPE_NONE.
+    FaceType *face_type;
 } SectorQuadTable;
 
 // ----------------------------------------------------------------------------
@@ -53,9 +61,12 @@ typedef struct SectorQuadTable
 // ----------------------------------------------------------------------------
 typedef struct VoxelVertexTable
 {
-    s32 row_count;                  // Number of vertices stored.
-    s32 row_capacity;               // Number of vertices the column can hold.
-    VoxelVertex* vertex;            // Packed vertices, in GPU layout.
+    // Number of vertices stored.
+    s32 row_count;
+    // Number of vertices the column can hold.
+    s32 row_capacity;
+    // Packed vertices, in GPU layout.
+    VoxelVertex *vertex;
 } VoxelVertexTable;
 
 // ----------------------------------------------------------------------------
@@ -69,9 +80,12 @@ typedef struct VoxelVertexTable
 // ----------------------------------------------------------------------------
 typedef struct ModelVertexTable
 {
-    s32 row_count;                  // Number of vertices stored.
-    s32 row_capacity;               // Number of vertices the column can hold.
-    ModelVertex* vertex;            // Vertices, in GPU layout.
+    // Number of vertices stored.
+    s32 row_count;
+    // Number of vertices the column can hold.
+    s32 row_capacity;
+    // Vertices, in GPU layout.
+    ModelVertex *vertex;
 } ModelVertexTable;
 
 #endif

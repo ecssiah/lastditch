@@ -18,8 +18,10 @@
 // ----------------------------------------------------------------------------
 typedef struct NationRecord
 {
-    NationType nation_type;         // Key of the nation.
-    IVec3 home_coordinate;          // Cell around which the nation's agents are spawned.
+    // Key of the nation.
+    NationType nation_type;
+    // Cell around which the nation's agents are spawned.
+    IVec3 home_coordinate;
 } NationRecord;
 
 // ----------------------------------------------------------------------------

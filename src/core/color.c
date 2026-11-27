@@ -17,7 +17,10 @@ const Color COLOR_MAGENTA = { 1.0f, 0.0f, 1.0f, 1.0f };
 
 // Documented in src/core/color.h.
 Color
-color_make(const f32 r, const f32 g, const f32 b, const f32 a)
+color_make(const f32 r,
+           const f32 g,
+           const f32 b,
+           const f32 a)
 {
     Color color;
 

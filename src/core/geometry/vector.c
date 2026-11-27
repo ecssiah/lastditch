@@ -11,7 +11,8 @@
 
 // Documented in src/core/geometry/vector.h.
 Vec2
-vec2_make(const f32 x, const f32 y)
+vec2_make(const f32 x,
+          const f32 y)
 {
     Vec2 vector;
 
@@ -23,7 +24,9 @@ vec2_make(const f32 x, const f32 y)
 
 // Documented in src/core/geometry/vector.h.
 Vec3
-vec3_make(const f32 x, const f32 y, const f32 z)
+vec3_make(const f32 x,
+          const f32 y,
+          const f32 z)
 {
     Vec3 vector;
 
@@ -43,28 +46,32 @@ vec3_from_ivec3(const IVec3 vector)
 
 // Documented in src/core/geometry/vector.h.
 Vec3
-vec3_add(const Vec3 left, const Vec3 right)
+vec3_add(const Vec3 left,
+         const Vec3 right)
 {
     return vec3_make(left.x + right.x, left.y + right.y, left.z + right.z);
 }
 
 // Documented in src/core/geometry/vector.h.
 Vec3
-vec3_subtract(const Vec3 left, const Vec3 right)
+vec3_subtract(const Vec3 left,
+              const Vec3 right)
 {
     return vec3_make(left.x - right.x, left.y - right.y, left.z - right.z);
 }
 
 // Documented in src/core/geometry/vector.h.
 Vec3
-vec3_scale(const f32 scalar, const Vec3 vector)
+vec3_scale(const f32 scalar,
+           const Vec3 vector)
 {
     return vec3_make(scalar * vector.x, scalar * vector.y, scalar * vector.z);
 }
 
 // Documented in src/core/geometry/vector.h.
 Vec3
-vec3_min(const Vec3 left, const Vec3 right)
+vec3_min(const Vec3 left,
+         const Vec3 right)
 {
     return vec3_make(
         left.x < right.x ? left.x : right.x,
@@ -75,7 +82,8 @@ vec3_min(const Vec3 left, const Vec3 right)
 
 // Documented in src/core/geometry/vector.h.
 Vec3
-vec3_max(const Vec3 left, const Vec3 right)
+vec3_max(const Vec3 left,
+         const Vec3 right)
 {
     return vec3_make(
         left.x > right.x ? left.x : right.x,
@@ -86,14 +94,16 @@ vec3_max(const Vec3 left, const Vec3 right)
 
 // Documented in src/core/geometry/vector.h.
 f32
-vec3_dot(const Vec3 left, const Vec3 right)
+vec3_dot(const Vec3 left,
+         const Vec3 right)
 {
     return left.x * right.x + left.y * right.y + left.z * right.z;
 }
 
 // Documented in src/core/geometry/vector.h.
 Vec3
-vec3_cross(const Vec3 left, const Vec3 right)
+vec3_cross(const Vec3 left,
+           const Vec3 right)
 {
     return vec3_make(
         left.y * right.z - left.z * right.y,
@@ -140,7 +150,8 @@ vec3_normalize(const Vec3 vector)
 
 // Documented in src/core/geometry/vector.h.
 IVec2
-ivec2_make(const s32 x, const s32 y)
+ivec2_make(const s32 x,
+           const s32 y)
 {
     IVec2 vector;
 
@@ -152,21 +163,25 @@ ivec2_make(const s32 x, const s32 y)
 
 // Documented in src/core/geometry/vector.h.
 IVec2
-ivec2_add(const IVec2 left, const IVec2 right)
+ivec2_add(const IVec2 left,
+          const IVec2 right)
 {
     return ivec2_make(left.x + right.x, left.y + right.y);
 }
 
 // Documented in src/core/geometry/vector.h.
 IVec2
-ivec2_subtract(const IVec2 left, const IVec2 right)
+ivec2_subtract(const IVec2 left,
+               const IVec2 right)
 {
     return ivec2_make(left.x - right.x, left.y - right.y);
 }
 
 // Documented in src/core/geometry/vector.h.
 IVec3
-ivec3_make(const s32 x, const s32 y, const s32 z)
+ivec3_make(const s32 x,
+           const s32 y,
+           const s32 z)
 {
     IVec3 vector;
 

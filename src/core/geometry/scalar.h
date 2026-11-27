@@ -18,8 +18,10 @@
 // Constants: scalar limits
 // Purpose:   Numeric constants of the f32 type used by the geometry library.
 // ----------------------------------------------------------------------------
-#define F32_PI 3.14159265358979323846f      // Ratio of a circle's circumference to its diameter.
-#define F32_EPSILON FLT_EPSILON               // Distance from 1.0f to the next larger f32.
+// Ratio of a circle's circumference to its diameter.
+#define F32_PI 3.14159265358979323846f
+// Distance from 1.0f to the next larger f32.
+#define F32_EPSILON FLT_EPSILON
 
 // ----------------------------------------------------------------------------
 // Value:   SinCos
@@ -28,8 +30,10 @@
 // ----------------------------------------------------------------------------
 typedef struct SinCos
 {
-    f32 sin;                        // Sine of the angle.
-    f32 cos;                        // Cosine of the angle.
+    // Sine of the angle.
+    f32 sin;
+    // Cosine of the angle.
+    f32 cos;
 } SinCos;
 
 // ----------------------------------------------------------------------------

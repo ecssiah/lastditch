@@ -18,9 +18,12 @@
 // Purpose:   Reserved values shared by every table. Keys and row numbers are
 //            never negative, so -1 can mark "no such key" and "no such row".
 // ----------------------------------------------------------------------------
-#define TABLE_KEY_NONE (-1)         // Key value that refers to no row.
-#define TABLE_ROW_NONE (-1)         // Row number returned by failed lookups.
-#define TABLE_CAPACITY_MIN 16       // Smallest capacity a growing table takes.
+// Key value that refers to no row.
+#define TABLE_KEY_NONE (-1)
+// Row number returned by failed lookups.
+#define TABLE_ROW_NONE (-1)
+// Smallest capacity a growing table takes.
+#define TABLE_CAPACITY_MIN 16
 
 // ----------------------------------------------------------------------------
 // Value:   Sequence
@@ -30,7 +33,8 @@
 // ----------------------------------------------------------------------------
 typedef struct Sequence
 {
-    s32 next_value;                 // Key the next call to sequence_next returns.
+    // Key the next call to sequence_next returns.
+    s32 next_value;
 } Sequence;
 
 // ----------------------------------------------------------------------------
@@ -46,7 +50,7 @@ typedef struct Sequence
 // Reads:    the rows already stored in column
 // Writes:   nothing beyond the returned storage
 // ----------------------------------------------------------------------------
-void* column_resize(void* column, size_t element_size, s32 row_capacity);
+void *column_resize(void *column, size_t element_size, s32 row_capacity);
 
 // ----------------------------------------------------------------------------
 // Function: column_free
@@ -56,7 +60,7 @@ void* column_resize(void* column, size_t element_size, s32 row_capacity);
 // Reads:    nothing
 // Writes:   nothing; the storage is returned to the allocator
 // ----------------------------------------------------------------------------
-void column_free(void* column);
+void column_free(void *column);
 
 // ----------------------------------------------------------------------------
 // Function: table_grow_capacity
@@ -80,7 +84,7 @@ s32 table_grow_capacity(s32 row_capacity, s32 row_required);
 // Reads:    sequence
 // Writes:   sequence
 // ----------------------------------------------------------------------------
-s32 sequence_next(Sequence* sequence);
+s32 sequence_next(Sequence *sequence);
 
 // ----------------------------------------------------------------------------
 // Function: key_column_find_row
@@ -94,7 +98,7 @@ s32 sequence_next(Sequence* sequence);
 // Writes:   nothing
 // Notes:    Binary search, O(log row_count).
 // ----------------------------------------------------------------------------
-s32 key_column_find_row(const s32* key_column, s32 row_count, s32 key);
+s32 key_column_find_row(const s32 *key_column, s32 row_count, s32 key);
 
 // ----------------------------------------------------------------------------
 // Function: key_column_find_insert_row
@@ -108,7 +112,7 @@ s32 key_column_find_row(const s32* key_column, s32 row_count, s32 key);
 // Writes:   nothing
 // Notes:    Binary search, O(log row_count).
 // ----------------------------------------------------------------------------
-s32 key_column_find_insert_row(const s32* key_column, s32 row_count, s32 key);
+s32 key_column_find_insert_row(const s32 *key_column, s32 row_count, s32 key);
 
 // ----------------------------------------------------------------------------
 // Function: column_open_row
@@ -124,7 +128,7 @@ s32 key_column_find_insert_row(const s32* key_column, s32 row_count, s32 key);
 // Writes:   column rows (row, row_count]
 // Notes:    The column must already have capacity for row_count + 1 rows.
 // ----------------------------------------------------------------------------
-void column_open_row(void* column, size_t element_size, s32 row_count, s32 row);
+void column_open_row(void *column, size_t element_size, s32 row_count, s32 row);
 
 // ----------------------------------------------------------------------------
 // Function: column_close_row
@@ -139,6 +143,6 @@ void column_open_row(void* column, size_t element_size, s32 row_count, s32 row);
 // Reads:    column rows (row, row_count)
 // Writes:   column rows [row, row_count - 1)
 // ----------------------------------------------------------------------------
-void column_close_row(void* column, size_t element_size, s32 row_count, s32 row);
+void column_close_row(void *column, size_t element_size, s32 row_count, s32 row);
 
 #endif

@@ -23,13 +23,20 @@
 // ----------------------------------------------------------------------------
 typedef struct Control
 {
-    s32 actor_id;                   // [FK -> ActorTable.actor_id] Possessed actor, or TABLE_KEY_NONE for the free camera.
-    Inputs input;                   // Intent decoded from this frame's input.
-    Vec3 position;                  // Camera position in world space.
-    Vec3 rotation;                  // Camera Euler rotation in degrees: x pitch, y roll, z yaw.
-    Quaternion orientation;         // Camera orientation.
-    Mat4 view_matrix;               // World-to-view transform of the camera.
-    Mat4 projection_matrix;         // View-to-clip transform of the camera.
+    // [FK -> ActorTable.actor_id] Possessed actor, or TABLE_KEY_NONE for the free camera.
+    s32 actor_id;
+    // Intent decoded from this frame's input.
+    Inputs input;
+    // Camera position in world space.
+    Vec3 position;
+    // Camera Euler rotation in degrees: x pitch, y roll, z yaw.
+    Vec3 rotation;
+    // Camera orientation.
+    Quaternion orientation;
+    // World-to-view transform of the camera.
+    Mat4 view_matrix;
+    // View-to-clip transform of the camera.
+    Mat4 projection_matrix;
 } Control;
 
 // ----------------------------------------------------------------------------
@@ -41,7 +48,7 @@ typedef struct Control
 // Reads:    population.judge_id
 // Writes:   control
 // ----------------------------------------------------------------------------
-void control_init(Control* control, const Population* population);
+void control_init(Control *control, const Population *population);
 
 // ----------------------------------------------------------------------------
 // Function: control_update
@@ -58,6 +65,6 @@ void control_init(Control* control, const Population* population);
 // Writes:   control; the possessed actor's velocity, rotation_target and
 //           move_speed
 // ----------------------------------------------------------------------------
-void control_update(Control* control, const Platform* platform, Population* population);
+void control_update(Control *control, const Platform *platform, Population *population);
 
 #endif

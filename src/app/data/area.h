@@ -19,7 +19,8 @@
 // Constants: area geometry
 // Purpose:   Areas and links live in the horizontal plane of a floor.
 // ----------------------------------------------------------------------------
-#define AREA_AXIS_COUNT 2           // Axes of an area's bounds: AXIS_X and AXIS_Y.
+// Axes of an area's bounds: AXIS_X and AXIS_Y.
+#define AREA_AXIS_COUNT 2
 
 // ----------------------------------------------------------------------------
 // Enum:    AreaType
@@ -28,15 +29,24 @@
 // ----------------------------------------------------------------------------
 typedef enum AreaType
 {
-    AREA_TYPE_FREE,                 // Open floor; nothing is built.
-    AREA_TYPE_ROOM,                 // Walled room of the tower.
-    AREA_TYPE_ELEVATOR_TOP,         // Topmost segment of the elevator shaft.
-    AREA_TYPE_ELEVATOR_MID,         // Elevator shaft segment with segments above and below.
-    AREA_TYPE_ELEVATOR_BASE,        // Lowest segment of the elevator shaft.
-    AREA_TYPE_TEMPLE,               // Reserved for temples; nothing is built.
-    AREA_TYPE_WIREFRAME,            // Outline of a box, used by the test area.
-    AREA_TYPE_PLATFORM,             // Platform attached to the outside of the roof.
-    AREA_TYPE_COUNT                 // Number of area types.
+    // Open floor; nothing is built.
+    AREA_TYPE_FREE,
+    // Walled room of the tower.
+    AREA_TYPE_ROOM,
+    // Topmost segment of the elevator shaft.
+    AREA_TYPE_ELEVATOR_TOP,
+    // Elevator shaft segment with segments above and below.
+    AREA_TYPE_ELEVATOR_MID,
+    // Lowest segment of the elevator shaft.
+    AREA_TYPE_ELEVATOR_BASE,
+    // Reserved for temples; nothing is built.
+    AREA_TYPE_TEMPLE,
+    // Outline of a box, used by the test area.
+    AREA_TYPE_WIREFRAME,
+    // Platform attached to the outside of the roof.
+    AREA_TYPE_PLATFORM,
+    // Number of area types.
+    AREA_TYPE_COUNT
 } AreaType;
 
 // ----------------------------------------------------------------------------
@@ -46,10 +56,14 @@ typedef enum AreaType
 // ----------------------------------------------------------------------------
 typedef struct AreaRecord
 {
-    s32 area_id;                    // Primary key of the row.
-    AreaType area_type;             // What the area is and what gets built in it.
-    s32 floor_number;               // Floor the area lies on.
-    IBounds2 bounds;                // Half-open rectangle of cells the area covers.
+    // Primary key of the row.
+    s32 area_id;
+    // What the area is and what gets built in it.
+    AreaType area_type;
+    // Floor the area lies on.
+    s32 floor_number;
+    // Half-open rectangle of cells the area covers.
+    IBounds2 bounds;
 } AreaRecord;
 
 // ----------------------------------------------------------------------------
@@ -65,15 +79,24 @@ typedef struct AreaRecord
 // ----------------------------------------------------------------------------
 typedef struct AreaTable
 {
-    s32 row_count;                      // Number of rows stored.
-    s32 row_capacity;                   // Number of rows the columns can hold.
-    u32 revision;                       // Incremented by every insert and delete; lets indexes detect staleness.
-    Sequence id_sequence;               // Issues area_id values.
-    s32* area_id;                       // [PK] Key of the area.
-    u8* area_type;                      // AreaType of the area.
-    s32* floor_number;                  // Floor the area lies on, 0 <= floor_number < FLOOR_COUNT.
-    s32* bounds_min[AREA_AXIS_COUNT];   // Inclusive lower corner, one column per axis.
-    s32* bounds_max[AREA_AXIS_COUNT];   // Exclusive upper corner, one column per axis.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // Incremented by every insert and delete; lets indexes detect staleness.
+    u32 revision;
+    // Issues area_id values.
+    Sequence id_sequence;
+    // [PK] Key of the area.
+    s32 *area_id;
+    // AreaType of the area.
+    u8 *area_type;
+    // Floor the area lies on, 0 <= floor_number < FLOOR_COUNT.
+    s32 *floor_number;
+    // Inclusive lower corner, one column per axis.
+    s32 *bounds_min[AREA_AXIS_COUNT];
+    // Exclusive upper corner, one column per axis.
+    s32 *bounds_max[AREA_AXIS_COUNT];
 } AreaTable;
 
 // ----------------------------------------------------------------------------
@@ -82,11 +105,16 @@ typedef struct AreaTable
 // ----------------------------------------------------------------------------
 typedef struct LinkRecord
 {
-    s32 link_id;                    // Primary key of the row.
-    s32 area_1_id;                  // First area joined by the link.
-    s32 area_2_id;                  // Second area joined by the link.
-    Axis axis;                      // Axis along which the shared border runs.
-    IVec2 position;                 // Cell at the middle of the shared border.
+    // Primary key of the row.
+    s32 link_id;
+    // First area joined by the link.
+    s32 area_1_id;
+    // Second area joined by the link.
+    s32 area_2_id;
+    // Axis along which the shared border runs.
+    Axis axis;
+    // Cell at the middle of the shared border.
+    IVec2 position;
 } LinkRecord;
 
 // ----------------------------------------------------------------------------
@@ -101,15 +129,24 @@ typedef struct LinkRecord
 // ----------------------------------------------------------------------------
 typedef struct LinkTable
 {
-    s32 row_count;                      // Number of rows stored.
-    s32 row_capacity;                   // Number of rows the columns can hold.
-    u32 revision;                       // Incremented by every insert and delete; lets indexes detect staleness.
-    Sequence id_sequence;               // Issues link_id values.
-    s32* link_id;                       // [PK] Key of the link.
-    s32* area_1_id;                     // [FK -> AreaTable.area_id] First area joined.
-    s32* area_2_id;                     // [FK -> AreaTable.area_id] Second area joined.
-    u8* axis;                           // Axis along which the shared border runs.
-    s32* position[AREA_AXIS_COUNT];     // Cell at the middle of the shared border, one column per axis.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // Incremented by every insert and delete; lets indexes detect staleness.
+    u32 revision;
+    // Issues link_id values.
+    Sequence id_sequence;
+    // [PK] Key of the link.
+    s32 *link_id;
+    // [FK -> AreaTable.area_id] First area joined.
+    s32 *area_1_id;
+    // [FK -> AreaTable.area_id] Second area joined.
+    s32 *area_2_id;
+    // Axis along which the shared border runs.
+    u8 *axis;
+    // Cell at the middle of the shared border, one column per axis.
+    s32 *position[AREA_AXIS_COUNT];
 } LinkTable;
 
 // ----------------------------------------------------------------------------
@@ -120,10 +157,14 @@ typedef struct LinkTable
 // ----------------------------------------------------------------------------
 typedef struct Border
 {
-    s32 area_1_id;                  // First area of the pair.
-    s32 area_2_id;                  // Second area of the pair.
-    Axis axis;                      // Axis along which the border runs.
-    IBounds2 bounds;                // Two cell wide strip centered on the border; empty when the areas do not touch.
+    // First area of the pair.
+    s32 area_1_id;
+    // Second area of the pair.
+    s32 area_2_id;
+    // Axis along which the border runs.
+    Axis axis;
+    // Two cell wide strip centered on the border; empty when the areas do not touch.
+    IBounds2 bounds;
 } Border;
 
 // ----------------------------------------------------------------------------
@@ -138,10 +179,14 @@ typedef struct Border
 // ----------------------------------------------------------------------------
 typedef struct AreaFloorIndex
 {
-    u32 area_revision;              // AreaTable.revision the index was built from.
-    s32 row_capacity;               // Number of entries area_row can hold.
-    s32 offset[FLOOR_COUNT + 1];    // Floor F owns entries [offset[F], offset[F + 1]) of area_row.
-    s32* area_row;                  // [FK -> AreaTable row] Area rows grouped by floor.
+    // AreaTable.revision the index was built from.
+    u32 area_revision;
+    // Number of entries area_row can hold.
+    s32 row_capacity;
+    // Floor F owns entries [offset[F], offset[F + 1]) of area_row.
+    s32 offset[FLOOR_COUNT + 1];
+    // [FK -> AreaTable row] Area rows grouped by floor.
+    s32 *area_row;
 } AreaFloorIndex;
 
 // ----------------------------------------------------------------------------
@@ -156,12 +201,18 @@ typedef struct AreaFloorIndex
 // ----------------------------------------------------------------------------
 typedef struct AreaLinkIndex
 {
-    u32 area_revision;              // AreaTable.revision the index was built from.
-    u32 link_revision;              // LinkTable.revision the index was built from.
-    s32 offset_capacity;            // Number of entries offset can hold.
-    s32 row_capacity;               // Number of entries link_row can hold.
-    s32* offset;                    // Area row R owns entries [offset[R], offset[R + 1]) of link_row.
-    s32* link_row;                  // [FK -> LinkTable row] Link rows grouped by area.
+    // AreaTable.revision the index was built from.
+    u32 area_revision;
+    // LinkTable.revision the index was built from.
+    u32 link_revision;
+    // Number of entries offset can hold.
+    s32 offset_capacity;
+    // Number of entries link_row can hold.
+    s32 row_capacity;
+    // Area row R owns entries [offset[R], offset[R + 1]) of link_row.
+    s32 *offset;
+    // [FK -> LinkTable row] Link rows grouped by area.
+    s32 *link_row;
 } AreaLinkIndex;
 
 // ----------------------------------------------------------------------------
@@ -178,10 +229,14 @@ typedef struct AreaLinkIndex
 // ----------------------------------------------------------------------------
 typedef struct AreaChangeSet
 {
-    AreaTable insert;               // Rows waiting to be inserted.
-    s32 delete_count;               // Number of keys waiting to be deleted.
-    s32 delete_capacity;            // Number of keys delete_area_id can hold.
-    s32* delete_area_id;            // [FK -> AreaTable.area_id] Keys of rows waiting to be deleted.
+    // Rows waiting to be inserted.
+    AreaTable insert;
+    // Number of keys waiting to be deleted.
+    s32 delete_count;
+    // Number of keys delete_area_id can hold.
+    s32 delete_capacity;
+    // [FK -> AreaTable.area_id] Keys of rows waiting to be deleted.
+    s32 *delete_area_id;
 } AreaChangeSet;
 
 // ----------------------------------------------------------------------------
@@ -194,7 +249,7 @@ typedef struct AreaChangeSet
 // Writes:   table: every column, row_count, revision
 // Notes:    O(row_count) when the key is not the largest in the table.
 // ----------------------------------------------------------------------------
-s32 area_table_insert(AreaTable* table, const AreaRecord* record);
+s32 area_table_insert(AreaTable *table, const AreaRecord *record);
 
 // ----------------------------------------------------------------------------
 // Function: area_table_delete
@@ -207,7 +262,7 @@ s32 area_table_insert(AreaTable* table, const AreaRecord* record);
 // Notes:    Links are not cascaded; the caller must not leave links that
 //           refer to the deleted area.
 // ----------------------------------------------------------------------------
-void area_table_delete(AreaTable* table, s32 area_id);
+void area_table_delete(AreaTable *table, s32 area_id);
 
 // ----------------------------------------------------------------------------
 // Function: area_table_find_row
@@ -218,7 +273,7 @@ void area_table_delete(AreaTable* table, s32 area_id);
 // Reads:    table.area_id
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-s32 area_table_find_row(const AreaTable* table, s32 area_id);
+s32 area_table_find_row(const AreaTable *table, s32 area_id);
 
 // ----------------------------------------------------------------------------
 // Function: area_table_get_record
@@ -229,7 +284,7 @@ s32 area_table_find_row(const AreaTable* table, s32 area_id);
 // Reads:    table: every column
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-AreaRecord area_table_get_record(const AreaTable* table, s32 row);
+AreaRecord area_table_get_record(const AreaTable *table, s32 row);
 
 // ----------------------------------------------------------------------------
 // Function: area_table_get_bounds
@@ -240,7 +295,7 @@ AreaRecord area_table_get_record(const AreaTable* table, s32 row);
 // Reads:    table.bounds_min, table.bounds_max
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-IBounds2 area_table_get_bounds(const AreaTable* table, s32 row);
+IBounds2 area_table_get_bounds(const AreaTable *table, s32 row);
 
 // ----------------------------------------------------------------------------
 // Function: area_table_clear
@@ -250,7 +305,7 @@ IBounds2 area_table_get_bounds(const AreaTable* table, s32 row);
 // Reads:    nothing
 // Writes:   table.row_count, table.revision
 // ----------------------------------------------------------------------------
-void area_table_clear(AreaTable* table);
+void area_table_clear(AreaTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: area_table_free
@@ -260,7 +315,7 @@ void area_table_clear(AreaTable* table);
 // Reads:    table
 // Writes:   table
 // ----------------------------------------------------------------------------
-void area_table_free(AreaTable* table);
+void area_table_free(AreaTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: link_table_insert
@@ -273,7 +328,7 @@ void area_table_free(AreaTable* table);
 // Notes:    The caller guarantees that both areas exist, differ and lie on
 //           the same floor; world_add_link checks this.
 // ----------------------------------------------------------------------------
-s32 link_table_insert(LinkTable* table, const LinkRecord* record);
+s32 link_table_insert(LinkTable *table, const LinkRecord *record);
 
 // ----------------------------------------------------------------------------
 // Function: link_table_delete
@@ -284,7 +339,7 @@ s32 link_table_insert(LinkTable* table, const LinkRecord* record);
 // Reads:    table
 // Writes:   table: every column, row_count, revision
 // ----------------------------------------------------------------------------
-void link_table_delete(LinkTable* table, s32 link_id);
+void link_table_delete(LinkTable *table, s32 link_id);
 
 // ----------------------------------------------------------------------------
 // Function: link_table_find_row
@@ -295,7 +350,7 @@ void link_table_delete(LinkTable* table, s32 link_id);
 // Reads:    table.link_id
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-s32 link_table_find_row(const LinkTable* table, s32 link_id);
+s32 link_table_find_row(const LinkTable *table, s32 link_id);
 
 // ----------------------------------------------------------------------------
 // Function: link_table_get_record
@@ -306,7 +361,7 @@ s32 link_table_find_row(const LinkTable* table, s32 link_id);
 // Reads:    table: every column
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-LinkRecord link_table_get_record(const LinkTable* table, s32 row);
+LinkRecord link_table_get_record(const LinkTable *table, s32 row);
 
 // ----------------------------------------------------------------------------
 // Function: link_table_free
@@ -316,7 +371,7 @@ LinkRecord link_table_get_record(const LinkTable* table, s32 row);
 // Reads:    table
 // Writes:   table
 // ----------------------------------------------------------------------------
-void link_table_free(LinkTable* table);
+void link_table_free(LinkTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: area_floor_index_build
@@ -329,7 +384,7 @@ void link_table_free(LinkTable* table);
 // Writes:   index
 // Notes:    Counting sort, O(row_count + FLOOR_COUNT).
 // ----------------------------------------------------------------------------
-void area_floor_index_build(AreaFloorIndex* index, const AreaTable* table);
+void area_floor_index_build(AreaFloorIndex *index, const AreaTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: area_floor_index_get_rows
@@ -342,7 +397,7 @@ void area_floor_index_build(AreaFloorIndex* index, const AreaTable* table);
 // Reads:    index
 // Writes:   row_count
 // ----------------------------------------------------------------------------
-const s32* area_floor_index_get_rows(const AreaFloorIndex* index, const AreaTable* table, s32 floor_number, s32* row_count);
+const s32 *area_floor_index_get_rows(const AreaFloorIndex *index, const AreaTable *table, s32 floor_number, s32 *row_count);
 
 // ----------------------------------------------------------------------------
 // Function: area_floor_index_free
@@ -352,7 +407,7 @@ const s32* area_floor_index_get_rows(const AreaFloorIndex* index, const AreaTabl
 // Reads:    index
 // Writes:   index
 // ----------------------------------------------------------------------------
-void area_floor_index_free(AreaFloorIndex* index);
+void area_floor_index_free(AreaFloorIndex *index);
 
 // ----------------------------------------------------------------------------
 // Function: area_link_index_build
@@ -366,7 +421,7 @@ void area_floor_index_free(AreaFloorIndex* index);
 // Writes:   index
 // Notes:    O(link rows * log(area rows)).
 // ----------------------------------------------------------------------------
-void area_link_index_build(AreaLinkIndex* index, const AreaTable* area_table, const LinkTable* link_table);
+void area_link_index_build(AreaLinkIndex *index, const AreaTable *area_table, const LinkTable *link_table);
 
 // ----------------------------------------------------------------------------
 // Function: area_link_index_get_rows
@@ -380,7 +435,7 @@ void area_link_index_build(AreaLinkIndex* index, const AreaTable* area_table, co
 // Reads:    index
 // Writes:   row_count
 // ----------------------------------------------------------------------------
-const s32* area_link_index_get_rows(const AreaLinkIndex* index, const AreaTable* area_table, const LinkTable* link_table, s32 area_row, s32* row_count);
+const s32 *area_link_index_get_rows(const AreaLinkIndex *index, const AreaTable *area_table, const LinkTable *link_table, s32 area_row, s32 *row_count);
 
 // ----------------------------------------------------------------------------
 // Function: area_link_index_free
@@ -390,7 +445,7 @@ const s32* area_link_index_get_rows(const AreaLinkIndex* index, const AreaTable*
 // Reads:    index
 // Writes:   index
 // ----------------------------------------------------------------------------
-void area_link_index_free(AreaLinkIndex* index);
+void area_link_index_free(AreaLinkIndex *index);
 
 // ----------------------------------------------------------------------------
 // Function: area_change_set_stage_insert
@@ -401,7 +456,7 @@ void area_link_index_free(AreaLinkIndex* index);
 // Reads:    record
 // Writes:   change_set.insert
 // ----------------------------------------------------------------------------
-void area_change_set_stage_insert(AreaChangeSet* change_set, const AreaRecord* record);
+void area_change_set_stage_insert(AreaChangeSet *change_set, const AreaRecord *record);
 
 // ----------------------------------------------------------------------------
 // Function: area_change_set_stage_delete
@@ -412,7 +467,7 @@ void area_change_set_stage_insert(AreaChangeSet* change_set, const AreaRecord* r
 // Reads:    arguments only
 // Writes:   change_set.delete_area_id, change_set.delete_count
 // ----------------------------------------------------------------------------
-void area_change_set_stage_delete(AreaChangeSet* change_set, s32 area_id);
+void area_change_set_stage_delete(AreaChangeSet *change_set, s32 area_id);
 
 // ----------------------------------------------------------------------------
 // Function: area_change_set_apply
@@ -424,7 +479,7 @@ void area_change_set_stage_delete(AreaChangeSet* change_set, s32 area_id);
 // Reads:    change_set
 // Writes:   table, change_set
 // ----------------------------------------------------------------------------
-void area_change_set_apply(AreaChangeSet* change_set, AreaTable* table);
+void area_change_set_apply(AreaChangeSet *change_set, AreaTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: area_change_set_free
@@ -434,6 +489,6 @@ void area_change_set_apply(AreaChangeSet* change_set, AreaTable* table);
 // Reads:    change_set
 // Writes:   change_set
 // ----------------------------------------------------------------------------
-void area_change_set_free(AreaChangeSet* change_set);
+void area_change_set_free(AreaChangeSet *change_set);
 
 #endif

@@ -19,8 +19,10 @@
 // ----------------------------------------------------------------------------
 typedef struct VoxelVertex
 {
-    u32 vertex;                     // Corner position within the sector: x in bits 0-5, y in bits 6-11, z in bits 12-19.
-    u32 face_type;                  // Texture layer plus one in bits 0-7, Direction of the face in bits 8-10.
+    // Corner position within the sector: x in bits 0-5, y in bits 6-11, z in bits 12-19.
+    u32 vertex;
+    // Texture layer plus one in bits 0-7, Direction of the face in bits 8-10.
+    u32 face_type;
 } VoxelVertex;
 
 // ----------------------------------------------------------------------------
@@ -29,9 +31,12 @@ typedef struct VoxelVertex
 // ----------------------------------------------------------------------------
 typedef struct ModelVertex
 {
-    f32 position[3];                // Position in model space.
-    f32 normal[3];                  // Surface normal in model space.
-    f32 uv[2];                      // Texture coordinate.
+    // Position in model space.
+    f32 position[3];
+    // Surface normal in model space.
+    f32 normal[3];
+    // Texture coordinate.
+    f32 uv[2];
 } ModelVertex;
 
 // ----------------------------------------------------------------------------
@@ -40,8 +45,10 @@ typedef struct ModelVertex
 // ----------------------------------------------------------------------------
 typedef struct DebugVertex
 {
-    f32 position[3];                // Position in world space.
-    f32 color[3];                   // Line color: red, green, blue.
+    // Position in world space.
+    f32 position[3];
+    // Line color: red, green, blue.
+    f32 color[3];
 } DebugVertex;
 
 // ----------------------------------------------------------------------------
@@ -50,8 +57,10 @@ typedef struct DebugVertex
 // ----------------------------------------------------------------------------
 typedef struct TextVertex
 {
-    f32 position[2];                // Position in screen pixels; y grows downwards.
-    f32 uv[2];                      // Coordinate in the glyph atlas texture.
+    // Position in screen pixels; y grows downwards.
+    f32 position[2];
+    // Coordinate in the glyph atlas texture.
+    f32 uv[2];
 } TextVertex;
 
 #endif

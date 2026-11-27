@@ -20,9 +20,12 @@
 // Purpose:   Fixed buffer sizes used by the log. The log must work when
 //            memory is exhausted, so it never allocates per message.
 // ----------------------------------------------------------------------------
-#define LOG_PATH_CAPACITY 1024      // Longest log file path, with terminator.
-#define LOG_MESSAGE_CAPACITY 4096   // Longest formatted message, with terminator.
-#define LOG_TIMESTAMP_CAPACITY 32   // Longest formatted timestamp, with terminator.
+// Longest log file path, with terminator.
+#define LOG_PATH_CAPACITY 1024
+// Longest formatted message, with terminator.
+#define LOG_MESSAGE_CAPACITY 4096
+// Longest formatted timestamp, with terminator.
+#define LOG_TIMESTAMP_CAPACITY 32
 
 // ----------------------------------------------------------------------------
 // Constants: build configuration name
@@ -30,9 +33,11 @@
 //            message. NDEBUG is the standard macro that disables assert.
 // ----------------------------------------------------------------------------
 #ifdef NDEBUG
-#define LOG_BUILD_CONFIGURATION "RELEASE"   // Asserts are compiled out.
+// Asserts are compiled out.
+#define LOG_BUILD_CONFIGURATION "RELEASE"
 #else
-#define LOG_BUILD_CONFIGURATION "DEBUG"     // Asserts are active.
+// Asserts are active.
+#define LOG_BUILD_CONFIGURATION "DEBUG"
 #endif
 
 // ----------------------------------------------------------------------------
@@ -42,11 +47,16 @@
 // ----------------------------------------------------------------------------
 typedef struct LogState
 {
-    FILE* file;                     // Log file under the working directory, or NULL.
-    FILE* repository_file;          // Log file under the repository root, or NULL.
-    LogLevel pending_level;         // Severity recorded by the last log_begin.
-    const char* pending_file;       // Source file recorded by the last log_begin.
-    int pending_line;               // Source line recorded by the last log_begin.
+    // Log file under the working directory, or NULL.
+    FILE *file;
+    // Log file under the repository root, or NULL.
+    FILE *repository_file;
+    // Severity recorded by the last log_begin.
+    LogLevel pending_level;
+    // Source file recorded by the last log_begin.
+    const char *pending_file;
+    // Source line recorded by the last log_begin.
+    int pending_line;
 } LogState;
 
 // ----------------------------------------------------------------------------
@@ -64,8 +74,8 @@ static LogState log_state;
 // Reads:    arguments only
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-static const char*
-log_level_to_string(const LogLevel level)
+static const char
+*log_level_to_string(const LogLevel level)
 {
     switch (level)
     {
@@ -87,7 +97,7 @@ log_level_to_string(const LogLevel level)
 // Writes:   nothing
 // ----------------------------------------------------------------------------
 static int
-log_path_exists(const char* path)
+log_path_exists(const char *path)
 {
     if (path[0] == '\0')
     {
@@ -121,7 +131,7 @@ log_path_is_separator(const char character)
 // Writes:   directory
 // ----------------------------------------------------------------------------
 static int
-log_path_to_parent(char* directory)
+log_path_to_parent(char *directory)
 {
     size_t length;
 
@@ -162,11 +172,13 @@ log_path_to_parent(char* directory)
 // Writes:   root, is_working_directory
 // ----------------------------------------------------------------------------
 static void
-log_find_repository_root(char* root, const size_t root_capacity, int* is_working_directory)
+log_find_repository_root(char *root,
+                         const size_t root_capacity,
+                         int *is_working_directory)
 {
     char candidate[LOG_PATH_CAPACITY];
     char marker[LOG_PATH_CAPACITY];
-    char* working_directory;
+    char *working_directory;
     int is_first;
 
     root[0] = '\0';
@@ -228,7 +240,10 @@ log_find_repository_root(char* root, const size_t root_capacity, int* is_working
 // Notes:    path must hold LOG_PATH_CAPACITY bytes.
 // ----------------------------------------------------------------------------
 static void
-log_format_path(char* path, const char* directory, const char* prefix, const u32 sequence)
+log_format_path(char *path,
+                const char *directory,
+                const char *prefix,
+                const u32 sequence)
 {
     int length;
 
@@ -267,7 +282,7 @@ log_init(void)
     char repository_path[LOG_PATH_CAPACITY];
     int root_is_working_directory;
     time_t now;
-    const struct tm* time_info;
+    const struct tm *time_info;
     u32 sequence;
 
     SDL_CreateDirectory(log_directory);
@@ -320,7 +335,9 @@ log_init(void)
 
 // Documented in src/core/log.h.
 LogWriter
-log_begin(const LogLevel level, const char* file, const int line)
+log_begin(const LogLevel level,
+          const char *file,
+          const int line)
 {
     log_state.pending_level = level;
     log_state.pending_file = file;
@@ -331,16 +348,17 @@ log_begin(const LogLevel level, const char* file, const int line)
 
 // Documented in src/core/log.h.
 void
-log_write(const char* format, ...)
+log_write(const char *format,
+          ...)
 {
     char timestamp[LOG_TIMESTAMP_CAPACITY];
     char message[LOG_MESSAGE_CAPACITY];
     const LogLevel level = log_state.pending_level;
-    const char* level_string;
-    const char* filename;
-    const char* last_slash;
-    const struct tm* time_info;
-    FILE* stream_array[3];
+    const char *level_string;
+    const char *filename;
+    const char *last_slash;
+    const struct tm *time_info;
+    FILE *stream_array[3];
     time_t now;
     va_list arguments;
     s32 stream_index;
@@ -377,7 +395,7 @@ log_write(const char* format, ...)
 
     for (stream_index = 0; stream_index < ARRAY_COUNT(stream_array); ++stream_index)
     {
-        FILE* stream = stream_array[stream_index];
+        FILE *stream = stream_array[stream_index];
 
         if (stream == NULL)
         {

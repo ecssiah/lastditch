@@ -20,7 +20,8 @@
 // Constants: work schedule size
 // Purpose:   Row count of WORK_TABLE.
 // ----------------------------------------------------------------------------
-#define WORK_COUNT 3                // Rows of WORK_TABLE.
+// Rows of WORK_TABLE.
+#define WORK_COUNT 3
 
 // ----------------------------------------------------------------------------
 // State:   Action
@@ -28,8 +29,10 @@
 // ----------------------------------------------------------------------------
 typedef struct Action
 {
-    Random random;                  // Random stream reserved for scheduled work, seeded with WORK_SEED.
-    u64 tick_count;                 // Number of simulation steps started so far.
+    // Random stream reserved for scheduled work, seeded with WORK_SEED.
+    Random random;
+    // Number of simulation steps started so far.
+    u64 tick_count;
 } Action;
 
 // ----------------------------------------------------------------------------
@@ -52,7 +55,7 @@ extern const WorkRecord WORK_TABLE[WORK_COUNT];
 // Reads:    nothing
 // Writes:   action
 // ----------------------------------------------------------------------------
-void action_init(Action* action, World* world);
+void action_init(Action *action, World *world);
 
 // ----------------------------------------------------------------------------
 // Function: action_update
@@ -65,7 +68,7 @@ void action_init(Action* action, World* world);
 // Reads:    WORK_TABLE
 // Writes:   action.tick_count, and whatever the due work functions write
 // ----------------------------------------------------------------------------
-void action_update(Action* action, World* world, Population* population);
+void action_update(Action *action, World *world, Population *population);
 
 // ----------------------------------------------------------------------------
 // Function: action_is_due
@@ -77,7 +80,7 @@ void action_update(Action* action, World* world, Population* population);
 // Reads:    action.tick_count, work
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-int action_is_due(const Action* action, const WorkRecord* work);
+int action_is_due(const Action *action, const WorkRecord *work);
 
 // ----------------------------------------------------------------------------
 // Function: work_decide
@@ -93,7 +96,7 @@ int action_is_due(const Action* action, const WorkRecord* work);
 // Writes:   decision.decision_timer; actor.rotation_target[AXIS_Z],
 //           actor.velocity[AXIS_X], actor.velocity[AXIS_Y]; population.random
 // ----------------------------------------------------------------------------
-void work_decide(World* world, Population* population);
+void work_decide(World *world, Population *population);
 
 // ----------------------------------------------------------------------------
 // Function: work_orient
@@ -107,7 +110,7 @@ void work_decide(World* world, Population* population);
 //           actor.orientation
 // Writes:   actor.movement_yaw, actor.orientation
 // ----------------------------------------------------------------------------
-void work_orient(World* world, Population* population);
+void work_orient(World *world, Population *population);
 
 // ----------------------------------------------------------------------------
 // Function: work_move
@@ -119,6 +122,6 @@ void work_orient(World* world, Population* population);
 //           actor.collider_radius, actor.collision_enabled
 // Writes:   actor.velocity, actor.position, actor.is_grounded
 // ----------------------------------------------------------------------------
-void work_move(World* world, Population* population);
+void work_move(World *world, Population *population);
 
 #endif

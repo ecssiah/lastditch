@@ -11,7 +11,8 @@
 
 // Documented in src/core/geometry/interpolation.h.
 f32
-angle_get_shortest_delta(const f32 current, const f32 target)
+angle_get_shortest_delta(const f32 current,
+                         const f32 target)
 {
     f32 delta = target - current;
 
@@ -30,7 +31,10 @@ angle_get_shortest_delta(const f32 current, const f32 target)
 
 // Documented in src/core/geometry/interpolation.h.
 f32
-angle_interpolate_to(const f32 current_angle, const f32 target_angle, const f32 rate, const f32 delta_time)
+angle_interpolate_to(const f32 current_angle,
+                     const f32 target_angle,
+                     const f32 rate,
+                     const f32 delta_time)
 {
     const f32 alpha = 1.0f - f32_exp(-rate * delta_time);
     const f32 delta = angle_get_shortest_delta(current_angle, target_angle);
@@ -45,7 +49,9 @@ angle_interpolate_to(const f32 current_angle, const f32 target_angle, const f32 
 
 // Documented in src/core/geometry/interpolation.h.
 Quaternion
-quaternion_spherical_interpolation_to(const Quaternion current, const Quaternion target, const f32 amount)
+quaternion_spherical_interpolation_to(const Quaternion current,
+                                      const Quaternion target,
+                                      const f32 amount)
 {
     const f32 t = f32_clamp(amount, 0.0f, 1.0f);
     Quaternion end = target;

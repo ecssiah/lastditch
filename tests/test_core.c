@@ -28,7 +28,7 @@ test_core_table(void)
 {
     static const s32 key_array[5] = { 2, 3, 7, 11, 40 };
     Sequence sequence;
-    s32* column;
+    s32 *column;
 
     TEST_CHECK_S32(table_grow_capacity(0, 0), TABLE_CAPACITY_MIN);
     TEST_CHECK_S32(table_grow_capacity(0, 1), TABLE_CAPACITY_MIN);
@@ -56,7 +56,7 @@ test_core_table(void)
     TEST_CHECK_S32(key_column_find_insert_row(key_array, 5, 8), 3);
     TEST_CHECK_S32(key_column_find_insert_row(key_array, 5, 99), 5);
 
-    column = (s32*)column_resize(NULL, sizeof(s32), 8);
+    column = (s32 *)column_resize(NULL, sizeof(s32), 8);
 
     TEST_CHECK(column != NULL);
 
@@ -78,7 +78,7 @@ test_core_table(void)
     TEST_CHECK_S32(column[4], 40);
 
     // Growing keeps the rows already stored.
-    column = (s32*)column_resize(column, sizeof(s32), 1024);
+    column = (s32 *)column_resize(column, sizeof(s32), 1024);
 
     TEST_CHECK_S32(column[0], 3);
     TEST_CHECK_S32(column[4], 40);

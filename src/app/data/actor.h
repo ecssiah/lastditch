@@ -20,10 +20,14 @@
 // ----------------------------------------------------------------------------
 typedef enum ActorType
 {
-    ACTOR_TYPE_NONE,                // No role assigned.
-    ACTOR_TYPE_JUDGE,               // The actor the player embodies.
-    ACTOR_TYPE_AGENT,               // A member of a nation that acts on its own.
-    ACTOR_TYPE_COUNT                // Number of actor types.
+    // No role assigned.
+    ACTOR_TYPE_NONE,
+    // The actor the player embodies.
+    ACTOR_TYPE_JUDGE,
+    // A member of a nation that acts on its own.
+    ACTOR_TYPE_AGENT,
+    // Number of actor types.
+    ACTOR_TYPE_COUNT
 } ActorType;
 
 // ----------------------------------------------------------------------------
@@ -32,20 +36,34 @@ typedef enum ActorType
 // ----------------------------------------------------------------------------
 typedef struct ActorRecord
 {
-    s32 actor_id;                   // Primary key of the row.
-    ActorType actor_type;           // Role of the actor.
-    NationType nation_type;         // Nation the actor belongs to.
-    f32 move_speed;                 // Horizontal speed when moving, in cells per second.
-    f32 turn_speed;                 // Rate at which the actor turns towards rotation_target.
-    Vec3 position;                  // Center of the actor's collider, in world space.
-    Vec3 position_target;           // Position the actor is heading for.
-    Quaternion orientation;         // Current orientation, smoothed towards rotation_target.
-    Vec3 rotation_target;           // Wanted Euler rotation in degrees: x pitch, y roll, z yaw.
-    f32 movement_yaw;               // Current heading in degrees, smoothed towards rotation_target.z.
-    Vec3 velocity;                  // Velocity in cells per second.
-    int collision_enabled;          // Whether the actor collides with blocks.
-    Vec3 collider_radius;           // Half extents of the actor's box collider.
-    int is_grounded;                // Whether the actor stood on a block after the last physics step.
+    // Primary key of the row.
+    s32 actor_id;
+    // Role of the actor.
+    ActorType actor_type;
+    // Nation the actor belongs to.
+    NationType nation_type;
+    // Horizontal speed when moving, in cells per second.
+    f32 move_speed;
+    // Rate at which the actor turns towards rotation_target.
+    f32 turn_speed;
+    // Center of the actor's collider, in world space.
+    Vec3 position;
+    // Position the actor is heading for.
+    Vec3 position_target;
+    // Current orientation, smoothed towards rotation_target.
+    Quaternion orientation;
+    // Wanted Euler rotation in degrees: x pitch, y roll, z yaw.
+    Vec3 rotation_target;
+    // Current heading in degrees, smoothed towards rotation_target.z.
+    f32 movement_yaw;
+    // Velocity in cells per second.
+    Vec3 velocity;
+    // Whether the actor collides with blocks.
+    int collision_enabled;
+    // Half extents of the actor's box collider.
+    Vec3 collider_radius;
+    // Whether the actor stood on a block after the last physics step.
+    int is_grounded;
 } ActorRecord;
 
 // ----------------------------------------------------------------------------
@@ -62,23 +80,40 @@ typedef struct ActorRecord
 // ----------------------------------------------------------------------------
 typedef struct ActorTable
 {
-    s32 row_count;                      // Number of rows stored.
-    s32 row_capacity;                   // Number of rows the columns can hold.
-    Sequence id_sequence;               // Issues actor_id values.
-    s32* actor_id;                      // [PK] Key of the actor.
-    u8* actor_type;                     // ActorType of the actor.x
-    NationType* nation_type;            // [FK -> NATION_TABLE.nation_type] Nation the actor belongs to.
-    f32* move_speed;                    // Horizontal speed when moving, in cells per second.
-    f32* turn_speed;                    // Rate at which the actor turns towards its rotation target.
-    f32* position[AXIS_COUNT];          // Center of the collider in world space, one column per axis.
-    f32* position_target[AXIS_COUNT];   // Position the actor is heading for, one column per axis.
-    Quaternion* orientation;            // Current orientation, smoothed towards the rotation target.
-    f32* rotation_target[AXIS_COUNT];   // Wanted Euler rotation in degrees, one column per axis: pitch, roll, yaw.
-    f32* movement_yaw;                  // Current heading in degrees, smoothed towards rotation_target[AXIS_Z].
-    f32* velocity[AXIS_COUNT];          // Velocity in cells per second, one column per axis.
-    u8* collision_enabled;              // Non-zero when the actor collides with blocks.
-    f32* collider_radius[AXIS_COUNT];   // Half extents of the box collider, one column per axis.
-    u8* is_grounded;                    // [derived] Non-zero when the last physics step ended standing on a block.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // Issues actor_id values.
+    Sequence id_sequence;
+    // [PK] Key of the actor.
+    s32 *actor_id;
+    // ActorType of the actor.x
+    u8 *actor_type;
+    // [FK -> NATION_TABLE.nation_type] Nation the actor belongs to.
+    NationType *nation_type;
+    // Horizontal speed when moving, in cells per second.
+    f32 *move_speed;
+    // Rate at which the actor turns towards its rotation target.
+    f32 *turn_speed;
+    // Center of the collider in world space, one column per axis.
+    f32 *position[AXIS_COUNT];
+    // Position the actor is heading for, one column per axis.
+    f32 *position_target[AXIS_COUNT];
+    // Current orientation, smoothed towards the rotation target.
+    Quaternion *orientation;
+    // Wanted Euler rotation in degrees, one column per axis: pitch, roll, yaw.
+    f32 *rotation_target[AXIS_COUNT];
+    // Current heading in degrees, smoothed towards rotation_target[AXIS_Z].
+    f32 *movement_yaw;
+    // Velocity in cells per second, one column per axis.
+    f32 *velocity[AXIS_COUNT];
+    // Non-zero when the actor collides with blocks.
+    u8 *collision_enabled;
+    // Half extents of the box collider, one column per axis.
+    f32 *collider_radius[AXIS_COUNT];
+    // [derived] Non-zero when the last physics step ended standing on a block.
+    u8 *is_grounded;
 } ActorTable;
 
 // ----------------------------------------------------------------------------
@@ -94,10 +129,14 @@ typedef struct ActorTable
 // ----------------------------------------------------------------------------
 typedef struct DecisionTable
 {
-    s32 row_count;                  // Number of rows stored.
-    s32 row_capacity;               // Number of rows the columns can hold.
-    s32* actor_id;                  // [PK] [FK -> ActorTable.actor_id] Actor that steers itself.
-    s32* decision_timer;            // Decision steps left before the actor reconsiders; 0 means decide now.
+    // Number of rows stored.
+    s32 row_count;
+    // Number of rows the columns can hold.
+    s32 row_capacity;
+    // [PK] [FK -> ActorTable.actor_id] Actor that steers itself.
+    s32 *actor_id;
+    // Decision steps left before the actor reconsiders; 0 means decide now.
+    s32 *decision_timer;
 } DecisionTable;
 
 // ----------------------------------------------------------------------------
@@ -110,7 +149,7 @@ typedef struct DecisionTable
 // Reads:    record
 // Writes:   table: every column, row_count
 // ----------------------------------------------------------------------------
-s32 actor_table_insert(ActorTable* table, const ActorRecord* record);
+s32 actor_table_insert(ActorTable *table, const ActorRecord *record);
 
 // ----------------------------------------------------------------------------
 // Function: actor_table_find_row
@@ -121,7 +160,7 @@ s32 actor_table_insert(ActorTable* table, const ActorRecord* record);
 // Reads:    table.actor_id
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-s32 actor_table_find_row(const ActorTable* table, s32 actor_id);
+s32 actor_table_find_row(const ActorTable *table, s32 actor_id);
 
 // ----------------------------------------------------------------------------
 // Function: actor_table_get_position
@@ -132,7 +171,7 @@ s32 actor_table_find_row(const ActorTable* table, s32 actor_id);
 // Reads:    table.position
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-Vec3 actor_table_get_position(const ActorTable* table, s32 row);
+Vec3 actor_table_get_position(const ActorTable *table, s32 row);
 
 // ----------------------------------------------------------------------------
 // Function: actor_table_get_rotation_target
@@ -143,7 +182,7 @@ Vec3 actor_table_get_position(const ActorTable* table, s32 row);
 // Reads:    table.rotation_target
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-Vec3 actor_table_get_rotation_target(const ActorTable* table, s32 row);
+Vec3 actor_table_get_rotation_target(const ActorTable *table, s32 row);
 
 // ----------------------------------------------------------------------------
 // Function: actor_table_free
@@ -153,7 +192,7 @@ Vec3 actor_table_get_rotation_target(const ActorTable* table, s32 row);
 // Reads:    table
 // Writes:   table
 // ----------------------------------------------------------------------------
-void actor_table_free(ActorTable* table);
+void actor_table_free(ActorTable *table);
 
 // ----------------------------------------------------------------------------
 // Function: decision_table_insert
@@ -166,7 +205,7 @@ void actor_table_free(ActorTable* table);
 // Reads:    arguments only
 // Writes:   table: every column, row_count
 // ----------------------------------------------------------------------------
-s32 decision_table_insert(DecisionTable* table, s32 actor_id, s32 decision_timer);
+s32 decision_table_insert(DecisionTable *table, s32 actor_id, s32 decision_timer);
 
 // ----------------------------------------------------------------------------
 // Function: decision_table_free
@@ -176,6 +215,6 @@ s32 decision_table_insert(DecisionTable* table, s32 actor_id, s32 decision_timer
 // Reads:    table
 // Writes:   table
 // ----------------------------------------------------------------------------
-void decision_table_free(DecisionTable* table);
+void decision_table_free(DecisionTable *table);
 
 #endif

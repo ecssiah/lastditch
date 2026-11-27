@@ -15,10 +15,14 @@
 // ----------------------------------------------------------------------------
 typedef struct Color
 {
-    f32 r;                          // Red channel.
-    f32 g;                          // Green channel.
-    f32 b;                          // Blue channel.
-    f32 a;                          // Opacity; 1 is fully opaque.
+    // Red channel.
+    f32 r;
+    // Green channel.
+    f32 g;
+    // Blue channel.
+    f32 b;
+    // Opacity; 1 is fully opaque.
+    f32 a;
 } Color;
 
 // ----------------------------------------------------------------------------

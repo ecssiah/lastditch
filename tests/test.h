@@ -43,7 +43,7 @@ typedef void (*TestSuiteFunction)(void);
 // Reads:    arguments only
 // Writes:   the check counters; stderr on failure
 // ----------------------------------------------------------------------------
-void test_check(int passed, const char* expression, const char* file, int line);
+void test_check(int passed, const char *expression, const char *file, int line);
 
 // ----------------------------------------------------------------------------
 // Function: test_check_s32
@@ -57,7 +57,7 @@ void test_check(int passed, const char* expression, const char* file, int line);
 // Reads:    arguments only
 // Writes:   the check counters; stderr on failure
 // ----------------------------------------------------------------------------
-void test_check_s32(s32 actual, s32 expected, const char* expression, const char* file, int line);
+void test_check_s32(s32 actual, s32 expected, const char *expression, const char *file, int line);
 
 // ----------------------------------------------------------------------------
 // Function: test_check_f32
@@ -72,7 +72,7 @@ void test_check_s32(s32 actual, s32 expected, const char* expression, const char
 // Reads:    arguments only
 // Writes:   the check counters; stderr on failure
 // ----------------------------------------------------------------------------
-void test_check_f32(f32 actual, f32 expected, f32 tolerance, const char* expression, const char* file, int line);
+void test_check_f32(f32 actual, f32 expected, f32 tolerance, const char *expression, const char *file, int line);
 
 // ----------------------------------------------------------------------------
 // Function: test_hash_bytes
@@ -85,7 +85,7 @@ void test_check_f32(f32 actual, f32 expected, f32 tolerance, const char* express
 // Reads:    data
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-u64 test_hash_bytes(u64 hash, const void* data, size_t size);
+u64 test_hash_bytes(u64 hash, const void *data, size_t size);
 
 // ----------------------------------------------------------------------------
 // Function: test_hash_begin
@@ -121,7 +121,7 @@ u64 test_make_u64(u32 high, u32 low);
 // Reads:    the shared world
 // Writes:   the shared world, on first use
 // ----------------------------------------------------------------------------
-World* test_get_world(void);
+World *test_get_world(void);
 
 // ----------------------------------------------------------------------------
 // Function: test_get_asset_directory
@@ -133,7 +133,7 @@ World* test_get_world(void);
 // Reads:    the command line, as recorded by main
 // Writes:   nothing
 // ----------------------------------------------------------------------------
-const char* test_get_asset_directory(void);
+const char *test_get_asset_directory(void);
 
 // ----------------------------------------------------------------------------
 // Function: test_core_run

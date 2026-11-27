@@ -13,7 +13,8 @@
 // Constants: block geometry
 // Purpose:   Shape of the block reference tables.
 // ----------------------------------------------------------------------------
-#define BLOCK_FACE_COUNT 6          // Faces of a block, one per Direction.
+// Faces of a block, one per Direction.
+#define BLOCK_FACE_COUNT 6
 
 // ----------------------------------------------------------------------------
 // Enum:    FaceTypeId
@@ -25,7 +26,8 @@ typedef enum FaceTypeId
 #define FACE(id, name) FACE_TYPE_ ## id,
 #include "face_types.def"
 #undef FACE
-    FACE_TYPE_COUNT                 // Number of face types.
+    // Number of face types.
+    FACE_TYPE_COUNT
 } FaceTypeId;
 
 // ----------------------------------------------------------------------------
@@ -47,7 +49,8 @@ typedef enum BlockTypeId
 #include "block_types.def"
 #undef BLOCK
 #undef BLOCK_FACES
-    BLOCK_TYPE_COUNT                // Number of block types.
+    // Number of block types.
+    BLOCK_TYPE_COUNT
 } BlockTypeId;
 
 // ----------------------------------------------------------------------------
@@ -65,7 +68,7 @@ typedef char BlockTypeCapacityCheck[BLOCK_TYPE_COUNT <= 256 ? 1 : -1];
 // Order:     rows in FaceTypeId order
 // Lifetime:  compiled in, read-only
 // ----------------------------------------------------------------------------
-extern const char* const FACE_TYPE_NAME[FACE_TYPE_COUNT];
+extern const char *const FACE_TYPE_NAME[FACE_TYPE_COUNT];
 
 // ----------------------------------------------------------------------------
 // Reference: BLOCK_TYPE_NAME
@@ -74,7 +77,7 @@ extern const char* const FACE_TYPE_NAME[FACE_TYPE_COUNT];
 // Order:     rows in BlockTypeId order
 // Lifetime:  compiled in, read-only
 // ----------------------------------------------------------------------------
-extern const char* const BLOCK_TYPE_NAME[BLOCK_TYPE_COUNT];
+extern const char *const BLOCK_TYPE_NAME[BLOCK_TYPE_COUNT];
 
 // ----------------------------------------------------------------------------
 // Reference: BLOCK_FACE_TYPE

@@ -14,12 +14,12 @@
 
 // Documented in src/app/data/cell.h.
 void
-cell_table_init(CellTable* table)
+cell_table_init(CellTable *table)
 {
     s32 cell_index;
 
-    table->block_type = (BlockType*)column_resize(NULL, sizeof(BlockType), WORLD_VOLUME_IN_CELLS);
-    table->direction_mask = (u8*)column_resize(NULL, sizeof(u8), WORLD_VOLUME_IN_CELLS);
+    table->block_type = (BlockType *)column_resize(NULL, sizeof(BlockType), WORLD_VOLUME_IN_CELLS);
+    table->direction_mask = (u8 *)column_resize(NULL, sizeof(u8), WORLD_VOLUME_IN_CELLS);
 
     for (cell_index = 0; cell_index < WORLD_VOLUME_IN_CELLS; ++cell_index)
     {
@@ -31,7 +31,7 @@ cell_table_init(CellTable* table)
 
 // Documented in src/app/data/cell.h.
 void
-cell_table_free(CellTable* table)
+cell_table_free(CellTable *table)
 {
     column_free(table->block_type);
     column_free(table->direction_mask);

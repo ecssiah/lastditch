@@ -18,7 +18,8 @@ typedef enum NationTypeId
 #define NATION(id, name, texture) NATION_TYPE_ ## id,
 #include "nation_types.def"
 #undef NATION
-    NATION_TYPE_COUNT               // Number of nations.
+    // Number of nations.
+    NATION_TYPE_COUNT
 } NationTypeId;
 
 // ----------------------------------------------------------------------------
@@ -35,7 +36,7 @@ typedef char NationTypeCapacityCheck[NATION_TYPE_COUNT <= 256 ? 1 : -1];
 // Order:     rows in NationTypeId order
 // Lifetime:  compiled in, read-only
 // ----------------------------------------------------------------------------
-extern const char* const NATION_TYPE_NAME[NATION_TYPE_COUNT];
+extern const char *const NATION_TYPE_NAME[NATION_TYPE_COUNT];
 
 // ----------------------------------------------------------------------------
 // Reference: NATION_TEXTURE_NAME
@@ -45,6 +46,6 @@ extern const char* const NATION_TYPE_NAME[NATION_TYPE_COUNT];
 // Order:     rows in NationTypeId order
 // Lifetime:  compiled in, read-only
 // ----------------------------------------------------------------------------
-extern const char* const NATION_TEXTURE_NAME[NATION_TYPE_COUNT];
+extern const char *const NATION_TEXTURE_NAME[NATION_TYPE_COUNT];
 
 #endif

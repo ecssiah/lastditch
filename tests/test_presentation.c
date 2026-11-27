@@ -21,10 +21,14 @@
 //            WORLD_SEED and from the shipped assets. Like the recorded
 //            world values they are platform independent.
 // ----------------------------------------------------------------------------
-#define TEST_MESH_VERTEX_COUNT 9250824      // Vertices of all sector meshes together.
-#define TEST_DEBUG_LINE_COUNT 77928         // Lines of the debug overlay.
-#define TEST_MODEL_VERTEX_COUNT 720         // Vertices of assets/model/actor.obj.
-#define TEST_PATH_SIZE 1100                 // Size of the buffers that hold asset paths.
+// Vertices of all sector meshes together.
+#define TEST_MESH_VERTEX_COUNT 9250824
+// Lines of the debug overlay.
+#define TEST_DEBUG_LINE_COUNT 77928
+// Vertices of assets/model/actor.obj.
+#define TEST_MODEL_VERTEX_COUNT 720
+// Size of the buffers that hold asset paths.
+#define TEST_PATH_SIZE 1100
 
 // ----------------------------------------------------------------------------
 // Function: test_presentation_screen
@@ -93,7 +97,7 @@ test_presentation_screen(void)
 // Writes:   the check counters
 // ----------------------------------------------------------------------------
 static void
-test_presentation_debug(const World* world)
+test_presentation_debug(const World *world)
 {
     static Debug debug;
     s32 red_count = 0;
@@ -111,7 +115,7 @@ test_presentation_debug(const World* world)
 
     for (row = 0; row < debug.line.row_count; ++row)
     {
-        const DebugVertex* vertex = &debug.line.vertex[row];
+        const DebugVertex *vertex = &debug.line.vertex[row];
         const int is_red = vertex->color[0] == 1.0f && vertex->color[1] == 0.0f && vertex->color[2] == 0.0f;
         const int is_cyan = vertex->color[0] == 0.0f && vertex->color[1] == 1.0f && vertex->color[2] == 1.0f;
 
@@ -212,7 +216,7 @@ test_presentation_mesh_block(void)
     if (vertex.row_count == 16 * SECTOR_VERTEX_COUNT_PER_QUAD)
     {
         // The compass's east face: first corner at local (7, 8, 200).
-        const VoxelVertex* east = &vertex.vertex[10 * SECTOR_VERTEX_COUNT_PER_QUAD];
+        const VoxelVertex *east = &vertex.vertex[10 * SECTOR_VERTEX_COUNT_PER_QUAD];
         const u32 layer_plus_one = mesh_encode_face_texture_index(FACE_TYPE_DIRECTION_EAST);
 
         TEST_CHECK(east[0].vertex == (7u | (8u << 6) | (200u << 12)));
@@ -257,7 +261,7 @@ test_presentation_mesh_block(void)
 // Writes:   the check counters
 // ----------------------------------------------------------------------------
 static void
-test_presentation_mesh_world(const World* world)
+test_presentation_mesh_world(const World *world)
 {
     SectorQuadTable quad;
     VoxelVertexTable vertex;
@@ -338,7 +342,7 @@ test_presentation_model(void)
 
     char path[TEST_PATH_SIZE];
     ModelVertexTable vertex;
-    FILE* file;
+    FILE *file;
     s32 row;
 
     memset(&vertex, 0, sizeof(vertex));
@@ -388,7 +392,7 @@ test_presentation_model(void)
     // The actor model fits inside the actors' colliders, give or take.
     for (row = 0; row < vertex.row_count; ++row)
     {
-        const ModelVertex* model_vertex = &vertex.vertex[row];
+        const ModelVertex *model_vertex = &vertex.vertex[row];
         const f32 normal_length_squared =
             model_vertex->normal[0] * model_vertex->normal[0] +
             model_vertex->normal[1] * model_vertex->normal[1] +
@@ -409,7 +413,7 @@ test_presentation_model(void)
 void
 test_presentation_run(void)
 {
-    const World* world = test_get_world();
+    const World *world = test_get_world();
 
     test_presentation_screen();
     test_presentation_debug(world);

@@ -16,8 +16,10 @@
 // Purpose:   Fixed capacity of the label table. Labels are rebuilt every
 //            frame, so the table never allocates.
 // ----------------------------------------------------------------------------
-#define SCREEN_LABEL_CAPACITY 16            // Most labels on screen at once.
-#define SCREEN_LABEL_TEXT_CAPACITY 96       // Longest label text, with terminator.
+// Most labels on screen at once.
+#define SCREEN_LABEL_CAPACITY 16
+// Longest label text, with terminator.
+#define SCREEN_LABEL_TEXT_CAPACITY 96
 
 // ----------------------------------------------------------------------------
 // Table:    ScreenLabelTable
@@ -29,10 +31,14 @@
 // ----------------------------------------------------------------------------
 typedef struct ScreenLabelTable
 {
-    s32 row_count;                                                      // Number of labels this frame.
-    char text[SCREEN_LABEL_CAPACITY][SCREEN_LABEL_TEXT_CAPACITY];       // Label text, null-terminated UTF-8.
-    f32 x[SCREEN_LABEL_CAPACITY];                                       // Left edge of the label, in screen pixels.
-    f32 y[SCREEN_LABEL_CAPACITY];                                       // Top edge of the label, in screen pixels.
+    // Number of labels this frame.
+    s32 row_count;
+    // Label text, null-terminated UTF-8.
+    char text[SCREEN_LABEL_CAPACITY][SCREEN_LABEL_TEXT_CAPACITY];
+    // Left edge of the label, in screen pixels.
+    f32 x[SCREEN_LABEL_CAPACITY];
+    // Top edge of the label, in screen pixels.
+    f32 y[SCREEN_LABEL_CAPACITY];
 } ScreenLabelTable;
 
 // ----------------------------------------------------------------------------
@@ -41,7 +47,8 @@ typedef struct ScreenLabelTable
 // ----------------------------------------------------------------------------
 typedef struct Screen
 {
-    ScreenLabelTable label;         // The labels to draw this frame.
+    // The labels to draw this frame.
+    ScreenLabelTable label;
 } Screen;
 
 // ----------------------------------------------------------------------------
@@ -54,6 +61,6 @@ typedef struct Screen
 // Reads:    control.position
 // Writes:   screen.label
 // ----------------------------------------------------------------------------
-void screen_update(Screen* screen, const Control* control);
+void screen_update(Screen *screen, const Control *control);
 
 #endif

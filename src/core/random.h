@@ -19,7 +19,8 @@
 // Constants: MT19937 parameters
 // Purpose:   Size of the generator state, fixed by the MT19937 algorithm.
 // ----------------------------------------------------------------------------
-#define RANDOM_STATE_COUNT 624      // Number of 32-bit words of generator state.
+// Number of 32-bit words of generator state.
+#define RANDOM_STATE_COUNT 624
 
 // ----------------------------------------------------------------------------
 // State:   Random
@@ -30,8 +31,10 @@
 // ----------------------------------------------------------------------------
 typedef struct Random
 {
-    u32 state_array[RANDOM_STATE_COUNT];    // MT19937 state words.
-    s32 state_index;                        // Next state word to output; RANDOM_STATE_COUNT forces a refill.
+    // MT19937 state words.
+    u32 state_array[RANDOM_STATE_COUNT];
+    // Next state word to output; RANDOM_STATE_COUNT forces a refill.
+    s32 state_index;
 } Random;
 
 // ----------------------------------------------------------------------------
@@ -43,7 +46,7 @@ typedef struct Random
 // Reads:    arguments only
 // Writes:   random
 // ----------------------------------------------------------------------------
-void random_seed(Random* random, u32 seed);
+void random_seed(Random *random, u32 seed);
 
 // ----------------------------------------------------------------------------
 // Function: random_next_u32
@@ -53,7 +56,7 @@ void random_seed(Random* random, u32 seed);
 // Reads:    random
 // Writes:   random
 // ----------------------------------------------------------------------------
-u32 random_next_u32(Random* random);
+u32 random_next_u32(Random *random);
 
 // ----------------------------------------------------------------------------
 // Function: random_uniform_s32
@@ -68,7 +71,7 @@ u32 random_next_u32(Random* random);
 //           so the number of raw draws consumed varies. No draw is consumed
 //           when min equals max.
 // ----------------------------------------------------------------------------
-s32 random_uniform_s32(Random* random, s32 min, s32 max);
+s32 random_uniform_s32(Random *random, s32 min, s32 max);
 
 // ----------------------------------------------------------------------------
 // Function: random_uniform_f32
@@ -82,6 +85,6 @@ s32 random_uniform_s32(Random* random, s32 min, s32 max);
 // Writes:   random
 // Notes:    Consumes exactly one raw draw.
 // ----------------------------------------------------------------------------
-f32 random_uniform_f32(Random* random, f32 min, f32 max);
+f32 random_uniform_f32(Random *random, f32 min, f32 max);
 
 #endif

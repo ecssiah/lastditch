@@ -6,14 +6,14 @@
 
 #include "app/data/block_reference.h"
 
-const char* const FACE_TYPE_NAME[FACE_TYPE_COUNT] =
+const char *const FACE_TYPE_NAME[FACE_TYPE_COUNT] =
 {
 #define FACE(id, name) #name,
 #include "face_types.def"
 #undef FACE
 };
 
-const char* const BLOCK_TYPE_NAME[BLOCK_TYPE_COUNT] =
+const char *const BLOCK_TYPE_NAME[BLOCK_TYPE_COUNT] =
 {
 #define BLOCK(id, name, face) #name,
 #define BLOCK_FACES(id, name, east, west, north, south, up, down) #name,

@@ -8,16 +8,17 @@ The standard answers four questions, always in the same place:
 | --- | --- |
 | What is this file for? | The file banner. |
 | What is this data, and what are its keys, order and lifetime? | The block above the type or table. |
-| What does each column, member or constant mean? | The trailing comment on its line. |
+| What does each column, member or constant mean? | The comment directly above it. |
 | What does this function do, and which data does it read and write? | The block above the function. |
 
 ## 1. Comment syntax
 
-All comments are `//` comments. Two rule lines delimit documentation:
+All comments are `//` comments. A file banner rule uses `// ` followed by
+76 equals signs. A block rule uses `// ` followed by 76 hyphens.
 
 ```c
-// ============================================================================   file banner rule  ("// " + 76 "=")
-// ----------------------------------------------------------------------------   block rule        ("// " + 76 "-")
+// ============================================================================
+// ----------------------------------------------------------------------------
 ```
 
 A documentation block is: a block rule, a header line `// <Kind>: <Name>`,
@@ -87,17 +88,20 @@ The four fields of the tabular kinds mean:
 // ----------------------------------------------------------------------------
 typedef struct LinkTable
 {
-    s32 row_count;                      // Number of rows stored.
+    // Number of rows stored.
+    s32 row_count;
     ...
-    s32* link_id;                       // [PK] Key of the link.
-    s32* area_1_id;                     // [FK -> AreaTable.area_id] First area joined.
+    // [PK] Key of the link.
+    s32 *link_id;
+    // [FK -> AreaTable.area_id] First area joined.
+    s32 *area_1_id;
 ```
 
 ### Members, enumerators and constants
 
 Every struct member, every enumerator and every `#define` in a `Constants`
-group has a trailing comment on its own line. Column comments start with a
-tag when one applies:
+group has a comment directly above its declaration, at the same indentation.
+Column comments start with a tag when one applies:
 
 | Tag | Meaning |
 | --- | --- |
@@ -128,7 +132,7 @@ this order:
 // Notes:    Links are not cascaded; the caller must not leave links that
 //           refer to the deleted area.
 // ----------------------------------------------------------------------------
-void area_table_delete(AreaTable* table, s32 area_id);
+void area_table_delete(AreaTable *table, s32 area_id);
 ```
 
 * `Purpose` – what the function does, in terms of the data it transforms.
@@ -156,12 +160,15 @@ to reorder, batch or parallelise systems safely.
   documented **at its definition**.
 
 Function definitions are written with the return type on its own line so that
-the function name starts the line:
+the function declarator starts the next line. Write pointer stars with the
+declarator, including for pointer returns. When a definition has multiple
+parameters, put each on its own line and align them with the first parameter.
 
 ```c
 // Documented in src/app/data/area.h.
 void
-area_table_delete(AreaTable* table, const s32 area_id)
+area_table_delete(AreaTable *table,
+                  const s32 area_id)
 {
 ```
 

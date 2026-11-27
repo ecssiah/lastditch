@@ -100,21 +100,25 @@ f32_abs(const f32 value)
 
 // Documented in src/core/geometry/scalar.h.
 f32
-f32_min(const f32 left, const f32 right)
+f32_min(const f32 left,
+        const f32 right)
 {
     return right < left ? right : left;
 }
 
 // Documented in src/core/geometry/scalar.h.
 f32
-f32_max(const f32 left, const f32 right)
+f32_max(const f32 left,
+        const f32 right)
 {
     return left < right ? right : left;
 }
 
 // Documented in src/core/geometry/scalar.h.
 f32
-f32_clamp(const f32 value, const f32 minimum, const f32 maximum)
+f32_clamp(const f32 value,
+          const f32 minimum,
+          const f32 maximum)
 {
     if (value < minimum)
     {
@@ -138,14 +142,16 @@ f32_infinity(void)
 
 // Documented in src/core/geometry/scalar.h.
 s32
-s32_min(const s32 left, const s32 right)
+s32_min(const s32 left,
+        const s32 right)
 {
     return right < left ? right : left;
 }
 
 // Documented in src/core/geometry/scalar.h.
 s32
-s32_max(const s32 left, const s32 right)
+s32_max(const s32 left,
+        const s32 right)
 {
     return left < right ? right : left;
 }

@@ -19,8 +19,10 @@
 // Constants: simulation test sizes
 // Purpose:   Row counts and run lengths used by the simulation checks.
 // ----------------------------------------------------------------------------
-#define TEST_SPAWN_COUNT 33                 // Rows of TEST_SPAWN_TABLE: the judge and 8 agents per nation.
-#define TEST_SIMULATION_STEP_COUNT 900      // Simulation steps run by the whole-population check: 30 seconds.
+// Rows of TEST_SPAWN_TABLE: the judge and 8 agents per nation.
+#define TEST_SPAWN_COUNT 33
+// Simulation steps run by the whole-population check: 30 seconds.
+#define TEST_SIMULATION_STEP_COUNT 900
 
 // ----------------------------------------------------------------------------
 // Record:  TestSpawnRecord
@@ -28,11 +30,16 @@
 // ----------------------------------------------------------------------------
 typedef struct TestSpawnRecord
 {
-    s32 actor_id;                   // Key of the actor.
-    NationType nation_type;         // Nation of the actor.
-    s32 x;                          // Spawn position along X.
-    s32 y;                          // Spawn position along Y.
-    s32 z;                          // Spawn position along Z.
+    // Key of the actor.
+    s32 actor_id;
+    // Nation of the actor.
+    NationType nation_type;
+    // Spawn position along X.
+    s32 x;
+    // Spawn position along Y.
+    s32 y;
+    // Spawn position along Z.
+    s32 z;
 } TestSpawnRecord;
 
 // ----------------------------------------------------------------------------
@@ -93,9 +100,9 @@ static const TestSpawnRecord TEST_SPAWN_TABLE[TEST_SPAWN_COUNT] =
 // Writes:   the check counters
 // ----------------------------------------------------------------------------
 static void
-test_simulation_population(const Population* population)
+test_simulation_population(const Population *population)
 {
-    const ActorTable* actor = &population->actor;
+    const ActorTable *actor = &population->actor;
     s32 row;
 
     TEST_CHECK_S32(actor->row_count, TEST_SPAWN_COUNT);
@@ -105,7 +112,7 @@ test_simulation_population(const Population* population)
 
     for (row = 0; row < actor->row_count && row < TEST_SPAWN_COUNT; ++row)
     {
-        const TestSpawnRecord* spawn = &TEST_SPAWN_TABLE[row];
+        const TestSpawnRecord *spawn = &TEST_SPAWN_TABLE[row];
         const int is_judge = actor->actor_id[row] == population->judge_id;
         const Vec3 forward = quaternion_get_forward(actor->orientation[row]);
         const Vec2 heading = direction_from_angle(actor->movement_yaw[row]);
@@ -156,7 +163,8 @@ test_simulation_population(const Population* population)
 // Writes:   actor
 // ----------------------------------------------------------------------------
 static s32
-test_simulation_add_actor(ActorTable* actor, const Vec3 position)
+test_simulation_add_actor(ActorTable *actor,
+                          const Vec3 position)
 {
     ActorRecord record;
 
@@ -304,11 +312,11 @@ test_simulation_physics(void)
 // Writes:   the check counters
 // ----------------------------------------------------------------------------
 static void
-test_simulation_decisions(World* world)
+test_simulation_decisions(World *world)
 {
     static Population population;
     static Action action;
-    ActorTable* actor = &population.actor;
+    ActorTable *actor = &population.actor;
     s32 bystander;
     s32 agent;
     s32 step;
@@ -390,10 +398,11 @@ test_simulation_decisions(World* world)
 // Writes:   population; the check counters
 // ----------------------------------------------------------------------------
 static void
-test_simulation_schedule(World* world, Population* population)
+test_simulation_schedule(World *world,
+                         Population *population)
 {
     static Action action;
-    const ActorTable* actor = &population->actor;
+    const ActorTable *actor = &population->actor;
     const size_t cell_byte_count = (size_t)WORLD_VOLUME_IN_CELLS * sizeof(BlockType);
     const u64 block_hash_before = test_hash_bytes(test_hash_begin(), world->cell.block_type, cell_byte_count);
     const u32 area_revision_before = world->area.revision;
@@ -448,7 +457,7 @@ test_simulation_schedule(World* world, Population* population)
     for (row = 0; row < actor->row_count; ++row)
     {
         const Vec3 position = actor_table_get_position(actor, row);
-        const TestSpawnRecord* spawn = &TEST_SPAWN_TABLE[row];
+        const TestSpawnRecord *spawn = &TEST_SPAWN_TABLE[row];
         const IVec3 feet = world_position_to_cell_coordinate(position.x, position.y, position.z - actor->collider_radius[AXIS_Z][row] - 0.5f);
         const IVec3 body = world_position_to_cell_coordinate(position.x, position.y, position.z);
 
@@ -504,7 +513,9 @@ test_simulation_schedule(World* world, Population* population)
 //           platform.pointer_delta_x, platform.pointer_delta_y
 // ----------------------------------------------------------------------------
 static void
-test_simulation_press(Platform* platform, const ButtonType button_a, const ButtonType button_b)
+test_simulation_press(Platform *platform,
+                      const ButtonType button_a,
+                      const ButtonType button_b)
 {
     memcpy(platform->button_previous, platform->button_current, sizeof(platform->button_previous));
     memset(platform->button_current, 0, sizeof(platform->button_current));
@@ -528,11 +539,11 @@ test_simulation_press(Platform* platform, const ButtonType button_a, const Butto
 // Writes:   population; the check counters
 // ----------------------------------------------------------------------------
 static void
-test_simulation_control(Population* population)
+test_simulation_control(Population *population)
 {
     static Platform platform;
     static Control control;
-    ActorTable* actor = &population->actor;
+    ActorTable *actor = &population->actor;
     const s32 judge_row = actor_table_find_row(actor, population->judge_id);
     Vec3 before;
 
@@ -707,7 +718,7 @@ void
 test_simulation_run(void)
 {
     static Population population;
-    World* world = test_get_world();
+    World *world = test_get_world();
 
     memset(&population, 0, sizeof(population));
     population_init(&population);

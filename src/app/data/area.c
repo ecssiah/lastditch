@@ -21,7 +21,8 @@
 // Writes:   table: column storage, row_capacity
 // ----------------------------------------------------------------------------
 static void
-area_table_reserve(AreaTable* table, const s32 row_required)
+area_table_reserve(AreaTable *table,
+                   const s32 row_required)
 {
     const s32 capacity = table_grow_capacity(table->row_capacity, row_required);
     s32 axis;
@@ -31,14 +32,14 @@ area_table_reserve(AreaTable* table, const s32 row_required)
         return;
     }
 
-    table->area_id = (s32*)column_resize(table->area_id, sizeof(s32), capacity);
-    table->area_type = (u8*)column_resize(table->area_type, sizeof(u8), capacity);
-    table->floor_number = (s32*)column_resize(table->floor_number, sizeof(s32), capacity);
+    table->area_id = (s32 *)column_resize(table->area_id, sizeof(s32), capacity);
+    table->area_type = (u8 *)column_resize(table->area_type, sizeof(u8), capacity);
+    table->floor_number = (s32 *)column_resize(table->floor_number, sizeof(s32), capacity);
 
     for (axis = 0; axis < AREA_AXIS_COUNT; ++axis)
     {
-        table->bounds_min[axis] = (s32*)column_resize(table->bounds_min[axis], sizeof(s32), capacity);
-        table->bounds_max[axis] = (s32*)column_resize(table->bounds_max[axis], sizeof(s32), capacity);
+        table->bounds_min[axis] = (s32 *)column_resize(table->bounds_min[axis], sizeof(s32), capacity);
+        table->bounds_max[axis] = (s32 *)column_resize(table->bounds_max[axis], sizeof(s32), capacity);
     }
 
     table->row_capacity = capacity;
@@ -46,7 +47,8 @@ area_table_reserve(AreaTable* table, const s32 row_required)
 
 // Documented in src/app/data/area.h.
 s32
-area_table_insert(AreaTable* table, const AreaRecord* record)
+area_table_insert(AreaTable *table,
+                  const AreaRecord *record)
 {
     const s32 row = key_column_find_insert_row(table->area_id, table->row_count, record->area_id);
     const s32 row_count = table->row_count;
@@ -84,7 +86,8 @@ area_table_insert(AreaTable* table, const AreaRecord* record)
 
 // Documented in src/app/data/area.h.
 void
-area_table_delete(AreaTable* table, const s32 area_id)
+area_table_delete(AreaTable *table,
+                  const s32 area_id)
 {
     const s32 row = area_table_find_row(table, area_id);
     const s32 row_count = table->row_count;
@@ -113,14 +116,16 @@ area_table_delete(AreaTable* table, const s32 area_id)
 
 // Documented in src/app/data/area.h.
 s32
-area_table_find_row(const AreaTable* table, const s32 area_id)
+area_table_find_row(const AreaTable *table,
+                    const s32 area_id)
 {
     return key_column_find_row(table->area_id, table->row_count, area_id);
 }
 
 // Documented in src/app/data/area.h.
 AreaRecord
-area_table_get_record(const AreaTable* table, const s32 row)
+area_table_get_record(const AreaTable *table,
+                      const s32 row)
 {
     AreaRecord record;
 
@@ -136,7 +141,8 @@ area_table_get_record(const AreaTable* table, const s32 row)
 
 // Documented in src/app/data/area.h.
 IBounds2
-area_table_get_bounds(const AreaTable* table, const s32 row)
+area_table_get_bounds(const AreaTable *table,
+                      const s32 row)
 {
     assert(row >= 0 && row < table->row_count);
 
@@ -150,7 +156,7 @@ area_table_get_bounds(const AreaTable* table, const s32 row)
 
 // Documented in src/app/data/area.h.
 void
-area_table_clear(AreaTable* table)
+area_table_clear(AreaTable *table)
 {
     table->row_count = 0;
     table->revision += 1;
@@ -158,7 +164,7 @@ area_table_clear(AreaTable* table)
 
 // Documented in src/app/data/area.h.
 void
-area_table_free(AreaTable* table)
+area_table_free(AreaTable *table)
 {
     s32 axis;
 
@@ -186,7 +192,8 @@ area_table_free(AreaTable* table)
 // Writes:   table: column storage, row_capacity
 // ----------------------------------------------------------------------------
 static void
-link_table_reserve(LinkTable* table, const s32 row_required)
+link_table_reserve(LinkTable *table,
+                   const s32 row_required)
 {
     const s32 capacity = table_grow_capacity(table->row_capacity, row_required);
     s32 axis;
@@ -196,14 +203,14 @@ link_table_reserve(LinkTable* table, const s32 row_required)
         return;
     }
 
-    table->link_id = (s32*)column_resize(table->link_id, sizeof(s32), capacity);
-    table->area_1_id = (s32*)column_resize(table->area_1_id, sizeof(s32), capacity);
-    table->area_2_id = (s32*)column_resize(table->area_2_id, sizeof(s32), capacity);
-    table->axis = (u8*)column_resize(table->axis, sizeof(u8), capacity);
+    table->link_id = (s32 *)column_resize(table->link_id, sizeof(s32), capacity);
+    table->area_1_id = (s32 *)column_resize(table->area_1_id, sizeof(s32), capacity);
+    table->area_2_id = (s32 *)column_resize(table->area_2_id, sizeof(s32), capacity);
+    table->axis = (u8 *)column_resize(table->axis, sizeof(u8), capacity);
 
     for (axis = 0; axis < AREA_AXIS_COUNT; ++axis)
     {
-        table->position[axis] = (s32*)column_resize(table->position[axis], sizeof(s32), capacity);
+        table->position[axis] = (s32 *)column_resize(table->position[axis], sizeof(s32), capacity);
     }
 
     table->row_capacity = capacity;
@@ -211,7 +218,8 @@ link_table_reserve(LinkTable* table, const s32 row_required)
 
 // Documented in src/app/data/area.h.
 s32
-link_table_insert(LinkTable* table, const LinkRecord* record)
+link_table_insert(LinkTable *table,
+                  const LinkRecord *record)
 {
     const s32 row = key_column_find_insert_row(table->link_id, table->row_count, record->link_id);
     const s32 row_count = table->row_count;
@@ -247,7 +255,8 @@ link_table_insert(LinkTable* table, const LinkRecord* record)
 
 // Documented in src/app/data/area.h.
 void
-link_table_delete(LinkTable* table, const s32 link_id)
+link_table_delete(LinkTable *table,
+                  const s32 link_id)
 {
     const s32 row = link_table_find_row(table, link_id);
     const s32 row_count = table->row_count;
@@ -276,14 +285,16 @@ link_table_delete(LinkTable* table, const s32 link_id)
 
 // Documented in src/app/data/area.h.
 s32
-link_table_find_row(const LinkTable* table, const s32 link_id)
+link_table_find_row(const LinkTable *table,
+                    const s32 link_id)
 {
     return key_column_find_row(table->link_id, table->row_count, link_id);
 }
 
 // Documented in src/app/data/area.h.
 LinkRecord
-link_table_get_record(const LinkTable* table, const s32 row)
+link_table_get_record(const LinkTable *table,
+                      const s32 row)
 {
     LinkRecord record;
 
@@ -300,7 +311,7 @@ link_table_get_record(const LinkTable* table, const s32 row)
 
 // Documented in src/app/data/area.h.
 void
-link_table_free(LinkTable* table)
+link_table_free(LinkTable *table)
 {
     s32 axis;
 
@@ -319,7 +330,8 @@ link_table_free(LinkTable* table)
 
 // Documented in src/app/data/area.h.
 void
-area_floor_index_build(AreaFloorIndex* index, const AreaTable* table)
+area_floor_index_build(AreaFloorIndex *index,
+                       const AreaTable *table)
 {
     s32 cursor[FLOOR_COUNT];
     s32 floor_number;
@@ -328,7 +340,7 @@ area_floor_index_build(AreaFloorIndex* index, const AreaTable* table)
     if (index->row_capacity < table->row_count || index->area_row == NULL)
     {
         index->row_capacity = table_grow_capacity(index->row_capacity, table->row_count);
-        index->area_row = (s32*)column_resize(index->area_row, sizeof(s32), index->row_capacity);
+        index->area_row = (s32 *)column_resize(index->area_row, sizeof(s32), index->row_capacity);
     }
 
     for (floor_number = 0; floor_number <= FLOOR_COUNT; ++floor_number)
@@ -360,8 +372,11 @@ area_floor_index_build(AreaFloorIndex* index, const AreaTable* table)
 }
 
 // Documented in src/app/data/area.h.
-const s32*
-area_floor_index_get_rows(const AreaFloorIndex* index, const AreaTable* table, const s32 floor_number, s32* row_count)
+const s32
+*area_floor_index_get_rows(const AreaFloorIndex *index,
+                           const AreaTable *table,
+                           const s32 floor_number,
+                           s32 *row_count)
 {
     assert(index->area_revision == table->revision);
     assert(floor_number >= 0 && floor_number < FLOOR_COUNT);
@@ -375,7 +390,7 @@ area_floor_index_get_rows(const AreaFloorIndex* index, const AreaTable* table, c
 
 // Documented in src/app/data/area.h.
 void
-area_floor_index_free(AreaFloorIndex* index)
+area_floor_index_free(AreaFloorIndex *index)
 {
     column_free(index->area_row);
 
@@ -384,7 +399,9 @@ area_floor_index_free(AreaFloorIndex* index)
 
 // Documented in src/app/data/area.h.
 void
-area_link_index_build(AreaLinkIndex* index, const AreaTable* area_table, const LinkTable* link_table)
+area_link_index_build(AreaLinkIndex *index,
+                      const AreaTable *area_table,
+                      const LinkTable *link_table)
 {
     const s32 area_count = area_table->row_count;
     const s32 entry_count = 2 * link_table->row_count;
@@ -395,13 +412,13 @@ area_link_index_build(AreaLinkIndex* index, const AreaTable* area_table, const L
     if (index->offset_capacity < area_count + 2 || index->offset == NULL)
     {
         index->offset_capacity = table_grow_capacity(index->offset_capacity, area_count + 2);
-        index->offset = (s32*)column_resize(index->offset, sizeof(s32), index->offset_capacity);
+        index->offset = (s32 *)column_resize(index->offset, sizeof(s32), index->offset_capacity);
     }
 
     if (index->row_capacity < entry_count || index->link_row == NULL)
     {
         index->row_capacity = table_grow_capacity(index->row_capacity, entry_count);
-        index->link_row = (s32*)column_resize(index->link_row, sizeof(s32), index->row_capacity);
+        index->link_row = (s32 *)column_resize(index->link_row, sizeof(s32), index->row_capacity);
     }
 
     for (area_row = 0; area_row < area_count + 2; ++area_row)
@@ -445,8 +462,12 @@ area_link_index_build(AreaLinkIndex* index, const AreaTable* area_table, const L
 }
 
 // Documented in src/app/data/area.h.
-const s32*
-area_link_index_get_rows(const AreaLinkIndex* index, const AreaTable* area_table, const LinkTable* link_table, const s32 area_row, s32* row_count)
+const s32
+*area_link_index_get_rows(const AreaLinkIndex *index,
+                          const AreaTable *area_table,
+                          const LinkTable *link_table,
+                          const s32 area_row,
+                          s32 *row_count)
 {
     assert(index->area_revision == area_table->revision);
     assert(index->link_revision == link_table->revision);
@@ -462,7 +483,7 @@ area_link_index_get_rows(const AreaLinkIndex* index, const AreaTable* area_table
 
 // Documented in src/app/data/area.h.
 void
-area_link_index_free(AreaLinkIndex* index)
+area_link_index_free(AreaLinkIndex *index)
 {
     column_free(index->offset);
     column_free(index->link_row);
@@ -472,20 +493,22 @@ area_link_index_free(AreaLinkIndex* index)
 
 // Documented in src/app/data/area.h.
 void
-area_change_set_stage_insert(AreaChangeSet* change_set, const AreaRecord* record)
+area_change_set_stage_insert(AreaChangeSet *change_set,
+                             const AreaRecord *record)
 {
     area_table_insert(&change_set->insert, record);
 }
 
 // Documented in src/app/data/area.h.
 void
-area_change_set_stage_delete(AreaChangeSet* change_set, const s32 area_id)
+area_change_set_stage_delete(AreaChangeSet *change_set,
+                             const s32 area_id)
 {
     if (change_set->delete_count >= change_set->delete_capacity || change_set->delete_area_id == NULL)
     {
         change_set->delete_capacity = table_grow_capacity(change_set->delete_capacity, change_set->delete_count + 1);
         change_set->delete_area_id =
-            (s32*)column_resize(change_set->delete_area_id, sizeof(s32), change_set->delete_capacity);
+            (s32 *)column_resize(change_set->delete_area_id, sizeof(s32), change_set->delete_capacity);
     }
 
     change_set->delete_area_id[change_set->delete_count++] = area_id;
@@ -493,7 +516,8 @@ area_change_set_stage_delete(AreaChangeSet* change_set, const s32 area_id)
 
 // Documented in src/app/data/area.h.
 void
-area_change_set_apply(AreaChangeSet* change_set, AreaTable* table)
+area_change_set_apply(AreaChangeSet *change_set,
+                      AreaTable *table)
 {
     s32 index;
     s32 row;
@@ -516,7 +540,7 @@ area_change_set_apply(AreaChangeSet* change_set, AreaTable* table)
 
 // Documented in src/app/data/area.h.
 void
-area_change_set_free(AreaChangeSet* change_set)
+area_change_set_free(AreaChangeSet *change_set)
 {
     area_table_free(&change_set->insert);
     column_free(change_set->delete_area_id);
